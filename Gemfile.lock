@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    finite_mdp (0.2.0)
+      narray (~> 0.6)
+    narray (0.6.1.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  finite_mdp
+
+BUNDLED WITH
+   1.11.2
