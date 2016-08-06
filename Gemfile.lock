@@ -4,12 +4,14 @@ GEM
     finite_mdp (0.2.0)
       narray (~> 0.6)
     narray (0.6.1.2)
+    ruby-prof (0.15.9)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   finite_mdp
+  ruby-prof
 
 BUNDLED WITH
    1.11.2
