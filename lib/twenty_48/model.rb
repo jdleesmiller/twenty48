@@ -1,17 +1,16 @@
-require 'finite_mdp'
 require 'set'
 
 module Twenty48
   class Model
-    include FiniteMDP::Model
-
-    def initialize(board_size, max_exponent)
+    def initialize(board_size, max_exponent, use_pre_winning_state = false)
       @board_size = board_size
       @max_exponent = max_exponent
+      @use_pre_winning_state = use_pre_winning_state
     end
 
     attr_reader :board_size
     attr_reader :max_exponent
+    attr_reader :use_pre_winning_state
 
     def unflatten_state(state)
       state.each_slice(@board_size).to_a
@@ -51,6 +50,13 @@ module Twenty48
       n = @board_size
       (0...state.length).map do |index|
         state[n * (index % n) + index.div(n)]
+      end
+    end
+
+    def pre_winning_state?(state)
+      return false unless use_pre_winning_state
+      DIRECTIONS.any? do |direction|
+        winning_state?(move(state, direction))
       end
     end
 
@@ -96,6 +102,7 @@ module Twenty48
     #
     def canonicalize_state(state)
       return winning_state if winning_state?(state)
+      return pre_winning_state if pre_winning_state?(state)
       return losing_state if losing_state?(state)
 
       best_state = state
@@ -315,14 +322,19 @@ module Twenty48
       model
     end
 
+    def sort_states(states)
+      states.sort { |state0, state1| compare_states(state0, state1) }
+    end
+
     def pretty_print_hash_model(model)
-      keys = model.keys.sort { |state0, state1| compare_states(state0, state1) }
-      keys.map do |state0|
+      sort_states(model.keys).map do |state0|
         actions = model[state0]
         [pretty_print_state(state0)] +
-          actions.map do |action, successor_states|
-            successor_states.map do |state1, probability|
-              ["#{action} -> #{probability}",
+          DIRECTIONS.map do |direction|
+            successor_states = actions[direction]
+            sort_states(successor_states.keys).map do |state1|
+              probability = successor_states[state1]
+              ["#{direction} -> #{probability}",
                pretty_print_state(state1)].join("\n")
             end
           end + ['----------------------------------']
@@ -333,6 +345,11 @@ module Twenty48
 
     def losing_state
       @losing_state ||= [0] * @board_size ** 2
+    end
+
+    def pre_winning_state
+      @pre_winning_state ||= [0] * (@board_size ** 2 - 2) +
+        [@max_exponent - 1, @max_exponent - 1]
     end
 
     def winning_state
