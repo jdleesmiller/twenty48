@@ -594,29 +594,6 @@ class ModelTest < Minitest::Test
       1, 1], :left)
   end
 
-  def test_successors_2x2
-    #model = Twenty48::Model.new(2, 3)
-
-    #successors = model.successors([
-    #  0, 0,
-    #  0, 1])
-
-    #puts
-    #successors.each do |successor|
-    #  puts model.pretty_print_state(successor)
-    #  puts
-    #end
-  end
-
-  def test_reachable_states_2x2
-    #model = Twenty48::Model.new(2, 3)
-    #puts
-    #model.reachable_states.each do |state|
-    #  puts model.pretty_print_state(state)
-    #  puts
-    #end
-  end
-
   def assert_close x, y
     assert (x - y).abs < 1e-6, "expected #{x} ~ #{y}"
   end

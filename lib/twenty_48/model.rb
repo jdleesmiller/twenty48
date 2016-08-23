@@ -140,14 +140,6 @@ module Twenty48
       compare_states(state0, state1) < 0
     end
 
-    def states
-      states = Set[]
-      each_candidate_state do |state|
-        states << canonicalize_state(state)
-      end
-      states.to_a
-    end
-
     def pretty_print_state(state)
       unflatten_state(state).map do |row|
         row.map do |entry|
@@ -256,32 +248,6 @@ module Twenty48
       end
     end
 
-    def successors(state)
-      results = Set.new
-      DIRECTIONS.each do |direction|
-        new_state = move(state, direction)
-        if new_state != state
-          results = results.union(random_tile_successors(new_state))
-        else
-          results << canonicalize_state(new_state)
-        end
-      end
-      results.to_a
-    end
-
-    def random_tile_successors(state)
-      results = Set.new
-      state.each.with_index do |value, i|
-        next unless value == 0
-        [1, 2].each do |new_value|
-          new_state = state.dup
-          new_state[i] = new_value
-          results << canonicalize_state(new_state)
-        end
-      end
-      results
-    end
-
     RANDOM_TILES = { 1 => 0.9, 2 => 0.1 }
 
     def reward_for_state(state)
@@ -311,23 +277,6 @@ module Twenty48
         (hash.values.inject(:+) - 1).abs < 1e-6
 
       hash
-    end
-
-    def reachable_states
-      results = Set.new
-      queue = start_states
-
-      tick = 0
-      until queue.empty? do
-        tick += 1
-        p [results.size, queue.size] if tick % 1000 == 0
-        state = queue.shift
-        next if results.member?(state)
-        results << state
-        queue.push(*successors(state))
-      end
-
-      results.to_a.sort { |state0, state1| compare_states(state0, state1) }
     end
 
     def build_hash_model
@@ -384,22 +333,6 @@ module Twenty48
 
     def winning_state
       @winning_sate ||= [0] * (@board_size ** 2 - 1) + [@max_exponent]
-    end
-
-    def each_candidate_state
-      length = @board_size ** 2
-      state = [0] * length
-      loop do
-        index = length - 1
-        state[index] += 1
-        while index >= 0 && state[index] > @max_exponent
-          state[index] = 0
-          index -= 1
-          state[index] += 1
-        end
-        break if index < 0
-        yield state.dup
-      end
     end
   end
 end
