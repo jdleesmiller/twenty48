@@ -162,10 +162,14 @@ module Twenty48
       (0...length).each do |i|
         (0...length).each do |j|
           next if i == j
-          state = empty_state.dup
-          state[i] = 1
-          state[j] = 2
-          states << canonicalize_state(state)
+          [1, 2].each do |value_i|
+            [1, 2].each do |value_j|
+              state = empty_state.dup
+              state[i] = value_i
+              state[j] = value_j
+              states << canonicalize_state(state)
+            end
+          end
         end
       end
       states.sort { |state0, state1| compare_states(state0, state1) }

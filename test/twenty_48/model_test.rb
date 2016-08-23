@@ -618,11 +618,30 @@ class ModelTest < Minitest::Test
       2, 0]], 1 * 0.1 / 3
   end
 
-  def test_build_hash_model_2x2
-    #model = Twenty48::Model.new(2, 3)
-    #hash = model.build_hash_model
-    #puts
-    #puts model.pretty_print_hash_model(hash)
+  def test_start_states_2x2
+    model = Twenty48::Model.new(2, 2)
+    assert_equal [
+      [0, 0,
+       0, 2], # canonicalized to winning state
+      [0, 0,
+       1, 1],
+      [0, 1,
+       1, 0]], model.start_states
+
+    model = Twenty48::Model.new(2, 3)
+    assert_equal [
+      [0, 0,
+       1, 1],
+      [0, 0,
+       1, 2],
+      [0, 0,
+       2, 2],
+      [0, 1,
+       1, 0],
+      [0, 1,
+       2, 0],
+      [0, 2,
+       2, 0]], model.start_states
   end
 
   def test_build_hash_model_3x3
