@@ -14,11 +14,7 @@ module Twenty48
     attr_reader :max_exponent
 
     def unflatten_state(state)
-      rows = []
-      state.each_slice(@board_size) do |row|
-        rows << row
-      end
-      rows
+      state.each_slice(@board_size).to_a
     end
 
     #
@@ -128,16 +124,20 @@ module Twenty48
       best_state
     end
 
-    def state_less_than(state0, state1)
+    def compare_states(state0, state1)
       fail 'state length mismatch' unless state0.length == state1.length
       (0...state0.length).each do |i|
         if state0[i] < state1[i]
-          return true
+          return -1
         elsif state0[i] > state1[i]
-          return false
+          return 1
         end
       end
-      false
+      0
+    end
+
+    def state_less_than(state0, state1)
+      compare_states(state0, state1) < 0
     end
 
     def states
@@ -154,10 +154,226 @@ module Twenty48
           if entry > 0
             format('%4d', 2 ** entry)
           else
-            '    '
+            '   .'
           end
         end.join(' ')
       end.join("\n")
+    end
+
+    #
+    # We get two random tiles at the start.
+    #
+    def start_states
+      length = @board_size ** 2
+      empty_state = [0] * length
+      states = Set.new
+      (0...length).each do |i|
+        (0...length).each do |j|
+          next if i == j
+          state = empty_state.dup
+          state[i] = 1
+          state[j] = 2
+          states << canonicalize_state(state)
+        end
+      end
+      states.sort { |state0, state1| compare_states(state0, state1) }
+    end
+
+    #
+    # Slide a row or column toward the start of the line.
+    # Don't merge a tile that has already been merged.
+    #
+    def move_line(line)
+      result = []
+      last = nil
+      line.each do |value|
+        # Slide through empty spaces.
+        next if value == 0
+        if last == value
+          # Merge adjacent tiles.
+          result[result.size - 1] += 1
+          last = nil
+        else
+          # Keep the tile.
+          result << value
+          last = value
+        end
+      end
+      result << 0 while result.size < line.size
+      result
+    end
+
+    def update_each_row_with(state)
+      n = @board_size
+      state = state.dup
+      (0...n).each do |i|
+        state[i * n, n] = yield(state[i * n, n])
+      end
+      state
+    end
+
+    def update_each_col_with(state)
+      n = @board_size
+      state = state.dup
+      (0...n).each do |j|
+        col = (0...n).map do |i|
+          state[i * n + j]
+        end
+        new_col = yield(col)
+        (0...n).each do |i|
+          state[i * n + j] = new_col[i]
+        end
+      end
+      state
+    end
+
+    DIRECTIONS = [:left, :right, :up, :down]
+
+    #
+    # Slide tiles left (-1, 0), right (+1, 0), up (0, -1) or down (0, +1).
+    # Signs are for consistency with the 2048 source.
+    #
+    def move(state, direction)
+      case direction
+      when :left
+        update_each_row_with(state) do |row|
+          move_line(row)
+        end
+      when :right
+        update_each_row_with(state) do |row|
+          move_line(row.reverse).reverse
+        end
+      when :up
+        update_each_col_with(state) do |col|
+          move_line(col)
+        end
+      when :down
+        update_each_col_with(state) do |col|
+          move_line(col.reverse).reverse
+        end
+      else
+        fail "bad direction: #{direction}"
+      end
+    end
+
+    def successors(state)
+      results = Set.new
+      DIRECTIONS.each do |direction|
+        new_state = move(state, direction)
+        if new_state != state
+          results = results.union(random_tile_successors(new_state))
+        else
+          results << canonicalize_state(new_state)
+        end
+      end
+      results.to_a
+    end
+
+    def random_tile_successors(state)
+      results = Set.new
+      state.each.with_index do |value, i|
+        next unless value == 0
+        [1, 2].each do |new_value|
+          new_state = state.dup
+          new_state[i] = new_value
+          results << canonicalize_state(new_state)
+        end
+      end
+      results
+    end
+
+    RANDOM_TILES = { 1 => 0.9, 2 => 0.1 }
+
+    def reward_for_state(state)
+      winning_state?(state) ? 1 : 0
+    end
+
+    # Generate the successors and include the probabilities. The probabilities
+    # are normalized. Must not be called on a losing state or winning state.
+    def random_tile_successors_hash(state)
+      hash = Hash.new { 0 }
+
+      num_available = state.count { |value| value == 0 }
+      fail 'no cells available' if num_available < 1
+      fail 'all cells available' if num_available >= state.size
+
+      state.each.with_index do |value, i|
+        next unless value == 0
+        RANDOM_TILES.each do |new_value, value_probability|
+          new_state = state.dup
+          new_state[i] = new_value
+          new_state = canonicalize_state(new_state)
+          hash[new_state] += value_probability / num_available
+        end
+      end
+
+      fail "non-normalized: #{state.inspect}" unless
+        (hash.values.inject(:+) - 1).abs < 1e-6
+
+      hash
+    end
+
+    def reachable_states
+      results = Set.new
+      queue = start_states
+
+      tick = 0
+      until queue.empty? do
+        tick += 1
+        p [results.size, queue.size] if tick % 1000 == 0
+        state = queue.shift
+        next if results.member?(state)
+        results << state
+        queue.push(*successors(state))
+      end
+
+      results.to_a.sort { |state0, state1| compare_states(state0, state1) }
+    end
+
+    def build_hash_model
+      # Hash<state, Hash<action, Hash<state, [Float, Float]>>>
+      model = {}
+      stack = start_states
+
+      tick = 0
+      until stack.empty?
+        tick += 1
+        p [model.size, stack.size] if tick % 1000 == 0
+
+        state = stack.pop
+        next if model.key?(state)
+        state_hash = model[state] = {}
+
+        DIRECTIONS.each do |direction|
+          new_state = move(state, direction)
+          if new_state == state
+            state_hash[direction] = { state => 1.0 }
+          else
+            successors_hash = random_tile_successors_hash(new_state)
+            state_hash[direction] = successors_hash
+
+            successors_hash.keys.each do |successor_state|
+              stack.push successor_state unless model.key?(successor_state)
+            end
+          end
+        end
+      end
+
+      model
+    end
+
+    def pretty_print_hash_model(model)
+      keys = model.keys.sort { |state0, state1| compare_states(state0, state1) }
+      keys.map do |state0|
+        actions = model[state0]
+        [pretty_print_state(state0)] +
+          actions.map do |action, successor_states|
+            successor_states.map do |state1, probability|
+              ["#{action} -> #{probability}",
+               pretty_print_state(state1)].join("\n")
+            end
+          end + ['----------------------------------']
+      end.flatten.join("\n")
     end
 
     private
