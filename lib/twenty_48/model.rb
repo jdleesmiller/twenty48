@@ -179,7 +179,7 @@ module Twenty48
           end
         end
       end
-      states.sort { |state0, state1| compare_states(state0, state1) }
+      sort_states(states)
     end
 
     #
