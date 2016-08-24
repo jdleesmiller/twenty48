@@ -291,14 +291,13 @@ module Twenty48
     end
 
     def build_hash_model
-      # Hash<state, Hash<action, Hash<state, [Float, Float]>>>
       model = {}
       stack = start_states
 
       tick = 0
       until stack.empty?
         tick += 1
-        p [model.size, stack.size] if tick % 1000 == 0
+        $stderr.puts [model.size, stack.size].inspect if tick % 1000 == 0
 
         state = stack.pop
         next if model.key?(state)

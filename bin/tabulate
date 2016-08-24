@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+require_relative '../lib/twenty_48/model'
+
+puts %w(board_size max_exponent use_pre_winning_state states size).join(',')
+
+def tabulate(model)
+  hash = model.build_hash_model
+  puts [
+    model.board_size,
+    model.max_exponent,
+    model.use_pre_winning_state,
+    hash.size,
+    JSON.dump(hash).size].join(',')
+end
+
+(2..7).each do |max_exponent|
+  tabulate(Twenty48::Model.new(2, max_exponent))
+  tabulate(Twenty48::Model.new(2, max_exponent, true))
+end
+
+(2..5).each do |max_exponent|
+  tabulate(Twenty48::Model.new(3, max_exponent))
+  tabulate(Twenty48::Model.new(3, max_exponent, true))
+end
+
+#(2..3).each do |max_exponent|
+#  tabulate(Twenty48::Model.new(4, max_exponent))
+#  tabulate(Twenty48::Model.new(4, max_exponent, true))
+#end
+#
+# out of time / memory: at least 1446235 states
+# tabulate(Twenty48::Model.new(4, 4, true))
+
