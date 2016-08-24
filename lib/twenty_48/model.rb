@@ -290,6 +290,10 @@ module Twenty48
       hash
     end
 
+    #
+    # Return a hash model (almost) -- it's missing the rewards; we will add
+    # those later.
+    #
     def build_hash_model
       model = {}
       stack = start_states
@@ -319,6 +323,19 @@ module Twenty48
       end
 
       model
+    end
+
+    #
+    # Add in the rewards to the hash model (in place).
+    #
+    def add_rewards_to_hash(hash)
+      hash.each do |state0, state_hash|
+        state_hash.each do |action, action_hash|
+          action_hash.each do |state1, probability|
+            action_hash[state1] = [probability, reward_for_state(state1)]
+          end
+        end
+      end
     end
 
     def sort_states(states)

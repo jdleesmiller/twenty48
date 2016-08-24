@@ -818,8 +818,8 @@ class ModelTest < Minitest::Test
     assert_close 1, hash[side][:down][side]
     assert_close 1, hash[side][:left][win]
 
-    puts
-    puts model.pretty_print_hash_model(hash)
+    #puts
+    #puts model.pretty_print_hash_model(hash)
   end
 
   def test_build_hash_model_3x3_game_of_4_with_pre_win
@@ -905,5 +905,41 @@ class ModelTest < Minitest::Test
     assert_close 0.1, hash[corners][:down][win]
     assert_close 0.9, hash[corners][:left][side] # pre-win state
     assert_close 0.1, hash[corners][:left][win]
+  end
+
+  def test_add_rewards_to_hash_2x2
+    model = Twenty48::Model.new(2, 2, true)
+    hash = model.build_hash_model
+    model.add_rewards_to_hash(hash)
+
+    assert_equal 3, hash.size
+    win = [0, 0,
+           0, 2]
+    side = [0, 0,
+            1, 1]
+
+    assert hash.key?(win)
+    assert_equal 4, hash[win].size
+    assert_close 1, hash[win][:up][win][0]
+    assert_close 1, hash[win][:up][win][1]
+    assert_close 1, hash[win][:right][win][0]
+    assert_close 1, hash[win][:right][win][1]
+    assert_close 1, hash[win][:down][win][0]
+    assert_close 1, hash[win][:down][win][1]
+    assert_close 1, hash[win][:left][win][0]
+    assert_close 1, hash[win][:left][win][1]
+
+    assert hash.key?(side)
+    assert_equal 4, hash[side].size
+    assert_close 0.9, hash[side][:up][side][0] # pre-win state
+    assert_close 0, hash[side][:up][side][1]
+    assert_close 0.1, hash[side][:up][win][0]
+    assert_close 1, hash[side][:up][win][1]
+    assert_close 1, hash[side][:right][win][0]
+    assert_close 1, hash[side][:right][win][1]
+    assert_close 1, hash[side][:down][side][0]
+    assert_close 0, hash[side][:down][side][1]
+    assert_close 1, hash[side][:left][win][0]
+    assert_close 1, hash[side][:left][win][1]
   end
 end

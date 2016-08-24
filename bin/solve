@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'finite_mdp'
+
+require_relative '../lib/twenty_48/model'
+
+board_size = 3
+max_exponent = 3
+discount = 0.95
+tolerance = 1e-4
+use_pre_winning_state = true
+
+builder = Twenty48::Model.new(board_size, max_exponent, use_pre_winning_state)
+hash = builder.build_hash_model
+builder.add_rewards_to_hash hash
+
+model = FiniteMDP::HashModel.new(hash)
+
+solver = FiniteMDP::Solver.new(model, discount)
+solver.policy_iteration tolerance
+
+builder.sort_states(solver.policy.keys).each do |state|
+  puts "#{builder.pretty_print_state(state)} => " \
+    "#{solver.policy[state]} (%.2f)" % [solver.value[state]]
+  puts
+end
