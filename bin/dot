@@ -2,7 +2,7 @@
 
 require 'finite_mdp'
 
-require_relative '../lib/twenty_48/model'
+require_relative '../lib/twenty_48'
 
 board_size = 2
 max_exponent = 4
@@ -24,28 +24,25 @@ def node_name(state)
   "s#{state.join('_')}"
 end
 
+graph = Twenty48::Graph.new
+
 start_states = builder.start_states
-
-puts 'digraph {'
-puts '  splines=spline;'
-puts '  nodesep=1;' # horizontal spacing
-puts '  ranksep=2;' # vertical spacing
-puts '  node [fontname="Courier"];'
-
 builder.sort_states(solver.policy.keys).each do |state|
-  node_properties = ['shape=record']
   optimal_action = solver.policy[state]
   formatted_value = format('%.2f', solver.value[state])
 
+  node_properties = graph.add_node(node_name(state))
+  node_properties[:shape] = :record
+
   if builder.winning_state?(state)
-    node_properties << 'color=blue'
-    node_properties << "label=\"{{win!}|{#{formatted_value}}}\""
+    node_properties[:color] = :blue
+    node_properties[:label] = "{{win!}|{#{formatted_value}}}"
   elsif builder.losing_state?(state)
-    node_properties << 'color=red'
-    node_properties << "label=\"{{lose}|{#{formatted_value}}}\""
+    node_properties[:color] = :red
+    node_properties[:label] = "{{lose}|{#{formatted_value}}}"
   else
     if start_states.member?(state)
-      node_properties << 'color=green'
+      node_properties[:color] = :green
     end
 
     label_values = state.map do |value|
@@ -54,24 +51,30 @@ builder.sort_states(solver.policy.keys).each do |state|
         ' ' * board_digits
       string_value.gsub(' ', '&nbsp;')
     end
-    label = label_values.each_slice(board_size).map do |values|
-      values.join('|')
-    end.join('}|{')
-    label = "{{#{label}}|{#{optimal_action}}|{#{formatted_value}}}"
-
-    node_properties << "label=\"#{label}\""
+    board = label_values.each_slice(board_size)
+      .map { |values| values.join('|') }
+      .join('}|{')
+    node_properties[:label] =
+      "{{#{board}}|{#{optimal_action}}|{#{formatted_value}}}"
   end
-
-  puts "  #{node_name(state)} [#{node_properties.join(', ')}];"
 
   model.next_states(state, optimal_action).each do |next_state|
     probability = model.transition_probability(
       state, optimal_action, next_state)
-    formatted_label = format(' %.2f ', probability)
-    label_weight = (100 * probability).round
-    puts "  #{node_name(state)} -> #{node_name(next_state)} [" \
-      "taillabel=\"#{formatted_label}\", weight=#{label_weight}, color=grey];"
+
+    edge_properties = graph.add_edge(node_name(state), node_name(next_state))
+
+    edge_properties[:taillabel] = format(' %.2f ', probability)
+    edge_properties[:weight] = (100 * probability).round
+    edge_properties[:color] = :grey
   end
 end
 
+
+puts 'digraph {'
+puts '  splines=spline;'
+puts '  nodesep=1;' # horizontal spacing
+puts '  ranksep=2;' # vertical spacing
+puts '  node [fontname="Courier"];'
+puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
 puts '}'
