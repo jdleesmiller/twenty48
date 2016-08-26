@@ -1,0 +1,77 @@
+#!/usr/bin/env ruby
+
+require 'finite_mdp'
+
+require_relative '../lib/twenty_48/model'
+
+board_size = 2
+max_exponent = 4
+discount = 0.95
+tolerance = 1e-4
+use_pre_winning_state = true
+board_digits = 2
+
+builder = Twenty48::Model.new(board_size, max_exponent, use_pre_winning_state)
+hash = builder.build_hash_model
+builder.add_rewards_to_hash hash
+
+model = FiniteMDP::HashModel.new(hash)
+
+solver = FiniteMDP::Solver.new(model, discount)
+solver.policy_iteration tolerance
+
+def node_name(state)
+  "s#{state.join('_')}"
+end
+
+start_states = builder.start_states
+
+puts 'digraph {'
+puts '  splines=spline;'
+puts '  nodesep=1;' # horizontal spacing
+puts '  ranksep=2;' # vertical spacing
+puts '  node [fontname="Courier"];'
+
+builder.sort_states(solver.policy.keys).each do |state|
+  node_properties = ['shape=record']
+  optimal_action = solver.policy[state]
+  formatted_value = format('%.2f', solver.value[state])
+
+  if builder.winning_state?(state)
+    node_properties << 'color=blue'
+    node_properties << "label=\"{{win!}|{#{formatted_value}}}\""
+  elsif builder.losing_state?(state)
+    node_properties << 'color=red'
+    node_properties << "label=\"{{lose}|{#{formatted_value}}}\""
+  else
+    if start_states.member?(state)
+      node_properties << 'color=green'
+    end
+
+    label_values = state.map do |value|
+      string_value = value > 0 ?
+        format("%#{board_digits}d", 2 ** value) :
+        ' ' * board_digits
+      string_value.gsub(' ', '&nbsp;')
+    end
+    label = label_values.each_slice(board_size).map do |values|
+      values.join('|')
+    end.join('}|{')
+    label = "{{#{label}}|{#{optimal_action}}|{#{formatted_value}}}"
+
+    node_properties << "label=\"#{label}\""
+  end
+
+  puts "  #{node_name(state)} [#{node_properties.join(', ')}];"
+
+  model.next_states(state, optimal_action).each do |next_state|
+    probability = model.transition_probability(
+      state, optimal_action, next_state)
+    formatted_label = format(' %.2f ', probability)
+    label_weight = (100 * probability).round
+    puts "  #{node_name(state)} -> #{node_name(next_state)} [" \
+      "taillabel=\"#{formatted_label}\", weight=#{label_weight}, color=grey];"
+  end
+end
+
+puts '}'
