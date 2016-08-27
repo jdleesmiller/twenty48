@@ -46,7 +46,7 @@ module Twenty48
 
     def to_key_value(properties)
       properties.map do |name, value|
-        if value.is_a?(Numeric)
+        if value.is_a?(Numeric) || value.is_a?(Symbol)
           "#{name}=#{value}"
         else
           "#{name}=\"#{value}\""
