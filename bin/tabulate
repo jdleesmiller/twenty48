@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'json'
 
-require_relative '../lib/twenty_48/model'
+require_relative '../lib/twenty_48'
 
 puts %w(board_size max_exponent use_pre_winning_state states size).join(',')
 
@@ -13,7 +14,8 @@ def tabulate(model)
     model.max_exponent,
     model.use_pre_winning_state,
     hash.size,
-    JSON.dump(hash).size].join(',')
+    JSON.dump(hash).size
+  ].join(',')
 end
 
 (2..7).each do |max_exponent|
@@ -26,11 +28,10 @@ end
   tabulate(Twenty48::Model.new(3, max_exponent, true))
 end
 
-#(2..3).each do |max_exponent|
+# (2..3).each do |max_exponent|
 #  tabulate(Twenty48::Model.new(4, max_exponent))
 #  tabulate(Twenty48::Model.new(4, max_exponent, true))
-#end
+# end
 #
 # out of time / memory: at least 1446235 states
 # tabulate(Twenty48::Model.new(4, 4, true))
-

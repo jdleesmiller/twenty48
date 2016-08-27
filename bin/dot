@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'finite_mdp'
 
@@ -21,34 +22,34 @@ solver = FiniteMDP::Solver.new(model, discount)
 solver.policy_iteration tolerance
 
 def node_name(state)
-  "s#{state.join('_')}"
+  "s#{state.to_a.join('_')}"
 end
 
 graph = Twenty48::Graph.new
 
 start_states = builder.start_states
-builder.sort_states(solver.policy.keys).each do |state|
+solver.policy.keys.sort.each do |state|
   optimal_action = solver.policy[state]
   formatted_value = format('%.2f', solver.value[state])
 
   node_properties = graph.add_node(node_name(state))
   node_properties[:shape] = :record
 
-  if builder.winning_state?(state)
+  if state.win?(max_exponent)
     node_properties[:color] = :blue
     node_properties[:label] = "{{win!}|{#{formatted_value}}}"
-  elsif builder.losing_state?(state)
+  elsif state.lose?
     node_properties[:color] = :red
     node_properties[:label] = "{{lose}|{#{formatted_value}}}"
   else
-    if start_states.member?(state)
-      node_properties[:color] = :green
-    end
+    node_properties[:color] = :green if start_states.member?(state)
 
-    label_values = state.map do |value|
-      string_value = value > 0 ?
-        format("%#{board_digits}d", 2 ** value) :
-        ' ' * board_digits
+    label_values = state.to_a.map do |value|
+      if value.positive? # rubocop:disable Style/ConditionalAssignment
+        string_value = format("%#{board_digits}d", 2**value)
+      else
+        string_value = ' ' * board_digits
+      end
       string_value.gsub(' ', '&nbsp;')
     end
     board = label_values.each_slice(board_size)
@@ -60,7 +61,8 @@ builder.sort_states(solver.policy.keys).each do |state|
 
   model.next_states(state, optimal_action).each do |next_state|
     probability = model.transition_probability(
-      state, optimal_action, next_state)
+      state, optimal_action, next_state
+    )
 
     edge_properties = graph.add_edge(node_name(state), node_name(next_state))
 
@@ -69,7 +71,6 @@ builder.sort_states(solver.policy.keys).each do |state|
     edge_properties[:color] = :grey
   end
 end
-
 
 puts 'digraph {'
 puts '  splines=spline;'

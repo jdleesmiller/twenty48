@@ -1,621 +1,38 @@
+# frozen_string_literal: true
+
 require 'minitest/autorun'
 
 require_relative '../../lib/twenty_48'
 
 class ModelTest < Minitest::Test
-  def test_pretty_print_state_2x2
-    model = Twenty48::Model.new(2, 2)
-    assert_equal "   .    .\n   .    .",
-      model.pretty_print_state([0, 0, 0, 0])
-
-    assert_equal "   2    .\n   .    .",
-      model.pretty_print_state([1, 0, 0, 0])
-
-    assert_equal "   2    4\n   .    .",
-      model.pretty_print_state([1, 2, 0, 0])
-
-    assert_equal "   2    2\n   4    .",
-      model.pretty_print_state([1, 1, 2, 0])
-
-    assert_equal "   2    2\n   2    4",
-      model.pretty_print_state([1, 1, 1, 2])
-  end
-
-  def test_reflect_2x2
-    model = Twenty48::Model.new(2, 3)
-    state = [0, 1, 2, 3]
-    assert_equal [
-      [0, 1],
-      [2, 3]],
-      model.unflatten_state(state)
-
-    assert_equal [
-      [1, 0],
-      [3, 2]],
-      model.unflatten_state(model.reflect_state_horizontally(state))
-
-    assert_equal [
-      [2, 3],
-      [0, 1]],
-      model.unflatten_state(model.reflect_state_vertically(state))
-
-    assert_equal [
-      [0, 2],
-      [1, 3]],
-      model.unflatten_state(model.reflect_state_diagonally(state))
-
-    assert_equal [
-      [3, 2],
-      [1, 0]],
-      model.unflatten_state(
-        model.reflect_state_horizontally(
-          model.reflect_state_vertically(state)))
-  end
-
-  def test_reflect_3x3
-    model = Twenty48::Model.new(3, 8)
-    state = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    assert_equal [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8]],
-      model.unflatten_state(state)
-
-    assert_equal [
-      [2, 1, 0],
-      [5, 4, 3],
-      [8, 7, 6]],
-      model.unflatten_state(model.reflect_state_horizontally(state))
-
-    assert_equal [
-      [6, 7, 8],
-      [3, 4, 5],
-      [0, 1, 2]],
-      model.unflatten_state(model.reflect_state_vertically(state))
-
-    assert_equal [
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8]],
-      model.unflatten_state(model.reflect_state_diagonally(state))
-
-    assert_equal [
-      [8, 7, 6],
-      [5, 4, 3],
-      [2, 1, 0]],
-      model.unflatten_state(
-        model.reflect_state_horizontally(
-          model.reflect_state_vertically(state)))
-  end
-
-  def test_canonicalize_2x2
-    model = Twenty48::Model.new(2, 4)
-    state = [0, 0, 0, 0]
-    assert_equal state, model.canonicalize_state(state)
-
-    canonical_state = [0, 0,
-                       0, 1]
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [1, 0,
-       0, 0])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [0, 1,
-       0, 0])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [0, 0,
-       1, 0])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [0, 0,
-       0, 1])
-
-    canonical_state = [0, 0,
-                       1, 2]
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [1, 2,
-       0, 0])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [0, 1,
-       0, 2])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [0, 0,
-       2, 1])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [2, 0,
-       1, 0])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [1, 0,
-       2, 0])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [0, 0,
-       1, 2])
-
-    canonical_state = [0, 1,
-                       2, 3]
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [2, 3,
-       0, 1])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [0, 2,
-       1, 3])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [1, 0,
-       3, 2])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [3, 1,
-       2, 0])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [1, 3,
-       0, 2])
-
-    assert_equal canonical_state, model.canonicalize_state(
-      [0, 2,
-       1, 3])
-  end
-
-  def test_move_line_2
-    model = Twenty48::Model.new(2, 3)
-
-    assert_equal [0, 0], model.move_line([0, 0])
-    assert_equal [1, 0], model.move_line([0, 1])
-    assert_equal [2, 0], model.move_line([0, 2])
-
-    assert_equal [1, 0], model.move_line([1, 0])
-    assert_equal [2, 0], model.move_line([1, 1])
-    assert_equal [1, 2], model.move_line([1, 2])
-
-    assert_equal [2, 0], model.move_line([2, 0])
-    assert_equal [2, 1], model.move_line([2, 1])
-    assert_equal [3, 0], model.move_line([2, 2])
-  end
-
-  def test_move_line_3
-    model = Twenty48::Model.new(3, 3)
-
-    assert_equal [0, 0, 0], model.move_line([0, 0, 0])
-    assert_equal [1, 0, 0], model.move_line([0, 0, 1])
-    assert_equal [2, 0, 0], model.move_line([0, 0, 2])
-    assert_equal [3, 0, 0], model.move_line([0, 0, 3])
-
-    assert_equal [1, 0, 0], model.move_line([0, 1, 0])
-    assert_equal [2, 0, 0], model.move_line([0, 1, 1])
-    assert_equal [1, 2, 0], model.move_line([0, 1, 2])
-    assert_equal [1, 3, 0], model.move_line([0, 1, 3])
-
-    assert_equal [2, 0, 0], model.move_line([0, 2, 0])
-    assert_equal [2, 1, 0], model.move_line([0, 2, 1])
-    assert_equal [3, 0, 0], model.move_line([0, 2, 2])
-    assert_equal [2, 3, 0], model.move_line([0, 2, 3])
-
-    assert_equal [2, 0, 0], model.move_line([0, 2, 0])
-    assert_equal [2, 1, 0], model.move_line([0, 2, 1])
-    assert_equal [3, 0, 0], model.move_line([0, 2, 2])
-    assert_equal [2, 3, 0], model.move_line([0, 2, 3])
-
-    assert_equal [3, 0, 0], model.move_line([0, 3, 0])
-    assert_equal [3, 1, 0], model.move_line([0, 3, 1])
-    assert_equal [3, 2, 0], model.move_line([0, 3, 2])
-    assert_equal [4, 0, 0], model.move_line([0, 3, 3])
-
-    assert_equal [1, 0, 0], model.move_line([1, 0, 0])
-    assert_equal [2, 0, 0], model.move_line([1, 0, 1])
-    assert_equal [1, 2, 0], model.move_line([1, 0, 2])
-    assert_equal [1, 3, 0], model.move_line([1, 0, 3])
-
-    assert_equal [2, 0, 0], model.move_line([1, 1, 0])
-    assert_equal [2, 1, 0], model.move_line([1, 1, 1])
-    assert_equal [2, 2, 0], model.move_line([1, 1, 2]) # checked
-    assert_equal [2, 3, 0], model.move_line([1, 1, 3])
-
-    assert_equal [1, 2, 0], model.move_line([1, 2, 0])
-    assert_equal [1, 2, 1], model.move_line([1, 2, 1])
-    assert_equal [1, 3, 0], model.move_line([1, 2, 2])
-    assert_equal [1, 2, 3], model.move_line([1, 2, 3])
-
-    assert_equal [1, 3, 0], model.move_line([1, 3, 0])
-    assert_equal [1, 3, 1], model.move_line([1, 3, 1])
-    assert_equal [1, 3, 2], model.move_line([1, 3, 2])
-    assert_equal [1, 4, 0], model.move_line([1, 3, 3])
-
-    assert_equal [2, 0, 0], model.move_line([2, 0, 0])
-    assert_equal [2, 1, 0], model.move_line([2, 0, 1])
-    assert_equal [3, 0, 0], model.move_line([2, 0, 2])
-    assert_equal [2, 3, 0], model.move_line([2, 0, 3])
-
-    assert_equal [2, 1, 0], model.move_line([2, 1, 0])
-    assert_equal [2, 2, 0], model.move_line([2, 1, 1]) # checked
-    assert_equal [2, 1, 2], model.move_line([2, 1, 2])
-    assert_equal [2, 1, 3], model.move_line([2, 1, 3])
-
-    assert_equal [3, 0, 0], model.move_line([2, 2, 0])
-    assert_equal [3, 1, 0], model.move_line([2, 2, 1])
-    assert_equal [3, 2, 0], model.move_line([2, 2, 2]) # checked
-    assert_equal [3, 3, 0], model.move_line([2, 2, 3]) # checked
-
-    assert_equal [2, 3, 0], model.move_line([2, 3, 0])
-    assert_equal [2, 3, 1], model.move_line([2, 3, 1])
-    assert_equal [2, 3, 2], model.move_line([2, 3, 2])
-    assert_equal [2, 4, 0], model.move_line([2, 3, 3])
-
-    assert_equal [3, 0, 0], model.move_line([3, 0, 0])
-    assert_equal [3, 1, 0], model.move_line([3, 0, 1])
-    assert_equal [3, 2, 0], model.move_line([3, 0, 2])
-    assert_equal [4, 0, 0], model.move_line([3, 0, 3])
-
-    assert_equal [3, 1, 0], model.move_line([3, 1, 0])
-    assert_equal [3, 2, 0], model.move_line([3, 1, 1])
-    assert_equal [3, 1, 2], model.move_line([3, 1, 2])
-    assert_equal [3, 1, 3], model.move_line([3, 1, 3])
-
-    assert_equal [3, 2, 0], model.move_line([3, 2, 0])
-    assert_equal [3, 2, 1], model.move_line([3, 2, 1])
-    assert_equal [3, 3, 0], model.move_line([3, 2, 2])
-    assert_equal [3, 2, 3], model.move_line([3, 2, 3])
-
-    assert_equal [4, 0, 0], model.move_line([3, 3, 0])
-    assert_equal [4, 1, 0], model.move_line([3, 3, 1])
-    assert_equal [4, 2, 0], model.move_line([3, 3, 2])
-    assert_equal [4, 3, 0], model.move_line([3, 3, 3])
-  end
-
-  def test_move_line_4
-    model = Twenty48::Model.new(4, 4)
-
-    assert_equal [0, 0, 0, 0], model.move_line([0, 0, 0, 0])
-    assert_equal [1, 0, 0, 0], model.move_line([0, 0, 0, 1])
-    assert_equal [2, 0, 0, 0], model.move_line([0, 0, 0, 2])
-
-    assert_equal [1, 0, 0, 0], model.move_line([0, 0, 1, 0])
-    assert_equal [2, 0, 0, 0], model.move_line([0, 0, 1, 1])
-    assert_equal [1, 2, 0, 0], model.move_line([0, 0, 1, 2])
-
-    assert_equal [2, 0, 0, 0], model.move_line([0, 0, 2, 0])
-    assert_equal [2, 1, 0, 0], model.move_line([0, 0, 2, 1])
-    assert_equal [3, 0, 0, 0], model.move_line([0, 0, 2, 2])
-
-    assert_equal [1, 0, 0, 0], model.move_line([0, 1, 0, 0])
-    assert_equal [2, 0, 0, 0], model.move_line([0, 1, 0, 1])
-    assert_equal [1, 2, 0, 0], model.move_line([0, 1, 0, 2])
-
-    assert_equal [2, 0, 0, 0], model.move_line([0, 1, 1, 0])
-    assert_equal [2, 1, 0, 0], model.move_line([0, 1, 1, 1]) # checked
-    assert_equal [2, 2, 0, 0], model.move_line([0, 1, 1, 2])
-
-    assert_equal [1, 2, 0, 0], model.move_line([0, 1, 2, 0])
-    assert_equal [1, 2, 1, 0], model.move_line([0, 1, 2, 1])
-    assert_equal [1, 3, 0, 0], model.move_line([0, 1, 2, 2])
-
-    assert_equal [2, 0, 0, 0], model.move_line([0, 2, 0, 0])
-    assert_equal [2, 1, 0, 0], model.move_line([0, 2, 0, 1])
-    assert_equal [3, 0, 0, 0], model.move_line([0, 2, 0, 2])
-
-    assert_equal [2, 1, 0, 0], model.move_line([0, 2, 1, 0])
-    assert_equal [2, 2, 0, 0], model.move_line([0, 2, 1, 1])
-    assert_equal [2, 1, 2, 0], model.move_line([0, 2, 1, 2])
-
-    assert_equal [3, 0, 0, 0], model.move_line([0, 2, 2, 0])
-    assert_equal [3, 1, 0, 0], model.move_line([0, 2, 2, 1])
-    assert_equal [3, 2, 0, 0], model.move_line([0, 2, 2, 2])
-
-
-    assert_equal [1, 0, 0, 0], model.move_line([1, 0, 0, 0])
-    assert_equal [2, 0, 0, 0], model.move_line([1, 0, 0, 1])
-    assert_equal [1, 2, 0, 0], model.move_line([1, 0, 0, 2])
-
-    assert_equal [2, 0, 0, 0], model.move_line([1, 0, 1, 0])
-    assert_equal [2, 1, 0, 0], model.move_line([1, 0, 1, 1])
-    assert_equal [2, 2, 0, 0], model.move_line([1, 0, 1, 2])
-
-    assert_equal [1, 2, 0, 0], model.move_line([1, 0, 2, 0])
-    assert_equal [1, 2, 1, 0], model.move_line([1, 0, 2, 1])
-    assert_equal [1, 3, 0, 0], model.move_line([1, 0, 2, 2])
-
-    assert_equal [2, 0, 0, 0], model.move_line([1, 1, 0, 0])
-    assert_equal [2, 1, 0, 0], model.move_line([1, 1, 0, 1])
-    assert_equal [2, 2, 0, 0], model.move_line([1, 1, 0, 2])
-
-    assert_equal [2, 1, 0, 0], model.move_line([1, 1, 1, 0])
-    assert_equal [2, 2, 0, 0], model.move_line([1, 1, 1, 1]) # checked
-    assert_equal [2, 1, 2, 0], model.move_line([1, 1, 1, 2]) # checked
-
-    assert_equal [2, 2, 0, 0], model.move_line([1, 1, 2, 0])
-    assert_equal [2, 2, 1, 0], model.move_line([1, 1, 2, 1])
-    assert_equal [2, 3, 0, 0], model.move_line([1, 1, 2, 2]) # checked
-
-    assert_equal [1, 2, 0, 0], model.move_line([1, 2, 0, 0])
-    assert_equal [1, 2, 1, 0], model.move_line([1, 2, 0, 1])
-    assert_equal [1, 3, 0, 0], model.move_line([1, 2, 0, 2])
-
-    assert_equal [1, 2, 1, 0], model.move_line([1, 2, 1, 0])
-    assert_equal [1, 2, 2, 0], model.move_line([1, 2, 1, 1]) # checked
-    assert_equal [1, 2, 1, 2], model.move_line([1, 2, 1, 2])
-
-    assert_equal [1, 3, 0, 0], model.move_line([1, 2, 2, 0])
-    assert_equal [1, 3, 1, 0], model.move_line([1, 2, 2, 1])
-    assert_equal [1, 3, 2, 0], model.move_line([1, 2, 2, 2]) # checked
-
-
-    assert_equal [2, 0, 0, 0], model.move_line([2, 0, 0, 0])
-    assert_equal [2, 1, 0, 0], model.move_line([2, 0, 0, 1])
-    assert_equal [3, 0, 0, 0], model.move_line([2, 0, 0, 2])
-
-    assert_equal [2, 1, 0, 0], model.move_line([2, 0, 1, 0])
-    assert_equal [2, 2, 0, 0], model.move_line([2, 0, 1, 1]) # checked
-    assert_equal [2, 1, 2, 0], model.move_line([2, 0, 1, 2])
-
-    assert_equal [3, 0, 0, 0], model.move_line([2, 0, 2, 0])
-    assert_equal [3, 1, 0, 0], model.move_line([2, 0, 2, 1])
-    assert_equal [3, 2, 0, 0], model.move_line([2, 0, 2, 2]) # checked
-
-    assert_equal [2, 1, 0, 0], model.move_line([2, 1, 0, 0])
-    assert_equal [2, 2, 0, 0], model.move_line([2, 1, 0, 1]) # checked
-    assert_equal [2, 1, 2, 0], model.move_line([2, 1, 0, 2])
-
-    assert_equal [2, 2, 0, 0], model.move_line([2, 1, 1, 0]) # checked
-    assert_equal [2, 2, 1, 0], model.move_line([2, 1, 1, 1]) # checked
-    assert_equal [2, 2, 2, 0], model.move_line([2, 1, 1, 2]) # checked
-
-    assert_equal [2, 1, 2, 0], model.move_line([2, 1, 2, 0])
-    assert_equal [2, 1, 2, 1], model.move_line([2, 1, 2, 1])
-    assert_equal [2, 1, 3, 0], model.move_line([2, 1, 2, 2])
-
-    assert_equal [3, 0, 0, 0], model.move_line([2, 2, 0, 0])
-    assert_equal [3, 1, 0, 0], model.move_line([2, 2, 0, 1])
-    assert_equal [3, 2, 0, 0], model.move_line([2, 2, 0, 2]) # checked
-
-    assert_equal [3, 1, 0, 0], model.move_line([2, 2, 1, 0])
-    assert_equal [3, 2, 0, 0], model.move_line([2, 2, 1, 1]) # checked
-    assert_equal [3, 1, 2, 0], model.move_line([2, 2, 1, 2])
-
-    assert_equal [3, 2, 0, 0], model.move_line([2, 2, 2, 0])
-    assert_equal [3, 2, 1, 0], model.move_line([2, 2, 2, 1])
-    assert_equal [3, 3, 0, 0], model.move_line([2, 2, 2, 2])
-  end
-
-  def test_move_2x2_up
-    model = Twenty48::Model.new(2, 3)
-
-    assert_equal [
-      0, 0,
-      0, 0], model.move([
-      0, 0,
-      0, 0], :up)
-
-    assert_equal [
-      0, 1,
-      0, 0], model.move([
-      0, 1,
-      0, 0], :up)
-
-    assert_equal [
-      0, 1,
-      0, 0], model.move([
-      0, 0,
-      0, 1], :up)
-
-    assert_equal [
-      1, 0,
-      0, 0], model.move([
-      0, 0,
-      1, 0], :up)
-
-    assert_equal [
-      1, 1,
-      0, 0], model.move([
-      0, 0,
-      1, 1], :up)
-
-    assert_equal [
-      0, 2,
-      0, 0], model.move([
-      0, 1,
-      0, 1], :up)
-
-    assert_equal [
-      1, 2,
-      0, 0], model.move([
-      1, 1,
-      0, 1], :up)
-
-    assert_equal [
-      2, 2,
-      0, 0], model.move([
-      1, 1,
-      1, 1], :up)
-  end
-
-  def test_move_2x2_right
-    model = Twenty48::Model.new(2, 3)
-
-    assert_equal [
-      0, 0,
-      0, 0], model.move([
-      0, 0,
-      0, 0], :right)
-
-    assert_equal [
-      0, 1,
-      0, 0], model.move([
-      0, 1,
-      0, 0], :right)
-
-    assert_equal [
-      0, 0,
-      0, 1], model.move([
-      0, 0,
-      0, 1], :right)
-
-    assert_equal [
-      0, 0,
-      0, 1], model.move([
-      0, 0,
-      1, 0], :right)
-
-    assert_equal [
-      0, 0,
-      0, 2], model.move([
-      0, 0,
-      1, 1], :right)
-
-    assert_equal [
-      0, 1,
-      0, 1], model.move([
-      0, 1,
-      0, 1], :right)
-
-    assert_equal [
-      0, 2,
-      0, 1], model.move([
-      1, 1,
-      0, 1], :right)
-
-    assert_equal [
-      0, 2,
-      0, 2], model.move([
-      1, 1,
-      1, 1], :right)
-  end
-
-  def test_move_2x2_down
-    model = Twenty48::Model.new(2, 3)
-
-    assert_equal [
-      0, 0,
-      0, 0], model.move([
-      0, 0,
-      0, 0], :down)
-
-    assert_equal [
-      0, 0,
-      0, 1], model.move([
-      0, 1,
-      0, 0], :down)
-
-    assert_equal [
-      0, 0,
-      0, 1], model.move([
-      0, 0,
-      0, 1], :down)
-
-    assert_equal [
-      0, 0,
-      1, 0], model.move([
-      0, 0,
-      1, 0], :down)
-
-    assert_equal [
-      0, 0,
-      1, 1], model.move([
-      0, 0,
-      1, 1], :down)
-
-    assert_equal [
-      0, 0,
-      0, 2], model.move([
-      0, 1,
-      0, 1], :down)
-
-    assert_equal [
-      0, 0,
-      1, 2], model.move([
-      1, 1,
-      0, 1], :down)
-
-    assert_equal [
-      0, 0,
-      2, 2], model.move([
-      1, 1,
-      1, 1], :down)
-  end
-
-  def test_move_2x2_left
-    model = Twenty48::Model.new(2, 3)
-
-    assert_equal [
-      0, 0,
-      0, 0], model.move([
-      0, 0,
-      0, 0], :left)
-
-    assert_equal [
-      1, 0,
-      0, 0], model.move([
-      0, 1,
-      0, 0], :left)
-
-    assert_equal [
-      0, 0,
-      1, 0], model.move([
-      0, 0,
-      0, 1], :left)
-
-    assert_equal [
-      0, 0,
-      1, 0], model.move([
-      0, 0,
-      1, 0], :left)
-
-    assert_equal [
-      0, 0,
-      2, 0], model.move([
-      0, 0,
-      1, 1], :left)
-
-    assert_equal [
-      1, 0,
-      1, 0], model.move([
-      0, 1,
-      0, 1], :left)
-
-    assert_equal [
-      2, 0,
-      1, 0], model.move([
-      1, 1,
-      0, 1], :left)
-
-    assert_equal [
-      2, 0,
-      2, 0], model.move([
-      1, 1,
-      1, 1], :left)
-  end
-
-  def assert_close x, y
-    assert (x - y).abs < 1e-6, "expected #{x} ~ #{y}"
+  def assert_close(x, y)
+    assert_in_delta x, y, 1e-6
   end
 
   def test_random_tile_successors_hash_2x2
     model = Twenty48::Model.new(2, 3)
 
-    hash = model.random_tile_successors_hash([
+    hash = model.random_tile_successors_hash(Twenty48::State.new([
       0, 0,
-      0, 1])
-    assert_close hash[[
+      0, 1
+    ]))
+
+    assert_close hash[Twenty48::State.new([
       0, 0,
-      1, 1]], 0.6
-    assert_close hash[[
+      1, 1
+    ])], 0.6
+    assert_close hash[Twenty48::State.new([
       0, 1,
-      1, 0]], 0.3
-    assert_close hash[[
+      1, 0
+    ])], 0.3
+    assert_close hash[Twenty48::State.new([
       0, 0,
-      1, 2]], 2 * 0.1 / 3
-    assert_close hash[[
+      1, 2
+    ])], 2 * 0.1 / 3
+    assert_close hash[Twenty48::State.new([
       0, 1,
-      2, 0]], 1 * 0.1 / 3
+      2, 0
+    ])], 1 * 0.1 / 3
   end
 
   def test_start_states_2x2
@@ -626,7 +43,8 @@ class ModelTest < Minitest::Test
       [0, 0,
        1, 1],
       [0, 1,
-       1, 0]], model.start_states
+       1, 0]
+    ].map { |state_array| Twenty48::State.new(state_array) }, model.start_states
 
     model = Twenty48::Model.new(2, 3)
     assert_equal [
@@ -641,7 +59,8 @@ class ModelTest < Minitest::Test
       [0, 1,
        2, 0],
       [0, 2,
-       2, 0]], model.start_states
+       2, 0]
+    ].map { |state_array| Twenty48::State.new(state_array) }, model.start_states
   end
 
   def test_start_states_2x2_with_pre_win
@@ -652,7 +71,8 @@ class ModelTest < Minitest::Test
       [0, 0,
        1, 1], # actually the pre-win state
       [0, 1,
-       1, 0]], model.start_states
+       1, 0]
+    ].map { |state_array| Twenty48::State.new(state_array) }, model.start_states
 
     model = Twenty48::Model.new(2, 3, true)
     assert_equal [
@@ -667,7 +87,8 @@ class ModelTest < Minitest::Test
       [0, 1,
        2, 0],
       [0, 2,
-       2, 0]], model.start_states
+       2, 0]
+    ].map { |state_array| Twenty48::State.new(state_array) }, model.start_states
   end
 
   def test_build_hash_model_2x2_game_of_4
@@ -675,14 +96,22 @@ class ModelTest < Minitest::Test
     hash = model.build_hash_model
 
     assert_equal 4, hash.size
-    win = [0, 0,
-           0, 2]
-    side = [0, 0,
-            1, 1]
-    corner = [0, 1,
-              1, 1]
-    diag = [0, 1,
-            1, 0]
+    win = Twenty48::State.new([
+      0, 0,
+      0, 2
+    ])
+    side = Twenty48::State.new([
+      0, 0,
+      1, 1
+    ])
+    corner = Twenty48::State.new([
+      0, 1,
+      1, 1
+    ])
+    diag = Twenty48::State.new([
+      0, 1,
+      1, 0
+    ])
 
     assert hash.key?(win)
     assert_equal 4, hash[win].size
@@ -727,12 +156,18 @@ class ModelTest < Minitest::Test
     # which we consider a pre-win state.
     #
     assert_equal 3, hash.size
-    win = [0, 0,
-           0, 2]
-    side = [0, 0,
-            1, 1]
-    diag = [0, 1,
-            1, 0]
+    win = Twenty48::State.new([
+      0, 0,
+      0, 2
+    ])
+    side = Twenty48::State.new([
+      0, 0,
+      1, 1
+    ])
+    diag = Twenty48::State.new([
+      0, 1,
+      1, 0
+    ])
 
     assert hash.key?(win)
     assert_equal 4, hash[win].size
@@ -767,12 +202,16 @@ class ModelTest < Minitest::Test
 
     assert_equal 23, hash.size
 
-    win = [0, 0, 0,
-           0, 0, 0,
-           0, 0, 2]
-    side = [0, 0, 0,
-            0, 0, 0,
-            0, 1, 1]
+    win = Twenty48::State.new([
+      0, 0, 0,
+      0, 0, 0,
+      0, 0, 2
+    ])
+    side = Twenty48::State.new([
+      0, 0, 0,
+      0, 0, 0,
+      0, 1, 1
+    ])
 
     assert hash.key?(win)
     assert_equal 4, hash[win].size
@@ -786,40 +225,54 @@ class ModelTest < Minitest::Test
     up = hash[side][:up]
     assert_equal 8, up.size
     assert_close 0.1, up[win]
-    assert_close 0.9 / 7, up[[
-      0, 0, 0,
-      0, 0, 0,
-      1, 1, 1]] # flipped vertically
-    assert_close 0.9 / 7, up[[
-      0, 0, 0,
-      0, 0, 1,
-      0, 1, 1]] # flipped vertically
-    assert_close 0.9 / 7, up[[
-      0, 0, 0,
-      0, 0, 1,
-      1, 0, 1]] # rotated 90
-    assert_close 0.9 / 7, up[[
-      0, 0, 0,
-      0, 0, 1,
-      1, 1, 0]] # rotated 180
-    assert_close 0.9 / 7, up[[
-      0, 0, 0,
-      0, 1, 0,
-      0, 1, 1]] # flipped vertically
-    assert_close 0.9 / 7, up[[
-      0, 0, 0,
-      1, 0, 1,
-      0, 0, 1]] # rotated 90
-    assert_close 0.9 / 7, up[[
-      0, 0, 1,
-      0, 0, 0,
-      1, 1, 0]] # rotated 180
+    assert_close 0.9 / 7, up[
+      Twenty48::State.new([
+        0, 0, 0,
+        0, 0, 0,
+        1, 1, 1
+      ])] # flipped vertically
+    assert_close 0.9 / 7, up[
+      Twenty48::State.new([
+        0, 0, 0,
+        0, 0, 1,
+        0, 1, 1
+      ])] # flipped vertically
+    assert_close 0.9 / 7, up[
+      Twenty48::State.new([
+        0, 0, 0,
+        0, 0, 1,
+        1, 0, 1
+      ])] # rotated 90
+    assert_close 0.9 / 7, up[
+      Twenty48::State.new([
+        0, 0, 0,
+        0, 0, 1,
+        1, 1, 0
+      ])] # rotated 180
+    assert_close 0.9 / 7, up[
+      Twenty48::State.new([
+        0, 0, 0,
+        0, 1, 0,
+        0, 1, 1
+      ])] # flipped vertically
+    assert_close 0.9 / 7, up[
+      Twenty48::State.new([
+        0, 0, 0,
+        1, 0, 1,
+        0, 0, 1
+      ])] # rotated 90
+    assert_close 0.9 / 7, up[
+      Twenty48::State.new([
+        0, 0, 1,
+        0, 0, 0,
+        1, 1, 0
+      ])] # rotated 180
     assert_close 1, hash[side][:right][win]
     assert_close 1, hash[side][:down][side]
     assert_close 1, hash[side][:left][win]
 
-    #puts
-    #puts model.pretty_print_hash_model(hash)
+    # puts
+    # puts model.pretty_print_hash_model(hash)
   end
 
   def test_build_hash_model_3x3_game_of_4_with_pre_win
@@ -828,24 +281,36 @@ class ModelTest < Minitest::Test
 
     assert_equal 6, hash.size
 
-    win = [0, 0, 0,
-           0, 0, 0,
-           0, 0, 2]
-    side = [0, 0, 0,
-            0, 0, 0,
-            0, 1, 1]
-    diag_t = [0, 0, 0,
-              0, 0, 1,
-              0, 1, 0]
-    skew = [0, 0, 0,
-            0, 0, 1,
-            1, 0, 0]
-    diag = [0, 0, 0,
-            0, 1, 0,
-            0, 0, 1]
-    corners = [0, 0, 1,
-               0, 0, 0,
-               1, 0, 0]
+    win = Twenty48::State.new([
+      0, 0, 0,
+      0, 0, 0,
+      0, 0, 2
+    ])
+    side = Twenty48::State.new([
+      0, 0, 0,
+      0, 0, 0,
+      0, 1, 1
+    ])
+    diag_t = Twenty48::State.new([
+      0, 0, 0,
+      0, 0, 1,
+      0, 1, 0
+    ])
+    skew = Twenty48::State.new([
+      0, 0, 0,
+      0, 0, 1,
+      1, 0, 0
+    ])
+    diag = Twenty48::State.new([
+      0, 0, 0,
+      0, 1, 0,
+      0, 0, 1
+    ])
+    corners = Twenty48::State.new([
+      0, 0, 1,
+      0, 0, 0,
+      1, 0, 0
+    ])
 
     assert hash.key?(win)
     assert_equal 4, hash[win].size
@@ -913,10 +378,14 @@ class ModelTest < Minitest::Test
     model.add_rewards_to_hash(hash)
 
     assert_equal 3, hash.size
-    win = [0, 0,
-           0, 2]
-    side = [0, 0,
-            1, 1]
+    win = Twenty48::State.new([
+      0, 0,
+      0, 2
+    ])
+    side = Twenty48::State.new([
+      0, 0,
+      1, 1
+    ])
 
     assert hash.key?(win)
     assert_equal 4, hash[win].size

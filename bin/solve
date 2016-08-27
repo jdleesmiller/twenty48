@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'finite_mdp'
 
-require_relative '../lib/twenty_48/model'
+require_relative '../lib/twenty_48'
 
 board_size = 3
 max_exponent = 3
@@ -19,8 +20,8 @@ model = FiniteMDP::HashModel.new(hash)
 solver = FiniteMDP::Solver.new(model, discount)
 solver.policy_iteration tolerance
 
-builder.sort_states(solver.policy.keys).each do |state|
-  puts "#{builder.pretty_print_state(state)} => " \
-    "#{solver.policy[state]} (%.2f)" % [solver.value[state]]
+solver.policy.keys.sort.each do |state|
+  state_value = format("#{solver.policy[state]} (%.2f)", solver.value[state])
+  puts "#{state.pretty_print} => #{state_value}"
   puts
 end

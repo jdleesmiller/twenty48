@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Twenty48
   #
   # Simple directed graph model with dot (graphviz) printer.
@@ -12,7 +14,7 @@ module Twenty48
     attr_reader :edges
 
     def add_node(name, properties = {})
-      fail 'node already added' if @nodes.key?(name)
+      raise 'node already added' if @nodes.key?(name)
       @nodes[name] = properties
     end
 
@@ -33,13 +35,14 @@ module Twenty48
     end
 
     def to_dot
-      @nodes.map do |node_name, properties|
+      node_dot = @nodes.map do |node_name, properties|
         "#{node_name} [#{to_key_value(properties).join(', ')}];"
-      end +
-      @edges.map do |(node0_name, node1_name), properties|
+      end
+      edge_dot = @edges.map do |(node0_name, node1_name), properties|
         key_values = to_key_value(properties)
         "#{node0_name} -> #{node1_name} [#{key_values.join(', ')}];"
       end
+      node_dot + edge_dot
     end
 
     private

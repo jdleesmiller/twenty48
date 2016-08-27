@@ -1,0 +1,44 @@
+AllCops:
+  TargetRubyVersion: 2.3
+
+Style/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+Style/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Style/IndentArray:
+  EnforcedStyle: consistent
+
+Style/IndentHash:
+  EnforcedStyle: consistent
+
+Style/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Style/Documentation:
+  Exclude:
+    - 'test/**/*'
+
+Metrics/AbcSize:
+  Max: 30
+  Exclude:
+    - 'test/**/*'
+
+Metrics/CyclomaticComplexity:
+  Max: 15
+  Exclude:
+    - 'test/**/*'
+
+Metrics/PerceivedComplexity:
+  Max: 15
+  Exclude:
+    - 'test/**/*'
+
+Metrics/MethodLength:
+  Max: 25
+  Exclude:
+    - 'test/**/*'
+
+Metrics/ClassLength:
+  Max: 1000
