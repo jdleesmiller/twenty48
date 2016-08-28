@@ -7,16 +7,17 @@ require_relative '../lib/twenty_48'
 
 board_size = 2
 max_exponent = 4
+max_end_state_moves = 0
 discount = 0.95
 tolerance = 1e-4
-use_pre_winning_state = true
 board_digits = 2
 
-builder = Twenty48::Model.new(board_size, max_exponent, use_pre_winning_state)
+builder = Twenty48::Model.new(board_size, max_exponent, max_end_state_moves)
 hash = builder.build_hash_model
 builder.add_rewards_to_hash hash
 
 model = FiniteMDP::HashModel.new(hash)
+model.check_transition_probabilities_sum
 
 solver = FiniteMDP::Solver.new(model, discount)
 solver.policy_iteration tolerance
@@ -43,6 +44,9 @@ solver.policy.keys.sort.each do |state|
     node_properties[:label] = "{{lose}|{#{formatted_value}}}"
   else
     node_properties[:color] = :green if start_states.member?(state)
+    node_properties[:color] = :red if builder.resolved_lose_state == state
+    node_properties[:color] = :blue if
+      builder.resolved_win_states.member?(state)
 
     label_values = state.to_a.map do |value|
       if value.positive? # rubocop:disable Style/ConditionalAssignment

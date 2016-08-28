@@ -47,9 +47,12 @@ module Twenty48
       transform { |n, x, y| n * x + y }
     end
 
+    def max_value
+      to_a.max
+    end
+
     def win?(max_exponent)
-      state = unpack(data)
-      state.any? { |value| value == max_exponent }
+      to_a.any? { |value| value == max_exponent }
     end
 
     def lose?
@@ -128,6 +131,27 @@ module Twenty48
       else
         raise "bad direction: #{direction}"
       end
+    end
+
+    #
+    # Generate all possible random successors without the probabilities.
+    # We can add either a 2 or 4 tile (value 1 or 2) in any available cell.
+    # The returned states are not canonicalized. If there are no available
+    # cells, the state itself is returned as the only entry.
+    #
+    def random_successors
+      state_array = unpack(data)
+      new_states = []
+      state_array.each.with_index do |value, i|
+        next unless value.zero?
+        [1, 2].each do |new_value|
+          new_state_array = state_array.dup
+          new_state_array[i] = new_value
+          new_states << self.class.new(new_state_array)
+        end
+      end
+      new_states << self if new_states.empty?
+      new_states
     end
 
     def to_a

@@ -7,15 +7,16 @@ require_relative '../lib/twenty_48'
 
 board_size = 3
 max_exponent = 3
+max_end_state_moves = 1
 discount = 0.95
 tolerance = 1e-4
-use_pre_winning_state = true
 
-builder = Twenty48::Model.new(board_size, max_exponent, use_pre_winning_state)
+builder = Twenty48::Model.new(board_size, max_exponent, max_end_state_moves)
 hash = builder.build_hash_model
 builder.add_rewards_to_hash hash
 
 model = FiniteMDP::HashModel.new(hash)
+model.check_transition_probabilities_sum
 
 solver = FiniteMDP::Solver.new(model, discount)
 solver.policy_iteration tolerance

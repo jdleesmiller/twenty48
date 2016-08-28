@@ -64,7 +64,7 @@ class ModelTest < Minitest::Test
   end
 
   def test_start_states_2x2_with_pre_win
-    model = Twenty48::Model.new(2, 2, true)
+    model = Twenty48::Model.new(2, 2, 1)
     assert_equal [
       [0, 0,
        0, 2], # canonicalized to winning state
@@ -74,7 +74,7 @@ class ModelTest < Minitest::Test
        1, 0]
     ].map { |state_array| Twenty48::State.new(state_array) }, model.start_states
 
-    model = Twenty48::Model.new(2, 3, true)
+    model = Twenty48::Model.new(2, 3, 1)
     assert_equal [
       [0, 0,
        1, 1],
@@ -148,7 +148,7 @@ class ModelTest < Minitest::Test
   end
 
   def test_build_hash_model_2x2_game_of_4_pre_win
-    model = Twenty48::Model.new(2, 2, true)
+    model = Twenty48::Model.new(2, 2, 1)
     hash = model.build_hash_model
 
     #
@@ -276,7 +276,7 @@ class ModelTest < Minitest::Test
   end
 
   def test_build_hash_model_3x3_game_of_4_with_pre_win
-    model = Twenty48::Model.new(3, 2, true)
+    model = Twenty48::Model.new(3, 2, 1)
     hash = model.build_hash_model
 
     assert_equal 6, hash.size
@@ -373,7 +373,7 @@ class ModelTest < Minitest::Test
   end
 
   def test_add_rewards_to_hash_2x2
-    model = Twenty48::Model.new(2, 2, true)
+    model = Twenty48::Model.new(2, 2, 1)
     hash = model.build_hash_model
     model.add_rewards_to_hash(hash)
 

@@ -124,6 +124,21 @@ class StateTest < Minitest::Test
     ], state.reflect_horizontally.reflect_vertically.to_a
   end
 
+  def test_random_successors_2x2
+    state = Twenty48::State.new([0, 0, 0, 0])
+    assert_equal [
+      [1, 0, 0, 0],
+      [2, 0, 0, 0],
+      [0, 1, 0, 0],
+      [0, 2, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 2, 0],
+      [0, 0, 0, 1],
+      [0, 0, 0, 2]
+    ].map { |state_array| Twenty48::State.new(state_array) },
+      state.random_successors
+  end
+
   def test_canonicalize_2x2
     state = Twenty48::State.new([0, 0, 0, 0])
     assert_equal state, state.canonicalize
