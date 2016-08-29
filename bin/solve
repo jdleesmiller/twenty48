@@ -2,27 +2,31 @@
 # frozen_string_literal: true
 
 require 'finite_mdp'
+require 'csv'
+require 'json'
 
 require_relative '../lib/twenty_48'
 
-board_size = 3
-max_exponent = 3
-max_end_state_moves = 1
 discount = 0.95
 tolerance = 1e-4
 
-builder = Twenty48::Model.new(board_size, max_exponent, max_end_state_moves)
-hash = builder.build_hash_model
-builder.add_rewards_to_hash hash
+Dir.glob(Twenty48::Storage::MODELS_GLOB).sort.each do |input_file|
+  model_params = Twenty48::Storage.model_params_from_pathname(input_file)
+  model = Twenty48::Storage.read_model(model_params)
+  model.check_transition_probabilities_sum
 
-model = FiniteMDP::HashModel.new(hash)
-model.check_transition_probabilities_sum
+  solver = FiniteMDP::Solver.new(model, discount)
+  solver.policy_iteration tolerance
 
-solver = FiniteMDP::Solver.new(model, discount)
-solver.policy_iteration tolerance
-
-solver.policy.keys.sort.each do |state|
-  state_value = format("#{solver.policy[state]} (%.2f)", solver.value[state])
-  puts "#{state.pretty_print} => #{state_value}"
-  puts
+  solver_params = Twenty48::Storage.solver_params(
+    model_params, discount, tolerance
+  )
+  output_file = Twenty48::Storage.solver_pathname(solver_params, '.csv')
+  CSV.open(output_file, 'w') do |csv|
+    csv << %w(state action value)
+    solver.policy.keys.sort.each do |state|
+      csv << [state, solver.policy[state], solver.value[state]]
+    end
+  end
+  system "bzip2 --force #{output_file}"
 end

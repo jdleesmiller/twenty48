@@ -52,8 +52,9 @@ module Twenty48
 
     RANDOM_TILES = { 1 => 0.9, 2 => 0.1 }.freeze
 
-    # Generate the successors and include the probabilities. The probabilities
-    # are normalized. Must not be called on a losing state or winning state.
+    # Generate the successors and include the probabilities and rewards. The
+    # probabilities are normalized. Must not be called on a losing state or
+    # winning state.
     def random_tile_successors_hash(state)
       hash = Hash.new { 0 }
 
@@ -75,7 +76,9 @@ module Twenty48
       raise "non-normalized: #{state.inspect}" unless
         (hash.values.inject(:+) - 1).abs < 1e-6
 
-      hash
+      hash.map do |successor_state, probability|
+        [successor_state, probability_reward_pair(successor_state, probability)]
+      end.to_h
     end
 
     #
@@ -83,62 +86,49 @@ module Twenty48
     # those later.
     #
     def build_hash_model
-      model = {}
+      states = Set[]
       stack = start_states
 
-      tick = 0
       until stack.empty?
-        tick += 1
-        $stderr.puts [model.size, stack.size].inspect if (tick % 1000).zero?
-
         state = stack.pop
-        next if model.key?(state)
-        state_hash = model[state] = {}
+        next if states.member?(state)
+        state_hash = {}
 
         DIRECTIONS.each do |direction|
           new_state = state.move(direction)
           if new_state == state
-            state_hash[direction] = { state => 1.0 }
+            state_hash[direction] = {
+              state => probability_reward_pair(state, 1)
+            }
           else
             successors_hash = random_tile_successors_hash(new_state)
             state_hash[direction] = successors_hash
 
             successors_hash.keys.each do |successor_state|
-              stack.push successor_state unless model.key?(successor_state)
+              stack.push successor_state unless states.member?(successor_state)
             end
           end
         end
-      end
 
-      model
+        states << state
+        yield state, state_hash
+      end
     end
 
-    #
-    # Add in the rewards to the hash model (in place).
-    #
-    def add_rewards_to_hash(hash)
-      hash.each do |_state0, state_hash|
-        state_hash.each do |_action, action_hash|
-          action_hash.each do |state1, probability|
-            action_hash[state1] = [
-              probability,
-              state1.win?(max_exponent) ? 1 : 0
-            ]
-          end
-        end
-      end
+    def probability_reward_pair(state, probability)
+      [probability, state.win?(max_exponent) ? 1 : 0]
     end
 
     def pretty_print_hash_model(model)
       model.keys.sort.map do |state0|
         actions = model[state0]
-        [state0.to_s] +
+        [state0.pretty_print] +
           DIRECTIONS.map do |direction|
             successor_states = actions[direction]
             successor_states.keys.sort.map do |state1|
-              probability = successor_states[state1]
-              ["#{direction} -> #{probability}",
-               state1.to_s].join("\n")
+              probability, value = successor_states[state1]
+              [format('%s -> %6f (%6f)', direction, probability, value),
+               state1.pretty_print].join("\n")
             end
           end + ['----------------------------------']
       end.flatten.join("\n")

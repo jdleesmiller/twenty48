@@ -2,84 +2,95 @@
 # frozen_string_literal: true
 
 require 'finite_mdp'
+require 'csv'
+require 'json'
 
 require_relative '../lib/twenty_48'
 
-board_size = 2
-max_exponent = 4
-max_end_state_moves = 0
-discount = 0.95
-tolerance = 1e-4
-board_digits = 2
-
-builder = Twenty48::Model.new(board_size, max_exponent, max_end_state_moves)
-hash = builder.build_hash_model
-builder.add_rewards_to_hash hash
-
-model = FiniteMDP::HashModel.new(hash)
-model.check_transition_probabilities_sum
-
-solver = FiniteMDP::Solver.new(model, discount)
-solver.policy_iteration tolerance
+max_states = 1000
 
 def node_name(state)
   "s#{state.to_a.join('_')}"
 end
 
-graph = Twenty48::Graph.new
+# rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+def build_graph(builder, solver)
+  graph = Twenty48::Graph.new
 
-start_states = builder.start_states
-solver.policy.keys.sort.each do |state|
-  optimal_action = solver.policy[state]
-  formatted_value = format('%.2f', solver.value[state])
+  board_digits = [Math.log10(builder.max_exponent**2).ceil.to_i, 2].max
+  start_states = builder.start_states
+  model = solver.model
+  policy = solver.policy
+  value = solver.value
 
-  node_properties = graph.add_node(node_name(state))
-  node_properties[:shape] = :record
+  policy.keys.sort.each do |state|
+    optimal_action = policy[state]
+    formatted_value = format('%.2f', value[state])
 
-  if state.win?(max_exponent)
-    node_properties[:color] = :blue
-    node_properties[:label] = "{{win!}|{#{formatted_value}}}"
-  elsif state.lose?
-    node_properties[:color] = :red
-    node_properties[:label] = "{{lose}|{#{formatted_value}}}"
-  else
-    node_properties[:color] = :green if start_states.member?(state)
-    node_properties[:color] = :red if builder.resolved_lose_state == state
-    node_properties[:color] = :blue if
-      builder.resolved_win_states.member?(state)
+    node_properties = graph.add_node(node_name(state))
+    node_properties[:shape] = :record
 
-    label_values = state.to_a.map do |value|
-      if value.positive? # rubocop:disable Style/ConditionalAssignment
-        string_value = format("%#{board_digits}d", 2**value)
-      else
-        string_value = ' ' * board_digits
+    if state.win?(builder.max_exponent)
+      node_properties[:color] = :blue
+      node_properties[:label] = "{{win!}|{#{formatted_value}}}"
+    elsif state.lose?
+      node_properties[:color] = :red
+      node_properties[:label] = "{{lose}|{#{formatted_value}}}"
+    else
+      node_properties[:color] = :green if start_states.member?(state)
+      node_properties[:color] = :red if builder.resolved_lose_state == state
+      node_properties[:color] = :blue if
+        builder.resolved_win_states.member?(state)
+
+      label_values = state.to_a.map do |cell_value|
+        if cell_value.positive?
+          string_value = format("%#{board_digits}d", 2**cell_value)
+        else
+          string_value = ' ' * board_digits
+        end
+        string_value.gsub(' ', '&nbsp;')
       end
-      string_value.gsub(' ', '&nbsp;')
+
+      board = label_values.each_slice(builder.board_size)
+        .map { |values| values.join('|') }
+        .join('}|{')
+      node_properties[:label] =
+        "{{#{board}}|{#{optimal_action}}|{#{formatted_value}}}"
     end
-    board = label_values.each_slice(board_size)
-      .map { |values| values.join('|') }
-      .join('}|{')
-    node_properties[:label] =
-      "{{#{board}}|{#{optimal_action}}|{#{formatted_value}}}"
+
+    model.next_states(state, optimal_action).each do |next_state|
+      probability = model.transition_probability(
+        state, optimal_action, next_state
+      )
+
+      edge_properties = graph.add_edge(node_name(state), node_name(next_state))
+
+      edge_properties[:taillabel] = format(' %.2f ', probability)
+      edge_properties[:weight] = (100 * probability).round
+      edge_properties[:color] = :grey
+    end
   end
-
-  model.next_states(state, optimal_action).each do |next_state|
-    probability = model.transition_probability(
-      state, optimal_action, next_state
-    )
-
-    edge_properties = graph.add_edge(node_name(state), node_name(next_state))
-
-    edge_properties[:taillabel] = format(' %.2f ', probability)
-    edge_properties[:weight] = (100 * probability).round
-    edge_properties[:color] = :grey
-  end
+  graph
 end
 
-puts 'digraph {'
-puts '  splines=spline;'
-puts '  nodesep=1;' # horizontal spacing
-puts '  ranksep=2;' # vertical spacing
-puts '  node [fontname="Courier"];'
-puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
-puts '}'
+Dir.glob(Twenty48::Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
+  solver_params = Twenty48::Storage.solver_params_from_pathname(solver_pathname)
+  builder = Twenty48::Storage.new_builder_from_model_params(solver_params)
+  solver = Twenty48::Storage.read_solver(solver_params)
+
+  next if solver.model.states.size > max_states
+
+  graph = build_graph(builder, solver)
+
+  output_pathname = Twenty48::Storage.graph_pathname(solver_params, '.dot')
+  File.open(output_pathname, 'w') do |dot|
+    dot.puts 'digraph {'
+    dot.puts '  splines=spline;'
+    dot.puts '  nodesep=1;' # horizontal spacing
+    dot.puts '  ranksep=2;' # vertical spacing
+    dot.puts '  node [fontname="Courier"];'
+    dot.puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
+    dot.puts '}'
+  end
+  system "bzip2 --force #{output_pathname}"
+end
