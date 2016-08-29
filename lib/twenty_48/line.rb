@@ -12,23 +12,49 @@ module Twenty48
     # Don't merge a tile that has already been merged.
     #
     def move(line)
-      result = []
+      result = Array.new(line.size, 0)
+      i = 0
       last = nil
       line.each do |value|
         # Slide through empty spaces.
         next if value.zero?
         if last == value
           # Merge adjacent tiles.
-          result[result.size - 1] += 1
+          result[i - 1] += 1
           last = nil
         else
           # Keep the tile.
-          result << value
+          result[i] = value
+          i += 1
           last = value
         end
       end
-      result << 0 while result.size < line.size
       result
     end
+
+    # This function was identified as a hot spot in profiling. I thought this
+    # in-place version might be faster, but it does not seem to be true. Keeping
+    # it around in case we want to try it again some time.
+    # def move(line)
+    #   n = line.size
+    #   i = -1
+    #   done = 0
+    #   merged = 0
+    #   while (i += 1) < n
+    #     next if (value = line[i]).zero?
+    #     if done > merged && line[done - 1] == value
+    #       line[done - 1] += 1
+    #       line[i] = 0
+    #       merged = done
+    #     else
+    #       if i > done
+    #         line[done] = value
+    #         line[i] = 0
+    #       end
+    #       done += 1
+    #     end
+    #   end
+    #   line
+    # end
   end
 end
