@@ -6,8 +6,8 @@ require 'json'
 require_relative '../lib/twenty_48'
 
 def generate(builder)
-  p builder
   model_params = Twenty48::Storage.model_params_from_builder(builder)
+  p model_params
   file_name = Twenty48::Storage.model_pathname(model_params, '.json')
   File.open(file_name, 'w') do |file|
     file.puts '{'
@@ -17,7 +17,17 @@ def generate(builder)
       file.puts ',' if state_count > 1
       file.write %("#{state}": #{JSON.dump(state_hash)})
 
-      $stderr.puts "state_count=#{state_count}" if (state_count % 1000).zero?
+      next unless (state_count % 1000).zero?
+      $stderr.puts format('state_count=%d, ' \
+        'resolve_cache_size=%d, ' \
+        'resolve_cache_hit_rate=%.1f%%, ' \
+        'expand_cache_size=%d, ' \
+        'expand_cache_hit_rate=%.1f%%',
+        state_count,
+        builder.resolve_cache.size,
+        100 * builder.resolve_cache.hit_rate,
+        builder.expand_cache.size,
+        100 * builder.expand_cache.hit_rate)
     end
     file.puts "\n}"
   end
@@ -34,7 +44,7 @@ board_size = 2
 end
 
 board_size = 3
-(2..3).each do |max_exponent|
+(2..4).each do |max_exponent|
   (0..[max_exponent - 1, 2].min).each do |max_resolve_depth|
     generate(Twenty48::Builder.new(
       board_size, max_exponent, max_resolve_depth

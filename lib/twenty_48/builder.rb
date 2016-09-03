@@ -4,7 +4,17 @@ require 'set'
 
 module Twenty48
   #
-  # Resolve end states.
+  # Build a complete hash model for a 2048-like game.
+  #
+  # The general approach is to generate all possible start states and then
+  # perform a depth-first search of the whole state space.
+  #
+  # The builder also 'resolves' states that are close to a win or a loss, in
+  # order to avoid generating many states with unhelpful levels of detail ---
+  # if you're going to win in 2 moves, you don't care how.
+  #
+  # To make this acceptably fast, we use two LRU caches to remember the results
+  # of (1) expanding a state and (2) resolving a state.
   #
   class Builder
     def initialize(board_size, max_exponent, max_resolve_depth = 0)
@@ -17,6 +27,8 @@ module Twenty48
 
       @resolved_win_states = build_resolved_win_states
       @resolved_lose_state = build_resolved_lose_state
+      @resolve_cache = LruCache.new(max_size: 1_000_000)
+      @expand_cache = LruCache.new(max_size: 1_000_000)
       @closed = SortedSet.new
       @open = []
     end
@@ -26,6 +38,9 @@ module Twenty48
     attr_reader :max_resolve_depth
     attr_reader :resolved_win_states
     attr_reader :resolved_lose_state
+
+    attr_reader :resolve_cache
+    attr_reader :expand_cache
 
     #
     # Set of canonicalized, resolved states for which the transition function
@@ -102,11 +117,27 @@ module Twenty48
       end
     end
 
+    #
+    # The basic structure here is recursive:
+    # - you win in n moves if there is some action such that you can win in n-1
+    #   moves from all possible successors of that action
+    # - you lose in n moves if for all possible actions, you lose in n-1 moves
+    #   from all possible successors from each of those actions
+    #
+    # This implementation makes very heavy use of the `expand_cache`, since
+    # it effectively has to expand all states from the current state several
+    # times over.
+    #
     def resolve(state)
+      cached_result = @resolve_cache[state]
+      return cached_result if cached_result
+
       (0..max_resolve_depth).each do |move|
         return resolved_win_states[move] if win_in?(state, move)
         return resolved_lose_state if lose_in?(state, move)
       end
+
+      @resolve_cache[state] = state
       state
     end
 
@@ -115,6 +146,9 @@ module Twenty48
     DIRECTIONS = [:left, :right, :up, :down].freeze
 
     def expand(state)
+      cached_result = @expand_cache[state]
+      return cached_result if cached_result
+
       hash = {}
       DIRECTIONS.each do |direction|
         move_state = state.move(direction)
@@ -123,6 +157,7 @@ module Twenty48
         hash[direction] = move_state.random_successors_hash
       end
       # TODO: we could easily check for a loss here?
+      @expand_cache[state] = hash
       hash
     end
 
