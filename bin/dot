@@ -1,10 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'finite_mdp'
-require 'csv'
-require 'json'
-
 require_relative '../lib/twenty_48'
 
 max_states = 1000

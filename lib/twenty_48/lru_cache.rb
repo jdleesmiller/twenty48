@@ -20,6 +20,7 @@ module Twenty48
       @hit_rate = 1
     end
 
+    # Exponential moving average hit rate.
     attr_reader :hit_rate
 
     def []=(key, value)
@@ -32,13 +33,11 @@ module Twenty48
     def [](key)
       found = true
       value = @data.delete(key) { found = false }
+      @hit_rate *= 1 - HIT_RATE_ALPHA
       if found
-        @hit_rate = HIT_RATE_ALPHA + (1 - HIT_RATE_ALPHA) * @hit_rate
+        @hit_rate += HIT_RATE_ALPHA
         @data[key] = value
         value
-      else
-        @hit_rate *= 1 - HIT_RATE_ALPHA
-        nil
       end
     end
 

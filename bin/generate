@@ -1,8 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'json'
-
 require_relative '../lib/twenty_48'
 
 def generate(builder)
@@ -17,21 +15,28 @@ def generate(builder)
       file.puts ',' if state_count > 1
       file.write %("#{state}": #{JSON.dump(state_hash)})
 
-      next unless (state_count % 1000).zero?
-      $stderr.puts format('state_count=%d, ' \
-        'resolve_cache_size=%d, ' \
-        'resolve_cache_hit_rate=%.1f%%, ' \
-        'expand_cache_size=%d, ' \
-        'expand_cache_hit_rate=%.1f%%',
-        state_count,
-        builder.resolve_cache.size,
-        100 * builder.resolve_cache.hit_rate,
-        builder.expand_cache.size,
-        100 * builder.expand_cache.hit_rate)
+      puts status_line(state_count, builder) if (state_count % 1000).zero?
     end
     file.puts "\n}"
+    puts status_line(state_count, builder)
   end
   system "bzip2 --force #{file_name}"
+end
+
+def status_line(state_count, builder)
+  format('%s: state_count=%d, ' \
+    'open_size=%d, ' \
+    'resolve_cache_size=%d, ' \
+    'resolve_cache_hit_rate=%.2f%%, ' \
+    'expand_cache_size=%d, ' \
+    'expand_cache_hit_rate=%.4f%%',
+    Time.now.to_s,
+    state_count,
+    builder.open.size,
+    builder.resolve_cache.size,
+    100 * builder.resolve_cache.hit_rate,
+    builder.expand_cache.size,
+    100 * builder.expand_cache.hit_rate)
 end
 
 board_size = 2

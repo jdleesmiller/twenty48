@@ -28,7 +28,15 @@ module Twenty48
       @resolved_win_states = build_resolved_win_states
       @resolved_lose_state = build_resolved_lose_state
       @resolve_cache = LruCache.new(max_size: 1_000_000)
-      @expand_cache = LruCache.new(max_size: 1_000_000)
+
+      # We get almost no hits on the expand cache unless we are resolving
+      # at least one state ahead.
+      @expand_cache = if max_resolve_depth.positive?
+                        LruCache.new(max_size: 1_000_000)
+                      else
+                        @expand_cache = NonCache.new
+                      end
+
       @closed = SortedSet.new
       @open = []
     end
