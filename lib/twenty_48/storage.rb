@@ -29,7 +29,7 @@ module Twenty48
     MODEL_NAME_RX = build_pathname_rx(
       /board_size-(?<board_size>\d+)/,
       /max_exponent-(?<max_exponent>\d+)/,
-      /max_end_state_moves-(?<max_end_state_moves>\d+)/
+      /max_resolve_depth-(?<max_resolve_depth>\d+)/
     )
 
     SOLVER_NAME_RX = build_pathname_rx(
@@ -58,7 +58,7 @@ module Twenty48
       {
         board_size: builder.board_size,
         max_exponent: builder.max_exponent,
-        max_end_state_moves: builder.max_end_state_moves
+        max_resolve_depth: builder.max_resolve_depth
       }
     end
 
@@ -71,7 +71,7 @@ module Twenty48
     def cast_model_params(params)
       params[:board_size] = params[:board_size].to_i
       params[:max_exponent] = params[:max_exponent].to_i
-      params[:max_end_state_moves] = params[:max_end_state_moves].to_i
+      params[:max_resolve_depth] = params[:max_resolve_depth].to_i
       params
     end
 
@@ -79,7 +79,7 @@ module Twenty48
       build_basename(
         board_size: model_params[:board_size],
         max_exponent: model_params[:max_exponent],
-        max_end_state_moves: model_params[:max_end_state_moves]
+        max_resolve_depth: model_params[:max_resolve_depth]
       )
     end
 
@@ -134,10 +134,10 @@ module Twenty48
     #
 
     def new_builder_from_model_params(model_params)
-      Model.new(
+      Builder.new(
         model_params[:board_size],
         model_params[:max_exponent],
-        model_params[:max_end_state_moves]
+        model_params[:max_resolve_depth]
       )
     end
 

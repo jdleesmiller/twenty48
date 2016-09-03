@@ -7,6 +7,9 @@ Style/AlignParameters:
 Style/MultilineOperationIndentation:
   EnforcedStyle: indented
 
+Style/FirstParameterIndentation:
+  EnforcedStyle: consistent
+
 Style/IndentArray:
   EnforcedStyle: consistent
 

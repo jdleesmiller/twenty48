@@ -134,17 +134,24 @@ module Twenty48
     end
 
     #
+    # Generate a 2^1 with 90% probability and a 2^2 with 10% probability.
+    #
+    RANDOM_TILES = { 1 => 0.9, 2 => 0.1 }.freeze
+
+    #
     # Generate all possible random successors without the probabilities.
     # We can add either a 2 or 4 tile (value 1 or 2) in any available cell.
     # The returned states are not canonicalized. If there are no available
     # cells, the state itself is returned as the only entry.
     #
+    # TODO why not canonicalize?
+    #
     def random_successors
-      state_array = unpack(data)
+      state_array = to_a
       new_states = []
       state_array.each.with_index do |value, i|
         next unless value.zero?
-        [1, 2].each do |new_value|
+        RANDOM_TILES.each do |new_value, _|
           new_state_array = state_array.dup
           new_state_array[i] = new_value
           new_states << self.class.new(new_state_array)
@@ -152,6 +159,30 @@ module Twenty48
       end
       new_states << self if new_states.empty?
       new_states
+    end
+
+    #
+    # Generate the successors and include the probabilities. The states are
+    # canonicalized. The probabilities are normalized. If there are no
+    # available cells, the state itself is returned as the only entry, with
+    # probability 1.
+    #
+    def random_successors_hash
+      state_array = to_a
+      hash = Hash.new { 0 }
+      cells_available = self.cells_available
+      state_array.each.with_index do |value, i|
+        next unless value.zero?
+        RANDOM_TILES.each do |new_value, value_probability|
+          new_state_array = state_array.dup
+          new_state_array[i] = new_value
+          new_state = self.class.new(new_state_array).canonicalize
+          hash[new_state] += value_probability / cells_available
+        end
+      end
+      hash[self] = 1.0 if hash.empty?
+      check_normalised hash
+      hash
     end
 
     def to_a
@@ -225,6 +256,11 @@ module Twenty48
         end
       end
       self.class.new(state)
+    end
+
+    def check_normalised(hash)
+      raise "non-normalized: #{inspect}" unless
+        (hash.values.inject(:+) - 1).abs < 1e-6
     end
 
     PACK_FORMAT = 'C*' # unsigned chars are enough
