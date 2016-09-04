@@ -33,5 +33,5 @@ end
 # tabulate(Twenty48::Builder.new(4, 4, true))
 # out of patience: at least 5700 states
 # Twenty48::Builder.new(4, 4, 3)
-# out of patience: at least 87800 states
+# out of patience: at least 88300 states
 # Twenty48::Builder.new(4, 4, 2)
