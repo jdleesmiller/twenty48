@@ -190,6 +190,13 @@ class BuilderResolveTest < Twenty48Test
       2, 0, 0, 2,
       0, 0, 0, 3
     ]), 2)
+
+    assert builder.win_in?(Twenty48::State.new([
+      0, 0, 0, 0,
+      0, 0, 0, 1,
+      2, 1, 2, 3,
+      0, 2, 1, 2
+    ]), 3)
   end
 
   def test_approx_moves_to_win_2x2_to_3

@@ -114,6 +114,10 @@ module Twenty48
       best
     end
 
+    def moves_to_definite_win(state)
+      inner_moves_to_definite_win(state, max_resolve_depth)
+    end
+
     #
     # Check whether we are certain to lose within the given number of moves.
     #
@@ -191,7 +195,7 @@ module Twenty48
     #   successors from each of those actions, then you lose in n moves
     #
     def forward_resolve(state)
-      win_in = approx_moves_to_win(state)
+      win_in = moves_to_definite_win(state)
       return resolved_win_states[win_in] unless win_in.nil?
       return resolved_lose_state if lose_within?(state, max_resolve_depth)
       state
@@ -365,6 +369,22 @@ module Twenty48
         end
       end
       last_result
+    end
+
+    def inner_moves_to_definite_win(state, max_depth)
+      max_value = state.max_value
+      return 0 if max_value >= max_exponent
+
+      # If there is no value close enough to the max exponent, we can skip this
+      # check, because the maximum value can increase by at most one per move.
+      return nil if max_exponent - max_value > max_depth
+
+      DIRECTIONS.map do |direction|
+        zeros_unknown = max_depth < max_resolve_depth
+        successor = state.move(direction, zeros_unknown)
+        moves = inner_moves_to_definite_win(successor, max_depth - 1)
+        moves + 1 if moves
+      end.compact.min
     end
   end
 end

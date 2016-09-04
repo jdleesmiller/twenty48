@@ -11,13 +11,19 @@ module Twenty48
     # Slide a row or column toward the start of the line.
     # Don't merge a tile that has already been merged.
     #
-    def move(line)
+    # @param [Boolean?] zeros_unknown treat zero as 'unknown', not 'empty'
+    #
+    def move(line, zeros_unknown = false)
       result = Array.new(line.size, 0)
       i = 0
       last = nil
       line.each do |value|
-        # Slide through empty spaces.
-        next if value.zero?
+        # Slide through empty spaces, unless zeros are unknowns, in which case
+        # all subsequent tiles are unknown.
+        if value.zero?
+          break if zeros_unknown
+          next
+        end
         if last == value
           # Merge adjacent tiles.
           result[i - 1] += 1

@@ -117,17 +117,25 @@ module Twenty48
     # Slide tiles left (-1, 0), right (+1, 0), up (0, -1) or down (0, +1).
     # Signs are for consistency with the 2048 source.
     #
-    def move(direction)
+    def move(direction, zeros_unknown = false)
       state = unpack(data)
       case direction
       when :left
-        update_each_row_with(state) { |row| Line.move(row) }
+        update_each_row_with(state) do |row|
+          Line.move(row, zeros_unknown)
+        end
       when :right
-        update_each_row_with(state) { |row| Line.move(row.reverse).reverse }
+        update_each_row_with(state) do |row|
+          Line.move(row.reverse, zeros_unknown).reverse
+        end
       when :up
-        update_each_col_with(state) { |col| Line.move(col) }
+        update_each_col_with(state) do |col|
+          Line.move(col, zeros_unknown)
+        end
       when :down
-        update_each_col_with(state) { |col| Line.move(col.reverse).reverse }
+        update_each_col_with(state) do |col|
+          Line.move(col.reverse, zeros_unknown).reverse
+        end
       else
         raise "bad direction: #{direction}"
       end
