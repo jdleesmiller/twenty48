@@ -3,8 +3,10 @@
 
 require_relative '../lib/twenty_48'
 
-puts %w(board_size max_exponent max_resolve_depth start_states states bz2_size
-  mean_start_state_value).join(',')
+puts %w(
+  board_size max_exponent max_resolve_depth start_states states bz2_size
+  mean_start_state_value
+).join(',')
 
 Dir.glob(Twenty48::Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
   solver_params = Twenty48::Storage.solver_params_from_pathname(solver_pathname)
