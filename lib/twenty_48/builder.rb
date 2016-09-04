@@ -27,12 +27,12 @@ module Twenty48
 
       @resolved_win_states = build_resolved_win_states
       @resolved_lose_state = build_resolved_lose_state
-      @resolve_cache = LruCache.new(max_size: 1_000_000)
+      @resolve_cache = LruCache.new(max_size: 100_000)
 
       # We get almost no hits on the expand cache unless we are resolving
       # at least one state ahead.
       @expand_cache = if max_resolve_depth.positive?
-                        LruCache.new(max_size: 1_000_000)
+                        LruCache.new(max_size: 100_000)
                       else
                         @expand_cache = NonCache.new
                       end
@@ -94,6 +94,43 @@ module Twenty48
       end
     end
 
+    def moves_to_win(state, max_depth = max_resolve_depth)
+      max_value = state.max_value
+      return 0 if max_value >= max_exponent
+
+      # If there is no value close enough to the max exponent, we can skip this
+      # check, because the maximum value can increase by at most one per move.
+      return nil if max_exponent - max_value > max_depth
+
+      best = nil
+      expand(state).each do |_action, successors|
+        moves = same_result(successors) do |successor|
+          moves_to_win(successor, max_depth - 1)
+        end
+        next if moves.nil?
+        best = moves + 1 if best.nil? || best > moves + 1
+        break if best == 1 # Not going to beat that.
+      end
+      best
+    end
+
+    def moves_to_lose(state, max_depth = max_resolve_depth)
+      return 0 if state.lose?
+
+      # If the state has too many available cells, we can skip this check,
+      # because the number of filled cells can increase by at most one per move.
+      return nil if state.cells_available > max_depth
+
+      moves = nil
+      expand(state).each do |_action, successors|
+        moves = same_result(successors, moves) do |successor|
+          moves_to_lose(successor, max_depth - 1)
+        end
+        break if moves.nil?
+      end
+      moves + 1 unless moves.nil?
+    end
+
     def win_in?(state, moves)
       raise 'moves must be non-negative' if moves.negative?
 
@@ -136,17 +173,55 @@ module Twenty48
     # it effectively has to expand all states from the current state several
     # times over.
     #
-    def resolve(state)
-      cached_result = @resolve_cache[state]
-      return cached_result if cached_result
-
+    def uncached_resolve(state)
       (0..max_resolve_depth).each do |move|
         return resolved_win_states[move] if win_in?(state, move)
         return resolved_lose_state if lose_in?(state, move)
       end
-
-      @resolve_cache[state] = state
       state
+    end
+
+    #
+    # Alternative recursion:
+    # - if there is some action such that you win in exactly n-1 moves from
+    #   all possible successor states of that action, then you win in n moves.
+    # - if for all possible actions, you lose in n-1 moves from all possible
+    #   successors from each of those actions, then you lose in n moves
+    #
+    def forward_resolve(state)
+      result = nil
+
+      win_in = moves_to_win(state)
+      result = resolved_win_states[win_in] unless win_in.nil?
+
+      if result.nil?
+        lose_in = moves_to_lose(state)
+        result = resolved_lose_state unless lose_in.nil?
+      end
+
+      result = state if result.nil?
+      result
+    end
+
+    def resolve(state)
+      cached_result = @resolve_cache[state]
+      return cached_result if cached_result
+
+      result = uncached_resolve(state)
+      # new_result = forward_resolve(state)
+
+      # if result != new_result
+      #   puts 'state'
+      #   puts state.pretty_print
+      #   puts 'old'
+      #   puts result.pretty_print
+      #   puts 'new'
+      #   puts new_result.pretty_print
+      #   raise 'resolve mismatch'
+      # end
+
+      @resolve_cache[state] = result
+      result
     end
 
     private
@@ -255,6 +330,19 @@ module Twenty48
 
     def build_resolved_lose_state
       State.new([0] * board_size**2)
+    end
+
+    def same_result(successors, last_result = nil)
+      successors.each do |successor, _|
+        result = yield(successor)
+        return nil if result.nil?
+        if last_result.nil?
+          last_result = result
+        elsif last_result != result
+          return nil
+        end
+      end
+      last_result
     end
   end
 end
