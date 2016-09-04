@@ -6,6 +6,12 @@ require_relative '../lib/twenty_48'
 discount = 0.95
 tolerance = 1e-4
 
+# For a single file:
+# input_stem = 'data/...'
+# input_file = "#{input_stem}.json.bz2"
+# model_params = { board_size: 4, max_exponent: 4, max_resolve_depth: 3 }
+# model = Twenty48::Storage.read_model_file(input_file)
+
 Dir.glob(Twenty48::Storage::MODELS_GLOB).sort.each do |input_file|
   model_params = Twenty48::Storage.model_params_from_pathname(input_file)
   p model_params

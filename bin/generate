@@ -15,7 +15,7 @@ def generate(builder)
       file.puts ',' if state_count > 1
       file.write %("#{state}": #{JSON.dump(state_hash)})
 
-      puts status_line(state_count, builder) if (state_count % 1000).zero?
+      puts status_line(state_count, builder) if (state_count % 100).zero?
     end
     file.puts "\n}"
     puts status_line(state_count, builder)
@@ -37,6 +37,19 @@ def status_line(state_count, builder)
     100 * builder.resolve_cache.hit_rate,
     builder.expand_cache.size,
     100 * builder.expand_cache.hit_rate)
+end
+
+def generate_from(builder, start_state)
+  puts '{'
+  state_count = 0
+  builder.build([start_state]) do |state, state_hash|
+    state_count += 1
+    puts ',' if state_count > 1
+    STDOUT.write %("#{state}": #{JSON.dump(state_hash)})
+    $stderr.puts status_line(state_count, builder) if (state_count % 100).zero?
+  end
+  $stderr.puts status_line(state_count, builder)
+  puts "\n}"
 end
 
 board_size = 2
@@ -65,3 +78,13 @@ end
 #     ))
 #   end
 # end
+
+# For a single start state:
+# start_state = Twenty48::State.new([
+#   0, 0, 0, 0,
+#   0, 0, 0, 1,
+#   2, 1, 2, 3,
+#   0, 2, 1, 2
+# ])
+# builder = Twenty48::Builder.new(4, 4, 3)
+# generate_from(builder, start_state)

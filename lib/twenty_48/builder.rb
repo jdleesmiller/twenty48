@@ -78,13 +78,13 @@ module Twenty48
       states.to_a
     end
 
-    def build
+    def build(states = start_states)
       # Our usual transition model is not valid in the lose state, so we handle
       # it as a special case.
       @closed << resolved_lose_state
       yield resolved_lose_state, { down: { resolved_lose_state => [1, 0] } }
 
-      start_states.each do |start_state|
+      states.each do |start_state|
         @open << resolve(start_state)
         while (state = @open.pop)
           next if @closed.member?(state)

@@ -154,6 +154,10 @@ module Twenty48
 
     def read_model(model_params)
       pathname = model_pathname(model_params)
+      read_model_file(pathname)
+    end
+
+    def read_model_file(pathname)
       hash = read_bzipped_json(pathname)
       hash = hash.map do |state0, actions|
         new_actions = actions.map do |action, successors|
@@ -185,10 +189,14 @@ module Twenty48
     def read_solver(solver_params)
       model = read_model(solver_params)
       pathname = solver_pathname(solver_params)
+      read_solver_file(model, pathname, solver_params[:discount])
+    end
+
+    def read_solver_file(model, pathname, discount)
       policy, value = read_bzipped_csv(pathname) do |csv|
         read_policy_and_value_from_csv(csv)
       end
-      FiniteMDP::Solver.new(model, solver_params[:discount], policy, value)
+      FiniteMDP::Solver.new(model, discount, policy, value)
     end
   end
 end
