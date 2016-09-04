@@ -114,21 +114,23 @@ module Twenty48
       best
     end
 
-    def moves_to_lose(state, max_depth = max_resolve_depth)
-      return 0 if state.lose?
+    #
+    # Check whether we are certain to lose within the given number of moves.
+    #
+    def lose_within?(state, moves)
+      raise 'negative moves' if moves.negative?
+
+      return true if state.lose?
 
       # If the state has too many available cells, we can skip this check,
       # because the number of filled cells can increase by at most one per move.
-      return nil if state.cells_available > max_depth
+      return false if moves.zero? || state.cells_available > moves
 
-      moves = nil
-      expand(state).each do |_action, successors|
-        moves = same_result(successors, moves) do |successor|
-          moves_to_lose(successor, max_depth - 1)
+      expand(state).all? do |_action, successors|
+        successors.all? do |successor, _|
+          lose_within?(successor, moves - 1)
         end
-        break if moves.nil?
       end
-      moves + 1 unless moves.nil?
     end
 
     def win_in?(state, moves)
@@ -189,25 +191,18 @@ module Twenty48
     #   successors from each of those actions, then you lose in n moves
     #
     def forward_resolve(state)
-      result = nil
-
-      win_in = moves_to_win(state)
-      result = resolved_win_states[win_in] unless win_in.nil?
-
-      if result.nil?
-        lose_in = moves_to_lose(state)
-        result = resolved_lose_state unless lose_in.nil?
-      end
-
-      result = state if result.nil?
-      result
+      win_in = approx_moves_to_win(state)
+      return resolved_win_states[win_in] unless win_in.nil?
+      return resolved_lose_state if lose_within?(state, max_resolve_depth)
+      state
     end
 
     def resolve(state)
       cached_result = @resolve_cache[state]
       return cached_result if cached_result
 
-      result = uncached_resolve(state)
+      result = forward_resolve(state)
+      # result = uncached_resolve(state)
       # new_result = forward_resolve(state)
 
       # if result != new_result
@@ -222,6 +217,33 @@ module Twenty48
 
       @resolve_cache[state] = result
       result
+    end
+
+    #
+    # Be pessimistic about all of the available cells. Assume they are filled
+    # with blockers that can't be traversed or merged: large negative numbers.
+    #
+    def approx_moves_to_win(state, max_depth = max_resolve_depth)
+      max_value = state.max_value
+      return 0 if max_value >= max_exponent
+
+      # If there is no value close enough to the max exponent, we can skip this
+      # check, because the maximum value can increase by at most one per move.
+      return nil if max_exponent - max_value > max_depth
+
+      DIRECTIONS.map do |direction|
+        move_state = state.move(direction)
+        next if move_state == state
+
+        state_array = move_state.to_a
+        state_array.map!.with_index do |value, index|
+          value.zero? ? -128 + index : value
+        end
+        new_state = State.new(state_array)
+
+        moves = approx_moves_to_win(new_state, max_depth - 1)
+        moves + 1 unless moves.nil?
+      end.compact.min
     end
 
     private

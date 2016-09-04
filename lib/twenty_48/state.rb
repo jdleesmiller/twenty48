@@ -263,7 +263,7 @@ module Twenty48
         (hash.values.inject(:+) - 1).abs < 1e-6
     end
 
-    PACK_FORMAT = 'C*' # unsigned chars are enough
+    PACK_FORMAT = 'c*' # signed chars are enough
 
     def pack(state_array)
       state_array.pack(PACK_FORMAT)
