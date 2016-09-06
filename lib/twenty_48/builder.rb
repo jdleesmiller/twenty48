@@ -25,9 +25,9 @@ module Twenty48
       @max_exponent = max_exponent
       @max_resolve_depth = max_resolve_depth
 
-      @resolved_win_states = build_resolved_win_states
-      @resolved_lose_state = build_resolved_lose_state
-      @resolve_cache = LruCache.new(max_size: 100_000)
+      @resolver = Resolver.new(board_size, max_exponent, max_resolve_depth)
+
+      @resolve_cache = LruCache.new(max_size: 300_000)
 
       # We get almost no hits on the expand cache unless we are resolving
       # at least one state ahead.
@@ -44,8 +44,14 @@ module Twenty48
     attr_reader :board_size
     attr_reader :max_exponent
     attr_reader :max_resolve_depth
-    attr_reader :resolved_win_states
-    attr_reader :resolved_lose_state
+
+    def resolved_win_states
+      @resolver.win_states
+    end
+
+    def resolved_lose_state
+      @resolver.lose_state
+    end
 
     attr_reader :resolve_cache
     attr_reader :expand_cache
@@ -284,78 +290,11 @@ module Twenty48
       end.to_h
       # TODO: we could remove equivalent actions here --- check that the action
       # successor sets are identical (or equal within some numerical tolerance)
-    end
-
-    def build_resolved_win_states
-      result = []
-
-      build_simple_resolved_win_states(result)
-
-      if max_resolve_depth >= board_size
-        raise 'build_resolved_win_states not up to it' unless board_size == 2
-        build_resolved_2x2_win_states(result)
-      end
-
-      result
-    end
-
-    #
-    # It's easy if we can fit all of the tiles on one row. For example:
-    # win:        [..., 0, 8]
-    # win in one: [..., 0, 4, 4]
-    # win in two: [..., 0, 2, 2, 4]
-    #
-    def build_simple_resolved_win_states(result)
-      # If the exponent is not large enough, we'll get zeros.
-      raise 'max end state moves too large' if
-        board_size > 2 && max_resolve_depth >= max_exponent
-
-      state_array = [0] * (board_size**2 - 1) + [max_exponent]
-      max_moves = [max_resolve_depth, board_size - 1].min
-      (0..max_moves).each do |move|
-        result << State.new(state_array)
-        top_index = state_array.length - 1 - move
-        new_top = state_array[top_index] - 1
-        state_array[top_index - 1] = new_top
-        state_array[top_index] = new_top
-      end
-    end
-
-    #
-    # These don't follow any obvious pattern, so I have just hard coded them.
-    # They are only really useful for testing, but we should have them for
-    # completeness.
-    #
-    def build_resolved_2x2_win_states(result) # rubocop:disable Metrics/AbcSize
-      if max_resolve_depth > 1
-        case max_exponent
-        when 2 then result << State.new([0, 1, 1, 0])
-        when 3 then result << State.new([0, 1, 2, 1])
-        when 4 then result << State.new([0, 2, 3, 2])
-        when 5 then result << State.new([1, 3, 4, 3])
-        end
-        # Otherwise, there are no win states.
-      end
-      if max_resolve_depth > 2
-        case max_exponent
-        when 3 then result << State.new([0, 1, 1, 2])
-        when 4 then result << State.new([0, 2, 2, 3])
-        when 5 then result << State.new([2, 2, 3, 4])
-        end
-      end
-      if max_resolve_depth > 3
-        case max_exponent
-        when 3 then result << State.new([0, 0, 1, 2])
-        when 4 then result << State.new([0, 1, 3, 2])
-        end
-        # There are no definite win states for max_exponent = 5, because until
-        # you get 3 moves from the end, there's always a possibility of losing.
-      end
-      raise '5+ on the 2x2 board not done yet' if max_resolve_depth > 4
-    end
-
-    def build_resolved_lose_state
-      State.new([0] * board_size**2)
+      # TODO: we could also prune other actions when there is one that leads
+      # uniquely to a resolved win state --- we resolve them because they're
+      # the way to win. This seems pretty much the same as extending the
+      # max depth by one, since it would then have resolved this state. It would
+      # have to be the best resolved win state.
     end
 
     def same_result(successors, last_result = nil)

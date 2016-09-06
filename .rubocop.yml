@@ -19,6 +19,10 @@ Style/IndentHash:
 Style/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
+Style/NumericPredicate:
+  Enabled: False
+  # EnforcedStyle: comparison
+
 Style/Documentation:
   Exclude:
     - 'test/**/*'
