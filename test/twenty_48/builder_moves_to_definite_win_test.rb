@@ -242,6 +242,26 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
     ]))
   end
 
+  def test_moves_to_definite_win_4x4_to_8_resolve_2
+    builder = Twenty48::Builder.new(4, 3, 2)
+
+    #
+    # A simple example of a state where the heuristic as it is currently coded
+    # fails: if we move right, we end up with two adjacent 2s, but the exact
+    # state after moving up or down in that position is unknown, so the
+    # heuristic does not detect the win.
+    #
+    # This seems like it should be fixable: we don't know where the 3 will be,
+    # but we know that we'll get one, which is enough to give us the win.
+    #
+    assert_nil builder.moves_to_definite_win(Twenty48::State.new([
+      0, 0, 0, 0,
+      0, 0, 0, 2,
+      0, 2, 0, 0,
+      0, 0, 0, 0
+    ]))
+  end
+
   def test_moves_to_definite_win_4x4_to_16_resolve_3
     builder = Twenty48::Builder.new(4, 4, 3)
 
