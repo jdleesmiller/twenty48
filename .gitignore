@@ -5,3 +5,7 @@
 .yardoc
 yard
 rdoc
+
+# The models get rather large past this point, so don't risk annoying github.
+data/models/board_size-3_max_exponent-7*
+data/models/board_size-3_max_exponent-8*
