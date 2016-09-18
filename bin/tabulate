@@ -4,9 +4,28 @@
 require_relative '../lib/twenty_48'
 
 puts %w(
-  board_size max_exponent max_resolve_depth start_states states bz2_size
-  mean_start_state_value
+  board_size max_exponent max_resolve_depth start_states states
+  mean_successor_states median_successor_states max_successor_states
+  bz2_size mean_start_state_value
 ).join(',')
+
+def count_successor_states(hash_model)
+  hash_model.map do |_state0, actions|
+    actions.map do |_action, successors|
+      successors.size
+    end.inject(&:+)
+  end
+end
+
+def median(data)
+  midpoint = data.size / 2
+  sorted_data = data.sort
+  if data.size.even?
+    (sorted_data[midpoint] + sorted_data[midpoint + 1]) / 2.0
+  else
+    sorted_data[midpoint]
+  end
+end
 
 Dir.glob(Twenty48::Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
   solver_params = Twenty48::Storage.solver_params_from_pathname(solver_pathname)
@@ -19,11 +38,16 @@ Dir.glob(Twenty48::Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
     .map { |state| value[builder.resolve(state)] }
     .inject(&:+) / start_states.size
 
+  successor_state_counts = count_successor_states(solver.model.hash)
+
   puts [
     builder.board_size,
     builder.max_exponent,
     builder.max_resolve_depth,
     value.size,
+    successor_state_counts.inject(&:+) / successor_state_counts.size.to_f,
+    median(successor_state_counts),
+    successor_state_counts.max,
     File.stat(Twenty48::Storage.model_pathname(solver_params)).size,
     mean_start_state_value
   ].join(',')
