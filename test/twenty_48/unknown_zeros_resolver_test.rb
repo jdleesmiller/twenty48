@@ -2,7 +2,7 @@
 
 require_relative 'helper'
 
-class BuilderMovesToDefiniteWinTest < Twenty48Test
+class UnknownZerosResolverTest < Twenty48Test
   include Twenty48
 
   def test_moves_to_definite_win_2x2_to_4_resolve_0
@@ -253,7 +253,7 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
   end
 
   def test_moves_to_definite_win_4x4_to_8_resolve_2
-    builder = Twenty48::Builder.new(4, 3)
+    builder = Builder.new(4, 3)
     resolver = UnknownZerosResolver.new(builder, 2)
 
     #
@@ -265,7 +265,7 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
     # This seems like it should be fixable: we don't know where the 3 will be,
     # but we know that we'll get one, which is enough to give us the win.
     #
-    assert_nil resolver.moves_to_definite_win(Twenty48::State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0, 0, 0,
       0, 0, 0, 2,
       0, 2, 0, 0,
@@ -274,24 +274,24 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
   end
 
   def test_moves_to_definite_win_4x4_to_16_resolve_3
-    builder = Twenty48::Builder.new(4, 4)
+    builder = Builder.new(4, 4)
     resolver = UnknownZerosResolver.new(builder, 3)
 
-    assert_nil resolver.moves_to_definite_win(Twenty48::State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0, 0, 0,
       0, 0, 0, 0,
       2, 0, 0, 3,
       2, 1, 2, 1
     ]))
 
-    assert_equal 1, resolver.moves_to_definite_win(Twenty48::State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       0, 0, 0, 0,
       0, 0, 0, 1,
       3, 0, 0, 0,
       3, 0, 0, 0
     ]))
 
-    assert_equal 2, resolver.moves_to_definite_win(Twenty48::State.new([
+    assert_equal 2, resolver.moves_to_definite_win(State.new([
       0, 0, 0, 0,
       0, 0, 0, 0,
       2, 0, 0, 2,
@@ -326,11 +326,43 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
     # From there, you win in two by going up and right. This is beyond what the
     # heuristic can do.
     #
-    assert_nil resolver.moves_to_definite_win(Twenty48::State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0, 0, 0,
       0, 0, 0, 1,
       2, 1, 2, 3,
       0, 2, 1, 2
+    ]))
+  end
+
+  def test_resolve_state_array_2x2
+    builder = Builder.new(2, 3)
+    resolver = UnknownZerosResolver.new(builder, 1)
+
+    # Nothing to do.
+    assert_equal State.new([
+      0, 0,
+      0, 1
+    ]), resolver.resolve(State.new([
+      0, 0,
+      0, 1
+    ]))
+
+    # 1-to-win state.
+    assert_equal State.new([
+      0, 0,
+      2, 2
+    ]), resolver.resolve(State.new([
+      0, 0,
+      2, 2
+    ]))
+
+    # 1-to-win state mapped to resolved 1-to-win state.
+    assert_equal State.new([
+      0, 0,
+      2, 2
+    ]), resolver.resolve(State.new([
+      0, 1,
+      2, 2
     ]))
   end
 end
