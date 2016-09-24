@@ -5,7 +5,8 @@ require_relative 'helper'
 class BuilderTest < Twenty48Test
   def test_build_2x2_to_4
     builder = Twenty48::Builder.new(2, 2)
-    hash = build_hash_model(builder)
+    resolver = Twenty48::UnknownZerosResolver.new(builder, 0)
+    hash = build_hash_model(builder, resolver)
 
     assert_equal 5, hash.size
     win = Twenty48::State.new([
@@ -60,8 +61,9 @@ class BuilderTest < Twenty48Test
   end
 
   def test_build_model_2x2_to_4_resolve_1
-    builder = Twenty48::Builder.new(2, 2, 1)
-    hash = build_hash_model(builder)
+    builder = Twenty48::Builder.new(2, 2)
+    resolver = Twenty48::UnknownZerosResolver.new(builder, 1)
+    hash = build_hash_model(builder, resolver)
 
     #
     # With one-step resolution, we lose the 'corner' state, because it has
@@ -110,7 +112,8 @@ class BuilderTest < Twenty48Test
 
   def test_build_hash_model_3x3_to_4
     builder = Twenty48::Builder.new(3, 2)
-    hash = build_hash_model(builder)
+    resolver = Twenty48::UnknownZerosResolver.new(builder, 0)
+    hash = build_hash_model(builder, resolver)
 
     assert_equal 24, hash.size
 
@@ -181,8 +184,9 @@ class BuilderTest < Twenty48Test
   end
 
   def test_build_hash_model_3x3_to_4_resolve_1
-    builder = Twenty48::Builder.new(3, 2, 1)
-    hash = build_hash_model(builder)
+    builder = Twenty48::Builder.new(3, 2)
+    resolver = Twenty48::UnknownZerosResolver.new(builder, 1)
+    hash = build_hash_model(builder, resolver)
 
     assert_equal 7, hash.size
 

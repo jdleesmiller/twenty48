@@ -3,14 +3,15 @@
 
 require_relative '../lib/twenty_48'
 
-def generate(builder)
-  model_params = Twenty48::Storage.model_params_from_builder(builder)
+def generate(builder, max_resolve_depth)
+  resolver = Twenty48::UnknownZerosResolver.new(builder, max_resolve_depth)
+  model_params = Twenty48::Storage.model_params_from_builder(builder, resolver)
   p model_params
   file_name = Twenty48::Storage.model_pathname(model_params, '.json')
   File.open(file_name, 'w') do |file|
     file.puts '{'
     state_count = 0
-    builder.build do |state, state_hash|
+    builder.build(resolver) do |state, state_hash|
       state_count += 1
       file.puts ',' if state_count > 1
       file.write %("#{state}": #{JSON.dump(state_hash)})
@@ -55,29 +56,26 @@ end
 board_size = 2
 (2..7).each do |max_exponent|
   (0..[max_exponent - 1, 3].min).each do |max_resolve_depth|
-    generate(Twenty48::Builder.new(
-      board_size, max_exponent, max_resolve_depth
-    ))
+    generate(Twenty48::Builder.new(board_size, max_exponent),
+      max_resolve_depth)
   end
 end
 
-board_size = 3
-(2..4).each do |max_exponent|
-  (0..[max_exponent - 1, 2].min).each do |max_resolve_depth|
-    generate(Twenty48::Builder.new(
-      board_size, max_exponent, max_resolve_depth
-    ))
-  end
-end
-
-# board_size = 4
+# board_size = 3
 # (2..4).each do |max_exponent|
-#   (0..[max_exponent - 1, 3].min).to_a.reverse.each do |max_resolve_depth|
-#     generate(Twenty48::Builder.new(
-#       board_size, max_exponent, max_resolve_depth
-#     ))
+#   (0..[max_exponent - 1, 2].min).each do |max_resolve_depth|
+#     generate(Twenty48::Builder.new(board_size, max_exponent),
+#       max_resolve_depth)
 #   end
 # end
+
+board_size = 4
+(2..3).each do |max_exponent|
+  (0..[max_exponent - 1, 3].min).to_a.reverse.each do |max_resolve_depth|
+    generate(Twenty48::Builder.new(board_size, max_exponent),
+      max_resolve_depth)
+  end
+end
 
 # For a single start state:
 # start_state = Twenty48::State.new([

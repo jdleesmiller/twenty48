@@ -6,10 +6,12 @@ module Twenty48
   # many, so some of them are just hand coded, but I think there are some
   # patterns we could exploit further.
   #
+  # Also, provide a `resolve` method to resolve states into these resolved
+  # win and lose states.
+  #
   class Resolver
-    def initialize(board_size, max_exponent, max_resolve_depth)
-      @board_size = board_size
-      @max_exponent = max_exponent
+    def initialize(builder, max_resolve_depth)
+      @builder = builder
       @max_resolve_depth = max_resolve_depth
 
       @win_states = build_wins
@@ -18,21 +20,76 @@ module Twenty48
       raise 'cannot resolve far enough' if @win_states.size <= max_resolve_depth
     end
 
-    attr_reader :board_size
-    attr_reader :max_exponent
+    def board_size
+      @builder.board_size
+    end
+
+    def max_exponent
+      @builder.max_exponent
+    end
+
+    attr_reader :builder
     attr_reader :max_resolve_depth
 
     attr_reader :win_states
     attr_reader :lose_state
 
+    #
+    # The resolved win state.
+    #
     def win_state
       @win_states[0]
+    end
+
+    #
+    # If the given state can be resolved into a known win or lose state by
+    # searching ahead, return the resolved state. Otherwise, just return the
+    # given state.
+    #
+    # @param [State] state
+    # @return [State] a resolved state, or just `state`
+    #
+    def resolve(state)
+      win_in = moves_to_definite_win(state)
+      return win_states[win_in] unless win_in.nil?
+      return lose_state if lose_within?(state, max_resolve_depth)
+      state
+    end
+
+    #
+    # Subclasses implement this to provide different win state resolution
+    # strateges.
+    #
+    # @abstract
+    # @param [State] state
+    # @return [Integer?] number of moves until win, if known
+    #
+    def moves_to_definite_win(_state)
+      raise NotImplementedError
+    end
+
+    #
+    # @param [State] state
+    # @param [Integer] moves non-negative
+    #
+    def lose_within?(state, moves)
+      raise 'negative moves' if moves.negative?
+
+      return true if state.lose?
+
+      # If the state has too many available cells, we can skip this check,
+      # because the number of filled cells can increase by at most one per move.
+      return false if moves.zero? || state.cells_available > moves
+
+      builder.expand(state).all? do |_action, successors|
+        successors.all? { |successor, _| lose_within?(successor, moves - 1) }
+      end
     end
 
     private
 
     def build_wins
-      case @board_size
+      case board_size
       when 2 then build_wins_2x2
       when 3 then build_wins_3x3
       when 4 then build_wins_4x4
@@ -44,21 +101,21 @@ module Twenty48
     def build_wins_2x2
       # Note that there are only three definite win states for max_exponent = 5,
       # because until 3 moves from a win, loss is possible no matter the action.
-      case @max_exponent
+      case max_exponent
       when 2 then make_states(build_generic_wins(2))
       when 3 then make_states(build_generic_wins(3))
       else
         # The generic pattern is for e.g. 3 moves for max_exponent = 4 is
         # [1, 1, 2, 3], but the state below has lower ordinal state.
         make_states(build_generic_wins(2), [[
-          0,                 @max_exponent - 2,
-          @max_exponent - 2, @max_exponent - 1
+          0,                max_exponent - 2,
+          max_exponent - 2, max_exponent - 1
         ]])
       end
     end
 
     def build_wins_3x3
-      case @max_exponent
+      case max_exponent
       when 2 then make_states(build_generic_wins(1), [[
         0, 0, 0,
         0, 0, 1,
@@ -77,12 +134,12 @@ module Twenty48
         5, 4, 3
       ]])
       else
-        make_states(build_generic_wins(@max_exponent - 1))
+        make_states(build_generic_wins(max_exponent - 1))
       end
     end
 
     def build_wins_4x4
-      case @max_exponent
+      case max_exponent
       when 2 then make_states(build_generic_wins(1), [[
         0, 0, 0, 0,
         0, 0, 0, 0,
@@ -102,7 +159,7 @@ module Twenty48
         3, 2, 1, 0
       ]])
       else
-        make_states(build_generic_wins(@max_exponent))
+        make_states(build_generic_wins(max_exponent))
       end
     end
 

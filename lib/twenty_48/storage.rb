@@ -57,11 +57,11 @@ module Twenty48
     # Model path handling
     #
 
-    def model_params_from_builder(builder)
+    def model_params_from_builder(builder, resolver)
       {
         board_size: builder.board_size,
         max_exponent: builder.max_exponent,
-        max_resolve_depth: builder.max_resolve_depth
+        max_resolve_depth: resolver.max_resolve_depth
       }
     end
 

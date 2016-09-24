@@ -7,52 +7,54 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
 
   def test_moves_to_definite_win_2x2_to_4_resolve_0
     builder = Builder.new(2, 2)
+    resolver = UnknownZerosResolver.new(builder, 0)
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       0, 0
     ]))
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       0, 1
     ]))
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       1, 1
     ]))
 
-    assert_equal 0, builder.moves_to_definite_win(State.new([
+    assert_equal 0, resolver.moves_to_definite_win(State.new([
       0, 0,
       0, 2
     ]))
   end
 
   def test_moves_to_definite_win_2x2_to_4_resolve_1
-    builder = Builder.new(2, 2, 1)
+    builder = Builder.new(2, 2)
+    resolver = UnknownZerosResolver.new(builder, 1)
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       0, 0
     ]))
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       0, 1
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       0, 0,
       1, 1
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       1, 0,
       1, 1
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       1, 1,
       1, 1
     ]))
@@ -60,132 +62,138 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
 
   def test_moves_to_definite_win_2x2_to_8_resolve_0
     builder = Builder.new(2, 3)
+    resolver = UnknownZerosResolver.new(builder, 0)
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       0, 1
     ]))
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       2, 2
     ]))
 
-    assert_equal 0, builder.moves_to_definite_win(State.new([
+    assert_equal 0, resolver.moves_to_definite_win(State.new([
       0, 0,
       0, 3
     ]))
   end
 
   def test_moves_to_definite_win_2x2_to_8_resolve_1
-    builder = Builder.new(2, 3, 1)
+    builder = Builder.new(2, 3)
+    resolver = UnknownZerosResolver.new(builder, 1)
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       0, 1
     ]))
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       1, 1
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       0, 0,
       2, 2
     ]))
 
     # Need two moves to win.
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       1, 0,
       1, 2
     ]))
   end
 
   def test_moves_to_definite_win_2x2_to_8_resolve_2
-    builder = Builder.new(2, 3, 2)
+    builder = Builder.new(2, 3)
+    resolver = UnknownZerosResolver.new(builder, 2)
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       1, 1
     ]))
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0,
       1, 2
     ]))
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 1,
       1, 2
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       0, 0,
       2, 2
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       1, 1,
       2, 2
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       1, 2,
       2, 2
     ]))
 
-    assert_equal 2, builder.moves_to_definite_win(State.new([
+    assert_equal 2, resolver.moves_to_definite_win(State.new([
       1, 0,
       1, 2
     ]))
 
-    assert_equal 2, builder.moves_to_definite_win(State.new([
+    assert_equal 2, resolver.moves_to_definite_win(State.new([
       1, 1,
       1, 2
     ]))
   end
 
   def test_moves_to_definite_win_2x2_to_16_resolve_2
-    builder = Builder.new(2, 4, 2)
+    builder = Builder.new(2, 4)
+    resolver = UnknownZerosResolver.new(builder, 2)
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       1, 1,
       2, 3
     ]))
   end
 
   def test_moves_to_definite_win_2x2_to_16_resolve_3
-    builder = Builder.new(2, 4, 3)
+    builder = Builder.new(2, 4)
+    resolver = UnknownZerosResolver.new(builder, 3)
 
-    assert_equal 3, builder.moves_to_definite_win(State.new([
+    assert_equal 3, resolver.moves_to_definite_win(State.new([
       1, 1,
       2, 3
     ]))
   end
 
   def test_moves_to_definite_win_3x3_to_8_resolve_1
-    builder = Builder.new(3, 3, 1)
+    builder = Builder.new(3, 3)
+    resolver = UnknownZerosResolver.new(builder, 1)
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0, 0,
       0, 0, 0,
       0, 1, 1
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       0, 0, 0,
       0, 0, 0,
       0, 2, 2
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       0, 0, 0,
       0, 0, 0,
       2, 2, 0
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(State.new([
+    assert_equal 1, resolver.moves_to_definite_win(State.new([
       0, 2, 0,
       0, 2, 0,
       0, 0, 0
@@ -193,39 +201,40 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
   end
 
   def test_moves_to_definite_win_3x3_to_8_resolve_2
-    builder = Builder.new(3, 3, 2)
+    builder = Builder.new(3, 3)
+    resolver = UnknownZerosResolver.new(builder, 2)
 
-    assert_equal 2, builder.moves_to_definite_win(State.new([
+    assert_equal 2, resolver.moves_to_definite_win(State.new([
       0, 0, 0,
       0, 0, 0,
       1, 1, 2
     ]))
 
-    assert_equal 2, builder.moves_to_definite_win(State.new([
+    assert_equal 2, resolver.moves_to_definite_win(State.new([
       0, 0, 0,
       1, 0, 0,
       1, 2, 0
     ]))
 
-    assert_equal 2, builder.moves_to_definite_win(State.new([
+    assert_equal 2, resolver.moves_to_definite_win(State.new([
       1, 0, 0,
       1, 0, 0,
       2, 0, 0
     ]))
 
-    assert_equal 2, builder.moves_to_definite_win(State.new([
+    assert_equal 2, resolver.moves_to_definite_win(State.new([
       0, 0, 0,
       0, 1, 0,
       0, 1, 2
     ]))
 
-    assert_equal 2, builder.moves_to_definite_win(State.new([
+    assert_equal 2, resolver.moves_to_definite_win(State.new([
       0, 0, 0,
       1, 1, 0,
       0, 2, 0
     ]))
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0, 0,
       1, 0, 0,
       1, 0, 2
@@ -233,9 +242,10 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
   end
 
   def test_moves_to_definite_win_3x3_to_16_resolve_2
-    builder = Builder.new(3, 4, 2)
+    builder = Builder.new(3, 4)
+    resolver = UnknownZerosResolver.new(builder, 2)
 
-    assert_nil builder.moves_to_definite_win(State.new([
+    assert_nil resolver.moves_to_definite_win(State.new([
       0, 0, 0,
       1, 1, 3,
       0, 2, 0
@@ -243,7 +253,8 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
   end
 
   def test_moves_to_definite_win_4x4_to_8_resolve_2
-    builder = Twenty48::Builder.new(4, 3, 2)
+    builder = Twenty48::Builder.new(4, 3)
+    resolver = UnknownZerosResolver.new(builder, 2)
 
     #
     # A simple example of a state where the heuristic as it is currently coded
@@ -254,7 +265,7 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
     # This seems like it should be fixable: we don't know where the 3 will be,
     # but we know that we'll get one, which is enough to give us the win.
     #
-    assert_nil builder.moves_to_definite_win(Twenty48::State.new([
+    assert_nil resolver.moves_to_definite_win(Twenty48::State.new([
       0, 0, 0, 0,
       0, 0, 0, 2,
       0, 2, 0, 0,
@@ -263,23 +274,24 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
   end
 
   def test_moves_to_definite_win_4x4_to_16_resolve_3
-    builder = Twenty48::Builder.new(4, 4, 3)
+    builder = Twenty48::Builder.new(4, 4)
+    resolver = UnknownZerosResolver.new(builder, 3)
 
-    assert_nil builder.moves_to_definite_win(Twenty48::State.new([
+    assert_nil resolver.moves_to_definite_win(Twenty48::State.new([
       0, 0, 0, 0,
       0, 0, 0, 0,
       2, 0, 0, 3,
       2, 1, 2, 1
     ]))
 
-    assert_equal 1, builder.moves_to_definite_win(Twenty48::State.new([
+    assert_equal 1, resolver.moves_to_definite_win(Twenty48::State.new([
       0, 0, 0, 0,
       0, 0, 0, 1,
       3, 0, 0, 0,
       3, 0, 0, 0
     ]))
 
-    assert_equal 2, builder.moves_to_definite_win(Twenty48::State.new([
+    assert_equal 2, resolver.moves_to_definite_win(Twenty48::State.new([
       0, 0, 0, 0,
       0, 0, 0, 0,
       2, 0, 0, 2,
@@ -314,7 +326,7 @@ class BuilderMovesToDefiniteWinTest < Twenty48Test
     # From there, you win in two by going up and right. This is beyond what the
     # heuristic can do.
     #
-    assert_nil builder.moves_to_definite_win(Twenty48::State.new([
+    assert_nil resolver.moves_to_definite_win(Twenty48::State.new([
       0, 0, 0, 0,
       0, 0, 0, 1,
       2, 1, 2, 3,

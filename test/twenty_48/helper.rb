@@ -17,9 +17,9 @@ class Twenty48Test < Minitest::Test
     assert_equal make_states(expected_state_arrays), observed_states
   end
 
-  def build_hash_model(builder)
+  def build_hash_model(builder, resolver)
     hash = {}
-    builder.build do |state, state_hash|
+    builder.build(resolver) do |state, state_hash|
       hash[state] = state_hash
     end
     hash

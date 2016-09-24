@@ -7,16 +7,16 @@ class ResolverTest < Twenty48Test
 
   def check(board_size, max_exponent, expected)
     (0...(expected.length)).each do |moves|
-      resolver = Resolver.new(board_size, max_exponent, moves)
+      builder = Builder.new(board_size, max_exponent)
+      resolver = UnknownZerosResolver.new(builder, moves)
       assert_states_equal expected.take(moves + 1), resolver.win_states
 
-      builder = Builder.new(board_size, max_exponent, moves)
       expected.take(moves + 1).each.with_index do |state_array, move|
         state = State.new(state_array)
-        assert_equal move, builder.moves_to_definite_win(state)
+        assert_equal move, resolver.moves_to_definite_win(state)
       end
     end
-    assert_raises { Resolver.new(board_size, max_exponent, expected.length) }
+    assert_raises { UnknownZerosResolver.new(builder, expected.length) }
   end
 
   def test_resolved_win_states_2x2_to_4
@@ -350,14 +350,29 @@ class ResolverTest < Twenty48Test
     ]]
   end
 
+  def test_resolves_win_state_2x2_to_8_depth_0
+    builder = Builder.new(2, 3)
+    resolver = UnknownZerosResolver.new(builder, 0)
+    # There are no moves in this state, so it is in that sense a loss, but it
+    # does not matter, because we have already got a 3 tile for the win.
+    assert_equal State.new([
+      0, 0,
+      0, 3
+    ]), resolver.resolve(State.new([
+      1, 2,
+      3, 1
+    ]))
+  end
+
   def test_resolved_lose_state_2x2
-    resolver = Resolver.new(2, 2, 0)
+    builder = Builder.new(2, 2)
+    resolver = Resolver.new(builder, 0)
     assert_equal State.new([
       0, 0,
       0, 0
     ]), resolver.lose_state
 
-    resolver = Resolver.new(2, 2, 1)
+    resolver = Resolver.new(builder, 1)
     assert_equal State.new([
       0, 0,
       0, 0
