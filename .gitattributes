@@ -1,0 +1,1 @@
+*.json.bz2 diff=diff_bzcat

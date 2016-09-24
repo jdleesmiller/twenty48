@@ -22,6 +22,15 @@ TODO description
 
 TODO developer advice
 
+The model files are stored as bzipped JSON. To make git diffs work on the
+underlying text, you can add
+```
+[diff "diff_bzcat"]
+	binary = true
+	textconv = /usr/bin/bzcat
+```
+to the `.git/config` in this repo once you have checked it out.
+
 ## LICENSE
 
 (The MIT License)
