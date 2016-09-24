@@ -17,6 +17,8 @@ module Twenty48
       @win_states = build_wins
       @lose_state = build_lose
 
+      builder.disable_expand_cache if max_resolve_depth == 0
+
       raise 'cannot resolve far enough' if @win_states.size <= max_resolve_depth
     end
 

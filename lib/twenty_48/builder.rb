@@ -97,6 +97,14 @@ module Twenty48
       hash
     end
 
+    #
+    # For resolvers that do not make good use of the expand cache (e.g. when
+    # the max resolve depth is zero), there is no point in using it.
+    #
+    def disable_expand_cache
+      @expand_cache = NonCache.new
+    end
+
     private
 
     def resolve(resolver, state)
