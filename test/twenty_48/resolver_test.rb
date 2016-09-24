@@ -6,17 +6,21 @@ class ResolverTest < Twenty48Test
   include Twenty48
 
   def check(board_size, max_exponent, expected)
-    (0...(expected.length)).each do |moves|
-      builder = Builder.new(board_size, max_exponent)
-      resolver = UnknownZerosResolver.new(builder, moves)
-      assert_states_equal expected.take(moves + 1), resolver.win_states
+    # These tests should also pass with ExactResolver, but they take so long
+    # that I have taken it out.
+    [UnknownZerosResolver].each do |resolver_class|
+      (0...(expected.length)).each do |moves|
+        builder = Builder.new(board_size, max_exponent)
+        resolver = resolver_class.new(builder, moves)
+        assert_states_equal expected.take(moves + 1), resolver.win_states
 
-      expected.take(moves + 1).each.with_index do |state_array, move|
-        state = State.new(state_array)
-        assert_equal move, resolver.moves_to_definite_win(state)
+        expected.take(moves + 1).each.with_index do |state_array, move|
+          state = State.new(state_array)
+          assert_equal move, resolver.moves_to_definite_win(state)
+        end
       end
+      assert_raises { resolver_class.new(builder, expected.length) }
     end
-    assert_raises { UnknownZerosResolver.new(builder, expected.length) }
   end
 
   def test_resolved_win_states_2x2_to_4
