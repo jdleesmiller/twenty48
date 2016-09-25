@@ -16,4 +16,9 @@ require_relative 'twenty_48/storage'
 
 module Twenty48
   DIRECTIONS = [:left, :right, :up, :down].freeze
+
+  RESOLVER_STRATEGIES = {
+    exact: ExactResolver,
+    unknown_zeros: UnknownZerosResolver
+  }.freeze
 end

@@ -22,6 +22,11 @@ module Twenty48
       raise 'cannot resolve far enough' if @win_states.size <= max_resolve_depth
     end
 
+    def self.new_from_strategy_name(strategy_name, builder, max_resolve_depth)
+      klass = RESOLVER_STRATEGIES[strategy_name]
+      klass.new(builder, max_resolve_depth) if klass
+    end
+
     def board_size
       @builder.board_size
     end

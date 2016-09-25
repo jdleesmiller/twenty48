@@ -18,11 +18,11 @@ module Twenty48
     SOLVERS_GLOB = File.join(SOLVERS_PATH, '*.csv.bz2')
 
     def build_basename(**args)
-      args.map { |key, value| "#{key}-#{value}" }.join('_')
+      args.map { |key, value| "#{key}-#{value}" }.join('.')
     end
 
     def build_pathname_rx(*components)
-      Regexp.new(components.map(&:to_s).join('_'))
+      Regexp.new(components.map(&:to_s).join('[.]'))
     end
 
     def rx_captures_to_hash(match_data)
@@ -32,6 +32,7 @@ module Twenty48
     MODEL_NAME_RX = build_pathname_rx(
       /board_size-(?<board_size>\d+)/,
       /max_exponent-(?<max_exponent>\d+)/,
+      /resolve_strategy-(?<resolve_strategy>\w+)/,
       /max_resolve_depth-(?<max_resolve_depth>\d+)/
     )
 
@@ -61,7 +62,8 @@ module Twenty48
       {
         board_size: builder.board_size,
         max_exponent: builder.max_exponent,
-        max_resolve_depth: resolver.max_resolve_depth
+        max_resolve_depth: resolver.max_resolve_depth,
+        resolve_strategy: resolver.strategy_name
       }
     end
 
@@ -82,6 +84,7 @@ module Twenty48
       build_basename(
         board_size: model_params[:board_size],
         max_exponent: model_params[:max_exponent],
+        resolve_strategy: model_params[:resolve_strategy],
         max_resolve_depth: model_params[:max_resolve_depth]
       )
     end
@@ -137,11 +140,16 @@ module Twenty48
     #
 
     def new_builder_from_model_params(model_params)
-      Builder.new(
+      builder = Builder.new(
         model_params[:board_size],
-        model_params[:max_exponent],
+        model_params[:max_exponent]
+      )
+      resolver = Resolver.new_from_strategy_name(
+        model_params[:resolve_strategy],
+        builder,
         model_params[:max_resolve_depth]
       )
+      [builder, resolver]
     end
 
     #

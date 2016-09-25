@@ -13,6 +13,10 @@ module Twenty48
   # times over.
   #
   class ExactResolver < Resolver
+    def strategy_name
+      :exact
+    end
+
     def moves_to_definite_win(state)
       (0..max_resolve_depth).find { |move| move if win_in?(state, move) }
     end

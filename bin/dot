@@ -5,13 +5,15 @@ require_relative '../lib/twenty_48'
 
 max_states = 1000
 
+include Twenty48
+
 def node_name(state)
   "s#{state.to_a.join('_')}"
 end
 
 # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-def build_graph(builder, solver)
-  graph = Twenty48::Graph.new
+def build_graph(builder, resolver, solver)
+  graph = Graph.new
 
   board_digits = [Math.log10(builder.max_exponent**2).ceil.to_i, 2].max
   start_states = builder.start_states
@@ -34,9 +36,8 @@ def build_graph(builder, solver)
       node_properties[:label] = "{{lose}|{#{formatted_value}}}"
     else
       node_properties[:color] = :green if start_states.member?(state)
-      node_properties[:color] = :red if builder.resolved_lose_state == state
-      node_properties[:color] = :blue if
-        builder.resolved_win_states.member?(state)
+      node_properties[:color] = :red if resolver.lose_state == state
+      node_properties[:color] = :blue if resolver.win_states.member?(state)
 
       label_values = state.to_a.map do |cell_value|
         if cell_value.positive?
@@ -72,20 +73,20 @@ end
 # # For a single file:
 # input_stem = 'data/...'
 # solver_params = { board_size: 4, max_exponent: 4, max_resolve_depth: 3 }
-# model = Twenty48::Storage.read_model_file("#{input_stem}.json.bz2")
-# solver = Twenty48::Storage.read_solver_file(model, "#{input_stem}.csv.bz2",
+# model = Storage.read_model_file("#{input_stem}.json.bz2")
+# solver = Storage.read_solver_file(model, "#{input_stem}.csv.bz2",
 #   0.05)
 
-Dir.glob(Twenty48::Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
-  solver_params = Twenty48::Storage.solver_params_from_pathname(solver_pathname)
-  builder = Twenty48::Storage.new_builder_from_model_params(solver_params)
-  solver = Twenty48::Storage.read_solver(solver_params)
+Dir.glob(Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
+  solver_params = Storage.solver_params_from_pathname(solver_pathname)
+  builder, resolver = Storage.new_builder_from_model_params(solver_params)
+  solver = Storage.read_solver(solver_params)
 
   next if solver.model.states.size > max_states
 
-  graph = build_graph(builder, solver)
+  graph = build_graph(builder, resolver, solver)
 
-  output_pathname = Twenty48::Storage.graph_pathname(solver_params, '.dot')
+  output_pathname = Storage.graph_pathname(solver_params, '.dot')
   File.open(output_pathname, 'w') do |dot|
     dot.puts 'digraph {'
     dot.puts '  splines=spline;'

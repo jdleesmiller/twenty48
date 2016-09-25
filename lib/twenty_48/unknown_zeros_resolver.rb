@@ -7,6 +7,10 @@ module Twenty48
   # This still uses expansion (like ExactResolver) to detect losing states.
   #
   class UnknownZerosResolver < Resolver
+    def strategy_name
+      :unknown_zeros
+    end
+
     def moves_to_definite_win(state)
       inner_moves_to_definite_win(state, max_resolve_depth)
     end
