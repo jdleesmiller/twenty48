@@ -79,10 +79,11 @@ end
 
 Dir.glob(Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
   solver_params = Storage.solver_params_from_pathname(solver_pathname)
+  p solver_params
+  next if Storage.estimate_solver_state_count(solver_params) > max_states
+
   builder, resolver = Storage.new_builder_from_model_params(solver_params)
   solver = Storage.read_solver(solver_params)
-
-  next if solver.model.states.size > max_states
 
   graph = build_graph(builder, resolver, solver)
 

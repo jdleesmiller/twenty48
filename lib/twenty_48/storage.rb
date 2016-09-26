@@ -127,6 +127,10 @@ module Twenty48
       File.join(SOLVERS_PATH, "#{solver_basename(solver_params)}#{extension}")
     end
 
+    def estimate_solver_state_count(solver_params)
+      `bunzip2 < #{solver_pathname(solver_params)} | wc -l`.to_i - 2
+    end
+
     #
     # Dot graph path handling
     #
