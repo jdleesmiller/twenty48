@@ -6,8 +6,8 @@ require_relative '../lib/twenty_48'
 include Twenty48
 
 puts %w(
-  board_size max_exponent max_resolve_depth start_states states
-  mean_successor_states median_successor_states max_successor_states
+  board_size max_exponent resolve_strategy_name max_resolve_depth
+  states mean_successor_states median_successor_states max_successor_states
   bz2_size mean_start_state_value
 ).join(',')
 
@@ -45,6 +45,7 @@ Dir.glob(Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
   puts [
     builder.board_size,
     builder.max_exponent,
+    resolver.strategy_name,
     resolver.max_resolve_depth,
     value.size,
     successor_state_counts.inject(&:+) / successor_state_counts.size.to_f,
