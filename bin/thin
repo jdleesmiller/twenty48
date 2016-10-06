@@ -1,0 +1,100 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/twenty_48'
+
+include Twenty48
+
+#
+# Check whether two successor hashes (from states to (probability, reward)
+# pairs) are equal within tolerance.
+#
+def successors_equal(successors0, successors1, tolerance = 1e-9)
+  return false unless successors0.size == successors1.size
+  states0 = successors0.keys.sort
+  states1 = successors1.keys.sort
+  return false unless states0 == states1
+  states0.all? do |state|
+    probability0, reward0 = successors0[state]
+    probability1, reward1 = successors1[state]
+    (probability0 - probability1).abs < tolerance &&
+      (reward0 - reward1).abs < tolerance
+  end
+end
+
+def deduplicate_actions(actions)
+  actions.reject do |action0, successors0|
+    actions.find do |action1, successors1|
+      next if action0 >= action1
+      successors_equal(successors0, successors1)
+    end
+  end
+end
+
+puts %w(
+  board_size max_exponent resolve_strategy_name max_resolve_depth
+  total_actions total_deduplicated_actions
+  num_single_action_states
+  num_single_successor_actions
+).join(',')
+
+Dir.glob(Twenty48::Storage::MODELS_GLOB).sort.each do |input_file|
+  model_params = Twenty48::Storage.model_params_from_pathname(input_file)
+
+  model = Twenty48::Storage.read_model(model_params)
+  model.check_transition_probabilities_sum
+  hash = model.hash
+
+  total_actions = 0
+  total_deduplicated_actions = 0
+  num_single_action_states = 0
+  num_single_successor_actions = 0
+
+  # If a state has two actions with identical successor state distributions,
+  # we can merge those two actions together.
+  hash = hash.map do |state, actions|
+    total_actions += actions.size
+    unique_actions = deduplicate_actions(actions)
+    total_deduplicated_actions += unique_actions.size
+    [state, unique_actions]
+  end.to_h
+
+  # If a state has only one possible action, we can elide it... but we would
+  # need to fix up the value function to double discount somehow. So for now
+  # we just count these to see whether it's a lot of states or not. I think if
+  # we changed the reward function so it gave you -1 each time, until you win
+  # with zero forever, then we could put in a -2 state if we found a move that
+  # we could elide.
+  #
+  # Search the model for transitions to the single-action state.
+  # If we find one, replace that transition n transitions for the n successors.
+  # Weight each probability.
+  # Add the rewards with discount factor applied.
+  # Remove the single-action state from the model.
+  #
+  # However, it's not clear whether this densification would be a good idea.
+  # It might make the model larger. We could perhaps look at only single-action
+  # states with at most K successors to see what the growth in overall model
+  # size would be.
+  #
+  # If an action results in a deterministic successor state, that's also
+  # interesting, but I don't see a way of exploiting it (unless there's only
+  # one action, but it is covered by that case).
+  hash.each do |_state, actions|
+    num_single_action_states += 1 if actions.size == 1
+    actions.each do |_action, successors|
+      num_single_successor_actions += 1 if successors.size == 1
+    end
+  end
+
+  puts [
+    model_params[:board_size],
+    model_params[:max_exponent],
+    model_params[:resolve_strategy],
+    model_params[:max_resolve_depth],
+    total_actions,
+    total_deduplicated_actions,
+    num_single_action_states,
+    num_single_successor_actions
+  ].join(',')
+end
