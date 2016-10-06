@@ -63,6 +63,19 @@ module Twenty48
       unpack(data).count(&:zero?)
     end
 
+    #
+    # Does the state contain a pair of cells, both with value `value`, separated
+    # only by zero or more (known) zeros? If so, we can always swipe to get a
+    # `value + 1` tile.
+    #
+    # @param [Boolean?] zeros_unknown treat zero as 'unknown', not 'empty'
+    #
+    def adjacent_pair?(value, zeros_unknown = false)
+      any_row_or_col?(unpack(data)) do |line|
+        Line.adjacent_pair?(line, value, zeros_unknown)
+      end
+    end
+
     def can_move_tile?(index)
       state = unpack(data)
       value = state[index]
@@ -242,6 +255,20 @@ module Twenty48
         state[yield(n, x, y)]
       end
       self.class.new(new_state)
+    end
+
+    def any_row?(state)
+      n = board_size
+      (0...n).any? { |i| yield(state[i * n, n]) }
+    end
+
+    def any_col?(state)
+      n = board_size
+      (0...n).any? { |j| yield((0...n).map { |i| state[i * n + j] }) }
+    end
+
+    def any_row_or_col?(state, &block)
+      any_row?(state, &block) || any_col?(state, &block)
     end
 
     def update_each_row_with(state)

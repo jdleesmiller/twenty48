@@ -257,15 +257,11 @@ class UnknownZerosResolverTest < Twenty48Test
     resolver = UnknownZerosResolver.new(builder, 2)
 
     #
-    # A simple example of a state where the heuristic as it is currently coded
-    # fails: if we move right, we end up with two adjacent 2s, but the exact
-    # state after moving up or down in that position is unknown, so the
-    # heuristic does not detect the win.
+    # If we move right, we end up with two adjacent 2s, but the exact state
+    # after moving up or down in that position is unknown. We can however tell
+    # that it's a win. This tripped up an earlier version of the heuristic.
     #
-    # This seems like it should be fixable: we don't know where the 3 will be,
-    # but we know that we'll get one, which is enough to give us the win.
-    #
-    assert_nil resolver.moves_to_definite_win(State.new([
+    assert_equal 2, resolver.moves_to_definite_win(State.new([
       0, 0, 0, 0,
       0, 0, 0, 2,
       0, 2, 0, 0,

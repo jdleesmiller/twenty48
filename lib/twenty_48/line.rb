@@ -38,6 +38,25 @@ module Twenty48
       result
     end
 
+    #
+    # Does the line contain a pair of cells, both with value `value`, separated
+    # only by zero or more (known) zeros? If so, we can always swipe along the
+    # line to get the `value + 1` tile.
+    #
+    # @param [Boolean?] zeros_unknown treat zero as 'unknown', not 'empty'
+    #
+    def adjacent_pair?(line, value, zeros_unknown = false)
+      found_first = false
+      line.each do |cell_value|
+        if found_first
+          next if !zeros_unknown && cell_value == 0
+          return cell_value == value
+        end
+        found_first = true if cell_value == value
+      end
+      false
+    end
+
     # This function was identified as a hot spot in profiling. I thought this
     # in-place version might be faster, but it does not seem to be true. Keeping
     # it around in case we want to try it again some time.
