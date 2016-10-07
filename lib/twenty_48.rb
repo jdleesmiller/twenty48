@@ -3,6 +3,7 @@
 require 'finite_mdp'
 
 require_relative 'twenty_48/version'
+require_relative 'twenty_48/action_deduplication'
 require_relative 'twenty_48/builder'
 require_relative 'twenty_48/graph'
 require_relative 'twenty_48/line'

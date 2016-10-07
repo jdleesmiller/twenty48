@@ -17,6 +17,8 @@ module Twenty48
   # of (1) expanding a state and (2) resolving a state.
   #
   class Builder
+    include ActionDeduplication
+
     def initialize(board_size, max_exponent)
       raise 'board size too small' if board_size < 2
       raise 'max exponent too small' if max_exponent < 2
@@ -141,8 +143,7 @@ module Twenty48
         end
         [action, new_successors]
       end.to_h
-      # TODO: we could remove equivalent actions here --- check that the action
-      # successor sets are identical (or equal within some numerical tolerance)
+      # TODO: deduplicate_actions(hash)
       # TODO: we could also prune other actions when there is one that leads
       # uniquely to a resolved win state --- we resolve them because they're
       # the way to win. This seems pretty much the same as extending the
