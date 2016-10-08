@@ -245,6 +245,10 @@ module Twenty48
       data <=> other.data
     end
 
+    def >=(other)
+      data >= other.data
+    end
+
     private
 
     def transform
