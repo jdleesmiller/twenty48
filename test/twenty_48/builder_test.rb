@@ -31,33 +31,22 @@ class BuilderTest < Twenty48Test
     check_win_state(hash, win)
 
     assert hash.key?(side)
-    assert_equal 3, hash[side].size
+    assert_equal 2, hash[side].size
     assert_close 0.9, hash[side][:up][corner][0]
     assert_equal 0, hash[side][:up][corner][1]
     assert_close 0.1, hash[side][:up][win][0]
     assert_equal 0, hash[side][:up][win][1]
     assert_close 1, hash[side][:right][win][0]
     assert_equal 0, hash[side][:right][win][1]
-    assert_close 1, hash[side][:left][win][0]
-    assert_equal 0, hash[side][:left][win][1]
 
     assert hash.key?(corner)
-    assert_equal 4, hash[corner].size
+    assert_equal 1, hash[corner].size
     assert_close 1, hash[corner][:up][win][0]
-    assert_close 1, hash[corner][:right][win][0]
-    assert_close 1, hash[corner][:down][win][0]
-    assert_close 1, hash[corner][:left][win][0]
 
     assert hash.key?(diag)
-    assert_equal 4, hash[diag].size
+    assert_equal 1, hash[diag].size
     assert_close 0.9, hash[diag][:up][corner][0]
     assert_close 0.1, hash[diag][:up][win][0]
-    assert_close 0.9, hash[diag][:right][corner][0]
-    assert_close 0.1, hash[diag][:right][win][0]
-    assert_close 0.9, hash[diag][:down][corner][0]
-    assert_close 0.1, hash[diag][:down][win][0]
-    assert_close 0.9, hash[diag][:left][corner][0]
-    assert_close 0.1, hash[diag][:left][win][0]
   end
 
   def test_build_model_2x2_to_4_resolve_1
@@ -88,26 +77,18 @@ class BuilderTest < Twenty48Test
     check_win_state(hash, win)
 
     assert hash.key?(side)
-    assert_equal 3, hash[side].size
+    assert_equal 2, hash[side].size
     assert_close 0.9, hash[side][:up][side][0] # resolved
     assert_equal 0, hash[side][:up][side][1]
     assert_close 0.1, hash[side][:up][win][0]
     assert_equal 0, hash[side][:up][win][1]
     assert_close 1, hash[side][:right][win][0]
     assert_equal 0, hash[side][:right][win][1]
-    assert_close 1, hash[side][:left][win][0]
-    assert_equal 0, hash[side][:left][win][1]
 
     assert hash.key?(diag)
-    assert_equal 4, hash[diag].size
+    assert_equal 1, hash[diag].size
     assert_close 0.9, hash[diag][:up][side][0] # resolved
     assert_close 0.1, hash[diag][:up][win][0]
-    assert_close 0.9, hash[diag][:right][side][0] # resolved
-    assert_close 0.1, hash[diag][:right][win][0]
-    assert_close 0.9, hash[diag][:down][side][0] # resolved
-    assert_close 0.1, hash[diag][:down][win][0]
-    assert_close 0.9, hash[diag][:left][side][0] # resolved
-    assert_close 0.1, hash[diag][:left][win][0]
   end
 
   def test_build_hash_model_3x3_to_4
@@ -133,7 +114,7 @@ class BuilderTest < Twenty48Test
     check_win_state(hash, win)
 
     assert hash.key?(side)
-    assert_equal 3, hash[side].size
+    assert_equal 2, hash[side].size
     up = hash[side][:up]
     assert_equal 8, up.size
     assert_close 0.1, up[win][0]
@@ -180,7 +161,6 @@ class BuilderTest < Twenty48Test
         1, 1, 0
       ])][0] # rotated 180
     assert_close 1, hash[side][:right][win][0]
-    assert_close 1, hash[side][:left][win][0]
   end
 
   def test_build_hash_model_3x3_to_4_resolve_1
@@ -226,71 +206,42 @@ class BuilderTest < Twenty48Test
     check_win_state(hash, win)
 
     assert hash.key?(win)
-    assert_equal 2, hash[win].size
+    assert_equal 1, hash[win].size
     assert_close 1, hash[win][:up][win][0]
     assert_equal 1, hash[win][:up][win][1]
-    assert_close 1, hash[win][:left][win][0]
-    assert_equal 1, hash[win][:left][win][1]
 
     assert hash.key?(side)
-    assert_equal 3, hash[side].size
+    assert_equal 2, hash[side].size
     assert_close 0.9, hash[side][:up][side][0] # pre-win state
     assert_close 0.1, hash[side][:up][win][0]
     assert_close 1, hash[side][:right][win][0]
-    assert_close 1, hash[side][:left][win][0]
 
     assert hash.key?(diag_t)
-    assert_equal 4, hash[diag_t].size
+    assert_equal 1, hash[diag_t].size
     assert_close 0.9, hash[diag_t][:up][side][0] # pre-win state
     assert_close 0.1, hash[diag_t][:up][win][0]
-    assert_close 0.9, hash[diag_t][:right][side][0] # pre-win state
-    assert_close 0.1, hash[diag_t][:right][win][0]
-    assert_close 0.9, hash[diag_t][:down][side][0] # pre-win state
-    assert_close 0.1, hash[diag_t][:down][win][0]
-    assert_close 0.9, hash[diag_t][:left][side][0] # pre-win state
-    assert_close 0.1, hash[diag_t][:left][win][0]
 
     assert hash.key?(skew)
-    assert_equal 4, hash[skew].size
+    assert_equal 1, hash[skew].size
     assert_close 0.9, hash[diag_t][:up][side][0] # pre-win state
     assert_close 0.1, hash[diag_t][:up][win][0]
-    assert_close 0.9, hash[diag_t][:right][side][0] # pre-win state
-    assert_close 0.1, hash[diag_t][:right][win][0]
-    assert_close 0.9, hash[diag_t][:down][side][0] # pre-win state
-    assert_close 0.1, hash[diag_t][:down][win][0]
-    assert_close 0.9, hash[diag_t][:left][side][0] # pre-win state
-    assert_close 0.1, hash[diag_t][:left][win][0]
 
     assert hash.key?(diag)
-    assert_equal 4, hash[diag].size
+    assert_equal 1, hash[diag].size
     assert_close 0.9, hash[diag][:up][side][0] # pre-win state
     assert_close 0.1, hash[diag][:up][win][0]
-    assert_close 0.9, hash[diag][:right][side][0] # pre-win state
-    assert_close 0.1, hash[diag][:right][win][0]
-    assert_close 0.9, hash[diag][:down][side][0] # pre-win state
-    assert_close 0.1, hash[diag][:down][win][0]
-    assert_close 0.9, hash[diag][:left][side][0] # pre-win state
-    assert_close 0.1, hash[diag][:left][win][0]
 
     assert hash.key?(corners)
-    assert_equal 4, hash[corners].size
+    assert_equal 1, hash[corners].size
     assert_close 0.9, hash[corners][:up][side][0] # pre-win state
     assert_close 0.1, hash[corners][:up][win][0]
-    assert_close 0.9, hash[corners][:right][side][0] # pre-win state
-    assert_close 0.1, hash[corners][:right][win][0]
-    assert_close 0.9, hash[corners][:down][side][0] # pre-win state
-    assert_close 0.1, hash[corners][:down][win][0]
-    assert_close 0.9, hash[corners][:left][side][0] # pre-win state
-    assert_close 0.1, hash[corners][:left][win][0]
   end
 
   def check_win_state(hash, win)
     assert hash.key?(win)
-    assert_equal 2, hash[win].size
+    assert_equal 1, hash[win].size
     assert_close 1, hash[win][:up][win][0]
     assert_equal 1, hash[win][:up][win][1]
-    assert_close 1, hash[win][:left][win][0]
-    assert_equal 1, hash[win][:left][win][1]
   end
 
   def check_lose_state(builder, hash)

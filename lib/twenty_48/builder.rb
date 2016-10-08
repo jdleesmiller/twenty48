@@ -133,7 +133,7 @@ module Twenty48
 
     def close(resolver, state)
       reward = state.win?(max_exponent) ? 1 : 0
-      expand(state).map do |action, successors|
+      result = expand(state).map do |action, successors|
         new_successors = Hash.new { |hash, key| hash[key] = [0, reward] }
         successors.each do |successor, probability|
           resolved_successor = resolve(resolver, successor)
@@ -143,7 +143,8 @@ module Twenty48
         end
         [action, new_successors]
       end.to_h
-      # TODO: deduplicate_actions(hash)
+      deduplicate_actions(result)
+      # TODO: maybe we should also sort the successor states?
       # TODO: we could also prune other actions when there is one that leads
       # uniquely to a resolved win state --- we resolve them because they're
       # the way to win. This seems pretty much the same as extending the
