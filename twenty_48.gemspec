@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.description       = 'Provably optimal solver for 2048-like games based on '\
     ' finite Markov Decision Processes.'
 
-  s.add_runtime_dependency 'finite_mdp', '~> 0.2.0'
+  s.add_runtime_dependency 'finite_mdp', '~> 0.3.0'
 
   s.add_development_dependency 'gemma', '~> 4.1.0'
   s.add_development_dependency 'ruby-prof', '~> 0.15.9'
