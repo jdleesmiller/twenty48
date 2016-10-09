@@ -16,8 +16,9 @@ Dir.glob(Storage::MODELS_GLOB).sort.each do |input_file|
   end
 
   array_model = Storage.build_array_model(model_params)
-  array_model.check_transition_probabilities_sum
   puts 'built'
+  array_model.check_transition_probabilities_sum
+  puts 'checked'
 
   if array_model.num_states < 50_000
     puts 'checking'
@@ -30,7 +31,7 @@ Dir.glob(Storage::MODELS_GLOB).sort.each do |input_file|
   end
 
   File.open(output_file, 'wb') do |file|
-    file.write(Marshal.dump(array_model))
+    Marshal.dump array_model, file
   end
   system "bzip2 --force #{output_file}"
 end
