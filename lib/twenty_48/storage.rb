@@ -16,6 +16,7 @@ module Twenty48
     GRAPHS_PATH = File.join(ROOT, 'graphs')
 
     MODELS_GLOB = File.join(MODELS_PATH, '*.json.bz2')
+    ARRAY_MODELS_GLOB = File.join(ARRAY_MODELS_PATH, '*.bin.bz2')
     SOLVERS_GLOB = File.join(SOLVERS_PATH, '*.csv.bz2')
 
     def build_basename(**args)
@@ -37,11 +38,16 @@ module Twenty48
       /max_resolve_depth-(?<max_resolve_depth>\d+)/
     )
 
+    MODEL_PARAMS = MODEL_NAME_RX.names.map(&:to_sym)
+
     SOLVER_NAME_RX = build_pathname_rx(
       MODEL_NAME_RX,
+      /solve_strategy-(?<solve_strategy>\w+)/,
       /discount-(?<discount>[0-9.e+-]+)/,
       /tolerance-(?<tolerance>[0-9.e+-]+)/
     )
+
+    SOLVER_PARAMS = SOLVER_NAME_RX.names.map(&:to_sym)
 
     def bunzip(pathname)
       IO.popen("bunzip2 < #{pathname}") { |input| yield(input) }
@@ -77,6 +83,7 @@ module Twenty48
     def cast_model_params(params)
       params[:board_size] = params[:board_size].to_i
       params[:max_exponent] = params[:max_exponent].to_i
+      params[:resolve_strategy] = params[:resolve_strategy].to_sym
       params[:max_resolve_depth] = params[:max_resolve_depth].to_i
       params
     end
@@ -98,10 +105,10 @@ module Twenty48
     # Solver path handling
     #
 
-    # The solver doesn't actually let us get the discount, and the tolerance
-    # is not stored on the solver.
-    def solver_params(model_params, discount, tolerance)
+    # The strategy and tolerance are not stored on the solver.
+    def solver_params(model_params, solve_strategy, discount, tolerance)
       model_params.merge(
+        solve_strategy: solve_strategy,
         discount: discount,
         tolerance: tolerance
       )
@@ -115,6 +122,7 @@ module Twenty48
 
     def cast_solver_params(params)
       cast_model_params(params)
+      params[:solve_strategy] = params[:solve_strategy].to_sym
       params[:discount] = params[:discount].to_f
       params[:tolerance] = params[:tolerance].to_f
       params
@@ -280,7 +288,7 @@ module Twenty48
     end
 
     def read_solver(solver_params)
-      model = read_model(solver_params)
+      model = read_array_model(solver_params)
       pathname = solver_pathname(solver_params)
       read_solver_file(model, pathname, solver_params[:discount])
     end
@@ -289,7 +297,7 @@ module Twenty48
       policy, value = read_bzipped_csv(pathname) do |csv|
         read_policy_and_value_from_csv(csv)
       end
-      FiniteMDP::Solver.new(model, discount, policy, value)
+      FiniteMDP::Solver.new(model, discount, policy: policy, value: value)
     end
   end
 end

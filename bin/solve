@@ -4,7 +4,8 @@
 require_relative '../lib/twenty_48'
 
 discount = 0.95
-tolerance = 1e-4
+tolerance = 1e-6
+solve_strategy = :policy_iteration # :value_iteration or :policy_iteration
 
 # For a single file:
 # input_stem = 'data/...'
@@ -12,11 +13,11 @@ tolerance = 1e-4
 # model_params = { board_size: 4, max_exponent: 4, max_resolve_depth: 3 }
 # model = Twenty48::Storage.read_model_file(input_file)
 
-Dir.glob(Twenty48::Storage::MODELS_GLOB).sort.each do |input_file|
+Dir.glob(Twenty48::Storage::ARRAY_MODELS_GLOB).sort.each do |input_file|
   model_params = Twenty48::Storage.model_params_from_pathname(input_file)
   p model_params
   solver_params = Twenty48::Storage.solver_params(
-    model_params, discount, tolerance
+    model_params, solve_strategy, discount, tolerance
   )
   output_file = Twenty48::Storage.solver_pathname(solver_params, '.csv')
   if File.exist?("#{output_file}.bz2")
@@ -28,14 +29,24 @@ Dir.glob(Twenty48::Storage::MODELS_GLOB).sort.each do |input_file|
     next
   end
 
-  model = Twenty48::Storage.read_model(model_params)
-  model.check_transition_probabilities_sum
+  puts 'reading'
+  model = Twenty48::Storage.read_array_model(model_params)
+  puts 'read'
 
   solver = FiniteMDP::Solver.new(model, discount)
-  solver.policy_iteration(tolerance) \
-  do |num_policy_iters, num_value_iters, delta|
-    next unless (num_policy_iters + num_value_iters) % 10 == 0
-    p [num_policy_iters, num_value_iters, delta]
+  case solve_strategy
+  when :policy_iteration then
+    solver.policy_iteration(value_tolerance: tolerance) \
+    do |num_policy_iters, num_actions_changed, num_value_iters, delta|
+      next unless (num_policy_iters + num_value_iters) % 5 == 0
+      p [Time.now,
+         num_policy_iters, num_actions_changed, num_value_iters, delta]
+    end
+  when :value_iteration then
+    solver.value_iteration(tolerance: tolerance) do |num_iters, delta|
+      next unless num_iters % 5 == 0
+      p [Time.now, num_iters, delta]
+    end
   end
 
   puts 'DONE'
