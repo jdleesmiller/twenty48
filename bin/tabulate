@@ -5,18 +5,14 @@ require_relative '../lib/twenty_48'
 
 include Twenty48
 
-puts %w(
-  board_size max_exponent resolve_strategy_name max_resolve_depth
+column_names = Storage::SOLVER_PARAMS + %w(
   states mean_successor_states median_successor_states max_successor_states
   bz2_size mean_start_state_value
-).join(',')
+)
+puts column_names.join(',')
 
-def count_successor_states(hash_model)
-  hash_model.map do |_state0, actions|
-    actions.map do |_action, successors|
-      successors.size
-    end.inject(&:+)
-  end
+def count_successor_states(array_model)
+  array_model.array.map { |actions| actions.map(&:size).inject(&:+) }
 end
 
 def median(data)
@@ -31,8 +27,11 @@ end
 
 Dir.glob(Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
   solver_params = Storage.solver_params_from_pathname(solver_pathname)
+  $stderr.puts [Time.now, solver_params].inspect
+  next if solver_params[:board_size] < 4
   builder, resolver = Storage.new_builder_from_model_params(solver_params)
   solver = Storage.read_solver(solver_params)
+  $stderr.puts [Time.now, 'read'].inspect
 
   value = solver.value
   start_states = builder.start_states
@@ -40,20 +39,19 @@ Dir.glob(Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
     .map { |state| value[resolver.resolve(state)] }
     .inject(&:+) / start_states.size
 
-  successor_state_counts = count_successor_states(solver.model.hash)
+  $stderr.puts [Time.now, 'counting'].inspect
+  successor_state_counts = count_successor_states(solver.model)
 
-  puts [
-    builder.board_size,
-    builder.max_exponent,
-    resolver.strategy_name,
-    resolver.max_resolve_depth,
+  $stderr.puts [Time.now, 'done'].inspect
+  values = solver_params.values + [
     value.size,
     successor_state_counts.inject(&:+) / successor_state_counts.size.to_f,
     median(successor_state_counts),
     successor_state_counts.max,
     File.stat(Storage.model_pathname(solver_params)).size,
     mean_start_state_value
-  ].join(',')
+  ]
+  puts values.join(',')
 end
 
 # out of time / memory: at least 1446235 states
