@@ -24,7 +24,7 @@ Dir.glob(Twenty48::Storage::ARRAY_MODELS_GLOB).sort.each do |input_file|
     puts 'exists'
     next
   end
-  if model_params[:board_size] == 3 && model_params[:max_exponent] > 6
+  if model_params[:board_size] == 3 && model_params[:max_exponent] > 7
     puts 'skipped'
     next
   end
