@@ -2,7 +2,29 @@
 
 require 'bundler/setup'
 require 'gemma'
+require 'rake/extensiontask'
+
+NAME = 'twenty48'
+EXT_DIR = File.join('ext', NAME)
+LIB_DIR = File.join('lib', 'twenty_48')
+
+def ext_file(file)
+  File.join(EXT_DIR, file)
+end
 
 Gemma::RakeTasks.with_gemspec_file 'twenty_48.gemspec'
 
-task default: :test
+WRAP_FILE = ext_file("#{NAME}_wrap.cxx")
+SWIG_FILES = [ext_file("#{NAME}.i")] + Dir.glob(ext_file('*.hpp'))
+file WRAP_FILE => SWIG_FILES do
+  Dir.chdir(EXT_DIR) do
+    system "swig -c++ -ruby #{NAME}.i"
+  end
+end
+
+Rake::ExtensionTask.new(NAME) do |ext|
+  ext.lib_dir = LIB_DIR
+  ext.source_pattern = '*.{c,cxx}'
+end
+
+task default: [:compile, :test]

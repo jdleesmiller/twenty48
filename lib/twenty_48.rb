@@ -15,6 +15,9 @@ require_relative 'twenty_48/unknown_zeros_resolver'
 require_relative 'twenty_48/state'
 require_relative 'twenty_48/storage'
 
+# Load native extension.
+require_relative 'twenty_48/twenty48'
+
 module Twenty48
   DIRECTIONS = [:left, :right, :up, :down].freeze
 

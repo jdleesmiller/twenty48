@@ -25,6 +25,8 @@ GEM
     powerpack (0.1.1)
     rainbow (2.1.0)
     rake (11.2.2)
+    rake-compiler (1.0.1)
+      rake
     rdoc (4.2.2)
       json (~> 1.4)
     rubocop (0.42.0)
@@ -43,6 +45,7 @@ PLATFORMS
 
 DEPENDENCIES
   gemma (~> 4.1.0)
+  rake-compiler (~> 1.0.1)
   rubocop (~> 0.42.0)
   ruby-prof (~> 0.15.9)
   twenty_48!
