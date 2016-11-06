@@ -2,7 +2,7 @@
 
 require 'minitest/autorun'
 
-require_relative '../../lib/twenty_48'
+require_relative '../../lib/twenty48'
 
 class StateTest < Minitest::Test
   def test_hash

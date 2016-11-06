@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib/twenty_48'
+require_relative '../lib/twenty48'
 
 max_states = 1000
 

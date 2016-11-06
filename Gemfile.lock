@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    twenty_48 (0.0.1)
+    twenty48 (0.0.1)
       finite_mdp (~> 0.3.0)
 
 GEM
@@ -48,7 +48,7 @@ DEPENDENCIES
   rake-compiler (~> 1.0.1)
   rubocop (~> 0.42.0)
   ruby-prof (~> 0.15.9)
-  twenty_48!
+  twenty48!
 
 RUBY VERSION
    ruby 2.3.1p112

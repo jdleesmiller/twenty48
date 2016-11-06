@@ -4,15 +4,15 @@
 lib = File.expand_path('../lib/', __FILE__)
 $LOAD_PATH.unshift lib unless $LOAD_PATH.include?(lib)
 
-require 'twenty_48/version'
+require 'twenty48/version'
 
 Gem::Specification.new do |s|
-  s.name              = 'twenty_48'
+  s.name              = 'twenty48'
   s.version           = Twenty48::VERSION
   s.platform          = Gem::Platform::RUBY
   s.authors           = ['John Lees-Miller']
   s.email             = ['jdleesmiller@gmail.com']
-  s.homepage          = 'https://github.com/jdleesmiller/twenty_48'
+  s.homepage          = 'https://github.com/jdleesmiller/twenty48'
   s.summary           = 'Provably optimal solver for 2048-like games.'
   s.description       = 'Provably optimal solver for 2048-like games based on '\
     ' finite Markov Decision Processes.'
@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
     Dir.glob('ext/**/*.{i,hpp,cxx,rb}') +
     %w(README.md)
   s.extensions = Dir.glob('ext/**/extconf.rb')
-  s.test_files  = Dir.glob('test/twenty_48/*_test.rb')
+  s.test_files  = Dir.glob('test/twenty48/*_test.rb')
   s.executables = Dir.glob('bin/*').map { |f| File.basename(f) }
 
   s.rdoc_options = [

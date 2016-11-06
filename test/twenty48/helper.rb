@@ -2,7 +2,7 @@
 
 require 'minitest/autorun'
 
-require_relative '../../lib/twenty_48'
+require_relative '../../lib/twenty48'
 
 class Twenty48Test < Minitest::Test
   def assert_close(x, y)

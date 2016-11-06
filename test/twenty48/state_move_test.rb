@@ -2,7 +2,7 @@
 
 require 'minitest/autorun'
 
-require_relative '../../lib/twenty_48'
+require_relative '../../lib/twenty48'
 
 class StateMoveTest < Minitest::Test
   def test_move_2x2_up

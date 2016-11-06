@@ -1,4 +1,4 @@
-# twenty_48
+# twenty48
 
 * TODO url
 
@@ -16,7 +16,7 @@ TODO description
 
 ## INSTALLATION
 
-  sudo gem install twenty_48
+  sudo gem install twenty48
 
 ## DEVELOPMENT
 
