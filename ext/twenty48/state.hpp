@@ -9,11 +9,28 @@
 
 namespace twenty48 {
 
+/**
+ * Board state.
+ *
+ * There are several places where it would be better (and more consistent with
+ * line_t) to use a std::array<uint8_t, size * size> here, but swig (v3.0.10)
+ * cannot handle the 'size * size' part, so we just use vectors.
+ */
 template <int size> struct state_t {
   typedef uint64_t nybbles_t;
 
   state_t(nybbles_t initial_nybbles = 0) {
     nybbles = initial_nybbles;
+  }
+
+  explicit state_t(const std::vector<uint8_t> &array) {
+    nybbles = 0;
+    if (array.size() != size * size) {
+      throw std::invalid_argument("bad state array size");
+    }
+    for (size_t i = 0; i < size * size; ++i) {
+      nybbles |= array[i] << 4 * (size * size - i - 1);
+    }
   }
 
   nybbles_t get_nybbles() const {
@@ -105,9 +122,6 @@ template <int size> struct state_t {
     return line_t<size>(col_nybbles);
   }
 
-  // It would be better (and more consistent with line_t) to use a
-  // std::array<uint8_t, size * size> here, but swig (v3.0.10) cannot handle
-  // the 'size * size' part.
   std::vector<uint8_t> to_a() const {
     std::vector<uint8_t> result(size * size);
     for (size_t i = 0; i < size * size; ++i) result[i] = (*this)[i];
@@ -137,6 +151,10 @@ template <int size> struct state_t {
       state_nybbles |= ((col_nybbles >> 4 * (size - i - 1)) & 0xf) << shift;
     }
     return state_nybbles;
+  }
+
+  bool operator==(const state_t<size> &other) const {
+    return this->nybbles == other.nybbles;
   }
 
 private:

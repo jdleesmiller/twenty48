@@ -5,6 +5,7 @@ require 'finite_mdp'
 require_relative 'twenty48/version'
 require_relative 'twenty48/action_deduplication'
 require_relative 'twenty48/builder'
+require_relative 'twenty48/common/state'
 require_relative 'twenty48/graph'
 require_relative 'twenty48/line'
 require_relative 'twenty48/lru_cache'
@@ -17,6 +18,7 @@ require_relative 'twenty48/storage'
 
 # Load native extension.
 require_relative 'twenty48/twenty48'
+require_relative 'twenty48/native'
 
 module Twenty48
   DIRECTIONS = [:left, :right, :up, :down].freeze

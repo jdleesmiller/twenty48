@@ -11,6 +11,8 @@ module Twenty48
   # required by {FiniteMDP::Model}.
   #
   class State
+    include CommonState
+
     def initialize(state_array)
       @data = pack(state_array)
     end
@@ -212,22 +214,6 @@ module Twenty48
 
     def to_s
       to_a.to_s
-    end
-
-    def inspect
-      to_a.inspect
-    end
-
-    def pretty_print
-      to_a.each_slice(board_size).map do |row|
-        row.map do |entry|
-          if entry.positive?
-            format('%4d', 2**entry)
-          else
-            '   .'
-          end
-        end.join(' ')
-      end.join("\n")
     end
 
     def ==(other)
