@@ -24,14 +24,15 @@ namespace twenty48 {
 
   /**
    * Set the value of the ith nybble (half byte), where i = 0 is the most
-   * significant byte.
+   * significant byte. This overwrites the existing nybble, regardless of its
+   * value.
    */
   template <typename Data>
-  Data set_nybble(Data data, uint8_t value, size_t i, size_t length) {
+  Data set_nybble(Data data, size_t i, uint8_t value, size_t length) {
     if (i >= length) throw std::invalid_argument("nybble index out of range");
     size_t shift = 4 * (length - i - 1);
-    data &= ~(0xf << shift);
-    data |= ~(value & 0xf << shift);
+    data &= ~((Data)0xf << shift);
+    data |= (value & (Data)0xf) << shift;
     return data;
   }
 }

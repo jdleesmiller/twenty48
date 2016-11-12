@@ -29,7 +29,7 @@ template <int size> struct state_t {
       throw std::invalid_argument("bad state array size");
     }
     for (size_t i = 0; i < size * size; ++i) {
-      nybbles |= array[i] << 4 * (size * size - i - 1);
+      set_nybble(i, array[i]);
     }
   }
 
@@ -72,15 +72,6 @@ template <int size> struct state_t {
       throw std::invalid_argument("state index out of range");
     }
     return (nybbles >> 4 * (size * size - i - 1)) & 0xf;
-  }
-
-  void set_nybble(size_t i, uint8_t value) {
-    if (i >= size * size) {
-      throw std::invalid_argument("state index out of range");
-    }
-    size_t shift = 4 * (size * size - i - 1);
-    nybbles &= ~(0xf << shift);
-    nybbles |= ~(value & 0xf << shift);
   }
 
   static const nybbles_t ROW_MASK = 0xffff >> (4 * (4 - size));
@@ -153,12 +144,75 @@ template <int size> struct state_t {
     return state_nybbles;
   }
 
+  state_t<size> reflect_horizontally() const {
+    return transform(transform_reflect_horizontally);
+  }
+
+  state_t<size> reflect_vertically() const {
+    return transform(transform_reflect_vertically);
+  }
+
+  state_t<size> transpose() const {
+    return transform(transform_transpose);
+  }
+
   bool operator==(const state_t<size> &other) const {
     return this->nybbles == other.nybbles;
   }
 
 private:
   nybbles_t nybbles;
+
+  static nybbles_t set_nybble(nybbles_t data, size_t i, uint8_t value) {
+    return twenty48::set_nybble(data, i, value, size * size);
+  }
+
+  void set_nybble(size_t i, uint8_t value) {
+    nybbles = set_nybble(nybbles, i, value);
+  }
+
+  //
+  // Transformer is a function from an (x, y) coordinate to the index of the
+  // cell whose value we want to put into cell (x, y) in the result.
+  //
+  template <typename Transformer> state_t<size> transform(Transformer t) const {
+    nybbles_t new_nybbles = 0;
+    for (size_t i = 0; i < size * size; ++i) {
+      size_t x = i % size;
+      size_t y = i / size;
+      uint8_t value = (*this)[t(x, y)];
+      new_nybbles = set_nybble(new_nybbles, i, value);
+    }
+    return state_t<size>(new_nybbles);
+  }
+
+  //
+  // Reflections
+  //
+  // i = n * y + x
+  // x = i % n
+  // y = i / n
+  //
+  // x' = n - x - 1, y' = y =>
+  //   i' = n*y + n - 1 - x = n*(y + 1) - (x + 1)
+  //
+  static size_t transform_reflect_horizontally(size_t x, size_t y) {
+    return size * (y + 1) - (x + 1);
+  }
+
+  //
+  // y' = n - y - 1, x' = x => i' = n*(n - y - 1) + x
+  //
+  static size_t transform_reflect_vertically(size_t x, size_t y) {
+    return size * (size - y - 1) + x;
+  }
+
+  //
+  // x' = y, y' = x => i' = n*x + y
+  //
+  static size_t transform_transpose(size_t x, size_t y) {
+    return size * x + y;
+  }
 
   state_t move(size_t begin, size_t step, size_t end) {
     size_t offset = size - 1;

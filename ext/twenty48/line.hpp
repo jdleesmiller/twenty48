@@ -21,7 +21,7 @@ template <int size> class line_t {
   explicit line_t(const array_t &array) {
     nybbles = 0;
     for (size_t i = 0; i < size; ++i) {
-      nybbles |= array[i] << 4 * (size - i - 1);
+      set_nybble(i, array[i]);
     }
   }
 
@@ -56,10 +56,6 @@ template <int size> class line_t {
 
   uint8_t operator[](size_t i) const {
     return twenty48::get_nybble(nybbles, i, size);
-  }
-
-  void set_nybble(size_t i, uint8_t value) {
-    nybbles = twenty48::set_nybble(nybbles, value, i, size);
   }
 
   array_t to_a() const {
@@ -97,6 +93,11 @@ template <int size> class line_t {
   static uint16_t lookup_move(const line_t<size> &line) {
     return lookup_move(line.get_nybbles());
   };
+
+private:
+  void set_nybble(size_t i, uint8_t value) {
+    nybbles = twenty48::set_nybble(nybbles, i, value, size);
+  }
 };
 
 template <int size>
