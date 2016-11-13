@@ -150,5 +150,99 @@ module Twenty48
         3,  2,  1,  0
       ], state.reflect_horizontally.reflect_vertically.to_a
     end
+
+    def test_canonicalize_2x2
+      state = make_state([0, 0, 0, 0])
+      assert_equal state, state.canonicalize
+
+      canonical_state = [0, 0,
+                         0, 1]
+
+      assert_equal canonical_state, make_state([
+        1, 0,
+        0, 0
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        0, 1,
+        0, 0
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        0, 0,
+        1, 0
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        0, 0,
+        0, 1
+      ]).canonicalize.to_a
+
+      canonical_state = [0, 0,
+                         1, 2]
+
+      assert_equal canonical_state, make_state([
+        1, 2,
+        0, 0
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        0, 1,
+        0, 2
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        0, 0,
+        2, 1
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        2, 0,
+        1, 0
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        1, 0,
+        2, 0
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        0, 0,
+        1, 2
+      ]).canonicalize.to_a
+
+      canonical_state = [0, 1,
+                         2, 3]
+
+      assert_equal canonical_state, make_state([
+        2, 3,
+        0, 1
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        0, 2,
+        1, 3
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        1, 0,
+        3, 2
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        3, 1,
+        2, 0
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        1, 3,
+        0, 2
+      ]).canonicalize.to_a
+
+      assert_equal canonical_state, make_state([
+        0, 2,
+        1, 3
+      ]).canonicalize.to_a
+    end
   end
 end

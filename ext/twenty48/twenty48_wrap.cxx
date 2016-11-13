@@ -13810,6 +13810,30 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_State2_canonicalize(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  twenty48::state_t< 2 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 2 > const *","canonicalize", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 2 > * >(argp1);
+  result = ((twenty48::state_t< 2 > const *)arg1)->canonicalize();
+  vresult = SWIG_NewPointerObj((new twenty48::state_t< 2 >(static_cast< const twenty48::state_t< 2 >& >(result))), SWIGTYPE_p_twenty48__state_tT_2_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /*
   Document-method: Twenty48::State2.==
@@ -13847,6 +13871,50 @@ _wrap_State2___eq__(int argc, VALUE *argv, VALUE self) {
   }
   arg2 = reinterpret_cast< twenty48::state_t< 2 > * >(argp2);
   result = (bool)((twenty48::state_t< 2 > const *)arg1)->operator ==((twenty48::state_t< 2 > const &)*arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+
+/*
+  Document-method: Twenty48::State2.<
+
+  call-seq:
+    <(other) -> bool
+
+Lower than comparison operator.
+*/
+SWIGINTERN VALUE
+_wrap_State2___lt__(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
+  twenty48::state_t< 2 > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 2 > const *","operator <", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 2 > * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_twenty48__state_tT_2_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::state_t< 2 > const &","operator <", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 2 > const &","operator <", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< twenty48::state_t< 2 > * >(argp2);
+  result = (bool)((twenty48::state_t< 2 > const *)arg1)->operator <((twenty48::state_t< 2 > const &)*arg2);
   vresult = SWIG_From_bool(static_cast< bool >(result));
   return vresult;
 fail:
@@ -14579,6 +14647,30 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_State3_canonicalize(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  twenty48::state_t< 3 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 3 > const *","canonicalize", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 3 > * >(argp1);
+  result = ((twenty48::state_t< 3 > const *)arg1)->canonicalize();
+  vresult = SWIG_NewPointerObj((new twenty48::state_t< 3 >(static_cast< const twenty48::state_t< 3 >& >(result))), SWIGTYPE_p_twenty48__state_tT_3_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /*
   Document-method: Twenty48::State3.==
@@ -14616,6 +14708,50 @@ _wrap_State3___eq__(int argc, VALUE *argv, VALUE self) {
   }
   arg2 = reinterpret_cast< twenty48::state_t< 3 > * >(argp2);
   result = (bool)((twenty48::state_t< 3 > const *)arg1)->operator ==((twenty48::state_t< 3 > const &)*arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+
+/*
+  Document-method: Twenty48::State3.<
+
+  call-seq:
+    <(other) -> bool
+
+Lower than comparison operator.
+*/
+SWIGINTERN VALUE
+_wrap_State3___lt__(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
+  twenty48::state_t< 3 > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 3 > const *","operator <", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 3 > * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_twenty48__state_tT_3_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::state_t< 3 > const &","operator <", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 3 > const &","operator <", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< twenty48::state_t< 3 > * >(argp2);
+  result = (bool)((twenty48::state_t< 3 > const *)arg1)->operator <((twenty48::state_t< 3 > const &)*arg2);
   vresult = SWIG_From_bool(static_cast< bool >(result));
   return vresult;
 fail:
@@ -15348,6 +15484,30 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_State4_canonicalize(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 4 > *arg1 = (twenty48::state_t< 4 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  twenty48::state_t< 4 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 4 > const *","canonicalize", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 4 > * >(argp1);
+  result = ((twenty48::state_t< 4 > const *)arg1)->canonicalize();
+  vresult = SWIG_NewPointerObj((new twenty48::state_t< 4 >(static_cast< const twenty48::state_t< 4 >& >(result))), SWIGTYPE_p_twenty48__state_tT_4_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /*
   Document-method: Twenty48::State4.==
@@ -15385,6 +15545,50 @@ _wrap_State4___eq__(int argc, VALUE *argv, VALUE self) {
   }
   arg2 = reinterpret_cast< twenty48::state_t< 4 > * >(argp2);
   result = (bool)((twenty48::state_t< 4 > const *)arg1)->operator ==((twenty48::state_t< 4 > const &)*arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+
+/*
+  Document-method: Twenty48::State4.<
+
+  call-seq:
+    <(other) -> bool
+
+Lower than comparison operator.
+*/
+SWIGINTERN VALUE
+_wrap_State4___lt__(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 4 > *arg1 = (twenty48::state_t< 4 > *) 0 ;
+  twenty48::state_t< 4 > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 4 > const *","operator <", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 4 > * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_twenty48__state_tT_4_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::state_t< 4 > const &","operator <", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 4 > const &","operator <", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< twenty48::state_t< 4 > * >(argp2);
+  result = (bool)((twenty48::state_t< 4 > const *)arg1)->operator <((twenty48::state_t< 4 > const &)*arg2);
   vresult = SWIG_From_bool(static_cast< bool >(result));
   return vresult;
 fail:
@@ -16124,7 +16328,9 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassState2.klass, "reflect_horizontally", VALUEFUNC(_wrap_State2_reflect_horizontally), -1);
   rb_define_method(SwigClassState2.klass, "reflect_vertically", VALUEFUNC(_wrap_State2_reflect_vertically), -1);
   rb_define_method(SwigClassState2.klass, "transpose", VALUEFUNC(_wrap_State2_transpose), -1);
+  rb_define_method(SwigClassState2.klass, "canonicalize", VALUEFUNC(_wrap_State2_canonicalize), -1);
   rb_define_method(SwigClassState2.klass, "==", VALUEFUNC(_wrap_State2___eq__), -1);
+  rb_define_method(SwigClassState2.klass, "<", VALUEFUNC(_wrap_State2___lt__), -1);
   rb_define_method(SwigClassState2.klass, "[]", VALUEFUNC(_wrap_State2___getitem__), -1);
   rb_define_method(SwigClassState2.klass, "to_i", VALUEFUNC(_wrap_State2___int__), -1);
   rb_define_method(SwigClassState2.klass, "to_s", VALUEFUNC(_wrap_State2___str__), -1);
@@ -16153,7 +16359,9 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassState3.klass, "reflect_horizontally", VALUEFUNC(_wrap_State3_reflect_horizontally), -1);
   rb_define_method(SwigClassState3.klass, "reflect_vertically", VALUEFUNC(_wrap_State3_reflect_vertically), -1);
   rb_define_method(SwigClassState3.klass, "transpose", VALUEFUNC(_wrap_State3_transpose), -1);
+  rb_define_method(SwigClassState3.klass, "canonicalize", VALUEFUNC(_wrap_State3_canonicalize), -1);
   rb_define_method(SwigClassState3.klass, "==", VALUEFUNC(_wrap_State3___eq__), -1);
+  rb_define_method(SwigClassState3.klass, "<", VALUEFUNC(_wrap_State3___lt__), -1);
   rb_define_method(SwigClassState3.klass, "[]", VALUEFUNC(_wrap_State3___getitem__), -1);
   rb_define_method(SwigClassState3.klass, "to_i", VALUEFUNC(_wrap_State3___int__), -1);
   rb_define_method(SwigClassState3.klass, "to_s", VALUEFUNC(_wrap_State3___str__), -1);
@@ -16182,7 +16390,9 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassState4.klass, "reflect_horizontally", VALUEFUNC(_wrap_State4_reflect_horizontally), -1);
   rb_define_method(SwigClassState4.klass, "reflect_vertically", VALUEFUNC(_wrap_State4_reflect_vertically), -1);
   rb_define_method(SwigClassState4.klass, "transpose", VALUEFUNC(_wrap_State4_transpose), -1);
+  rb_define_method(SwigClassState4.klass, "canonicalize", VALUEFUNC(_wrap_State4_canonicalize), -1);
   rb_define_method(SwigClassState4.klass, "==", VALUEFUNC(_wrap_State4___eq__), -1);
+  rb_define_method(SwigClassState4.klass, "<", VALUEFUNC(_wrap_State4___lt__), -1);
   rb_define_method(SwigClassState4.klass, "[]", VALUEFUNC(_wrap_State4___getitem__), -1);
   rb_define_method(SwigClassState4.klass, "to_i", VALUEFUNC(_wrap_State4___int__), -1);
   rb_define_method(SwigClassState4.klass, "to_s", VALUEFUNC(_wrap_State4___str__), -1);

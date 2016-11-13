@@ -156,8 +156,33 @@ template <int size> struct state_t {
     return transform(transform_transpose);
   }
 
+  state_t<size> canonicalize() const {
+    state_t<size> horizontal_reflection = reflect_horizontally();
+    state_t<size> vertical_reflection = reflect_vertically();
+    state_t<size> transposition = transpose();
+
+    state_t<size> rotated_90 = transposition.reflect_horizontally();
+    state_t<size> rotated_180 = horizontal_reflection.reflect_vertically();
+    state_t<size> rotated_270 = transposition.reflect_vertically();
+
+    // transpose rotated 180
+    state_t<size> anti_transposition = rotated_90.reflect_vertically();
+
+    return std::min(*this,
+      std::min(horizontal_reflection,
+        std::min(vertical_reflection,
+          std::min(transposition,
+            std::min(anti_transposition,
+              std::min(rotated_90,
+                std::min(rotated_180, rotated_270)))))));
+  }
+
   bool operator==(const state_t<size> &other) const {
-    return this->nybbles == other.nybbles;
+    return nybbles == other.nybbles;
+  }
+
+  bool operator<(const state_t<size> &other) const {
+    return nybbles < other.nybbles;
   }
 
 private:
