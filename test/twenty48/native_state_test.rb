@@ -3,17 +3,11 @@
 require_relative 'helper'
 require_relative 'common/state_tests'
 
-class NativeStateTest < Minitest::Test
+class NativeStateTest < Twenty48NativeTest
   include Twenty48
+  
+  # This is where the actual tests are defined.
   include CommonStateTests
-
-  def make_state(state_array)
-    case state_array.size
-    when 4 then State2.new(state_array)
-    when 9 then State3.new(state_array)
-    when 16 then State4.new(state_array)
-    end
-  end
 
   # TODO: migrate some tests
   #   state_t<2, 3> state_2_3;

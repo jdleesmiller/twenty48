@@ -10,6 +10,11 @@ module Twenty48
     def eql?(other)
       self == other
     end
+
+    def <=>(other)
+      return 0 if self == other
+      self < other ? -1 : 1
+    end
   end
 
   #

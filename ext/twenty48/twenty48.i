@@ -8,6 +8,7 @@
 
 %include "stdint.i"
 %include "std_array.i"
+%include "std_map.i"
 %include "std_vector.i"
 
 /******************************************************************************/
@@ -66,3 +67,7 @@
 %template(State2) twenty48::state_t<2>;
 %template(State3) twenty48::state_t<3>;
 %template(State4) twenty48::state_t<4>;
+
+%template(TransitionMap2) std::map<twenty48::state_t<2>, double>;
+%template(TransitionMap3) std::map<twenty48::state_t<3>, double>;
+%template(TransitionMap4) std::map<twenty48::state_t<4>, double>;

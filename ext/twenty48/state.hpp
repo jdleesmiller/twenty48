@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <map>
 
 #include "twenty48.hpp"
 #include "line.hpp"
@@ -18,6 +19,7 @@ namespace twenty48 {
  */
 template <int size> struct state_t {
   typedef uint64_t nybbles_t;
+  typedef std::map<state_t<size>, double> transitions_t;
 
   state_t(nybbles_t initial_nybbles = 0) {
     nybbles = initial_nybbles;
@@ -177,6 +179,27 @@ template <int size> struct state_t {
                 std::min(rotated_180, rotated_270)))))));
   }
 
+  /**
+   * Generate a 2 tile, with probability 0.9, or a 4 tile, with probability 0.1,
+   * in each empty cell. The successors are not canonicalized, and the
+   * transition probabilities are not normalized.
+   *
+   * @param transitions assumed to be empty (passed to avoid an allocation)
+   */
+  void generate_random_transitions(transitions_t &transitions) const {
+    for (size_t i = 0; i < size * size; ++i) {
+      if ((*this)[i] != 0) continue;
+      transitions[new_state_with_tile(i, 1)] = 0.9;
+      transitions[new_state_with_tile(i, 2)] = 0.1;
+    }
+  }
+
+  transitions_t random_transitions() const {
+    transitions_t transitions;
+    generate_random_transitions(transitions);
+    return transitions;
+  }
+
   bool operator==(const state_t<size> &other) const {
     return nybbles == other.nybbles;
   }
@@ -194,6 +217,10 @@ private:
 
   void set_nybble(size_t i, uint8_t value) {
     nybbles = set_nybble(nybbles, i, value);
+  }
+
+  state_t new_state_with_tile(size_t i, uint8_t value) const {
+    return state_t(set_nybble(nybbles, i, value));
   }
 
   //

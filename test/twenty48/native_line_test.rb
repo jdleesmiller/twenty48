@@ -3,7 +3,7 @@
 require_relative 'helper'
 require_relative 'common/line_tests'
 
-class NativeLineTest < Minitest::Test
+class NativeLineTest < Twenty48NativeTest
   include Twenty48
 
   # This is where the actual tests are defined; they call #move.
