@@ -181,16 +181,18 @@ template <int size> struct state_t {
 
   /**
    * Generate a 2 tile, with probability 0.9, or a 4 tile, with probability 0.1,
-   * in each empty cell. The successors are not canonicalized, and the
-   * transition probabilities are not normalized.
+   * in each empty cell. The states are canonicalized and the probabilities are
+   * normalized.
    *
    * @param transitions assumed to be empty (passed to avoid an allocation)
    */
   void generate_random_transitions(transitions_t &transitions) const {
     for (size_t i = 0; i < size * size; ++i) {
       if ((*this)[i] != 0) continue;
-      transitions[new_state_with_tile(i, 1)] = 0.9;
-      transitions[new_state_with_tile(i, 2)] = 0.1;
+      transitions[new_state_with_tile(i, 1).canonicalize()] +=
+        0.9 / (size * size);
+      transitions[new_state_with_tile(i, 2).canonicalize()] +=
+        0.1 / (size * size);
     }
   }
 

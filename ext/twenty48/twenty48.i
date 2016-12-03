@@ -4,11 +4,13 @@
 #include <sstream>
 #include "line.hpp"
 #include "state.hpp"
+#include "builder.hpp"
 %}
 
 %include "stdint.i"
 %include "std_array.i"
 %include "std_map.i"
+%include "std_set.i"
 %include "std_vector.i"
 
 /******************************************************************************/
@@ -68,6 +70,20 @@
 %template(State3) twenty48::state_t<3>;
 %template(State4) twenty48::state_t<4>;
 
+%template(StateSet2) std::set<twenty48::state_t<2> >;
+%template(StateSet3) std::set<twenty48::state_t<3> >;
+%template(StateSet4) std::set<twenty48::state_t<4> >;
+
 %template(TransitionMap2) std::map<twenty48::state_t<2>, double>;
 %template(TransitionMap3) std::map<twenty48::state_t<3>, double>;
 %template(TransitionMap4) std::map<twenty48::state_t<4>, double>;
+
+/******************************************************************************/
+/* Builder */
+/******************************************************************************/
+
+%include "builder.hpp"
+
+%template(Builder2) twenty48::builder_t<2>;
+%template(Builder3) twenty48::builder_t<3>;
+%template(Builder4) twenty48::builder_t<4>;
