@@ -1,5 +1,6 @@
 #ifndef TWENTY48_BUILDER_HPP
 
+#include <algorithm>
 #include <iostream>
 #include <iomanip>
 #include <set>
@@ -106,10 +107,12 @@ namespace twenty48 {
 template <int size> struct builder_t {
   typedef typename state_t<size>::transitions_t transitions_t;
   typedef std::set<state_t<size> > state_set_t;
+  typedef std::vector<state_t<size> > state_vector_t;
 
   explicit builder_t(int max_exponent) : max_exponent(max_exponent) { }
 
-  void open_start_states() {
+  state_set_t generate_start_states() {
+    state_set_t result;
     state_t<size> empty_state;
     transitions_t transitions_1 = empty_state.random_transitions();
     for (typename transitions_t::const_iterator it = transitions_1.begin();
@@ -119,12 +122,31 @@ template <int size> struct builder_t {
       for (typename transitions_t::const_iterator it2 = transitions_2.begin();
         it2 != transitions_2.end(); ++it2)
       {
-        open.insert(it2->first);
+        result.insert(it2->first);
       }
+    }
+    return result;
+  }
+
+  void build() {
+    // Our usual transition model is not valid in the lose state, so we handle
+    // it as a special case.
+    state_t<size> lose_state;
+    closed.insert(lose_state);
+
+    state_set_t start_states = generate_start_states();
+    std::copy(start_states.begin(), start_states.end(), open.begin());
+
+    while (!open.empty()) {
+      state_t<size> state = open.back();
+      open.pop_back();
+      if (state_closed(state)) continue;
+      closed.insert(state);
+      expand(state);
     }
   }
 
-  const state_set_t &open_states() const {
+  const state_vector_t &open_states() const {
     return open;
   }
 
@@ -132,8 +154,35 @@ template <int size> struct builder_t {
     return closed;
   }
 
+  void expand(const state_t<size> &state) {
+    // move(state, DIRECTION_UP);
+    // move(state, DIRECTION_DOWN);
+    // move(state, DIRECTION_LEFT);
+    // move(state, DIRECTION_RIGHT);
+  }
+
+  // void move(const state_t<size> &state, direction_t direction) {
+  //   state_t<size> moved_state = state.move(direction);
+  //   transitions_t transitions = moved_state.random_transitions();
+  //   for (typename transitions_t::const_iterator it = transitions.begin();
+  //     it != transitions.end(); ++it)
+  //   {
+  //     const state_t<size> &successor = it->first;
+  //     if (state_closed(successor)) continue;
+  //     open_state(successor);
+  //   }
+  // }
+
+  void open_state(const state_t<size> &state) {
+    open.push_back(state);
+  }
+
+  bool state_closed(const state_t<size> &state) const {
+    return closed.find(state) != closed.end();
+  }
+
 private:
-  state_set_t open;
+  state_vector_t open;
   state_set_t closed;
   int max_exponent;
 };

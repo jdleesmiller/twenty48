@@ -1,24 +1,20 @@
 # frozen_string_literal: true
 
 require_relative 'helper'
+require_relative 'common/builder_start_states'
 
 class BuilderStartStateTest < Twenty48Test
-  def test_start_states_2x2
-    model = Twenty48::Builder.new(2, 3)
-    assert_states_equal [
-      [0, 0,
-       1, 1],
-      [0, 0,
-       1, 2],
-      [0, 0,
-       2, 2],
-      [0, 1,
-       1, 0],
-      [0, 1,
-       2, 0],
-      [0, 2,
-       2, 0]
-    ], model.start_states
+  include Twenty48
+
+  # Some of the tests are defined here; they call #builder_start_states.
+  include CommonBuilderStartStatesTests
+
+  def make_builder(size, max_exponent)
+    Builder.new(size, max_exponent)
+  end
+
+  def builder_start_states(builder)
+    builder.start_states
   end
 
   def resolve_start_states(builder, max_resolve_depth = 0)

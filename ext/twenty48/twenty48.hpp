@@ -6,10 +6,10 @@
 
 namespace twenty48 {
   typedef enum DIRECTION {
-    DIRECTION_LEFT = 'l',
-    DIRECTION_RIGHT = 'r',
-    DIRECTION_UP = 'u',
-    DIRECTION_DOWN = 'd'
+    DIRECTION_LEFT = 0,
+    DIRECTION_RIGHT = 1,
+    DIRECTION_UP = 2,
+    DIRECTION_DOWN = 3
   } direction_t;
 
   /**

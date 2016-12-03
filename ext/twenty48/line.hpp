@@ -94,9 +94,17 @@ template <int size> class line_t {
     return lookup_move(line.get_nybbles());
   };
 
+  static uint8_t get_nybble(uint16_t nybbles, size_t i) {
+    return twenty48::get_nybble(nybbles, i, size);
+  }
+
+  static uint16_t set_nybble(uint16_t nybbles, size_t i, uint8_t value) {
+    return twenty48::set_nybble(nybbles, i, value, size);
+  }
+
 private:
   void set_nybble(size_t i, uint8_t value) {
-    nybbles = twenty48::set_nybble(nybbles, i, value, size);
+    nybbles = set_nybble(nybbles, i, value);
   }
 };
 

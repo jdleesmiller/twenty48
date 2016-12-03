@@ -70,49 +70,7 @@ template <int size> struct state_t {
   }
 
   uint8_t operator[](size_t i) const {
-    if (i >= size * size) {
-      throw std::invalid_argument("state index out of range");
-    }
-    return (nybbles >> 4 * (size * size - i - 1)) & 0xf;
-  }
-
-  static const nybbles_t ROW_MASK = 0xffff >> (4 * (4 - size));
-
-  /**
-   * Number of bits to right shift in order to get the nybbles for the given
-   * row into the rightmost nybbles.
-   *
-   * @param i from 0, which is the topmost row
-   */
-  size_t get_row_shift(size_t i) const {
-    if (i >= size) throw std::invalid_argument("row index out of range");
-    return 4 * size * (size - i - 1);
-  }
-
-  /**
-   * Number of bits to right shift in order to get the nybble for position
-   * (i, j) into the rightmost nybble.
-   *
-   * @param i from 0, which is the topmost cell
-   * @param j from 0, which is the leftmost cell
-   */
-  size_t get_shift(size_t i, size_t j) const {
-    if (i >= size) throw std::invalid_argument("row index out of range");
-    if (j >= size) throw std::invalid_argument("col index out of range");
-    return 4 * (size * (size - i) - j - 1);
-  }
-
-  line_t<size> get_row(size_t i) const {
-    uint16_t row_nybbles = (nybbles >> get_row_shift(i)) & ROW_MASK;
-    return line_t<size>(row_nybbles);
-  }
-
-  line_t<size> get_col(size_t j) const {
-    uint16_t col_nybbles = 0;
-    for (int i = 0; i < size; ++i) {
-      col_nybbles |= ((nybbles >> get_shift(i, j)) & 0xf) << 4 * (size - i - 1);
-    }
-    return line_t<size>(col_nybbles);
+    return get_nybble(nybbles, i);
   }
 
   std::vector<uint8_t> to_a() const {
@@ -121,29 +79,27 @@ template <int size> struct state_t {
     return result;
   }
 
-  state_t move (twenty48::direction_t direction) {
+  /**
+   * Return a new state that is the result of moving this one in the given
+   * direction.
+   *
+   * At present, all of these are implemented in terms of moving left. There
+   * may be some efficiency improvements possible.
+   */
+  state_t move (twenty48::direction_t direction) const {
     switch(direction) {
-      case DIRECTION_LEFT:  return move(0, 1, size);
-      case DIRECTION_RIGHT: return move(size, -1, 0);
-      case DIRECTION_UP:    return move(0, size, size * size);
-      case DIRECTION_DOWN:  return move(size * size, -size, 0);
+      case DIRECTION_LEFT:
+        return move_left();
+      case DIRECTION_RIGHT:
+        return reflect_horizontally().
+          move(DIRECTION_LEFT).
+          reflect_horizontally();
+      case DIRECTION_UP:
+        return transpose().move(DIRECTION_LEFT).transpose();
+      case DIRECTION_DOWN:
+        return transpose().move(DIRECTION_RIGHT).transpose();
     }
     throw std::invalid_argument("bad direction");
-  }
-
-  nybbles_t set_row(nybbles_t state_nybbles, size_t i, uint16_t row_nybbles) {
-    int shift = get_row_shift(i);
-    return (state_nybbles & ~(ROW_MASK << shift)) | (row_nybbles << shift);
-  }
-
-  nybbles_t set_col(nybbles_t state_nybbles, size_t j, uint16_t col_nybbles) {
-    if (j >= size) throw std::invalid_argument("col index out of range");
-    for (int i = 0; i < size; ++i) {
-      size_t shift = get_shift(i, j);
-      state_nybbles &= ~(0xf << shift);
-      state_nybbles |= ((col_nybbles >> 4 * (size - i - 1)) & 0xf) << shift;
-    }
-    return state_nybbles;
   }
 
   state_t<size> reflect_horizontally() const {
@@ -183,10 +139,9 @@ template <int size> struct state_t {
    * Generate a 2 tile, with probability 0.9, or a 4 tile, with probability 0.1,
    * in each empty cell. The states are canonicalized and the probabilities are
    * normalized.
-   *
-   * @param transitions assumed to be empty (passed to avoid an allocation)
    */
-  void generate_random_transitions(transitions_t &transitions) const {
+  transitions_t random_transitions() const {
+    transitions_t transitions;
     for (size_t i = 0; i < size * size; ++i) {
       if ((*this)[i] != 0) continue;
       transitions[new_state_with_tile(i, 1).canonicalize()] +=
@@ -194,11 +149,6 @@ template <int size> struct state_t {
       transitions[new_state_with_tile(i, 2).canonicalize()] +=
         0.1 / (size * size);
     }
-  }
-
-  transitions_t random_transitions() const {
-    transitions_t transitions;
-    generate_random_transitions(transitions);
     return transitions;
   }
 
@@ -213,8 +163,21 @@ template <int size> struct state_t {
 private:
   nybbles_t nybbles;
 
+  static uint8_t get_nybble(nybbles_t data, size_t i) {
+    return twenty48::get_nybble(data, i, size * size);
+  }
+
+  static uint8_t get_grid_nybble(nybbles_t data, size_t x, size_t y) {
+    return get_nybble(data, y * size + x);
+  }
+
   static nybbles_t set_nybble(nybbles_t data, size_t i, uint8_t value) {
     return twenty48::set_nybble(data, i, value, size * size);
+  }
+
+  static nybbles_t set_grid_nybble(nybbles_t data, size_t x, size_t y,
+    uint8_t value) {
+    return set_nybble(data, y * size + x, value);
   }
 
   void set_nybble(size_t i, uint8_t value) {
@@ -268,19 +231,20 @@ private:
     return size * x + y;
   }
 
-  state_t move(size_t begin, size_t step, size_t end) {
-    size_t offset = size - 1;
-    uint16_t line_nybble = 0;
-    for (size_t i = begin; i != end; i += step, --offset) {
-      line_nybble |= (*this)[i] << 4 * offset;
+  state_t move_left() const {
+    nybbles_t result = 0;
+    for (size_t y = 0; y < size; ++y) {
+      uint16_t row_nybbles = 0;
+      for (size_t x = 0; x < size; ++x) {
+        uint8_t value = get_grid_nybble(nybbles, x, y);
+        row_nybbles = line_t<size>::set_nybble(row_nybbles, x, value);
+      }
+      row_nybbles = line_t<size>::lookup_move(row_nybbles);
+      for (size_t x = 0; x < size; ++x) {
+        uint8_t value = line_t<size>::get_nybble(row_nybbles, x);
+        result = set_grid_nybble(result, x, y, value);
+      }
     }
-    line_t<size> line = line_t<size>(line_t<size>::lookup_move(line_nybble));
-
-    offset = 0;
-    nybbles_t result = nybbles;
-    // for (size_t i = begin; i != end; i += step, ++offset) {
-    //   result = set_nybble(i, get_nybble(offset, line_nybble));
-    // }
     return state_t(result);
   }
 };
