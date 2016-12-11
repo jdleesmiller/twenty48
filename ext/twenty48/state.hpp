@@ -53,6 +53,14 @@ template <int size> struct state_t {
     return true;
   }
 
+  bool lose() const {
+    return
+      move(DIRECTION_LEFT) == *this &&
+      move(DIRECTION_RIGHT) == *this &&
+      move(DIRECTION_UP) == *this &&
+      move(DIRECTION_DOWN) == *this;
+  }
+
   uint8_t max_value() const {
     uint8_t result = 0;
     for (size_t i = 0; i < size * size; ++i) {

@@ -109,7 +109,8 @@ template <int size> struct builder_t {
   typedef std::set<state_t<size> > state_set_t;
   typedef std::vector<state_t<size> > state_vector_t;
 
-  explicit builder_t(int max_exponent) : max_exponent(max_exponent) { }
+  explicit builder_t(int max_exponent) :
+    max_exponent(max_exponent), win_state(max_exponent), lose_state(0) { }
 
   state_set_t generate_start_states() {
     state_set_t result;
@@ -131,19 +132,27 @@ template <int size> struct builder_t {
   void build() {
     // Our usual transition model is not valid in the lose state, so we handle
     // it as a special case.
-    state_t<size> lose_state;
     closed.insert(lose_state);
 
     state_set_t start_states = generate_start_states();
-    std::copy(start_states.begin(), start_states.end(), open.begin());
-
-    while (!open.empty()) {
-      state_t<size> state = open.back();
-      open.pop_back();
-      if (state_closed(state)) continue;
-      closed.insert(state);
-      expand(state);
+    for (typename state_set_t::const_iterator it = start_states.begin();
+      it != start_states.end(); ++it)
+    {
+      open.push_back(resolve(*it));
+      while (!open.empty()) {
+        state_t<size> state = open.back();
+        open.pop_back();
+        if (state_closed(state)) continue;
+        closed.insert(state);
+        expand(state);
+      }
     }
+  }
+
+  state_t<size> resolve(const state_t<size> &state) {
+    if (state.max_value() >= max_exponent) return win_state;
+    if (state.no_cells_available() && state.lose()) return lose_state;
+    return state;
   }
 
   const state_vector_t &open_states() const {
@@ -154,27 +163,30 @@ template <int size> struct builder_t {
     return closed;
   }
 
-  void expand(const state_t<size> &state) {
-    // move(state, DIRECTION_UP);
-    // move(state, DIRECTION_DOWN);
-    // move(state, DIRECTION_LEFT);
-    // move(state, DIRECTION_RIGHT);
+  const size_t count_closed_states() const {
+    return closed.size();
   }
 
-  // void move(const state_t<size> &state, direction_t direction) {
-  //   state_t<size> moved_state = state.move(direction);
-  //   transitions_t transitions = moved_state.random_transitions();
-  //   for (typename transitions_t::const_iterator it = transitions.begin();
-  //     it != transitions.end(); ++it)
-  //   {
-  //     const state_t<size> &successor = it->first;
-  //     if (state_closed(successor)) continue;
-  //     open_state(successor);
-  //   }
-  // }
+  void expand(const state_t<size> &state) {
+    // std::cout << "EXPAND:" << state << std::endl;
+    move(state, DIRECTION_UP);
+    move(state, DIRECTION_DOWN);
+    move(state, DIRECTION_LEFT);
+    move(state, DIRECTION_RIGHT);
+  }
 
-  void open_state(const state_t<size> &state) {
-    open.push_back(state);
+  void move(const state_t<size> &state, direction_t direction) {
+    state_t<size> moved_state = state.move(direction);
+    if (moved_state == state) return; // Cannot move in this direction.
+
+    transitions_t transitions = moved_state.random_transitions();
+    for (typename transitions_t::const_iterator it = transitions.begin();
+      it != transitions.end(); ++it)
+    {
+      state_t<size> successor = resolve(it->first);
+      if (state_closed(successor)) continue;
+      open.push_back(successor);
+    }
   }
 
   bool state_closed(const state_t<size> &state) const {
@@ -185,6 +197,8 @@ private:
   state_vector_t open;
   state_set_t closed;
   int max_exponent;
+  state_t<size> win_state;
+  state_t<size> lose_state;
 };
 
 }

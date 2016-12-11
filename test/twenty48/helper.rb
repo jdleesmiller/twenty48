@@ -45,4 +45,8 @@ class Twenty48NativeTest < Minitest::Test
     when 16 then Twenty48::State4.new(state_array)
     end
   end
+
+  def make_builder(board_size, max_exponent)
+    NativeBuilder.create(board_size, max_exponent)
+  end
 end
