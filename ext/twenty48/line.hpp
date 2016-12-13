@@ -3,6 +3,7 @@
 #include <array>
 #include <iomanip>
 #include <map>
+#include <iostream>
 
 #include "twenty48.hpp"
 
@@ -72,7 +73,7 @@ template <int size> class line_t {
   struct table_t {
     const static size_t TABLE_SIZE = UINT16_MAX >> 4 * (4 - size);
 
-    uint16_t table[TABLE_SIZE];
+    uint16_t table[TABLE_SIZE + 1];
 
     table_t() {
       for (uint32_t nybbles = 0; nybbles <= TABLE_SIZE; ++nybbles) {
