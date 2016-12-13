@@ -264,5 +264,15 @@ std::ostream &operator << (std::ostream &os, const state_t<size> &state) {
 }
 
 }
+
+namespace std {
+  template <int size> struct hash<twenty48::state_t<size> > {
+    size_t operator()(const twenty48::state_t<size> &state) const {
+      return std::hash<typename twenty48::state_t<size>::nybbles_t>()(
+        state.get_nybbles());
+    }
+  };
+}
+
 #define TWENTY48_STATE_HPP
 #endif

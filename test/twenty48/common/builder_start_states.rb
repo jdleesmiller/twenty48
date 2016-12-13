@@ -17,7 +17,7 @@ module Twenty48
          2, 0],
         [0, 2,
          2, 0]
-      ], builder_start_states(builder)
+      ], builder_start_states(builder).sort
     end
   end
 end

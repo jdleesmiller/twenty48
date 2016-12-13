@@ -10,7 +10,6 @@
 %include "stdint.i"
 %include "std_array.i"
 %include "std_map.i"
-%include "std_set.i"
 %include "std_vector.i"
 
 %include "twenty48.hpp"
@@ -72,9 +71,9 @@
 %template(State3) twenty48::state_t<3>;
 %template(State4) twenty48::state_t<4>;
 
-%template(StateSet2) std::set<twenty48::state_t<2> >;
-%template(StateSet3) std::set<twenty48::state_t<3> >;
-%template(StateSet4) std::set<twenty48::state_t<4> >;
+%template(StateVector2) std::vector<twenty48::state_t<2> >;
+%template(StateVector3) std::vector<twenty48::state_t<3> >;
+%template(StateVector4) std::vector<twenty48::state_t<4> >;
 
 %template(TransitionMap2) std::map<twenty48::state_t<2>, double>;
 %template(TransitionMap3) std::map<twenty48::state_t<3>, double>;

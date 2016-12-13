@@ -54,7 +54,7 @@ module Twenty48
   # Common methods for the native Builder class.
   #
   module NativeBuilder
-    def create(board_size, max_exponent)
+    def self.create(board_size, max_exponent)
       case board_size
       when 2 then return Builder2.new(max_exponent)
       when 3 then return Builder3.new(max_exponent)

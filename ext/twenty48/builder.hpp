@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
-#include <set>
+#include <unordered_set>
 #include <vector>
 
 #include "twenty48.hpp"
@@ -106,13 +106,13 @@ namespace twenty48 {
  */
 template <int size> struct builder_t {
   typedef typename state_t<size>::transitions_t transitions_t;
-  typedef std::set<state_t<size> > state_set_t;
+  typedef std::unordered_set<state_t<size> > state_set_t;
   typedef std::vector<state_t<size> > state_vector_t;
 
   explicit builder_t(int max_exponent) :
     max_exponent(max_exponent), win_state(max_exponent), lose_state(0) { }
 
-  state_set_t generate_start_states() {
+  state_vector_t generate_start_states() {
     state_set_t result;
     state_t<size> empty_state;
     transitions_t transitions_1 = empty_state.random_transitions();
@@ -126,16 +126,19 @@ template <int size> struct builder_t {
         result.insert(it2->first);
       }
     }
-    return result;
+    return state_vector_t(result.begin(), result.end());
   }
 
-  void build() {
+  void build(size_t reserved_states = 0) {
     // Our usual transition model is not valid in the lose state, so we handle
     // it as a special case.
+    if (reserved_states > 0) {
+      closed.reserve(reserved_states);
+    }
     closed.insert(lose_state);
 
-    state_set_t start_states = generate_start_states();
-    for (typename state_set_t::const_iterator it = start_states.begin();
+    state_vector_t start_states = generate_start_states();
+    for (typename state_vector_t::const_iterator it = start_states.begin();
       it != start_states.end(); ++it)
     {
       open.push_back(resolve(*it));
@@ -159,8 +162,8 @@ template <int size> struct builder_t {
     return open;
   }
 
-  const state_set_t &closed_states() const {
-    return closed;
+  state_vector_t closed_states() const {
+    return state_vector_t(closed.begin(), closed.end());
   }
 
   const size_t count_closed_states() const {
