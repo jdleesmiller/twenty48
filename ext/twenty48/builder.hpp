@@ -109,8 +109,9 @@ template <int size> struct builder_t {
   typedef std::unordered_set<state_t<size> > state_set_t;
   typedef std::vector<state_t<size> > state_vector_t;
 
-  explicit builder_t(int max_exponent) :
-    max_exponent(max_exponent), win_state(max_exponent), lose_state(0) { }
+  explicit builder_t(int max_exponent, int max_lose_depth) :
+    max_exponent(max_exponent), win_state(max_exponent), lose_state(0),
+    max_lose_depth(max_lose_depth) { }
 
   state_vector_t generate_start_states() {
     state_set_t result;
@@ -152,9 +153,34 @@ template <int size> struct builder_t {
     }
   }
 
+  bool lose_within(const state_t<size> &state, size_t moves) {
+    if (state.cells_available() > moves) return false;
+    if (state.lose()) return true;
+    if (moves == 0) return false;
+    return
+      lose_within_after_move(state, moves - 1, DIRECTION_UP) &&
+      lose_within_after_move(state, moves - 1, DIRECTION_DOWN) &&
+      lose_within_after_move(state, moves - 1, DIRECTION_LEFT) &&
+      lose_within_after_move(state, moves - 1, DIRECTION_RIGHT);
+  }
+
+  bool lose_within_after_move(const state_t<size> &state, size_t moves,
+    direction_t direction) {
+
+    state_t<size> moved_state = state.move(direction);
+    if (moved_state == state) return true; // Cannot move in this direction.
+
+    transitions_t transitions = moved_state.random_transitions();
+    for (typename transitions_t::const_iterator it = transitions.begin();
+      it != transitions.end(); ++it) {
+      if (!lose_within(it->first, moves)) return false;
+    }
+    return true;
+  }
+
   state_t<size> resolve(const state_t<size> &state) {
     if (state.max_value() >= max_exponent) return win_state;
-    if (state.no_cells_available() && state.lose()) return lose_state;
+    if (lose_within(state, max_lose_depth)) return lose_state;
     return state;
   }
 
@@ -200,6 +226,7 @@ private:
   state_vector_t open;
   state_set_t closed;
   int max_exponent;
+  int max_lose_depth;
   state_t<size> win_state;
   state_t<size> lose_state;
 };

@@ -54,11 +54,11 @@ module Twenty48
   # Common methods for the native Builder class.
   #
   module NativeBuilder
-    def self.create(board_size, max_exponent)
+    def self.create(board_size, *args)
       case board_size
-      when 2 then return Builder2.new(max_exponent)
-      when 3 then return Builder3.new(max_exponent)
-      when 4 then return Builder4.new(max_exponent)
+      when 2 then return Builder2.new(*args)
+      when 3 then return Builder3.new(*args)
+      when 4 then return Builder4.new(*args)
       end
       raise "bad builder board_size: #{board_size}"
     end

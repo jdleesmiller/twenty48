@@ -23,6 +23,10 @@ Style/NumericPredicate:
   Enabled: False
   # EnforcedStyle: comparison
 
+# rubocop 0.43 does not accept foo_bar0 or foo_bar_0.
+Style/VariableNumber:
+  Enabled: False
+
 Style/Documentation:
   Exclude:
     - 'test/**/*'

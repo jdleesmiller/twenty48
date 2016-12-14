@@ -46,7 +46,7 @@ class Twenty48NativeTest < Minitest::Test
     end
   end
 
-  def make_builder(board_size, max_exponent)
-    Twenty48::NativeBuilder.create(board_size, max_exponent)
+  def make_builder(board_size, max_exponent, max_lose_depth: 0)
+    Twenty48::NativeBuilder.create(board_size, max_exponent, max_lose_depth)
   end
 end
