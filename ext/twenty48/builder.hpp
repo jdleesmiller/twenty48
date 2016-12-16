@@ -109,9 +109,9 @@ template <int size> struct builder_t {
   typedef std::unordered_set<state_t<size> > state_set_t;
   typedef std::vector<state_t<size> > state_vector_t;
 
-  explicit builder_t(int max_exponent, int max_lose_depth) :
+  explicit builder_t(int max_exponent, int max_lose_depth, int max_win_depth) :
     max_exponent(max_exponent), win_state(max_exponent), lose_state(0),
-    max_lose_depth(max_lose_depth) { }
+    max_lose_depth(max_lose_depth), max_win_depth(max_win_depth) { }
 
   state_vector_t generate_start_states() {
     state_set_t result;
@@ -178,6 +178,10 @@ template <int size> struct builder_t {
     return true;
   }
 
+  int moves_to_win(const state_t<size> &state) const {
+    return inner_moves_to_definite_win(state, max_win_depth, false);
+  }
+
   state_t<size> resolve(const state_t<size> &state) {
     if (state.max_value() >= max_exponent) return win_state;
     if (lose_within(state, max_lose_depth)) return lose_state;
@@ -227,8 +231,32 @@ private:
   state_set_t closed;
   int max_exponent;
   int max_lose_depth;
+  int max_win_depth;
   state_t<size> win_state;
   state_t<size> lose_state;
+
+  int inner_moves_to_definite_win(
+    const state_t<size> &state, int max_depth, bool zeros_unknown) const {
+      // If there is no value close enough to the max exponent, we can skip this
+      // check, because the maximum value can increase by at most one per move.
+      int delta = max_exponent - state.max_value();
+      if (delta > max_depth) return -1;
+
+      if (delta == 0) {
+        return 0;
+      }
+
+      if (delta == 1) {
+        return state.has_adjacent_pair(max_exponent - 1, zeros_unknown);
+      }
+
+      // TODO
+      // DIRECTIONS.map do |direction|
+      //   successor = state.move(direction, zeros_unknown)
+      //   moves = inner_moves_to_definite_win(successor, max_depth - 1, true)
+      //   moves + 1 if moves
+      // end.compact.min
+  }
 };
 
 }

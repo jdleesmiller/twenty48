@@ -160,6 +160,17 @@ template <int size> struct state_t {
     return transitions;
   }
 
+  //
+  // Does the state contain a pair of cells, both with value `value`, separated
+  // only by zero or more (known) zeros? If so, we can always swipe to get a
+  // `value + 1` tile.
+  //
+  bool has_adjacent_pair(uint8_t value, bool zeros_unknown) const {
+    // any_row_or_col?(unpack(data)) do |line|
+    //   Line.adjacent_pair?(line, value, zeros_unknown)
+    // end
+  }
+
   bool operator==(const state_t<size> &other) const {
     return nybbles == other.nybbles;
   }
@@ -238,6 +249,45 @@ private:
   static size_t transform_transpose(size_t x, size_t y) {
     return size * x + y;
   }
+
+  template <typename Predicate> bool any_row(Predicate predicate) const {
+    for (size_t y = 0; y < size; ++y) {
+      uint16_t row_nybbles = 0;
+      for (size_t x = 0; x < size; ++x) {
+        uint8_t value = get_grid_nybble(nybbles, x, y);
+        row_nybbles = line_t<size>::set_nybble(row_nybbles, x, value);
+      }
+      if (predicate(line_t<size>(row_nybbles))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  template <typename Predicate> bool any_col(Predicate predicate) const {
+    for (size_t x = 0; x < size; ++x) {
+      uint16_t col_nybbles = 0;
+      for (size_t y = 0; y < size; ++y) {
+        uint8_t value = get_grid_nybble(nybbles, x, y);
+        col_nybbles = line_t<size>::set_nybble(col_nybbles, x, value);
+      }
+      if (predicate(line_t<size>(col_nybbles))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  template <typename Predicate> bool any_row_or_col(Predicate predicate) const {
+    return any_row(predicate) || any_col(predicate);
+  }
+
+  // why am I doing this in C++ again?
+  // the idea was that I could use some STL containers to get better memory
+  // efficiency, but that no longer seems to be the case anyway
+  // I can probably do something in ruby to bit bash things into 4 bits.
+  // if I have to implement my own hash table anyway, maybe this is not worth
+  // the effort of porting
 
   state_t move_left() const {
     nybbles_t result = 0;
