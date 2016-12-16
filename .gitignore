@@ -6,6 +6,7 @@
 yard
 rdoc
 tmp
+vendor/bundle
 *.bundle
 *.so
 *.dll
@@ -13,6 +14,10 @@ tmp
 # The models get rather large past this point, so don't risk annoying github.
 data/models/board_size-3.max_exponent-7*
 data/models/board_size-3.max_exponent-8*
+data/models/board_size-3.max_exponent-9*
 
 data/array_models/board_size-3.*
 data/array_models/board_size-4.*
+
+data/solvers/board_size-3.max_exponent-8*
+
