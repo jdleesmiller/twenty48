@@ -148,6 +148,9 @@ template <int size> struct builder_t {
         open.pop_back();
         if (state_closed(state)) continue;
         closed.insert(state);
+        if (closed.size() % 10000 == 0) {
+          std::cerr<<"closed " << closed.size() << std::endl;
+        }
         expand(state);
       }
     }

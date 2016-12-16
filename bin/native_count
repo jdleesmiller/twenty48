@@ -8,37 +8,37 @@ include Twenty48
 puts %w(board_size max_exponent states).join(',')
 
 # Reserve memory for the closed state hashtable, to avoid rehashes.
-MACHINE_BYTES = 8 * 2**30
-STATE_BYTES = 8
-RESERVED_STATES = (0.8 * MACHINE_BYTES / STATE_BYTES).to_i
+#MACHINE_BYTES = 12 * 2**30
+#STATE_BYTES = 8
+#RESERVED_STATES = (0.8 * MACHINE_BYTES / STATE_BYTES).to_i
 
 #
 # 2x2
 #
-(2..7).each do |max_exponent|
-  builder = Builder2.new(max_exponent)
-  builder.build
-  puts [2, max_exponent, builder.count_closed_states].join(',')
-end
+#(2..7).each do |max_exponent|
+#  builder = Builder2.new(max_exponent)
+#  builder.build
+#  puts [2, max_exponent, builder.count_closed_states].join(',')
+#end
 
 #
 # 3x3
 #
-# (2..12).each do |max_exponent|
-#   GC.start
-#   builder = Builder3.new(max_exponent)
-#   builder.build(RESERVED_STATES)
-#   puts [3, max_exponent, builder.count_closed_states].join(',')
-#   STDOUT.flush
-# end
+#(2..12).each do |max_exponent|
+#  GC.start
+#  builder = Builder3.new(max_exponent)
+#  builder.build(RESERVED_STATES)
+#  puts [3, max_exponent, builder.count_closed_states].join(',')
+#  STDOUT.flush
+#end
 
 #
 # 4x4
 #
-# (5..11).each do |max_exponent|
-#   GC.start
-#   builder = Builder4.new(max_exponent)
-#   builder.build(RESERVED_STATES)
-#   puts [4, max_exponent, builder.count_closed_states].join(',')
-#   STDOUT.flush
-# end
+(5..11).each do |max_exponent|
+  GC.start
+  builder = Builder4.new(max_exponent)
+  builder.build
+  puts [4, max_exponent, builder.count_closed_states].join(',')
+  STDOUT.flush
+end
