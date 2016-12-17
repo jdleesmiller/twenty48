@@ -24,7 +24,7 @@ module Twenty48
 
     def self.new_from_strategy_name(strategy_name, builder, max_resolve_depth)
       klass = RESOLVER_STRATEGIES[strategy_name.to_sym]
-      klass.new(builder, max_resolve_depth) if klass
+      klass&.new(builder, max_resolve_depth)
     end
 
     def board_size

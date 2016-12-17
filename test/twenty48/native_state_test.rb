@@ -5,7 +5,7 @@ require_relative 'common/state_tests'
 
 class NativeStateTest < Twenty48NativeTest
   include Twenty48
-  
+
   # This is where the actual tests are defined.
   include CommonStateTests
 

@@ -34,11 +34,10 @@ module Twenty48
       found = true
       value = @data.delete(key) { found = false }
       @hit_rate *= 1 - HIT_RATE_ALPHA
-      if found
-        @hit_rate += HIT_RATE_ALPHA
-        @data[key] = value
-        value
-      end
+      return unless found
+      @hit_rate += HIT_RATE_ALPHA
+      @data[key] = value
+      value
     end
 
     def size

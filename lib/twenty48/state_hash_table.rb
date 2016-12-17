@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Twenty48
   #
   # A hash table of States. This tries to use as little memory as
@@ -28,7 +30,7 @@ module Twenty48
 
     def member?(state)
       _, candidate = find_packed_state(pack(state))
-      !!candidate
+      !candidate.nil?
     end
 
     def insert(state)
@@ -50,7 +52,7 @@ module Twenty48
     def unpack(packed_state)
       packed_value = packed_state.unpack('Q')[0]
       packed_value -= 1
-      array = (0...(@board_size**2)).map do |i|
+      array = (0...(@board_size**2)).map do |_|
         packed_value, value = packed_value.divmod(MAX_EXPONENT)
         value
       end
@@ -87,7 +89,7 @@ module Twenty48
     end
 
     def insert_packed_state(packed_state)
-      raise "State table is full" if @count >= @size
+      raise 'State table is full' if @count >= @size
       index, candidate = find_packed_state(packed_state)
       return if candidate == packed_state
       set(index, packed_state)

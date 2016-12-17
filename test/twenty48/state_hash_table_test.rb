@@ -63,4 +63,3 @@ class StateHashTableTest < Twenty48Test
     assert_equal 6, table.count
   end
 end
-
