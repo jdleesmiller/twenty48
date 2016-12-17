@@ -31,6 +31,7 @@ end
 def status_line(state_count, builder)
   format('%s: state_count=%d, ' \
     'open_size=%d, ' \
+    'closed_fill_factor=%.2f%%, ' \
     'resolve_cache_size=%d, ' \
     'resolve_cache_hit_rate=%.2f%%, ' \
     'expand_cache_size=%d, ' \
@@ -38,6 +39,7 @@ def status_line(state_count, builder)
     Time.now.to_s,
     state_count,
     builder.open.size,
+    100 * builder.closed.fill_factor,
     builder.resolve_cache.size,
     100 * builder.resolve_cache.hit_rate,
     builder.expand_cache.size,
@@ -73,8 +75,8 @@ RESOLVER_STRATEGIES.keys.each do |resolver_strategy_name, _|
     (0..[max_exponent - 1, 3].min).each do |max_resolve_depth|
       next if resolver_strategy_name == :exact && (
         max_resolve_depth > 2 || max_exponent > 6) # Too slow.
-      generate(Builder.new(board_size, max_exponent), resolver_strategy_name,
-        max_resolve_depth)
+      builder = Builder.new(board_size, max_exponent, max_states: 60_000_000)
+      generate(builder, resolver_strategy_name, max_resolve_depth)
     end
   end
 end

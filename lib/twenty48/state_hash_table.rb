@@ -33,7 +33,7 @@ module Twenty48
       !candidate.nil?
     end
 
-    def insert(state)
+    def <<(state)
       insert_packed_state(pack(state))
     end
 

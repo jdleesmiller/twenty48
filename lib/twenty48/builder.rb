@@ -19,7 +19,7 @@ module Twenty48
   class Builder
     include ActionDeduplication
 
-    def initialize(board_size, max_exponent)
+    def initialize(board_size, max_exponent, max_states: 1_000_000)
       raise 'board size too small' if board_size < 2
       raise 'max exponent too small' if max_exponent < 2
 
@@ -29,7 +29,7 @@ module Twenty48
       @resolve_cache = LruCache.new(max_size: 300_000)
       @expand_cache = LruCache.new(max_size: 100_000)
 
-      @closed = SortedSet.new
+      @closed = StateHashTable.new(board_size: board_size, size: max_states)
       @open = []
     end
 

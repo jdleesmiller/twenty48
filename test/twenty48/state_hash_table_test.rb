@@ -29,12 +29,12 @@ class StateHashTableTest < Twenty48Test
 
     # Insert first state.
     refute table.member?(states[0])
-    table.insert(states[0])
+    table << states[0]
     assert table.member?(states[0])
     assert_equal 1, table.count
 
     # Should not insert duplicate state.
-    table.insert(states[0])
+    table << states[0]
     assert table.member?(states[0])
     assert_equal 1, table.count
 
@@ -42,7 +42,7 @@ class StateHashTableTest < Twenty48Test
     count = 1
     states.drop(1).take(5).each do |state|
       refute table.member?(state)
-      table.insert(state)
+      table << state
       assert table.member?(state)
       count += 1
       assert_equal count, table.count
@@ -52,13 +52,13 @@ class StateHashTableTest < Twenty48Test
     # Can't insert into full table if state is already present.
     # (We could allow this, but it makes things more complicated.)
     assert_raises do
-      table.insert(states.first)
+      table << states.first
     end
     assert_equal 6, table.count
 
     # Can't insert new state into full table.
     assert_raises do
-      table.insert(states.last)
+      table << states.last
     end
     assert_equal 6, table.count
   end
