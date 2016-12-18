@@ -28,15 +28,16 @@ template <int board_size> struct state_hash_set_t {
     return count;
   }
 
-  void insert(const state_t<board_size> &state) {
-    if (state.get_nybbles() == 0) return;
+  bool insert(const state_t<board_size> &state) {
+    if (state.get_nybbles() == 0) return false;
     if (count >= data.size()) {
       throw std::length_error("state hash set is full");
     }
     size_t index;
-    if (find(state, index)) return;
+    if (find(state, index)) return false;
     data[index] = state;
     ++count;
+    return true;
   }
 
   bool member(const state_t<board_size> &state) const {
@@ -46,10 +47,23 @@ template <int board_size> struct state_hash_set_t {
     return find(state, index);
   }
 
+  std::vector<state_t<board_size> > to_a() const {
+    std::vector<state_t<board_size> > result;
+    result.reserve(count);
+    result.push_back(state_t<board_size>(0));
+    for (typename data_t::const_iterator it = data.begin(); it != data.end();
+      ++it) {
+      if (it->get_nybbles() == 0) continue;
+      result.push_back(*it);
+    }
+    return result;
+  }
+
 private:
   typedef std::hash<state_t<board_size> > hash_t;
+  typedef std::vector<state_t<board_size> > data_t;
 
-  std::vector<state_t<board_size> > data;
+  data_t data;
   size_t count;
   hash_t hash;
 

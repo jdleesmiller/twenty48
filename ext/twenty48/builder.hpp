@@ -8,6 +8,7 @@
 
 #include "twenty48.hpp"
 #include "state.hpp"
+#include "state_hash_set.hpp"
 
 namespace twenty48 {
 
@@ -110,7 +111,8 @@ template <int size> struct builder_t {
   typedef std::vector<state_t<size> > state_vector_t;
 
   explicit builder_t(int max_exponent, int max_lose_depth,
-    const state_vector_t &resolved_win_states) :
+    const state_vector_t &resolved_win_states, size_t max_states = 1048576) :
+    closed(max_states),
     max_exponent(max_exponent),
     max_lose_depth(max_lose_depth),
     resolved_win_states(resolved_win_states),
@@ -137,14 +139,7 @@ template <int size> struct builder_t {
     return state_vector_t(result.begin(), result.end());
   }
 
-  void build(size_t reserved_states = 0) {
-    // Our usual transition model is not valid in the lose state, so we handle
-    // it as a special case.
-    if (reserved_states > 0) {
-      closed.reserve(reserved_states);
-    }
-    closed.insert(lose_state);
-
+  void build() {
     state_vector_t start_states = generate_start_states();
     for (typename state_vector_t::const_iterator it = start_states.begin();
       it != start_states.end(); ++it)
@@ -153,8 +148,8 @@ template <int size> struct builder_t {
       while (!open.empty()) {
         state_t<size> state = open.back();
         open.pop_back();
-        if (state_closed(state)) continue;
-        closed.insert(state);
+        bool already_closed = !closed.insert(state);
+        if (already_closed) continue;
         if (closed.size() % 10000 == 0) {
           std::cerr<<"closed " << closed.size() << std::endl;
         }
@@ -212,7 +207,7 @@ template <int size> struct builder_t {
   }
 
   state_vector_t closed_states() const {
-    return state_vector_t(closed.begin(), closed.end());
+    return closed.to_a();
   }
 
   size_t count_closed_states() const {
@@ -236,18 +231,14 @@ template <int size> struct builder_t {
       it != transitions.end(); ++it)
     {
       state_t<size> successor = resolve(it->first);
-      if (state_closed(successor)) continue;
+      if (closed.member(successor)) continue;
       open.push_back(successor);
     }
   }
 
-  bool state_closed(const state_t<size> &state) const {
-    return closed.find(state) != closed.end();
-  }
-
 private:
   state_vector_t open;
-  state_set_t closed;
+  state_hash_set_t<size> closed;
   int max_exponent;
   int max_lose_depth;
   state_vector_t resolved_win_states;
