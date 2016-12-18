@@ -94,18 +94,19 @@ template <int size> struct state_t {
    * At present, all of these are implemented in terms of moving left. There
    * may be some efficiency improvements possible.
    */
-  state_t move (twenty48::direction_t direction) const {
+  state_t move (twenty48::direction_t direction,
+    bool zeros_unknown = false) const {
     switch(direction) {
       case DIRECTION_LEFT:
-        return move_left();
+        return move_left(zeros_unknown);
       case DIRECTION_RIGHT:
         return reflect_horizontally().
-          move(DIRECTION_LEFT).
+          move(DIRECTION_LEFT, zeros_unknown).
           reflect_horizontally();
       case DIRECTION_UP:
-        return transpose().move(DIRECTION_LEFT).transpose();
+        return transpose().move(DIRECTION_LEFT, zeros_unknown).transpose();
       case DIRECTION_DOWN:
-        return transpose().move(DIRECTION_RIGHT).transpose();
+        return transpose().move(DIRECTION_RIGHT, zeros_unknown).transpose();
     }
     throw std::invalid_argument("bad direction");
   }
@@ -292,14 +293,7 @@ private:
     return any_row(predicate) || any_col(predicate);
   }
 
-  // why am I doing this in C++ again?
-  // the idea was that I could use some STL containers to get better memory
-  // efficiency, but that no longer seems to be the case anyway
-  // I can probably do something in ruby to bit bash things into 4 bits.
-  // if I have to implement my own hash table anyway, maybe this is not worth
-  // the effort of porting
-
-  state_t move_left() const {
+  state_t move_left(bool zeros_unknown) const {
     nybbles_t result = 0;
     for (size_t y = 0; y < size; ++y) {
       uint16_t row_nybbles = 0;
@@ -307,7 +301,11 @@ private:
         uint8_t value = get_grid_nybble(nybbles, x, y);
         row_nybbles = line_t<size>::set_nybble(row_nybbles, x, value);
       }
-      row_nybbles = line_t<size>::lookup_move(row_nybbles);
+      if (zeros_unknown) {
+        row_nybbles = line_t<size>::lookup_move_zeros_unknown(row_nybbles);
+      } else {
+        row_nybbles = line_t<size>::lookup_move(row_nybbles);
+      }
       for (size_t x = 0; x < size; ++x) {
         uint8_t value = line_t<size>::get_nybble(row_nybbles, x);
         result = set_grid_nybble(result, x, y, value);

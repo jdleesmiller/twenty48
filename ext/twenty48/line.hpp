@@ -26,15 +26,25 @@ template <int size> class line_t {
     }
   }
 
-  line_t<size> move() {
+  line_t<size> move(bool zeros_unknown = false) {
     array_t line = to_a();
 
     size_t done = 0;
     size_t merged = 0;
+    bool unknown = false;
     for (size_t i = 0; i < size; ++i) {
-      uint8_t value = line[i];
+      // If zeros are unknown, zero everything once we hit a zero.
+      if (unknown) {
+        line[i] = 0;
+        continue;
+      }
 
-      if (value == 0) continue;
+      uint8_t value = line[i];
+      if (value == 0) {
+        if (zeros_unknown) unknown = true;
+        continue;
+      }
+
       if (done > merged && line[done - 1] == value) {
         line[done - 1] += 1;
         line[i] = 0;
@@ -99,9 +109,9 @@ template <int size> class line_t {
 
     uint16_t table[TABLE_SIZE + 1];
 
-    table_t() {
+    table_t(bool zeros_unknown = false) {
       for (uint32_t nybbles = 0; nybbles <= TABLE_SIZE; ++nybbles) {
-        table[nybbles] = line_t(nybbles).move().get_nybbles();
+        table[nybbles] = line_t(nybbles).move(zeros_unknown).get_nybbles();
       }
     }
   };
@@ -112,6 +122,14 @@ template <int size> class line_t {
    */
   static uint16_t lookup_move(uint16_t nybbles) {
     static table_t table;
+    return table.table[nybbles];
+  };
+
+  /**
+   * Look up the result of moving the given line if zeros are unknown.
+   */
+  static uint16_t lookup_move_zeros_unknown(uint16_t nybbles) {
+    static table_t table(true);
     return table.table[nybbles];
   };
 

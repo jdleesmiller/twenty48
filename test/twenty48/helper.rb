@@ -39,11 +39,7 @@ class Twenty48NativeTest < Minitest::Test
   include CommonTestHelpers
 
   def make_state(state_array)
-    case state_array.size
-    when 4 then Twenty48::State2.new(state_array)
-    when 9 then Twenty48::State3.new(state_array)
-    when 16 then Twenty48::State4.new(state_array)
-    end
+    Twenty48::NativeState.create(state_array)
   end
 
   def make_builder(board_size, max_exponent,

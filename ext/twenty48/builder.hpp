@@ -109,11 +109,16 @@ template <int size> struct builder_t {
   typedef std::unordered_set<state_t<size> > state_set_t;
   typedef std::vector<state_t<size> > state_vector_t;
 
-  explicit builder_t(int max_exponent, int max_lose_depth, int max_win_depth) :
+  explicit builder_t(int max_exponent, int max_lose_depth,
+    const state_vector_t &resolved_win_states) :
     max_exponent(max_exponent),
     max_lose_depth(max_lose_depth),
-    max_win_depth(max_win_depth),
-    win_state(max_exponent), lose_state(0) { }
+    resolved_win_states(resolved_win_states),
+    lose_state(0) {
+    if (resolved_win_states.size() < 1) {
+      throw std::invalid_argument("bad resolved win states size");
+    }
+  }
 
   state_vector_t generate_start_states() {
     state_set_t result;
@@ -183,12 +188,21 @@ template <int size> struct builder_t {
     return true;
   }
 
-  int moves_to_win(const state_t<size> &state) const {
-    return inner_moves_to_definite_win(state, max_win_depth, false);
+  size_t max_win_depth() const {
+    return resolved_win_states.size() - 1;
   }
 
+  size_t moves_to_win(const state_t<size> &state) const {
+    return inner_moves_to_win(state, max_win_depth(), false);
+  }
+
+  static const size_t UNKNOWN_MOVES_TO_WIN = (size_t)(-1);
+
   state_t<size> resolve(const state_t<size> &state) {
-    if (state.max_value() >= max_exponent) return win_state;
+    size_t win_in = moves_to_win(state);
+    if (win_in != UNKNOWN_MOVES_TO_WIN) {
+      return resolved_win_states[win_in];
+    }
     if (lose_within(state, max_lose_depth)) return lose_state;
     return state;
   }
@@ -201,7 +215,7 @@ template <int size> struct builder_t {
     return state_vector_t(closed.begin(), closed.end());
   }
 
-  const size_t count_closed_states() const {
+  size_t count_closed_states() const {
     return closed.size();
   }
 
@@ -236,31 +250,43 @@ private:
   state_set_t closed;
   int max_exponent;
   int max_lose_depth;
-  int max_win_depth;
-  state_t<size> win_state;
+  state_vector_t resolved_win_states;
   state_t<size> lose_state;
 
-  int inner_moves_to_definite_win(
+  size_t inner_moves_to_win(
     const state_t<size> &state, int max_depth, bool zeros_unknown) const {
-      // If there is no value close enough to the max exponent, we can skip this
-      // check, because the maximum value can increase by at most one per move.
-      int delta = max_exponent - state.max_value();
-      if (delta > max_depth) return -1;
+    // If there is no value close enough to the max exponent, we can skip this
+    // check, because the maximum value can increase by at most one per move.
+    int delta = max_exponent - state.max_value();
+    if (delta > max_depth) return UNKNOWN_MOVES_TO_WIN;
 
-      if (delta == 0) {
-        return 0;
-      }
+    if (delta == 0) {
+      return 0;
+    }
 
-      if (delta == 1) {
-        return state.has_adjacent_pair(max_exponent - 1, zeros_unknown);
-      }
+    if (delta == 1 &&
+      state.has_adjacent_pair(max_exponent - 1, zeros_unknown)) {
+      return 1;
+    }
 
-      // TODO
-      // DIRECTIONS.map do |direction|
-      //   successor = state.move(direction, zeros_unknown)
-      //   moves = inner_moves_to_definite_win(successor, max_depth - 1, true)
-      //   moves + 1 if moves
-      // end.compact.min
+    state_t<size> state_up = state.move(DIRECTION_UP, zeros_unknown);
+    size_t moves_up = inner_moves_to_win(state_up, max_depth - 1, true);
+
+    state_t<size> state_down = state.move(DIRECTION_DOWN, zeros_unknown);
+    size_t moves_down = inner_moves_to_win(state_down, max_depth - 1, true);
+
+    state_t<size> state_left = state.move(DIRECTION_LEFT, zeros_unknown);
+    size_t moves_left = inner_moves_to_win(state_left, max_depth - 1, true);
+
+    state_t<size> state_right = state.move(DIRECTION_RIGHT, zeros_unknown);
+    size_t moves_right = inner_moves_to_win(state_right, max_depth - 1, true);
+
+    size_t moves = std::min(
+      std::min(moves_up, moves_down),
+      std::min(moves_left, moves_right));
+
+    if (moves != UNKNOWN_MOVES_TO_WIN) moves += 1;
+    return moves;
   }
 };
 

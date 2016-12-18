@@ -12040,7 +12040,39 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_Line2_move(int argc, VALUE *argv, VALUE self) {
+_wrap_Line2_move__SWIG_0(int argc, VALUE *argv, VALUE self) {
+  twenty48::line_t< 2 > *arg1 = (twenty48::line_t< 2 > *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  twenty48::line_t< 2 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__line_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 2 > *","move", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::line_t< 2 > * >(argp1);
+  ecode2 = SWIG_AsVal_bool(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "bool","move", 2, argv[0] ));
+  } 
+  arg2 = static_cast< bool >(val2);
+  result = (arg1)->move(arg2);
+  vresult = SWIG_NewPointerObj((new twenty48::line_t< 2 >(static_cast< const twenty48::line_t< 2 >& >(result))), SWIGTYPE_p_twenty48__line_tT_2_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Line2_move__SWIG_1(int argc, VALUE *argv, VALUE self) {
   twenty48::line_t< 2 > *arg1 = (twenty48::line_t< 2 > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -12059,6 +12091,51 @@ _wrap_Line2_move(int argc, VALUE *argv, VALUE self) {
   vresult = SWIG_NewPointerObj((new twenty48::line_t< 2 >(static_cast< const twenty48::line_t< 2 >& >(result))), SWIGTYPE_p_twenty48__line_tT_2_t, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE _wrap_Line2_move(int nargs, VALUE *args, VALUE self) {
+  int argc;
+  VALUE argv[3];
+  int ii;
+  
+  argc = nargs + 1;
+  argv[0] = self;
+  if (argc > 3) SWIG_fail;
+  for (ii = 1; (ii < argc); ++ii) {
+    argv[ii] = args[ii-1];
+  }
+  if (argc == 1) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_2_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_Line2_move__SWIG_1(nargs, args, self);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_2_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_bool(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_Line2_move__SWIG_0(nargs, args, self);
+      }
+    }
+  }
+  
+fail:
+  Ruby_Format_OverloadedError( argc, 3, "Line2.move", 
+    "    twenty48::line_t< 2 > Line2.move(bool zeros_unknown)\n"
+    "    twenty48::line_t< 2 > Line2.move()\n");
+  
   return Qnil;
 }
 
@@ -12266,6 +12343,30 @@ _wrap_Line2_lookup_move__SWIG_0(int argc, VALUE *argv, VALUE self) {
   } 
   arg1 = static_cast< uint16_t >(val1);
   result = (uint16_t)twenty48::line_t< 2 >::SWIGTEMPLATEDISAMBIGUATOR lookup_move(arg1);
+  vresult = SWIG_From_unsigned_SS_short(static_cast< unsigned short >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Line2_lookup_move_zeros_unknown(int argc, VALUE *argv, VALUE self) {
+  uint16_t arg1 ;
+  unsigned short val1 ;
+  int ecode1 = 0 ;
+  uint16_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_unsigned_SS_short(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "uint16_t","twenty48::line_t<(2)>::lookup_move_zeros_unknown", 1, argv[0] ));
+  } 
+  arg1 = static_cast< uint16_t >(val1);
+  result = (uint16_t)twenty48::line_t< 2 >::SWIGTEMPLATEDISAMBIGUATOR lookup_move_zeros_unknown(arg1);
   vresult = SWIG_From_unsigned_SS_short(static_cast< unsigned short >(result));
   return vresult;
 fail:
@@ -12634,7 +12735,39 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_Line3_move(int argc, VALUE *argv, VALUE self) {
+_wrap_Line3_move__SWIG_0(int argc, VALUE *argv, VALUE self) {
+  twenty48::line_t< 3 > *arg1 = (twenty48::line_t< 3 > *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  twenty48::line_t< 3 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__line_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 3 > *","move", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::line_t< 3 > * >(argp1);
+  ecode2 = SWIG_AsVal_bool(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "bool","move", 2, argv[0] ));
+  } 
+  arg2 = static_cast< bool >(val2);
+  result = (arg1)->move(arg2);
+  vresult = SWIG_NewPointerObj((new twenty48::line_t< 3 >(static_cast< const twenty48::line_t< 3 >& >(result))), SWIGTYPE_p_twenty48__line_tT_3_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Line3_move__SWIG_1(int argc, VALUE *argv, VALUE self) {
   twenty48::line_t< 3 > *arg1 = (twenty48::line_t< 3 > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -12653,6 +12786,51 @@ _wrap_Line3_move(int argc, VALUE *argv, VALUE self) {
   vresult = SWIG_NewPointerObj((new twenty48::line_t< 3 >(static_cast< const twenty48::line_t< 3 >& >(result))), SWIGTYPE_p_twenty48__line_tT_3_t, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE _wrap_Line3_move(int nargs, VALUE *args, VALUE self) {
+  int argc;
+  VALUE argv[3];
+  int ii;
+  
+  argc = nargs + 1;
+  argv[0] = self;
+  if (argc > 3) SWIG_fail;
+  for (ii = 1; (ii < argc); ++ii) {
+    argv[ii] = args[ii-1];
+  }
+  if (argc == 1) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_3_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_Line3_move__SWIG_1(nargs, args, self);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_3_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_bool(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_Line3_move__SWIG_0(nargs, args, self);
+      }
+    }
+  }
+  
+fail:
+  Ruby_Format_OverloadedError( argc, 3, "Line3.move", 
+    "    twenty48::line_t< 3 > Line3.move(bool zeros_unknown)\n"
+    "    twenty48::line_t< 3 > Line3.move()\n");
+  
   return Qnil;
 }
 
@@ -12860,6 +13038,30 @@ _wrap_Line3_lookup_move__SWIG_0(int argc, VALUE *argv, VALUE self) {
   } 
   arg1 = static_cast< uint16_t >(val1);
   result = (uint16_t)twenty48::line_t< 3 >::SWIGTEMPLATEDISAMBIGUATOR lookup_move(arg1);
+  vresult = SWIG_From_unsigned_SS_short(static_cast< unsigned short >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Line3_lookup_move_zeros_unknown(int argc, VALUE *argv, VALUE self) {
+  uint16_t arg1 ;
+  unsigned short val1 ;
+  int ecode1 = 0 ;
+  uint16_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_unsigned_SS_short(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "uint16_t","twenty48::line_t<(3)>::lookup_move_zeros_unknown", 1, argv[0] ));
+  } 
+  arg1 = static_cast< uint16_t >(val1);
+  result = (uint16_t)twenty48::line_t< 3 >::SWIGTEMPLATEDISAMBIGUATOR lookup_move_zeros_unknown(arg1);
   vresult = SWIG_From_unsigned_SS_short(static_cast< unsigned short >(result));
   return vresult;
 fail:
@@ -13228,7 +13430,39 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_Line4_move(int argc, VALUE *argv, VALUE self) {
+_wrap_Line4_move__SWIG_0(int argc, VALUE *argv, VALUE self) {
+  twenty48::line_t< 4 > *arg1 = (twenty48::line_t< 4 > *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  twenty48::line_t< 4 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__line_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 4 > *","move", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::line_t< 4 > * >(argp1);
+  ecode2 = SWIG_AsVal_bool(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "bool","move", 2, argv[0] ));
+  } 
+  arg2 = static_cast< bool >(val2);
+  result = (arg1)->move(arg2);
+  vresult = SWIG_NewPointerObj((new twenty48::line_t< 4 >(static_cast< const twenty48::line_t< 4 >& >(result))), SWIGTYPE_p_twenty48__line_tT_4_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Line4_move__SWIG_1(int argc, VALUE *argv, VALUE self) {
   twenty48::line_t< 4 > *arg1 = (twenty48::line_t< 4 > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -13247,6 +13481,51 @@ _wrap_Line4_move(int argc, VALUE *argv, VALUE self) {
   vresult = SWIG_NewPointerObj((new twenty48::line_t< 4 >(static_cast< const twenty48::line_t< 4 >& >(result))), SWIGTYPE_p_twenty48__line_tT_4_t, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE _wrap_Line4_move(int nargs, VALUE *args, VALUE self) {
+  int argc;
+  VALUE argv[3];
+  int ii;
+  
+  argc = nargs + 1;
+  argv[0] = self;
+  if (argc > 3) SWIG_fail;
+  for (ii = 1; (ii < argc); ++ii) {
+    argv[ii] = args[ii-1];
+  }
+  if (argc == 1) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_4_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_Line4_move__SWIG_1(nargs, args, self);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_4_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_bool(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_Line4_move__SWIG_0(nargs, args, self);
+      }
+    }
+  }
+  
+fail:
+  Ruby_Format_OverloadedError( argc, 3, "Line4.move", 
+    "    twenty48::line_t< 4 > Line4.move(bool zeros_unknown)\n"
+    "    twenty48::line_t< 4 > Line4.move()\n");
+  
   return Qnil;
 }
 
@@ -13454,6 +13733,30 @@ _wrap_Line4_lookup_move__SWIG_0(int argc, VALUE *argv, VALUE self) {
   } 
   arg1 = static_cast< uint16_t >(val1);
   result = (uint16_t)twenty48::line_t< 4 >::SWIGTEMPLATEDISAMBIGUATOR lookup_move(arg1);
+  vresult = SWIG_From_unsigned_SS_short(static_cast< unsigned short >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Line4_lookup_move_zeros_unknown(int argc, VALUE *argv, VALUE self) {
+  uint16_t arg1 ;
+  unsigned short val1 ;
+  int ecode1 = 0 ;
+  uint16_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_unsigned_SS_short(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "uint16_t","twenty48::line_t<(4)>::lookup_move_zeros_unknown", 1, argv[0] ));
+  } 
+  arg1 = static_cast< uint16_t >(val1);
+  result = (uint16_t)twenty48::line_t< 4 >::SWIGTEMPLATEDISAMBIGUATOR lookup_move_zeros_unknown(arg1);
   vresult = SWIG_From_unsigned_SS_short(static_cast< unsigned short >(result));
   return vresult;
 fail:
@@ -16183,7 +16486,47 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_State2_move(int argc, VALUE *argv, VALUE self) {
+_wrap_State2_move__SWIG_0(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
+  twenty48::direction_t arg2 ;
+  bool arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  bool val3 ;
+  int ecode3 = 0 ;
+  twenty48::state_t< 2 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 2 > const *","move", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 2 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "twenty48::direction_t","move", 2, argv[0] ));
+  } 
+  arg2 = static_cast< twenty48::direction_t >(val2);
+  ecode3 = SWIG_AsVal_bool(argv[1], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "bool","move", 3, argv[1] ));
+  } 
+  arg3 = static_cast< bool >(val3);
+  result = ((twenty48::state_t< 2 > const *)arg1)->move(arg2,arg3);
+  vresult = SWIG_NewPointerObj((new twenty48::state_t< 2 >(static_cast< const twenty48::state_t< 2 >& >(result))), SWIGTYPE_p_twenty48__state_tT_2_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_State2_move__SWIG_1(int argc, VALUE *argv, VALUE self) {
   twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
   twenty48::direction_t arg2 ;
   void *argp1 = 0 ;
@@ -16210,6 +16553,63 @@ _wrap_State2_move(int argc, VALUE *argv, VALUE self) {
   vresult = SWIG_NewPointerObj((new twenty48::state_t< 2 >(static_cast< const twenty48::state_t< 2 >& >(result))), SWIGTYPE_p_twenty48__state_tT_2_t, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE _wrap_State2_move(int nargs, VALUE *args, VALUE self) {
+  int argc;
+  VALUE argv[4];
+  int ii;
+  
+  argc = nargs + 1;
+  argv[0] = self;
+  if (argc > 4) SWIG_fail;
+  for (ii = 1; (ii < argc); ++ii) {
+    argv[ii] = args[ii-1];
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__state_tT_2_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_State2_move__SWIG_1(nargs, args, self);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__state_tT_2_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_bool(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_State2_move__SWIG_0(nargs, args, self);
+        }
+      }
+    }
+  }
+  
+fail:
+  Ruby_Format_OverloadedError( argc, 4, "State2.move", 
+    "    twenty48::state_t< 2 > State2.move(twenty48::direction_t direction, bool zeros_unknown)\n"
+    "    twenty48::state_t< 2 > State2.move(twenty48::direction_t direction)\n");
+  
   return Qnil;
 }
 
@@ -16870,7 +17270,47 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_State3_move(int argc, VALUE *argv, VALUE self) {
+_wrap_State3_move__SWIG_0(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
+  twenty48::direction_t arg2 ;
+  bool arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  bool val3 ;
+  int ecode3 = 0 ;
+  twenty48::state_t< 3 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 3 > const *","move", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 3 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "twenty48::direction_t","move", 2, argv[0] ));
+  } 
+  arg2 = static_cast< twenty48::direction_t >(val2);
+  ecode3 = SWIG_AsVal_bool(argv[1], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "bool","move", 3, argv[1] ));
+  } 
+  arg3 = static_cast< bool >(val3);
+  result = ((twenty48::state_t< 3 > const *)arg1)->move(arg2,arg3);
+  vresult = SWIG_NewPointerObj((new twenty48::state_t< 3 >(static_cast< const twenty48::state_t< 3 >& >(result))), SWIGTYPE_p_twenty48__state_tT_3_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_State3_move__SWIG_1(int argc, VALUE *argv, VALUE self) {
   twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
   twenty48::direction_t arg2 ;
   void *argp1 = 0 ;
@@ -16897,6 +17337,63 @@ _wrap_State3_move(int argc, VALUE *argv, VALUE self) {
   vresult = SWIG_NewPointerObj((new twenty48::state_t< 3 >(static_cast< const twenty48::state_t< 3 >& >(result))), SWIGTYPE_p_twenty48__state_tT_3_t, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE _wrap_State3_move(int nargs, VALUE *args, VALUE self) {
+  int argc;
+  VALUE argv[4];
+  int ii;
+  
+  argc = nargs + 1;
+  argv[0] = self;
+  if (argc > 4) SWIG_fail;
+  for (ii = 1; (ii < argc); ++ii) {
+    argv[ii] = args[ii-1];
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__state_tT_3_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_State3_move__SWIG_1(nargs, args, self);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__state_tT_3_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_bool(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_State3_move__SWIG_0(nargs, args, self);
+        }
+      }
+    }
+  }
+  
+fail:
+  Ruby_Format_OverloadedError( argc, 4, "State3.move", 
+    "    twenty48::state_t< 3 > State3.move(twenty48::direction_t direction, bool zeros_unknown)\n"
+    "    twenty48::state_t< 3 > State3.move(twenty48::direction_t direction)\n");
+  
   return Qnil;
 }
 
@@ -17557,7 +18054,47 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_State4_move(int argc, VALUE *argv, VALUE self) {
+_wrap_State4_move__SWIG_0(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 4 > *arg1 = (twenty48::state_t< 4 > *) 0 ;
+  twenty48::direction_t arg2 ;
+  bool arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  bool val3 ;
+  int ecode3 = 0 ;
+  twenty48::state_t< 4 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 4 > const *","move", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 4 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "twenty48::direction_t","move", 2, argv[0] ));
+  } 
+  arg2 = static_cast< twenty48::direction_t >(val2);
+  ecode3 = SWIG_AsVal_bool(argv[1], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "bool","move", 3, argv[1] ));
+  } 
+  arg3 = static_cast< bool >(val3);
+  result = ((twenty48::state_t< 4 > const *)arg1)->move(arg2,arg3);
+  vresult = SWIG_NewPointerObj((new twenty48::state_t< 4 >(static_cast< const twenty48::state_t< 4 >& >(result))), SWIGTYPE_p_twenty48__state_tT_4_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_State4_move__SWIG_1(int argc, VALUE *argv, VALUE self) {
   twenty48::state_t< 4 > *arg1 = (twenty48::state_t< 4 > *) 0 ;
   twenty48::direction_t arg2 ;
   void *argp1 = 0 ;
@@ -17584,6 +18121,63 @@ _wrap_State4_move(int argc, VALUE *argv, VALUE self) {
   vresult = SWIG_NewPointerObj((new twenty48::state_t< 4 >(static_cast< const twenty48::state_t< 4 >& >(result))), SWIGTYPE_p_twenty48__state_tT_4_t, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE _wrap_State4_move(int nargs, VALUE *args, VALUE self) {
+  int argc;
+  VALUE argv[4];
+  int ii;
+  
+  argc = nargs + 1;
+  argv[0] = self;
+  if (argc > 4) SWIG_fail;
+  for (ii = 1; (ii < argc); ++ii) {
+    argv[ii] = args[ii-1];
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__state_tT_4_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_State4_move__SWIG_1(nargs, args, self);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__state_tT_4_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_bool(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_State4_move__SWIG_0(nargs, args, self);
+        }
+      }
+    }
+  }
+  
+fail:
+  Ruby_Format_OverloadedError( argc, 4, "State4.move", 
+    "    twenty48::state_t< 4 > State4.move(twenty48::direction_t direction, bool zeros_unknown)\n"
+    "    twenty48::state_t< 4 > State4.move(twenty48::direction_t direction)\n");
+  
   return Qnil;
 }
 
@@ -28764,13 +29358,12 @@ SWIGINTERN VALUE
 _wrap_new_Builder2(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
   int arg2 ;
-  int arg3 ;
+  twenty48::builder_t< 2 >::state_vector_t *arg3 = 0 ;
   int val1 ;
   int ecode1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
-  int val3 ;
-  int ecode3 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
   twenty48::builder_t< 2 > *result = 0 ;
   
   if ((argc < 3) || (argc > 3)) {
@@ -28786,15 +29379,23 @@ _wrap_new_Builder2(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","builder_t<(2)>", 2, argv[1] ));
   } 
   arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_int(argv[2], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","builder_t<(2)>", 3, argv[2] ));
-  } 
-  arg3 = static_cast< int >(val3);
-  result = (twenty48::builder_t< 2 > *)new twenty48::builder_t< 2 >(arg1,arg2,arg3);
+  {
+    std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > *ptr = (std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > *)0;
+    res3 = swig::asptr(argv[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "twenty48::builder_t< 2 >::state_vector_t const &","builder_t<(2)>", 3, argv[2] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::builder_t< 2 >::state_vector_t const &","builder_t<(2)>", 3, argv[2])); 
+    }
+    arg3 = ptr;
+  }
+  result = (twenty48::builder_t< 2 > *)new twenty48::builder_t< 2 >(arg1,arg2,(twenty48::builder_t< 2 >::state_vector_t const &)*arg3);
   DATA_PTR(self) = result;
+  if (SWIG_IsNewObj(res3)) delete arg3;
   return self;
 fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
   return Qnil;
 }
 
@@ -29013,6 +29614,30 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_Builder2_max_win_depth(int argc, VALUE *argv, VALUE self) {
+  twenty48::builder_t< 2 > *arg1 = (twenty48::builder_t< 2 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__builder_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::builder_t< 2 > const *","max_win_depth", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::builder_t< 2 > * >(argp1);
+  result = ((twenty48::builder_t< 2 > const *)arg1)->max_win_depth();
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_Builder2_moves_to_win(int argc, VALUE *argv, VALUE self) {
   twenty48::builder_t< 2 > *arg1 = (twenty48::builder_t< 2 > *) 0 ;
   twenty48::state_t< 2 > *arg2 = 0 ;
@@ -29020,7 +29645,7 @@ _wrap_Builder2_moves_to_win(int argc, VALUE *argv, VALUE self) {
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
-  int result;
+  size_t result;
   VALUE vresult = Qnil;
   
   if ((argc < 1) || (argc > 1)) {
@@ -29039,8 +29664,8 @@ _wrap_Builder2_moves_to_win(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 2 > const &","moves_to_win", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::state_t< 2 > * >(argp2);
-  result = (int)((twenty48::builder_t< 2 > const *)arg1)->moves_to_win((twenty48::state_t< 2 > const &)*arg2);
-  vresult = SWIG_From_int(static_cast< int >(result));
+  result = ((twenty48::builder_t< 2 > const *)arg1)->moves_to_win((twenty48::state_t< 2 > const &)*arg2);
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
   return vresult;
 fail:
   return Qnil;
@@ -29288,13 +29913,12 @@ SWIGINTERN VALUE
 _wrap_new_Builder3(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
   int arg2 ;
-  int arg3 ;
+  twenty48::builder_t< 3 >::state_vector_t *arg3 = 0 ;
   int val1 ;
   int ecode1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
-  int val3 ;
-  int ecode3 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
   twenty48::builder_t< 3 > *result = 0 ;
   
   if ((argc < 3) || (argc > 3)) {
@@ -29310,15 +29934,23 @@ _wrap_new_Builder3(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","builder_t<(3)>", 2, argv[1] ));
   } 
   arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_int(argv[2], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","builder_t<(3)>", 3, argv[2] ));
-  } 
-  arg3 = static_cast< int >(val3);
-  result = (twenty48::builder_t< 3 > *)new twenty48::builder_t< 3 >(arg1,arg2,arg3);
+  {
+    std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > *ptr = (std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > *)0;
+    res3 = swig::asptr(argv[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "twenty48::builder_t< 3 >::state_vector_t const &","builder_t<(3)>", 3, argv[2] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::builder_t< 3 >::state_vector_t const &","builder_t<(3)>", 3, argv[2])); 
+    }
+    arg3 = ptr;
+  }
+  result = (twenty48::builder_t< 3 > *)new twenty48::builder_t< 3 >(arg1,arg2,(twenty48::builder_t< 3 >::state_vector_t const &)*arg3);
   DATA_PTR(self) = result;
+  if (SWIG_IsNewObj(res3)) delete arg3;
   return self;
 fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
   return Qnil;
 }
 
@@ -29537,6 +30169,30 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_Builder3_max_win_depth(int argc, VALUE *argv, VALUE self) {
+  twenty48::builder_t< 3 > *arg1 = (twenty48::builder_t< 3 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__builder_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::builder_t< 3 > const *","max_win_depth", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::builder_t< 3 > * >(argp1);
+  result = ((twenty48::builder_t< 3 > const *)arg1)->max_win_depth();
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_Builder3_moves_to_win(int argc, VALUE *argv, VALUE self) {
   twenty48::builder_t< 3 > *arg1 = (twenty48::builder_t< 3 > *) 0 ;
   twenty48::state_t< 3 > *arg2 = 0 ;
@@ -29544,7 +30200,7 @@ _wrap_Builder3_moves_to_win(int argc, VALUE *argv, VALUE self) {
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
-  int result;
+  size_t result;
   VALUE vresult = Qnil;
   
   if ((argc < 1) || (argc > 1)) {
@@ -29563,8 +30219,8 @@ _wrap_Builder3_moves_to_win(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 3 > const &","moves_to_win", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::state_t< 3 > * >(argp2);
-  result = (int)((twenty48::builder_t< 3 > const *)arg1)->moves_to_win((twenty48::state_t< 3 > const &)*arg2);
-  vresult = SWIG_From_int(static_cast< int >(result));
+  result = ((twenty48::builder_t< 3 > const *)arg1)->moves_to_win((twenty48::state_t< 3 > const &)*arg2);
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
   return vresult;
 fail:
   return Qnil;
@@ -29812,13 +30468,12 @@ SWIGINTERN VALUE
 _wrap_new_Builder4(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
   int arg2 ;
-  int arg3 ;
+  twenty48::builder_t< 4 >::state_vector_t *arg3 = 0 ;
   int val1 ;
   int ecode1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
-  int val3 ;
-  int ecode3 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
   twenty48::builder_t< 4 > *result = 0 ;
   
   if ((argc < 3) || (argc > 3)) {
@@ -29834,15 +30489,23 @@ _wrap_new_Builder4(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","builder_t<(4)>", 2, argv[1] ));
   } 
   arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_int(argv[2], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","builder_t<(4)>", 3, argv[2] ));
-  } 
-  arg3 = static_cast< int >(val3);
-  result = (twenty48::builder_t< 4 > *)new twenty48::builder_t< 4 >(arg1,arg2,arg3);
+  {
+    std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > *ptr = (std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > *)0;
+    res3 = swig::asptr(argv[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "twenty48::builder_t< 4 >::state_vector_t const &","builder_t<(4)>", 3, argv[2] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::builder_t< 4 >::state_vector_t const &","builder_t<(4)>", 3, argv[2])); 
+    }
+    arg3 = ptr;
+  }
+  result = (twenty48::builder_t< 4 > *)new twenty48::builder_t< 4 >(arg1,arg2,(twenty48::builder_t< 4 >::state_vector_t const &)*arg3);
   DATA_PTR(self) = result;
+  if (SWIG_IsNewObj(res3)) delete arg3;
   return self;
 fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
   return Qnil;
 }
 
@@ -30061,6 +30724,30 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_Builder4_max_win_depth(int argc, VALUE *argv, VALUE self) {
+  twenty48::builder_t< 4 > *arg1 = (twenty48::builder_t< 4 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__builder_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::builder_t< 4 > const *","max_win_depth", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::builder_t< 4 > * >(argp1);
+  result = ((twenty48::builder_t< 4 > const *)arg1)->max_win_depth();
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_Builder4_moves_to_win(int argc, VALUE *argv, VALUE self) {
   twenty48::builder_t< 4 > *arg1 = (twenty48::builder_t< 4 > *) 0 ;
   twenty48::state_t< 4 > *arg2 = 0 ;
@@ -30068,7 +30755,7 @@ _wrap_Builder4_moves_to_win(int argc, VALUE *argv, VALUE self) {
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
-  int result;
+  size_t result;
   VALUE vresult = Qnil;
   
   if ((argc < 1) || (argc > 1)) {
@@ -30087,8 +30774,8 @@ _wrap_Builder4_moves_to_win(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 4 > const &","moves_to_win", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::state_t< 4 > * >(argp2);
-  result = (int)((twenty48::builder_t< 4 > const *)arg1)->moves_to_win((twenty48::state_t< 4 > const &)*arg2);
-  vresult = SWIG_From_int(static_cast< int >(result));
+  result = ((twenty48::builder_t< 4 > const *)arg1)->moves_to_win((twenty48::state_t< 4 > const &)*arg2);
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
   return vresult;
 fail:
   return Qnil;
@@ -30968,6 +31655,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassLine2.klass, "has_adjacent_pair", VALUEFUNC(_wrap_Line2_has_adjacent_pair), -1);
   rb_define_method(SwigClassLine2.klass, "get_nybbles", VALUEFUNC(_wrap_Line2_get_nybbles), -1);
   rb_define_method(SwigClassLine2.klass, "to_a", VALUEFUNC(_wrap_Line2_to_a), -1);
+  rb_define_singleton_method(SwigClassLine2.klass, "lookup_move_zeros_unknown", VALUEFUNC(_wrap_Line2_lookup_move_zeros_unknown), -1);
   rb_define_singleton_method(SwigClassLine2.klass, "lookup_move", VALUEFUNC(_wrap_Line2_lookup_move), -1);
   rb_define_singleton_method(SwigClassLine2.klass, "get_nybble", VALUEFUNC(_wrap_Line2_get_nybble), -1);
   rb_define_singleton_method(SwigClassLine2.klass, "set_nybble", VALUEFUNC(_wrap_Line2_set_nybble), -1);
@@ -30986,6 +31674,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassLine3.klass, "has_adjacent_pair", VALUEFUNC(_wrap_Line3_has_adjacent_pair), -1);
   rb_define_method(SwigClassLine3.klass, "get_nybbles", VALUEFUNC(_wrap_Line3_get_nybbles), -1);
   rb_define_method(SwigClassLine3.klass, "to_a", VALUEFUNC(_wrap_Line3_to_a), -1);
+  rb_define_singleton_method(SwigClassLine3.klass, "lookup_move_zeros_unknown", VALUEFUNC(_wrap_Line3_lookup_move_zeros_unknown), -1);
   rb_define_singleton_method(SwigClassLine3.klass, "lookup_move", VALUEFUNC(_wrap_Line3_lookup_move), -1);
   rb_define_singleton_method(SwigClassLine3.klass, "get_nybble", VALUEFUNC(_wrap_Line3_get_nybble), -1);
   rb_define_singleton_method(SwigClassLine3.klass, "set_nybble", VALUEFUNC(_wrap_Line3_set_nybble), -1);
@@ -31004,6 +31693,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassLine4.klass, "has_adjacent_pair", VALUEFUNC(_wrap_Line4_has_adjacent_pair), -1);
   rb_define_method(SwigClassLine4.klass, "get_nybbles", VALUEFUNC(_wrap_Line4_get_nybbles), -1);
   rb_define_method(SwigClassLine4.klass, "to_a", VALUEFUNC(_wrap_Line4_to_a), -1);
+  rb_define_singleton_method(SwigClassLine4.klass, "lookup_move_zeros_unknown", VALUEFUNC(_wrap_Line4_lookup_move_zeros_unknown), -1);
   rb_define_singleton_method(SwigClassLine4.klass, "lookup_move", VALUEFUNC(_wrap_Line4_lookup_move), -1);
   rb_define_singleton_method(SwigClassLine4.klass, "get_nybble", VALUEFUNC(_wrap_Line4_get_nybble), -1);
   rb_define_singleton_method(SwigClassLine4.klass, "set_nybble", VALUEFUNC(_wrap_Line4_set_nybble), -1);
@@ -31413,7 +32103,9 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassBuilder2.klass, "build", VALUEFUNC(_wrap_Builder2_build), -1);
   rb_define_method(SwigClassBuilder2.klass, "lose_within", VALUEFUNC(_wrap_Builder2_lose_within), -1);
   rb_define_method(SwigClassBuilder2.klass, "lose_within_after_move", VALUEFUNC(_wrap_Builder2_lose_within_after_move), -1);
+  rb_define_method(SwigClassBuilder2.klass, "max_win_depth", VALUEFUNC(_wrap_Builder2_max_win_depth), -1);
   rb_define_method(SwigClassBuilder2.klass, "moves_to_win", VALUEFUNC(_wrap_Builder2_moves_to_win), -1);
+  rb_define_const(SwigClassBuilder2.klass, "UNKNOWN_MOVES_TO_WIN", SWIG_From_size_t(static_cast< size_t >(twenty48::builder_t< 2 >::UNKNOWN_MOVES_TO_WIN)));
   rb_define_method(SwigClassBuilder2.klass, "resolve", VALUEFUNC(_wrap_Builder2_resolve), -1);
   rb_define_method(SwigClassBuilder2.klass, "open_states", VALUEFUNC(_wrap_Builder2_open_states), -1);
   rb_define_method(SwigClassBuilder2.klass, "closed_states", VALUEFUNC(_wrap_Builder2_closed_states), -1);
@@ -31433,7 +32125,9 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassBuilder3.klass, "build", VALUEFUNC(_wrap_Builder3_build), -1);
   rb_define_method(SwigClassBuilder3.klass, "lose_within", VALUEFUNC(_wrap_Builder3_lose_within), -1);
   rb_define_method(SwigClassBuilder3.klass, "lose_within_after_move", VALUEFUNC(_wrap_Builder3_lose_within_after_move), -1);
+  rb_define_method(SwigClassBuilder3.klass, "max_win_depth", VALUEFUNC(_wrap_Builder3_max_win_depth), -1);
   rb_define_method(SwigClassBuilder3.klass, "moves_to_win", VALUEFUNC(_wrap_Builder3_moves_to_win), -1);
+  rb_define_const(SwigClassBuilder3.klass, "UNKNOWN_MOVES_TO_WIN", SWIG_From_size_t(static_cast< size_t >(twenty48::builder_t< 3 >::UNKNOWN_MOVES_TO_WIN)));
   rb_define_method(SwigClassBuilder3.klass, "resolve", VALUEFUNC(_wrap_Builder3_resolve), -1);
   rb_define_method(SwigClassBuilder3.klass, "open_states", VALUEFUNC(_wrap_Builder3_open_states), -1);
   rb_define_method(SwigClassBuilder3.klass, "closed_states", VALUEFUNC(_wrap_Builder3_closed_states), -1);
@@ -31453,7 +32147,9 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassBuilder4.klass, "build", VALUEFUNC(_wrap_Builder4_build), -1);
   rb_define_method(SwigClassBuilder4.klass, "lose_within", VALUEFUNC(_wrap_Builder4_lose_within), -1);
   rb_define_method(SwigClassBuilder4.klass, "lose_within_after_move", VALUEFUNC(_wrap_Builder4_lose_within_after_move), -1);
+  rb_define_method(SwigClassBuilder4.klass, "max_win_depth", VALUEFUNC(_wrap_Builder4_max_win_depth), -1);
   rb_define_method(SwigClassBuilder4.klass, "moves_to_win", VALUEFUNC(_wrap_Builder4_moves_to_win), -1);
+  rb_define_const(SwigClassBuilder4.klass, "UNKNOWN_MOVES_TO_WIN", SWIG_From_size_t(static_cast< size_t >(twenty48::builder_t< 4 >::UNKNOWN_MOVES_TO_WIN)));
   rb_define_method(SwigClassBuilder4.klass, "resolve", VALUEFUNC(_wrap_Builder4_resolve), -1);
   rb_define_method(SwigClassBuilder4.klass, "open_states", VALUEFUNC(_wrap_Builder4_open_states), -1);
   rb_define_method(SwigClassBuilder4.klass, "closed_states", VALUEFUNC(_wrap_Builder4_closed_states), -1);
