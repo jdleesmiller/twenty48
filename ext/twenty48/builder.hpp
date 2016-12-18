@@ -111,7 +111,7 @@ template <int size> struct builder_t {
   typedef std::vector<state_t<size> > state_vector_t;
 
   explicit builder_t(int max_exponent, int max_lose_depth,
-    const state_vector_t &resolved_win_states, size_t max_states = 1048576) :
+    const state_vector_t &resolved_win_states, size_t max_states) :
     closed(max_states),
     max_exponent(max_exponent),
     max_lose_depth(max_lose_depth),

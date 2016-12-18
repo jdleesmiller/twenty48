@@ -70,16 +70,18 @@ module Twenty48
   # Common methods for the native Builder class.
   #
   module NativeBuilder
-    def self.create(board_size, max_exponent, max_lose_depth, max_win_depth)
+    def self.create(board_size, max_exponent, max_lose_depth, max_win_depth,
+      max_states: 2**20)
       win_states = ResolvedWinStateGenerator.new(
         board_size, max_exponent, max_win_depth
       ).build_wins.map { |state| NativeState.create(state.to_a) }
-      case board_size
-      when 2 then return Builder2.new(max_exponent, max_lose_depth, win_states)
-      when 3 then return Builder3.new(max_exponent, max_lose_depth, win_states)
-      when 4 then return Builder4.new(max_exponent, max_lose_depth, win_states)
-      end
-      raise "bad builder board_size: #{board_size}"
+      klass = case board_size
+              when 2 then Builder2
+              when 3 then Builder3
+              when 4 then Builder4
+              else raise "bad builder board_size: #{board_size}"
+              end
+      klass.new(max_exponent, max_lose_depth, win_states, max_states)
     end
   end
 
