@@ -110,8 +110,10 @@ template <int size> struct builder_t {
   typedef std::vector<state_t<size> > state_vector_t;
 
   explicit builder_t(int max_exponent, int max_lose_depth, int max_win_depth) :
-    max_exponent(max_exponent), win_state(max_exponent), lose_state(0),
-    max_lose_depth(max_lose_depth), max_win_depth(max_win_depth) { }
+    max_exponent(max_exponent),
+    max_lose_depth(max_lose_depth),
+    max_win_depth(max_win_depth),
+    win_state(max_exponent), lose_state(0) { }
 
   state_vector_t generate_start_states() {
     state_set_t result;
