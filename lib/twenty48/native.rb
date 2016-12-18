@@ -23,6 +23,8 @@ module Twenty48
   class State2
     include NativeState
 
+    alias adjacent_pair? has_adjacent_pair
+
     def board_size
       2
     end
@@ -34,6 +36,8 @@ module Twenty48
   class State3
     include NativeState
 
+    alias adjacent_pair? has_adjacent_pair
+
     def board_size
       3
     end
@@ -44,6 +48,8 @@ module Twenty48
   #
   class State4
     include NativeState
+
+    alias adjacent_pair? has_adjacent_pair
 
     def board_size
       4

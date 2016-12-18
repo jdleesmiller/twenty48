@@ -4848,6 +4848,42 @@ SWIG_AsVal_unsigned_SS_short (VALUE obj, unsigned short *val)
 }
 
 
+SWIGINTERN int
+SWIG_AsVal_int (VALUE obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = static_cast< int >(v);
+    }
+  }  
+  return res;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_bool (VALUE obj, bool *val)
+{
+  if (obj == Qtrue) {
+    if (val) *val = true;
+    return SWIG_OK;
+  } else if (obj == Qfalse) {
+    if (val) *val = false;
+    return SWIG_OK;
+  } else {
+    int res = 0;
+    if (SWIG_AsVal_int (obj, &res) == SWIG_OK) {    
+      if (val) *val = res ? true : false;
+      return SWIG_OK;
+    }
+  }  
+  return SWIG_TypeError;
+}
+
+
 SWIGINTERNINLINE VALUE
 SWIG_From_unsigned_SS_short  (unsigned short value)
 {    
@@ -5201,22 +5237,6 @@ SWIGINTERN VALUE std_vector_Sl_uint8_t_Sg__shift(std::vector< uint8_t > *self){
       self->erase( self->begin() );
       return swig::from< std::vector< unsigned char,std::allocator< unsigned char > >::value_type >( x );
     }
-
-SWIGINTERN int
-SWIG_AsVal_int (VALUE obj, int *val)
-{
-  long v;
-  int res = SWIG_AsVal_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v < INT_MIN || v > INT_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = static_cast< int >(v);
-    }
-  }  
-  return res;
-}
-
 SWIGINTERN std::vector< unsigned char,std::allocator< unsigned char > > *std_vector_Sl_uint8_t_Sg__insert__SWIG_0(std::vector< uint8_t > *self,std::vector< unsigned char >::difference_type pos,int argc,VALUE *argv,...){
       std::size_t len = self->size();
       std::size_t   i = swig::check_index( pos, len, true );
@@ -5277,26 +5297,6 @@ SWIGINTERN std::vector< unsigned char >::iterator std_vector_Sl_uint8_t_Sg__eras
 SWIGINTERN std::vector< unsigned char >::iterator std_vector_Sl_uint8_t_Sg__erase__SWIG_1(std::vector< uint8_t > *self,std::vector< unsigned char >::iterator first,std::vector< unsigned char >::iterator last){ return self->erase(first, last); }
 SWIGINTERN std::vector< unsigned char >::iterator std_vector_Sl_uint8_t_Sg__insert__SWIG_1(std::vector< uint8_t > *self,std::vector< unsigned char >::iterator pos,std::vector< unsigned char >::value_type const &x){ return self->insert(pos, x); }
 SWIGINTERN void std_vector_Sl_uint8_t_Sg__insert__SWIG_2(std::vector< uint8_t > *self,std::vector< unsigned char >::iterator pos,std::vector< unsigned char >::size_type n,std::vector< unsigned char >::value_type const &x){ self->insert(pos, n, x); }
-
-SWIGINTERN int
-SWIG_AsVal_bool (VALUE obj, bool *val)
-{
-  if (obj == Qtrue) {
-    if (val) *val = true;
-    return SWIG_OK;
-  } else if (obj == Qfalse) {
-    if (val) *val = false;
-    return SWIG_OK;
-  } else {
-    int res = 0;
-    if (SWIG_AsVal_int (obj, &res) == SWIG_OK) {    
-      if (val) *val = res ? true : false;
-      return SWIG_OK;
-    }
-  }  
-  return SWIG_TypeError;
-}
-
 SWIGINTERN uint8_t twenty48_state_t_Sl_2_Sg____getitem__(twenty48::state_t< 2 > const *self,size_t i){
     return (*self)[i];
   }
@@ -12064,6 +12064,135 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_Line2_has_adjacent_pair__SWIG_0(int argc, VALUE *argv, VALUE self) {
+  twenty48::line_t< 2 > *arg1 = (twenty48::line_t< 2 > *) 0 ;
+  uint8_t arg2 ;
+  bool arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned char val2 ;
+  int ecode2 = 0 ;
+  bool val3 ;
+  int ecode3 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__line_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 2 > const *","has_adjacent_pair", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::line_t< 2 > * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_char(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint8_t","has_adjacent_pair", 2, argv[0] ));
+  } 
+  arg2 = static_cast< uint8_t >(val2);
+  ecode3 = SWIG_AsVal_bool(argv[1], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "bool","has_adjacent_pair", 3, argv[1] ));
+  } 
+  arg3 = static_cast< bool >(val3);
+  result = (bool)((twenty48::line_t< 2 > const *)arg1)->has_adjacent_pair(arg2,arg3);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Line2_has_adjacent_pair__SWIG_1(int argc, VALUE *argv, VALUE self) {
+  twenty48::line_t< 2 > *arg1 = (twenty48::line_t< 2 > *) 0 ;
+  uint8_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned char val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__line_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 2 > const *","has_adjacent_pair", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::line_t< 2 > * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_char(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint8_t","has_adjacent_pair", 2, argv[0] ));
+  } 
+  arg2 = static_cast< uint8_t >(val2);
+  result = (bool)((twenty48::line_t< 2 > const *)arg1)->has_adjacent_pair(arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE _wrap_Line2_has_adjacent_pair(int nargs, VALUE *args, VALUE self) {
+  int argc;
+  VALUE argv[4];
+  int ii;
+  
+  argc = nargs + 1;
+  argv[0] = self;
+  if (argc > 4) SWIG_fail;
+  for (ii = 1; (ii < argc); ++ii) {
+    argv[ii] = args[ii-1];
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_2_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_unsigned_SS_char(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_Line2_has_adjacent_pair__SWIG_1(nargs, args, self);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_2_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_unsigned_SS_char(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_bool(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_Line2_has_adjacent_pair__SWIG_0(nargs, args, self);
+        }
+      }
+    }
+  }
+  
+fail:
+  Ruby_Format_OverloadedError( argc, 4, "Line2.has_adjacent_pair", 
+    "    bool Line2.has_adjacent_pair(uint8_t value, bool zeros_unknown)\n"
+    "    bool Line2.has_adjacent_pair(uint8_t value)\n");
+  
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_Line2_get_nybbles(int argc, VALUE *argv, VALUE self) {
   twenty48::line_t< 2 > *arg1 = (twenty48::line_t< 2 > *) 0 ;
   void *argp1 = 0 ;
@@ -12529,6 +12658,135 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_Line3_has_adjacent_pair__SWIG_0(int argc, VALUE *argv, VALUE self) {
+  twenty48::line_t< 3 > *arg1 = (twenty48::line_t< 3 > *) 0 ;
+  uint8_t arg2 ;
+  bool arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned char val2 ;
+  int ecode2 = 0 ;
+  bool val3 ;
+  int ecode3 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__line_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 3 > const *","has_adjacent_pair", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::line_t< 3 > * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_char(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint8_t","has_adjacent_pair", 2, argv[0] ));
+  } 
+  arg2 = static_cast< uint8_t >(val2);
+  ecode3 = SWIG_AsVal_bool(argv[1], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "bool","has_adjacent_pair", 3, argv[1] ));
+  } 
+  arg3 = static_cast< bool >(val3);
+  result = (bool)((twenty48::line_t< 3 > const *)arg1)->has_adjacent_pair(arg2,arg3);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Line3_has_adjacent_pair__SWIG_1(int argc, VALUE *argv, VALUE self) {
+  twenty48::line_t< 3 > *arg1 = (twenty48::line_t< 3 > *) 0 ;
+  uint8_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned char val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__line_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 3 > const *","has_adjacent_pair", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::line_t< 3 > * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_char(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint8_t","has_adjacent_pair", 2, argv[0] ));
+  } 
+  arg2 = static_cast< uint8_t >(val2);
+  result = (bool)((twenty48::line_t< 3 > const *)arg1)->has_adjacent_pair(arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE _wrap_Line3_has_adjacent_pair(int nargs, VALUE *args, VALUE self) {
+  int argc;
+  VALUE argv[4];
+  int ii;
+  
+  argc = nargs + 1;
+  argv[0] = self;
+  if (argc > 4) SWIG_fail;
+  for (ii = 1; (ii < argc); ++ii) {
+    argv[ii] = args[ii-1];
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_3_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_unsigned_SS_char(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_Line3_has_adjacent_pair__SWIG_1(nargs, args, self);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_3_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_unsigned_SS_char(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_bool(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_Line3_has_adjacent_pair__SWIG_0(nargs, args, self);
+        }
+      }
+    }
+  }
+  
+fail:
+  Ruby_Format_OverloadedError( argc, 4, "Line3.has_adjacent_pair", 
+    "    bool Line3.has_adjacent_pair(uint8_t value, bool zeros_unknown)\n"
+    "    bool Line3.has_adjacent_pair(uint8_t value)\n");
+  
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_Line3_get_nybbles(int argc, VALUE *argv, VALUE self) {
   twenty48::line_t< 3 > *arg1 = (twenty48::line_t< 3 > *) 0 ;
   void *argp1 = 0 ;
@@ -12989,6 +13247,135 @@ _wrap_Line4_move(int argc, VALUE *argv, VALUE self) {
   vresult = SWIG_NewPointerObj((new twenty48::line_t< 4 >(static_cast< const twenty48::line_t< 4 >& >(result))), SWIGTYPE_p_twenty48__line_tT_4_t, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Line4_has_adjacent_pair__SWIG_0(int argc, VALUE *argv, VALUE self) {
+  twenty48::line_t< 4 > *arg1 = (twenty48::line_t< 4 > *) 0 ;
+  uint8_t arg2 ;
+  bool arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned char val2 ;
+  int ecode2 = 0 ;
+  bool val3 ;
+  int ecode3 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__line_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 4 > const *","has_adjacent_pair", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::line_t< 4 > * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_char(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint8_t","has_adjacent_pair", 2, argv[0] ));
+  } 
+  arg2 = static_cast< uint8_t >(val2);
+  ecode3 = SWIG_AsVal_bool(argv[1], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "bool","has_adjacent_pair", 3, argv[1] ));
+  } 
+  arg3 = static_cast< bool >(val3);
+  result = (bool)((twenty48::line_t< 4 > const *)arg1)->has_adjacent_pair(arg2,arg3);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Line4_has_adjacent_pair__SWIG_1(int argc, VALUE *argv, VALUE self) {
+  twenty48::line_t< 4 > *arg1 = (twenty48::line_t< 4 > *) 0 ;
+  uint8_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned char val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__line_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 4 > const *","has_adjacent_pair", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::line_t< 4 > * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_char(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint8_t","has_adjacent_pair", 2, argv[0] ));
+  } 
+  arg2 = static_cast< uint8_t >(val2);
+  result = (bool)((twenty48::line_t< 4 > const *)arg1)->has_adjacent_pair(arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE _wrap_Line4_has_adjacent_pair(int nargs, VALUE *args, VALUE self) {
+  int argc;
+  VALUE argv[4];
+  int ii;
+  
+  argc = nargs + 1;
+  argv[0] = self;
+  if (argc > 4) SWIG_fail;
+  for (ii = 1; (ii < argc); ++ii) {
+    argv[ii] = args[ii-1];
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_4_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_unsigned_SS_char(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_Line4_has_adjacent_pair__SWIG_1(nargs, args, self);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_twenty48__line_tT_4_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_unsigned_SS_char(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_bool(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_Line4_has_adjacent_pair__SWIG_0(nargs, args, self);
+        }
+      }
+    }
+  }
+  
+fail:
+  Ruby_Format_OverloadedError( argc, 4, "Line4.has_adjacent_pair", 
+    "    bool Line4.has_adjacent_pair(uint8_t value, bool zeros_unknown)\n"
+    "    bool Line4.has_adjacent_pair(uint8_t value)\n");
+  
   return Qnil;
 }
 
@@ -30578,6 +30965,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_alloc_func(SwigClassLine2.klass, _wrap_Line2_allocate);
   rb_define_method(SwigClassLine2.klass, "initialize", VALUEFUNC(_wrap_new_Line2), -1);
   rb_define_method(SwigClassLine2.klass, "move", VALUEFUNC(_wrap_Line2_move), -1);
+  rb_define_method(SwigClassLine2.klass, "has_adjacent_pair", VALUEFUNC(_wrap_Line2_has_adjacent_pair), -1);
   rb_define_method(SwigClassLine2.klass, "get_nybbles", VALUEFUNC(_wrap_Line2_get_nybbles), -1);
   rb_define_method(SwigClassLine2.klass, "to_a", VALUEFUNC(_wrap_Line2_to_a), -1);
   rb_define_singleton_method(SwigClassLine2.klass, "lookup_move", VALUEFUNC(_wrap_Line2_lookup_move), -1);
@@ -30595,6 +30983,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_alloc_func(SwigClassLine3.klass, _wrap_Line3_allocate);
   rb_define_method(SwigClassLine3.klass, "initialize", VALUEFUNC(_wrap_new_Line3), -1);
   rb_define_method(SwigClassLine3.klass, "move", VALUEFUNC(_wrap_Line3_move), -1);
+  rb_define_method(SwigClassLine3.klass, "has_adjacent_pair", VALUEFUNC(_wrap_Line3_has_adjacent_pair), -1);
   rb_define_method(SwigClassLine3.klass, "get_nybbles", VALUEFUNC(_wrap_Line3_get_nybbles), -1);
   rb_define_method(SwigClassLine3.klass, "to_a", VALUEFUNC(_wrap_Line3_to_a), -1);
   rb_define_singleton_method(SwigClassLine3.klass, "lookup_move", VALUEFUNC(_wrap_Line3_lookup_move), -1);
@@ -30612,6 +31001,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_alloc_func(SwigClassLine4.klass, _wrap_Line4_allocate);
   rb_define_method(SwigClassLine4.klass, "initialize", VALUEFUNC(_wrap_new_Line4), -1);
   rb_define_method(SwigClassLine4.klass, "move", VALUEFUNC(_wrap_Line4_move), -1);
+  rb_define_method(SwigClassLine4.klass, "has_adjacent_pair", VALUEFUNC(_wrap_Line4_has_adjacent_pair), -1);
   rb_define_method(SwigClassLine4.klass, "get_nybbles", VALUEFUNC(_wrap_Line4_get_nybbles), -1);
   rb_define_method(SwigClassLine4.klass, "to_a", VALUEFUNC(_wrap_Line4_to_a), -1);
   rb_define_singleton_method(SwigClassLine4.klass, "lookup_move", VALUEFUNC(_wrap_Line4_lookup_move), -1);

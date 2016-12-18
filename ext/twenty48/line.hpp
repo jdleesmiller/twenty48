@@ -51,6 +51,30 @@ template <int size> class line_t {
     return line_t(line);
   }
 
+  /**
+   * Does the line contain a pair of cells, both with value `value`, separated
+   * only by zero or more (known) zeros? If so, we can always swipe along the
+   * line to get the `value + 1` tile.
+   *
+   * @param zeros_unknown treat zero as 'unknown', not 'empty'
+   */
+  bool has_adjacent_pair(uint8_t value, bool zeros_unknown = false) const {
+    bool found_first = false;
+    for (size_t i = 0; i < size; ++i) {
+      uint8_t cell_value = (*this)[i];
+      if (found_first) {
+        if (!zeros_unknown && cell_value == 0) {
+          continue;
+        }
+        return cell_value == value;
+      }
+      if (cell_value == value) {
+        found_first = true;
+      }
+    }
+    return false;
+  }
+
   uint16_t get_nybbles() const {
     return nybbles;
   }

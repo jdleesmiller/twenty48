@@ -215,5 +215,45 @@ module Twenty48
       assert_equal [3, 2, 1, 0], move([2, 2, 2, 1])
       assert_equal [3, 3, 0, 0], move([2, 2, 2, 2])
     end
+
+    def test_adjacent_pair_known_zeros
+      refute adjacent_pair?([0, 0], 1)
+      refute adjacent_pair?([0, 1], 1)
+      refute adjacent_pair?([1, 0], 1)
+      assert adjacent_pair?([1, 1], 1)
+      refute adjacent_pair?([1, 1], 2)
+
+      refute adjacent_pair?([1, 2], 2)
+      refute adjacent_pair?([2, 1], 2)
+      assert adjacent_pair?([2, 2], 2)
+
+      refute adjacent_pair?([1, 2, 1], 1)
+      assert adjacent_pair?([1, 0, 1], 1)
+      refute adjacent_pair?([2, 1, 2], 2)
+      assert adjacent_pair?([2, 0, 2], 2)
+
+      assert adjacent_pair?([1, 0, 0, 1], 1)
+      assert adjacent_pair?([0, 1, 0, 1], 1)
+      assert adjacent_pair?([1, 0, 1, 0], 1)
+      assert adjacent_pair?([0, 0, 1, 1], 1)
+      assert adjacent_pair?([1, 1, 0, 0], 1)
+      refute adjacent_pair?([0, 0, 0, 1], 1)
+    end
+
+    def test_adjacent_pair_unknown_zeros
+      refute adjacent_pair?([0, 0], 1, true)
+      refute adjacent_pair?([0, 1], 1, true)
+      refute adjacent_pair?([1, 0], 1, true)
+      assert adjacent_pair?([1, 1], 1, true)
+      refute adjacent_pair?([1, 1], 2, true)
+
+      refute adjacent_pair?([1, 2, 1], 1, true)
+      assert adjacent_pair?([1, 1, 1], 1, true)
+      refute adjacent_pair?([1, 0, 1], 1, true)
+
+      refute adjacent_pair?([1, 0, 0, 1], 1, true)
+      assert adjacent_pair?([1, 1, 0, 1], 1, true)
+      assert adjacent_pair?([0, 1, 1, 0], 1, true)
+    end
   end
 end

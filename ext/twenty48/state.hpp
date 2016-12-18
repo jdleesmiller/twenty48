@@ -166,10 +166,20 @@ template <int size> struct state_t {
   // `value + 1` tile.
   //
   bool has_adjacent_pair(uint8_t value, bool zeros_unknown) const {
-    // any_row_or_col?(unpack(data)) do |line|
-    //   Line.adjacent_pair?(line, value, zeros_unknown)
-    // end
+    return any_row_or_col(adjacent_pair_t(value, zeros_unknown));
   }
+
+  struct adjacent_pair_t {
+    adjacent_pair_t(uint8_t value, bool zeros_unknown) :
+      value(value), zeros_unknown(zeros_unknown) { }
+
+    bool operator()(const line_t<size> &line) const {
+      return line.has_adjacent_pair(value, zeros_unknown);
+    }
+  private:
+    uint8_t value;
+    bool zeros_unknown;
+  };
 
   bool operator==(const state_t<size> &other) const {
     return nybbles == other.nybbles;
@@ -269,7 +279,7 @@ private:
       uint16_t col_nybbles = 0;
       for (size_t y = 0; y < size; ++y) {
         uint8_t value = get_grid_nybble(nybbles, x, y);
-        col_nybbles = line_t<size>::set_nybble(col_nybbles, x, value);
+        col_nybbles = line_t<size>::set_nybble(col_nybbles, y, value);
       }
       if (predicate(line_t<size>(col_nybbles))) {
         return true;
