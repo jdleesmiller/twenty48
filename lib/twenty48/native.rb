@@ -82,4 +82,44 @@ module Twenty48
       raise "bad builder board_size: #{board_size}"
     end
   end
+
+  #
+  # Common methods for the native StateHashSet classes.
+  #
+  module NativeStateHashSet
+    def <<(state)
+      insert state
+    end
+
+    def fill_factor
+      size.to_f / max_size
+    end
+  end
+
+  #
+  # Hash set for 2x2 states.
+  #
+  class StateHashSet2
+    include NativeStateHashSet
+
+    alias member? member
+  end
+
+  #
+  # Hash set for 3x3 states.
+  #
+  class StateHashSet3
+    include NativeStateHashSet
+
+    alias member? member
+  end
+
+  #
+  # Hash set for 4x4 states.
+  #
+  class StateHashSet4
+    include NativeStateHashSet
+
+    alias member? member
+  end
 end

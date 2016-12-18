@@ -5,6 +5,7 @@
 #include "line.hpp"
 #include "state.hpp"
 #include "builder.hpp"
+#include "state_hash_set.hpp"
 %}
 
 %include "stdint.i"
@@ -88,3 +89,24 @@
 %template(Builder2) twenty48::builder_t<2>;
 %template(Builder3) twenty48::builder_t<3>;
 %template(Builder4) twenty48::builder_t<4>;
+
+/******************************************************************************/
+/* StateHashSet */
+/******************************************************************************/
+
+%include "state_hash_set.hpp"
+
+%extend twenty48::state_hash_set_t {
+  %exception insert {
+    try {
+      $action
+    }
+    catch (const std::length_error& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
+}
+
+%template(StateHashSet2) twenty48::state_hash_set_t<2>;
+%template(StateHashSet3) twenty48::state_hash_set_t<3>;
+%template(StateHashSet4) twenty48::state_hash_set_t<4>;

@@ -8,24 +8,24 @@ module Twenty48
   # does not support growth. States are packed into 64-bit integers to save
   # space.
   #
-  class StateHashTable
+  class StateHashSet
     MAX_EXPONENT = 11
     RECORD_SIZE = 8 # bytes
     EMPTY_RECORD = ([0] * RECORD_SIZE).pack('C*')
 
-    def initialize(board_size:, size:)
+    def initialize(board_size:, max_size:)
       @board_size = board_size
-      @size = size
-      @data = [0].pack('C*') * size * RECORD_SIZE
-      @count = 0
+      @max_size = max_size
+      @data = [0].pack('C*') * max_size * RECORD_SIZE
+      @size = 0
     end
 
     attr_reader :board_size
+    attr_reader :max_size
     attr_reader :size
-    attr_reader :count
 
     def fill_factor
-      count.to_f / size
+      size.to_f / max_size
     end
 
     def member?(state)
@@ -60,7 +60,7 @@ module Twenty48
     end
 
     def to_a
-      (0...@size).map do |index|
+      (0...max_size).map do |index|
         packed_state = get(index)
         next nil if packed_state == EMPTY_RECORD
         unpack(packed_state)
@@ -78,22 +78,22 @@ module Twenty48
     end
 
     def find_packed_state(packed_state)
-      index = packed_state.hash % @size
+      index = packed_state.hash % max_size
       loop do
         candidate = get(index)
         return index, candidate if candidate == packed_state
         return index, nil if candidate == EMPTY_RECORD
         index += 1
-        index = 0 if index >= @size
+        index = 0 if index >= max_size
       end
     end
 
     def insert_packed_state(packed_state)
-      raise 'State table is full' if @count >= @size
+      raise 'State table is full' if @size >= max_size
       index, candidate = find_packed_state(packed_state)
       return if candidate == packed_state
       set(index, packed_state)
-      @count += 1
+      @size += 1
       nil
     end
   end

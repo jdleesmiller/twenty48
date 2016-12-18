@@ -188,8 +188,8 @@ template <int size> struct builder_t {
     return true;
   }
 
-  size_t max_win_depth() const {
-    return resolved_win_states.size() - 1;
+  int max_win_depth() const {
+    return (int)resolved_win_states.size() - 1;
   }
 
   size_t moves_to_win(const state_t<size> &state) const {

@@ -29,7 +29,7 @@ module Twenty48
       @resolve_cache = LruCache.new(max_size: 300_000)
       @expand_cache = LruCache.new(max_size: 100_000)
 
-      @closed = StateHashTable.new(board_size: board_size, size: max_states)
+      @closed = StateHashSet.new(board_size: board_size, max_size: max_states)
       @open = []
     end
 
