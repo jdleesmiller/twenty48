@@ -1,5 +1,6 @@
 #ifndef TWENTY48_STATE_HASH_SET_HPP
 
+#include <fstream>
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -45,6 +46,17 @@ template <int board_size> struct state_hash_set_t {
 
     size_t index;
     return find(state, index);
+  }
+
+  void dump(const char *pathname) const {
+    std::ofstream of(pathname);
+    of << state_t<board_size>(0) << std::endl;
+    for (typename state_hash_set_t<board_size>::data_t::const_iterator it =
+      data.begin(); it != data.end(); ++it) {
+      if (it->get_nybbles() == 0) continue;
+      of << *it << std::endl;
+    }
+    of.close();
   }
 
   std::vector<state_t<board_size> > to_a() const {

@@ -317,7 +317,9 @@ private:
 
 template <int size>
 std::ostream &operator << (std::ostream &os, const state_t<size> &state) {
-  os << "(0x" << std::hex << state.get_nybbles() << std::dec << ')';
+  char prev_fill = os.fill();
+  os << "0x" << std::hex << std::setfill('0') << std::setw(size * size) <<
+    state.get_nybbles() << std::dec << std::setfill(prev_fill);
   return os;
 }
 

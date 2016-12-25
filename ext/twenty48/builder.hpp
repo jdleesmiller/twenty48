@@ -214,6 +214,10 @@ template <int size> struct builder_t {
     return closed.size();
   }
 
+  void dump(const char *pathname) const {
+    closed.dump(pathname);
+  }
+
   void expand(const state_t<size> &state) {
     // std::cout << "EXPAND:" << state << std::endl;
     move(state, DIRECTION_UP);
