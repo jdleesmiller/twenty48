@@ -1,0 +1,256 @@
+---
+title: "Tabulate"
+author: "JLM"
+date: "21 December 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+```{r}
+data <- read.csv('tabulate_native.csv')
+data$states <- as.numeric(as.character(data$states))
+```
+
+```{r}
+ggplot(subset(data, board_size == 3), aes(x = max_exponent, y = states)) +
+  geom_line(aes(color = factor(max_lose_depth))) +
+  facet_wrap(~ max_win_depth, ncol = 1) +
+  scale_y_log10()
+```
+
+```{r}
+ggplot(subset(data, board_size == 3), aes(x = max_exponent, y = states)) +
+  geom_line(aes(color = factor(max_win_depth))) +
+  facet_wrap(~ max_lose_depth, ncol = 1) +
+  scale_y_log10()
+```
+
+```{r}
+ggplot(subset(data, board_size == 4), aes(x = max_exponent, y = states)) +
+  geom_line() +
+  facet_grid(max_win_depth ~ max_lose_depth) +
+  scale_y_log10()
+```
+
+How many moves are there in a game?
+If we just look at it as a random walk, then basically we advance by
+- 2 with pr 0.9
+- 4 with pr 0.1
+What's the distribution of our hitting time for the sum to hit 2048?
+It's bounded between 512 (all 4s) and 1024 (all 2s).
+In other words, we advance by 2 + 2*X where X is 0.1-Bernoulli.
+
+Is it just 512 + Binomial(512, 0.1)? I don't think that quite captures it.
+
+Let N by the number of moves. We want the minimum N such that
+\[
+sum_{i}^{N} 2 + 2X_i \le 2048
+\]
+or
+\[
+2 N + 2 sum_{i}^{N} X_i \le 2048
+\]
+or
+\[
+N + sum_{i}^{N} X_i \le 1024
+\]
+or, if we put it back into the sum
+\[
+sum_{i}^{N} (1 + X_i) \le 1024
+\]
+
+The sum of X_i term is Binomial(N, 0.1).
+
+A Geometric would give us the time until the first success.
+What gives us the time until the N'th success?
+https://en.wikipedia.org/wiki/Negative_binomial_distribution
+If we ignore the leading N, then the N for which $sum_{i}^N X_i \le 1024$ is NB(1024, 0.1).
+
+Y_i = +2 w/ pr 0.9
+      +4 w/ pr 0.1
+Implies that \[Z_i = Y_i/2 - 2\] is Bernoulli.
+Working the constraint in terms of $Y_i$ into $Z_i$ gets you back to the above:
+```
+sum_{i}^{N} Y_i \le 2048
+sum_{i}^{N} 2*(1 + Z_i) \le 2048
+sum_{i}^{N} 1 + Z_i \le 1024
+
+Y_0 -> as above
+
+Y_1 -> 
+  2 + 2 = 4 w/ pr 0.9*0.9
+  2 + 4 = 6 w/ pr 0.9*0.1
+  4 + 2 = 6 w/ pr 0.1*0.9
+  4 + 4 = 8 w/ pr 0.1*0.1
+  
+Y_2 ->
+  2 + 2 + 2 = 6   w/ pr 0.9*0.9*0.9
+  2 + 2 + 4 = 8   w/ pr 0.9*0.9*0.1
+  2 + 4 + 2 = 8   w/ pr 0.9*0.1*0.9
+  2 + 4 + 4 = 10  w/ pr 0.9*0.1*0.1
+  4 + 2 + 2 = 8   w/ pr 0.1*0.9*0.9
+  4 + 2 + 4 = 10  w/ pr 0.1*0.9*0.1
+  4 + 4 + 2 = 10  w/ pr 0.1*0.1*0.9
+  4 + 4 + 4 = 12  w/ pr 0.1*0.1*0.1
+  
+If we let S be the sum of the Y_i, we have a recurrence
+
+P(S_n = s) = 0.9 * P(S_{n-1} = s - 2) + 0.1 * P(S_{n-1} = s - 4)
+
+P(S_0 = 0) = 0
+P(S_0 = 2*i + 1) = 0 for any i (only even numbers)
+P(S_0 = 2) = 0.1
+P(S_0 = 4) = 0.9
+
+P(S_1 = 4) = 0.9 * P(S_0 = 2) + 0.1 * P(S_0 = 0)
+P(S_1 = 6) = 0.9 * P(S_0 = 4) + 0.1 * P(S_0 = 2)
+P(S_1 = 8) = 0.9 * P(S_0 = 6) + 0.1 * P(S_0 = 4)
+
+We want P(S_n = 2048) as a function of n.
+
+k is number of 4s
+r is number of 2s
+p is probability of a 4 (0.1)
+probability for any specific sequence is (1-p)^r p^k
+
+S_n = 1 + X_n + S_{n - 1}
+S_n = 1 + 1 + X_n + X_{n-1} + S_{n - 2}
+...
+S_n = n + sum_{i=0}^{n-1} X_{n-i} + S_0
+That is, the sum after n moves is
+S_n = n + B(n) for B(n) ~ Binomial(n, p)
+
+P(N = n | S_N = 2048) = P(N = n | N + B_N = 2048)
+
+A combinatorial argument: how many ways are there to get to 2048 by adding 2s and 4s?
+
+1024 2s + 0 4s
+1022 2s + 1 4s
+1020 2s + 2 4s
+1018 2s + 3 4s
+...
+0 2s + 512 5s
+
+In general: 2*(1024 - 2*m) + 4*m for m in {0, ..., 512}
+For m being the number of 4s.
+The probability of reaching 2048 with m 4s is p^m (1-p)^(512-m)
+(It implies that you got (2048 - 4*m)/2 2s, or 1024-2*m 2s.)
+so that looks a lot like plain old binomial: M ~ Binomial(512, 0.1)
+so total moves is 1024 - 2*M + M = 1024 - M
+
+However, this doesn't match up, because it doesn't capture that a model with
+more 4s will get you to 2048 sooner than a model with fewer 4s.
+
+I think we can get the expectation from Wald's equation:
+https://en.wikipedia.org/wiki/Wald's_equation
+And maybe a variance:
+http://www.math.unl.edu/~sdunbar1/ProbabilityTheory/Lessons/Conditionals/RandomSums/randsum.shtml
+
+Tried a few things in maxima, but no real luck there.
+declare(n, integer, x, integer, p, scalar);
+ratsimp(
+  binomial(n, x - n) * p ^ (x - n) * (1 - p) ^ (2 * n - x) +
+  binomial(n - 1, x - n) * p ^ (x - n) * (1 - p) ^ (2 * n - x - 1));
+```
+
+Let's see what it looks like.
+
+```{r}
+generateMovesToWin <- function(maxExponent, numTrials, p4 = 0.1) {
+  winValue <- 2 ^ maxExponent
+  maxTiles <- winValue / 2
+  
+  winMoves <- rep(0, numTrials)
+  for (i in 1:numTrials) {
+    u <- runif(maxTiles)
+    u2 <- 2 * (u > p4)
+    u4 <- 4 * (u <= p4)
+    winMoves[i] <- which.max(cumsum(u2 + u4) >= winValue)
+  }
+  winMoves
+}
+movesToWin <- generateMovesToWin(11, 100000)
+```
+
+```{r}
+# sanity check
+m <- seq(0, 512)
+data.frame(m=m, m2=2*(1024 - 2*m), m4=4*m, total=2*(1024 - 2*m) + 4*m)
+```
+
+```{r}
+# based on the 1024 - Binomial model:
+moves <- seq(0, 1024)
+binomialMovesToWin <- data.frame(
+  moves = seq(0, 1024),
+  prob = c(rep(0, 512), rev(dbinom(seq(0, 512), 512, 0.1))))
+```
+
+```{r}
+ggplot(binomialMovesToWin, aes(x = moves)) +
+  geom_histogram(
+    data = data.frame(moves = movesToWin),
+    aes(y = ..density..),
+    binwidth = 1) +
+  geom_line(aes(y = prob))
+```
+
+```{r}
+# attempt number two...
+# based on https://www.mpp.mpg.de/~caldwell/ss05/Lecture7.pdf
+# to 4:
+# 1 move: (4)
+# 2 moves: (2, 2) or (2, 4)
+# - 2 + 4 is 6, and k is only 0 (zero 1s)
+#
+# to 8:
+# 2 moves: (4, 4)
+# 3 moves: (2, 2, 4), (2, 4, 4)
+# 4 moves: (2, 2, 2, 2), (2, 2, 2, 4)
+# - order is important for the last one: if it was (2, 2, 4, 2), we'd have won in 3
+#
+# to 16:
+# 4 moves: (4, 4, 4, 4)
+# 5 moves: (2, 2, 4, 4, 4)
+# 6 moves: (2, 2, 2, 2, 4, 4), 
+# 7 moves: (2, 2, 2, 2, 2, 2, 4), (2, 2, 2, 2, 2, 4, 4)
+# 8 moves: (2, 2, 2, 2, 2, 2, 2, 2), (2, 2, 2, 2, 2, 2, 2, 4)
+makeBinomialMovesToWin2 <- function(maxExponent, p4 = 0.1) {
+  maxMoves <- 2 ^ (maxExponent - 1)
+  n <- seq(1, maxMoves)
+  k <- seq(maxMoves - 1, 0, by=-1) # k = maxMoves - n
+  data.frame(
+    moves = n,
+    k = k,
+    prob = dbinom(k, n, p4) + dbinom(k, n - 1, p4) * p4)
+}
+binomialMovesToWin2 <- makeBinomialMovesToWin2(11)
+```
+
+So: the joint probability
+\[
+P(n) = B(n, x - n, p) + p * B(n - 1, x - n, p)
+\]
+
+We can also get an expectation:
+\[
+E(n) = np + (n-1)p*p
+\]
+
+```{r}
+# print(binomialMovesToWin2)
+print(sum(binomialMovesToWin2$prob))
+with(binomialMovesToWin2, print(sum(prob * moves)))
+ggplot(subset(binomialMovesToWin2, prob > 0), aes(x = moves)) +
+  geom_histogram(
+    data = data.frame(moves = movesToWin),
+    aes(y = ..density..),
+    binwidth = 1) +
+  geom_line(aes(y = prob), color='red') +
+  geom_abline(x = )
+```
+
