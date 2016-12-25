@@ -1,0 +1,81 @@
+---
+title: "native_states"
+author: "JLM"
+date: "12/25/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Hmm...
+
+```{r}
+makeColNames <- function(boardSize) {
+  n <- boardSize - 1
+  result <- c()
+  for (i in 0:n) {
+    for (j in 0:n) {
+      result <- c(result, paste0('x', i, j))
+    }
+  }
+  result
+}
+
+readStates <- function(file) {
+  data <- read.table(file = file, na.strings = '0')
+  boardSize <- sqrt(ncol(data))
+  colnames(data) <- makeColNames(boardSize)
+  data <- data.frame(2 ^ data)
+  data <- transform(data, total=rowSums(data, na.rm = TRUE))
+  data[order(data$total),]
+}
+
+buildPathname <- function(..., ext) {
+  args <- list(...)
+  makePair <- function(key) {
+    paste(key, args[[key]], sep = '-')
+  }
+  pairArgs <- lapply(names(args), makePair)
+  pairArgs[['sep']] <- '.'
+  paste(do.call(paste, pairArgs), ext, sep = '.')
+}
+
+boardSize <- 3
+maxExponent <- 10
+states <- readStates(file.path('states', buildPathname(
+  board_size = boardSize,
+  max_exponent = maxExponent,
+  max_lose_depth = 0,
+  max_win_depth = 2,
+  ext = 'txt')))
+if (nrow(states) < 100) states
+nrow(states)
+```
+
+```{r}
+ggplot(states, aes(x = total)) +
+  geom_histogram(binwidth = 2) +
+  geom_vline(xintercept = 2^maxExponent)
+```
+
+```{r}
+tail(states, 100)
+```
+
+```
+# highest-sum states:
+# to 128:
+#  4 16 64
+# 64 16 32
+#  4 32 64
+# to 256:
+#   4   8   8
+#  64 128  16
+# 128  64 128
+# to 512:
+#   4   8   8
+#  16 256  16
+# 256 128 256
+```
