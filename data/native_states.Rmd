@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
 ```
 
 ## Hmm...
@@ -49,7 +50,7 @@ states <- readStates(file.path('states', buildPathname(
   max_exponent = maxExponent,
   max_lose_depth = 0,
   max_win_depth = 2,
-  ext = 'txt')))
+  ext = 'txt.bz2')))
 if (nrow(states) < 100) states
 nrow(states)
 ```

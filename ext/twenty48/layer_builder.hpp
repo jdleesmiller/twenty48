@@ -80,6 +80,8 @@ namespace twenty48 {
       state_hash_set_t<size> output_layer(max_states);
 
       output_layer.load_binary(output_layer_pathname.c_str());
+      size_t start_size = output_layer.size();
+
       std::ifstream is(input_layer_pathname, std::ios::in | std::ios::binary);
       while (is) {
         state_t<size> state = state_t<size>::read_bin(is);
@@ -87,12 +89,21 @@ namespace twenty48 {
       }
       is.close();
 
-      output_layer.dump_binary(output_layer_pathname.c_str());
+      size_t end_size = output_layer.size();
+      if (end_size > start_size) {
+        output_layer.dump_binary(output_layer_pathname.c_str());
+      }
     }
 
   private:
     const std::string data_path;
     resolver_t<size> resolver;
+
+    static void call_build_layer(
+      const layer_builder_t<size> &builder,
+      int sum, int step, size_t max_states) {
+      builder.build_layer(sum, step, max_states);
+    }
 
     void expand(const state_t<size> &state, int step,
       state_hash_set_t<size> &successors) const {

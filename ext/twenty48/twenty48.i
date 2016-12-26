@@ -12,6 +12,7 @@
 %include "stdint.i"
 %include "std_array.i"
 %include "std_map.i"
+%include "std_string.i"
 %include "std_vector.i"
 
 %include "twenty48.hpp"
