@@ -123,7 +123,7 @@ template <int size> struct builder_t {
     for (typename state_vector_t::const_iterator it = start_states.begin();
       it != start_states.end(); ++it)
     {
-      open.push_back(resolve(*it));
+      open.push_back(resolver.resolve(*it));
       while (!open.empty()) {
         state_t<size> state = open.back();
         open.pop_back();
@@ -135,10 +135,6 @@ template <int size> struct builder_t {
         expand(state);
       }
     }
-  }
-
-  state_t<size> resolve(const state_t<size> &state) {
-    return resolver.resolve(state);
   }
 
   const state_vector_t &open_states() const {
@@ -173,7 +169,7 @@ template <int size> struct builder_t {
     for (typename transitions_t::const_iterator it = transitions.begin();
       it != transitions.end(); ++it)
     {
-      state_t<size> successor = resolve(it->first);
+      state_t<size> successor = resolver.resolve(it->first);
       if (closed.member(successor)) continue;
       open.push_back(successor);
     }
