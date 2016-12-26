@@ -81,6 +81,16 @@ template <int size> struct state_t {
     return get_nybble(nybbles, i);
   }
 
+  int sum() const {
+    int result = 0;
+    for (size_t i = 0; i < size * size; ++i) {
+      uint8_t value = (*this)[i];
+      if (value == 0) continue;
+      result += 1 << value;
+    }
+    return result;
+  }
+
   std::vector<uint8_t> to_a() const {
     std::vector<uint8_t> result(size * size);
     for (size_t i = 0; i < size * size; ++i) result[i] = (*this)[i];

@@ -9,6 +9,10 @@ class NativeStateTest < Twenty48NativeTest
   # This is where the actual tests are defined.
   include CommonStateTests
 
+  def test_state_sum
+    assert_equal 2 + 4 + 8, make_state([0, 1, 2, 3]).sum
+  end
+
   # TODO: migrate some tests
   #   state_t<2, 3> state_2_3;
   # std::cout << "is_lose: " << state_2_3.is_lose() << std::endl;
