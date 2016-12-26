@@ -21,6 +21,10 @@ module Twenty48
       self == other
     end
 
+    def hash
+      get_nybbles.hash
+    end
+
     def <=>(other)
       return 0 if self == other
       self < other ? -1 : 1
@@ -70,7 +74,8 @@ module Twenty48
   # Common methods for the native Resolver class.
   #
   module NativeResolver
-    def self.create(board_size, max_exponent, max_lose_depth, max_win_depth)
+    def self.create(board_size, max_exponent,
+      max_lose_depth: 0, max_win_depth: 0)
       win_states = ResolvedWinStateGenerator.new(
         board_size, max_exponent, max_win_depth
       ).build_wins.map { |state| NativeState.create(state.to_a) }
@@ -96,6 +101,21 @@ module Twenty48
               else raise "bad builder board_size: #{board_size}"
               end
       klass.new(resolver, max_states)
+    end
+  end
+
+  #
+  # Common methods for the native LayerBuilder class.
+  #
+  module NativeLayerBuilder
+    def self.create(board_size, data_path, resolver)
+      klass = case board_size
+              when 2 then LayerBuilder2
+              when 3 then LayerBuilder3
+              when 4 then LayerBuilder4
+              else raise "bad layer builder board_size: #{board_size}"
+              end
+      klass.new(data_path, resolver)
     end
   end
 

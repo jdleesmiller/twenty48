@@ -31411,20 +31411,31 @@ _wrap_LayerBuilder2_allocate(int argc, VALUE *argv, VALUE self)
 SWIGINTERN VALUE
 _wrap_new_LayerBuilder2(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
+  twenty48::resolver_t< 2 > *arg2 = 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   twenty48::layer_builder_t< 2 > *result = 0 ;
   
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","layer_builder_t<(2)>", 1, argv[0] ));
   }
   arg1 = reinterpret_cast< char * >(buf1);
-  result = (twenty48::layer_builder_t< 2 > *)new twenty48::layer_builder_t< 2 >((char const *)arg1);
+  res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_twenty48__resolver_tT_2_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::resolver_t< 2 > const &","layer_builder_t<(2)>", 2, argv[1] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::resolver_t< 2 > const &","layer_builder_t<(2)>", 2, argv[1])); 
+  }
+  arg2 = reinterpret_cast< twenty48::resolver_t< 2 > * >(argp2);
+  result = (twenty48::layer_builder_t< 2 > *)new twenty48::layer_builder_t< 2 >((char const *)arg1,(twenty48::resolver_t< 2 > const &)*arg2);
   DATA_PTR(self) = result;
   if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
   return self;
@@ -31558,20 +31569,31 @@ _wrap_LayerBuilder3_allocate(int argc, VALUE *argv, VALUE self)
 SWIGINTERN VALUE
 _wrap_new_LayerBuilder3(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
+  twenty48::resolver_t< 3 > *arg2 = 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   twenty48::layer_builder_t< 3 > *result = 0 ;
   
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","layer_builder_t<(3)>", 1, argv[0] ));
   }
   arg1 = reinterpret_cast< char * >(buf1);
-  result = (twenty48::layer_builder_t< 3 > *)new twenty48::layer_builder_t< 3 >((char const *)arg1);
+  res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_twenty48__resolver_tT_3_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::resolver_t< 3 > const &","layer_builder_t<(3)>", 2, argv[1] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::resolver_t< 3 > const &","layer_builder_t<(3)>", 2, argv[1])); 
+  }
+  arg2 = reinterpret_cast< twenty48::resolver_t< 3 > * >(argp2);
+  result = (twenty48::layer_builder_t< 3 > *)new twenty48::layer_builder_t< 3 >((char const *)arg1,(twenty48::resolver_t< 3 > const &)*arg2);
   DATA_PTR(self) = result;
   if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
   return self;
@@ -31705,20 +31727,31 @@ _wrap_LayerBuilder4_allocate(int argc, VALUE *argv, VALUE self)
 SWIGINTERN VALUE
 _wrap_new_LayerBuilder4(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
+  twenty48::resolver_t< 4 > *arg2 = 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   twenty48::layer_builder_t< 4 > *result = 0 ;
   
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","layer_builder_t<(4)>", 1, argv[0] ));
   }
   arg1 = reinterpret_cast< char * >(buf1);
-  result = (twenty48::layer_builder_t< 4 > *)new twenty48::layer_builder_t< 4 >((char const *)arg1);
+  res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_twenty48__resolver_tT_4_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::resolver_t< 4 > const &","layer_builder_t<(4)>", 2, argv[1] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::resolver_t< 4 > const &","layer_builder_t<(4)>", 2, argv[1])); 
+  }
+  arg2 = reinterpret_cast< twenty48::resolver_t< 4 > * >(argp2);
+  result = (twenty48::layer_builder_t< 4 > *)new twenty48::layer_builder_t< 4 >((char const *)arg1,(twenty48::resolver_t< 4 > const &)*arg2);
   DATA_PTR(self) = result;
   if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
   return self;

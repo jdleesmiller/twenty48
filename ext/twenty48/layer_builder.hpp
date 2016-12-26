@@ -46,10 +46,11 @@ namespace twenty48 {
    * list itself.
    */
   template <int size> struct layer_builder_t {
+    typedef typename state_t<size>::transitions_t transitions_t;
     typedef std::vector<state_t<size> > state_vector_t;
 
-    layer_builder_t(const char *data_path) : data_path(data_path) {
-    }
+    layer_builder_t(const char *data_path, const resolver_t<size> &resolver)
+      : data_path(data_path), resolver(resolver) { }
 
     void build_start_state_layers() const {
       const size_t max_layer_start_states = 1024;
@@ -75,27 +76,43 @@ namespace twenty48 {
 
     void build_layer(int sum, int step, size_t max_states) const {
       std::string input_layer_pathname = make_layer_pathname(sum);
-      std::string output_layer_pathname = make_layer_pathname(sum + step);
+      std::string output_layer_pathname = make_layer_pathname(sum + 2 * step);
       state_hash_set_t<size> output_layer(max_states);
 
       output_layer.load_binary(output_layer_pathname.c_str());
       std::ifstream is(input_layer_pathname, std::ios::in | std::ios::binary);
       while (is) {
         state_t<size> state = state_t<size>::read_bin(is);
-        expand(state, output_layer);
+        expand(state, step, output_layer);
       }
       is.close();
+
+      output_layer.dump_binary(output_layer_pathname.c_str());
     }
 
   private:
-    void expand(const state_t<size> &state,
+    const std::string data_path;
+    resolver_t<size> resolver;
+
+    void expand(const state_t<size> &state, int step,
       state_hash_set_t<size> &successors) const {
-      // TODO
+      move(state, step, DIRECTION_UP, successors);
+      move(state, step, DIRECTION_DOWN, successors);
+      move(state, step, DIRECTION_LEFT, successors);
+      move(state, step, DIRECTION_RIGHT, successors);
     }
 
-    const std::string data_path;
+    void move(const state_t<size> &state, int step,
+      direction_t direction, state_hash_set_t<size> &successors) const {
+      state_t<size> moved_state = state.move(direction);
+      if (moved_state == state) return; // Cannot move in this direction.
 
-    const int MAX_EXPONENT = 11;
+      transitions_t transitions = moved_state.random_transitions(step);
+      for (typename transitions_t::const_iterator it = transitions.begin();
+        it != transitions.end(); ++it) {
+        successors.insert(resolver.resolve(it->first));
+      }
+    }
   };
 }
 

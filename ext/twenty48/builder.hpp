@@ -178,7 +178,7 @@ template <int size> struct builder_t {
 private:
   state_vector_t open;
   state_hash_set_t<size> closed;
-  resolver_t<size> resolver;
+  const resolver_t<size> &resolver;
 };
 
 }
