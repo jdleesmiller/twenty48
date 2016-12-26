@@ -1840,30 +1840,30 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 #define SWIGTYPE_p_short swig_types[10]
 #define SWIGTYPE_p_signed_char swig_types[11]
 #define SWIGTYPE_p_size_type swig_types[12]
-#define SWIGTYPE_p_state_set_t swig_types[13]
-#define SWIGTYPE_p_state_vector_t swig_types[14]
-#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t swig_types[15]
-#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t swig_types[16]
-#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t swig_types[17]
-#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_2_t_t swig_types[18]
-#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_3_t_t swig_types[19]
-#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_4_t_t swig_types[20]
-#define SWIGTYPE_p_std__allocatorT_unsigned_char_t swig_types[21]
-#define SWIGTYPE_p_std__arrayT_unsigned_char_2_t swig_types[22]
-#define SWIGTYPE_p_std__arrayT_unsigned_char_3_t swig_types[23]
-#define SWIGTYPE_p_std__arrayT_unsigned_char_4_t swig_types[24]
-#define SWIGTYPE_p_std__lessT_twenty48__state_tT_2_t_t swig_types[25]
-#define SWIGTYPE_p_std__lessT_twenty48__state_tT_3_t_t swig_types[26]
-#define SWIGTYPE_p_std__lessT_twenty48__state_tT_4_t_t swig_types[27]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t swig_types[28]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t__iterator swig_types[29]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t__reverse_iterator swig_types[30]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t swig_types[31]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t__iterator swig_types[32]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t__reverse_iterator swig_types[33]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t swig_types[34]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__iterator swig_types[35]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__reverse_iterator swig_types[36]
+#define SWIGTYPE_p_state_vector_t swig_types[13]
+#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t swig_types[14]
+#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t swig_types[15]
+#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t swig_types[16]
+#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_2_t_t swig_types[17]
+#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_3_t_t swig_types[18]
+#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_4_t_t swig_types[19]
+#define SWIGTYPE_p_std__allocatorT_unsigned_char_t swig_types[20]
+#define SWIGTYPE_p_std__arrayT_unsigned_char_2_t swig_types[21]
+#define SWIGTYPE_p_std__arrayT_unsigned_char_3_t swig_types[22]
+#define SWIGTYPE_p_std__arrayT_unsigned_char_4_t swig_types[23]
+#define SWIGTYPE_p_std__lessT_twenty48__state_tT_2_t_t swig_types[24]
+#define SWIGTYPE_p_std__lessT_twenty48__state_tT_3_t_t swig_types[25]
+#define SWIGTYPE_p_std__lessT_twenty48__state_tT_4_t_t swig_types[26]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t swig_types[27]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t__iterator swig_types[28]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t__reverse_iterator swig_types[29]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t swig_types[30]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t__iterator swig_types[31]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t__reverse_iterator swig_types[32]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t swig_types[33]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__iterator swig_types[34]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__reverse_iterator swig_types[35]
+#define SWIGTYPE_p_std__string swig_types[36]
 #define SWIGTYPE_p_std__vectorT_twenty48__state_tT_2_t_std__allocatorT_twenty48__state_tT_2_t_t_t swig_types[37]
 #define SWIGTYPE_p_std__vectorT_twenty48__state_tT_3_t_std__allocatorT_twenty48__state_tT_3_t_t_t swig_types[38]
 #define SWIGTYPE_p_std__vectorT_twenty48__state_tT_4_t_std__allocatorT_twenty48__state_tT_4_t_t_t swig_types[39]
@@ -1876,23 +1876,26 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 #define SWIGTYPE_p_twenty48__builder_tT_2_t swig_types[46]
 #define SWIGTYPE_p_twenty48__builder_tT_3_t swig_types[47]
 #define SWIGTYPE_p_twenty48__builder_tT_4_t swig_types[48]
-#define SWIGTYPE_p_twenty48__line_tT_2_t swig_types[49]
-#define SWIGTYPE_p_twenty48__line_tT_3_t swig_types[50]
-#define SWIGTYPE_p_twenty48__line_tT_4_t swig_types[51]
-#define SWIGTYPE_p_twenty48__state_hash_set_tT_2_t swig_types[52]
-#define SWIGTYPE_p_twenty48__state_hash_set_tT_3_t swig_types[53]
-#define SWIGTYPE_p_twenty48__state_hash_set_tT_4_t swig_types[54]
-#define SWIGTYPE_p_twenty48__state_tT_2_t swig_types[55]
-#define SWIGTYPE_p_twenty48__state_tT_3_t swig_types[56]
-#define SWIGTYPE_p_twenty48__state_tT_4_t swig_types[57]
-#define SWIGTYPE_p_unsigned_char swig_types[58]
-#define SWIGTYPE_p_unsigned_int swig_types[59]
-#define SWIGTYPE_p_unsigned_long_long swig_types[60]
-#define SWIGTYPE_p_unsigned_short swig_types[61]
-#define SWIGTYPE_p_value_type swig_types[62]
-#define SWIGTYPE_p_void swig_types[63]
-static swig_type_info *swig_types[65];
-static swig_module_info swig_module = {swig_types, 64, 0, 0, 0, 0};
+#define SWIGTYPE_p_twenty48__layer_builder_tT_2_t swig_types[49]
+#define SWIGTYPE_p_twenty48__layer_builder_tT_3_t swig_types[50]
+#define SWIGTYPE_p_twenty48__layer_builder_tT_4_t swig_types[51]
+#define SWIGTYPE_p_twenty48__line_tT_2_t swig_types[52]
+#define SWIGTYPE_p_twenty48__line_tT_3_t swig_types[53]
+#define SWIGTYPE_p_twenty48__line_tT_4_t swig_types[54]
+#define SWIGTYPE_p_twenty48__state_hash_set_tT_2_t swig_types[55]
+#define SWIGTYPE_p_twenty48__state_hash_set_tT_3_t swig_types[56]
+#define SWIGTYPE_p_twenty48__state_hash_set_tT_4_t swig_types[57]
+#define SWIGTYPE_p_twenty48__state_tT_2_t swig_types[58]
+#define SWIGTYPE_p_twenty48__state_tT_3_t swig_types[59]
+#define SWIGTYPE_p_twenty48__state_tT_4_t swig_types[60]
+#define SWIGTYPE_p_unsigned_char swig_types[61]
+#define SWIGTYPE_p_unsigned_int swig_types[62]
+#define SWIGTYPE_p_unsigned_long_long swig_types[63]
+#define SWIGTYPE_p_unsigned_short swig_types[64]
+#define SWIGTYPE_p_value_type swig_types[65]
+#define SWIGTYPE_p_void swig_types[66]
+static swig_type_info *swig_types[68];
+static swig_module_info swig_module = {swig_types, 67, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1922,6 +1925,7 @@ static VALUE mTwenty48;
 #include "line.hpp"
 #include "state.hpp"
 #include "builder.hpp"
+#include "layer_builder.hpp"
 #include "state_hash_set.hpp"
 
 
@@ -16493,6 +16497,30 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_State2_sum(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 2 > const *","sum", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 2 > * >(argp1);
+  result = (int)((twenty48::state_t< 2 > const *)arg1)->sum();
+  vresult = SWIG_From_int(static_cast< int >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /*
   Document-method: Twenty48::State2.to_a
@@ -17277,6 +17305,30 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_State3_sum(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 3 > const *","sum", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 3 > * >(argp1);
+  result = (int)((twenty48::state_t< 3 > const *)arg1)->sum();
+  vresult = SWIG_From_int(static_cast< int >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /*
   Document-method: Twenty48::State3.to_a
@@ -18055,6 +18107,30 @@ _wrap_State4_cells_available(int argc, VALUE *argv, VALUE self) {
   arg1 = reinterpret_cast< twenty48::state_t< 4 > * >(argp1);
   result = ((twenty48::state_t< 4 > const *)arg1)->cells_available();
   vresult = SWIG_From_size_t(static_cast< size_t >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_State4_sum(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 4 > *arg1 = (twenty48::state_t< 4 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 4 > const *","sum", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 4 > * >(argp1);
+  result = (int)((twenty48::state_t< 4 > const *)arg1)->sum();
+  vresult = SWIG_From_int(static_cast< int >(result));
   return vresult;
 fail:
   return Qnil;
@@ -30836,6 +30912,399 @@ free_twenty48_builder_t_Sl_4_Sg_(void *self) {
     delete arg1;
 }
 
+static swig_class SwigClassLayerBuilder2;
+
+SWIGINTERN VALUE
+#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
+_wrap_LayerBuilder2_allocate(VALUE self)
+#else
+_wrap_LayerBuilder2_allocate(int argc, VALUE *argv, VALUE self)
+#endif
+{
+  VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_twenty48__layer_builder_tT_2_t);
+#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
+  rb_obj_call_init(vresult, argc, argv);
+#endif
+  return vresult;
+}
+
+
+SWIGINTERN VALUE
+_wrap_new_LayerBuilder2(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  twenty48::layer_builder_t< 2 > *result = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","layer_builder_t<(2)>", 1, argv[0] ));
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = (twenty48::layer_builder_t< 2 > *)new twenty48::layer_builder_t< 2 >((char const *)arg1);
+  DATA_PTR(self) = result;
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return self;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerBuilder2_build_start_state_layers(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_builder_t< 2 > *arg1 = (twenty48::layer_builder_t< 2 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_builder_t< 2 > const *","build_start_state_layers", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_builder_t< 2 > * >(argp1);
+  ((twenty48::layer_builder_t< 2 > const *)arg1)->build_start_state_layers();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerBuilder2_layer_path(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_builder_t< 2 > *arg1 = (twenty48::layer_builder_t< 2 > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  std::string result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_builder_t< 2 > const *","layer_path", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_builder_t< 2 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","layer_path", 2, argv[0] ));
+  } 
+  arg2 = static_cast< int >(val2);
+  result = ((twenty48::layer_builder_t< 2 > const *)arg1)->layer_path(arg2);
+  vresult = SWIG_NewPointerObj((new std::string(static_cast< const std::string& >(result))), SWIGTYPE_p_std__string, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerBuilder2_build_layer(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_builder_t< 2 > *arg1 = (twenty48::layer_builder_t< 2 > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_builder_t< 2 > const *","build_layer", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_builder_t< 2 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","build_layer", 2, argv[0] ));
+  } 
+  arg2 = static_cast< int >(val2);
+  ((twenty48::layer_builder_t< 2 > const *)arg1)->build_layer(arg2);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN void
+free_twenty48_layer_builder_t_Sl_2_Sg_(void *self) {
+    twenty48::layer_builder_t< 2 > *arg1 = (twenty48::layer_builder_t< 2 > *)self;
+    delete arg1;
+}
+
+static swig_class SwigClassLayerBuilder3;
+
+SWIGINTERN VALUE
+#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
+_wrap_LayerBuilder3_allocate(VALUE self)
+#else
+_wrap_LayerBuilder3_allocate(int argc, VALUE *argv, VALUE self)
+#endif
+{
+  VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_twenty48__layer_builder_tT_3_t);
+#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
+  rb_obj_call_init(vresult, argc, argv);
+#endif
+  return vresult;
+}
+
+
+SWIGINTERN VALUE
+_wrap_new_LayerBuilder3(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  twenty48::layer_builder_t< 3 > *result = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","layer_builder_t<(3)>", 1, argv[0] ));
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = (twenty48::layer_builder_t< 3 > *)new twenty48::layer_builder_t< 3 >((char const *)arg1);
+  DATA_PTR(self) = result;
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return self;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerBuilder3_build_start_state_layers(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_builder_t< 3 > *arg1 = (twenty48::layer_builder_t< 3 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_builder_t< 3 > const *","build_start_state_layers", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_builder_t< 3 > * >(argp1);
+  ((twenty48::layer_builder_t< 3 > const *)arg1)->build_start_state_layers();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerBuilder3_layer_path(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_builder_t< 3 > *arg1 = (twenty48::layer_builder_t< 3 > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  std::string result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_builder_t< 3 > const *","layer_path", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_builder_t< 3 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","layer_path", 2, argv[0] ));
+  } 
+  arg2 = static_cast< int >(val2);
+  result = ((twenty48::layer_builder_t< 3 > const *)arg1)->layer_path(arg2);
+  vresult = SWIG_NewPointerObj((new std::string(static_cast< const std::string& >(result))), SWIGTYPE_p_std__string, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerBuilder3_build_layer(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_builder_t< 3 > *arg1 = (twenty48::layer_builder_t< 3 > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_builder_t< 3 > const *","build_layer", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_builder_t< 3 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","build_layer", 2, argv[0] ));
+  } 
+  arg2 = static_cast< int >(val2);
+  ((twenty48::layer_builder_t< 3 > const *)arg1)->build_layer(arg2);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN void
+free_twenty48_layer_builder_t_Sl_3_Sg_(void *self) {
+    twenty48::layer_builder_t< 3 > *arg1 = (twenty48::layer_builder_t< 3 > *)self;
+    delete arg1;
+}
+
+static swig_class SwigClassLayerBuilder4;
+
+SWIGINTERN VALUE
+#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
+_wrap_LayerBuilder4_allocate(VALUE self)
+#else
+_wrap_LayerBuilder4_allocate(int argc, VALUE *argv, VALUE self)
+#endif
+{
+  VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_twenty48__layer_builder_tT_4_t);
+#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
+  rb_obj_call_init(vresult, argc, argv);
+#endif
+  return vresult;
+}
+
+
+SWIGINTERN VALUE
+_wrap_new_LayerBuilder4(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  twenty48::layer_builder_t< 4 > *result = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","layer_builder_t<(4)>", 1, argv[0] ));
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = (twenty48::layer_builder_t< 4 > *)new twenty48::layer_builder_t< 4 >((char const *)arg1);
+  DATA_PTR(self) = result;
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return self;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerBuilder4_build_start_state_layers(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_builder_t< 4 > *arg1 = (twenty48::layer_builder_t< 4 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_builder_t< 4 > const *","build_start_state_layers", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_builder_t< 4 > * >(argp1);
+  ((twenty48::layer_builder_t< 4 > const *)arg1)->build_start_state_layers();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerBuilder4_layer_path(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_builder_t< 4 > *arg1 = (twenty48::layer_builder_t< 4 > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  std::string result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_builder_t< 4 > const *","layer_path", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_builder_t< 4 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","layer_path", 2, argv[0] ));
+  } 
+  arg2 = static_cast< int >(val2);
+  result = ((twenty48::layer_builder_t< 4 > const *)arg1)->layer_path(arg2);
+  vresult = SWIG_NewPointerObj((new std::string(static_cast< const std::string& >(result))), SWIGTYPE_p_std__string, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerBuilder4_build_layer(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_builder_t< 4 > *arg1 = (twenty48::layer_builder_t< 4 > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_builder_t< 4 > const *","build_layer", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_builder_t< 4 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","build_layer", 2, argv[0] ));
+  } 
+  arg2 = static_cast< int >(val2);
+  ((twenty48::layer_builder_t< 4 > const *)arg1)->build_layer(arg2);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN void
+free_twenty48_layer_builder_t_Sl_4_Sg_(void *self) {
+    twenty48::layer_builder_t< 4 > *arg1 = (twenty48::layer_builder_t< 4 > *)self;
+    delete arg1;
+}
+
 static swig_class SwigClassStateHashSet2;
 
 SWIGINTERN VALUE
@@ -31052,6 +31521,38 @@ _wrap_StateHashSet2_dump(int argc, VALUE *argv, VALUE self) {
   }
   arg2 = reinterpret_cast< char * >(buf2);
   ((twenty48::state_hash_set_t< 2 > const *)arg1)->dump((char const *)arg2);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_StateHashSet2_dump_binary(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_hash_set_t< 2 > *arg1 = (twenty48::state_hash_set_t< 2 > *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_hash_set_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_hash_set_t< 2 > const *","dump_binary", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_hash_set_t< 2 > * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(argv[0], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","dump_binary", 2, argv[0] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  ((twenty48::state_hash_set_t< 2 > const *)arg1)->dump_binary((char const *)arg2);
   if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
   return Qnil;
 fail:
@@ -31323,6 +31824,38 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_StateHashSet3_dump_binary(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_hash_set_t< 3 > *arg1 = (twenty48::state_hash_set_t< 3 > *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_hash_set_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_hash_set_t< 3 > const *","dump_binary", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_hash_set_t< 3 > * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(argv[0], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","dump_binary", 2, argv[0] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  ((twenty48::state_hash_set_t< 3 > const *)arg1)->dump_binary((char const *)arg2);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+}
+
+
 
 /*
   Document-method: Twenty48::StateHashSet3.to_a
@@ -31586,6 +32119,38 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_StateHashSet4_dump_binary(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_hash_set_t< 4 > *arg1 = (twenty48::state_hash_set_t< 4 > *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_hash_set_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_hash_set_t< 4 > const *","dump_binary", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_hash_set_t< 4 > * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(argv[0], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","dump_binary", 2, argv[0] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  ((twenty48::state_hash_set_t< 4 > const *)arg1)->dump_binary((char const *)arg2);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+}
+
+
 
 /*
   Document-method: Twenty48::StateHashSet4.to_a
@@ -31644,7 +32209,6 @@ static swig_type_info _swigt__p_p_void = {"_p_p_void", "void **|VALUE *", 0, 0, 
 static swig_type_info _swigt__p_short = {"_p_short", "short *|int_least16_t *|int16_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_signed_char = {"_p_signed_char", "signed char *|int_least8_t *|int_fast8_t *|int8_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_size_type = {"_p_size_type", "size_type *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_state_set_t = {"_p_state_set_t", "state_set_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_state_vector_t = {"_p_state_vector_t", "state_vector_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t = {"_p_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t", "std::map< twenty48::state_t< 2 >,double >::allocator_type *|std::allocator< std::pair< twenty48::state_t< 2 > const,double > > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t = {"_p_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t", "std::map< twenty48::state_t< 3 >,double >::allocator_type *|std::allocator< std::pair< twenty48::state_t< 3 > const,double > > *", 0, 0, (void*)0, 0};
@@ -31668,6 +32232,7 @@ static swig_type_info _swigt__p_std__mapT_twenty48__state_tT_3_t_double_std__les
 static swig_type_info _swigt__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t = {"_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t", "twenty48::state_t< 4 >::transitions_t *|std::map< twenty48::state_t< 4 >,double,std::less< twenty48::state_t< 4 > >,std::allocator< std::pair< twenty48::state_t< 4 > const,double > > > *|std::map< twenty48::state_t< 4 >,double > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__iterator = {"_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__iterator", "std::map< twenty48::state_t< 4 >,double >::iterator *|std::map< twenty48::state_t< 4 >,double,std::less< twenty48::state_t< 4 > >,std::allocator< std::pair< twenty48::state_t< 4 > const,double > > >::iterator *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__reverse_iterator = {"_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__reverse_iterator", "std::map< twenty48::state_t< 4 >,double >::reverse_iterator *|std::map< twenty48::state_t< 4 >,double,std::less< twenty48::state_t< 4 > >,std::allocator< std::pair< twenty48::state_t< 4 > const,double > > >::reverse_iterator *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__string = {"_p_std__string", "std::string *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_twenty48__state_tT_2_t_std__allocatorT_twenty48__state_tT_2_t_t_t = {"_p_std__vectorT_twenty48__state_tT_2_t_std__allocatorT_twenty48__state_tT_2_t_t_t", "std::vector< twenty48::state_t< 2 > > *|std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_twenty48__state_tT_3_t_std__allocatorT_twenty48__state_tT_3_t_t_t = {"_p_std__vectorT_twenty48__state_tT_3_t_std__allocatorT_twenty48__state_tT_3_t_t_t", "std::vector< twenty48::state_t< 3 > > *|std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_twenty48__state_tT_4_t_std__allocatorT_twenty48__state_tT_4_t_t_t = {"_p_std__vectorT_twenty48__state_tT_4_t_std__allocatorT_twenty48__state_tT_4_t_t_t", "std::vector< twenty48::state_t< 4 > > *|std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > *", 0, 0, (void*)0, 0};
@@ -31680,6 +32245,9 @@ static swig_type_info _swigt__p_twenty48__DIRECTION = {"_p_twenty48__DIRECTION",
 static swig_type_info _swigt__p_twenty48__builder_tT_2_t = {"_p_twenty48__builder_tT_2_t", "twenty48::builder_t< 2 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__builder_tT_3_t = {"_p_twenty48__builder_tT_3_t", "twenty48::builder_t< 3 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__builder_tT_4_t = {"_p_twenty48__builder_tT_4_t", "twenty48::builder_t< 4 > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_twenty48__layer_builder_tT_2_t = {"_p_twenty48__layer_builder_tT_2_t", "twenty48::layer_builder_t< 2 > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_twenty48__layer_builder_tT_3_t = {"_p_twenty48__layer_builder_tT_3_t", "twenty48::layer_builder_t< 3 > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_twenty48__layer_builder_tT_4_t = {"_p_twenty48__layer_builder_tT_4_t", "twenty48::layer_builder_t< 4 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__line_tT_2_t = {"_p_twenty48__line_tT_2_t", "twenty48::line_t< 2 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__line_tT_3_t = {"_p_twenty48__line_tT_3_t", "twenty48::line_t< 3 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__line_tT_4_t = {"_p_twenty48__line_tT_4_t", "twenty48::line_t< 4 > *", 0, 0, (void*)0, 0};
@@ -31710,7 +32278,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_short,
   &_swigt__p_signed_char,
   &_swigt__p_size_type,
-  &_swigt__p_state_set_t,
   &_swigt__p_state_vector_t,
   &_swigt__p_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t,
   &_swigt__p_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t,
@@ -31734,6 +32301,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t,
   &_swigt__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__iterator,
   &_swigt__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__reverse_iterator,
+  &_swigt__p_std__string,
   &_swigt__p_std__vectorT_twenty48__state_tT_2_t_std__allocatorT_twenty48__state_tT_2_t_t_t,
   &_swigt__p_std__vectorT_twenty48__state_tT_3_t_std__allocatorT_twenty48__state_tT_3_t_t_t,
   &_swigt__p_std__vectorT_twenty48__state_tT_4_t_std__allocatorT_twenty48__state_tT_4_t_t_t,
@@ -31746,6 +32314,9 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_twenty48__builder_tT_2_t,
   &_swigt__p_twenty48__builder_tT_3_t,
   &_swigt__p_twenty48__builder_tT_4_t,
+  &_swigt__p_twenty48__layer_builder_tT_2_t,
+  &_swigt__p_twenty48__layer_builder_tT_3_t,
+  &_swigt__p_twenty48__layer_builder_tT_4_t,
   &_swigt__p_twenty48__line_tT_2_t,
   &_swigt__p_twenty48__line_tT_3_t,
   &_swigt__p_twenty48__line_tT_4_t,
@@ -31776,7 +32347,6 @@ static swig_cast_info _swigc__p_p_void[] = {  {&_swigt__p_p_void, 0, 0, 0},{0, 0
 static swig_cast_info _swigc__p_short[] = {  {&_swigt__p_short, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_signed_char[] = {  {&_swigt__p_signed_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_size_type[] = {  {&_swigt__p_size_type, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_state_set_t[] = {  {&_swigt__p_state_set_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_state_vector_t[] = {  {&_swigt__p_state_vector_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t[] = {  {&_swigt__p_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t[] = {  {&_swigt__p_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -31800,6 +32370,7 @@ static swig_cast_info _swigc__p_std__mapT_twenty48__state_tT_3_t_double_std__les
 static swig_cast_info _swigc__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t[] = {  {&_swigt__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__iterator[] = {  {&_swigt__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__iterator, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__reverse_iterator[] = {  {&_swigt__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__reverse_iterator, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__string[] = {  {&_swigt__p_std__string, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_twenty48__state_tT_2_t_std__allocatorT_twenty48__state_tT_2_t_t_t[] = {  {&_swigt__p_std__vectorT_twenty48__state_tT_2_t_std__allocatorT_twenty48__state_tT_2_t_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_twenty48__state_tT_3_t_std__allocatorT_twenty48__state_tT_3_t_t_t[] = {  {&_swigt__p_std__vectorT_twenty48__state_tT_3_t_std__allocatorT_twenty48__state_tT_3_t_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_twenty48__state_tT_4_t_std__allocatorT_twenty48__state_tT_4_t_t_t[] = {  {&_swigt__p_std__vectorT_twenty48__state_tT_4_t_std__allocatorT_twenty48__state_tT_4_t_t_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -31812,6 +32383,9 @@ static swig_cast_info _swigc__p_twenty48__DIRECTION[] = {  {&_swigt__p_twenty48_
 static swig_cast_info _swigc__p_twenty48__builder_tT_2_t[] = {  {&_swigt__p_twenty48__builder_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__builder_tT_3_t[] = {  {&_swigt__p_twenty48__builder_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__builder_tT_4_t[] = {  {&_swigt__p_twenty48__builder_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_twenty48__layer_builder_tT_2_t[] = {  {&_swigt__p_twenty48__layer_builder_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_twenty48__layer_builder_tT_3_t[] = {  {&_swigt__p_twenty48__layer_builder_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_twenty48__layer_builder_tT_4_t[] = {  {&_swigt__p_twenty48__layer_builder_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__line_tT_2_t[] = {  {&_swigt__p_twenty48__line_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__line_tT_3_t[] = {  {&_swigt__p_twenty48__line_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__line_tT_4_t[] = {  {&_swigt__p_twenty48__line_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -31842,7 +32416,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_short,
   _swigc__p_signed_char,
   _swigc__p_size_type,
-  _swigc__p_state_set_t,
   _swigc__p_state_vector_t,
   _swigc__p_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t,
   _swigc__p_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t,
@@ -31866,6 +32439,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t,
   _swigc__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__iterator,
   _swigc__p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__reverse_iterator,
+  _swigc__p_std__string,
   _swigc__p_std__vectorT_twenty48__state_tT_2_t_std__allocatorT_twenty48__state_tT_2_t_t_t,
   _swigc__p_std__vectorT_twenty48__state_tT_3_t_std__allocatorT_twenty48__state_tT_3_t_t_t,
   _swigc__p_std__vectorT_twenty48__state_tT_4_t_std__allocatorT_twenty48__state_tT_4_t_t_t,
@@ -31878,6 +32452,9 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_twenty48__builder_tT_2_t,
   _swigc__p_twenty48__builder_tT_3_t,
   _swigc__p_twenty48__builder_tT_4_t,
+  _swigc__p_twenty48__layer_builder_tT_2_t,
+  _swigc__p_twenty48__layer_builder_tT_3_t,
+  _swigc__p_twenty48__layer_builder_tT_4_t,
   _swigc__p_twenty48__line_tT_2_t,
   _swigc__p_twenty48__line_tT_3_t,
   _swigc__p_twenty48__line_tT_4_t,
@@ -32395,6 +32972,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassState2.klass, "lose", VALUEFUNC(_wrap_State2_lose), -1);
   rb_define_method(SwigClassState2.klass, "max_value", VALUEFUNC(_wrap_State2_max_value), -1);
   rb_define_method(SwigClassState2.klass, "cells_available", VALUEFUNC(_wrap_State2_cells_available), -1);
+  rb_define_method(SwigClassState2.klass, "sum", VALUEFUNC(_wrap_State2_sum), -1);
   rb_define_method(SwigClassState2.klass, "to_a", VALUEFUNC(_wrap_State2_to_a), -1);
   rb_define_method(SwigClassState2.klass, "move", VALUEFUNC(_wrap_State2_move), -1);
   rb_define_method(SwigClassState2.klass, "reflect_horizontally", VALUEFUNC(_wrap_State2_reflect_horizontally), -1);
@@ -32422,6 +33000,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassState3.klass, "lose", VALUEFUNC(_wrap_State3_lose), -1);
   rb_define_method(SwigClassState3.klass, "max_value", VALUEFUNC(_wrap_State3_max_value), -1);
   rb_define_method(SwigClassState3.klass, "cells_available", VALUEFUNC(_wrap_State3_cells_available), -1);
+  rb_define_method(SwigClassState3.klass, "sum", VALUEFUNC(_wrap_State3_sum), -1);
   rb_define_method(SwigClassState3.klass, "to_a", VALUEFUNC(_wrap_State3_to_a), -1);
   rb_define_method(SwigClassState3.klass, "move", VALUEFUNC(_wrap_State3_move), -1);
   rb_define_method(SwigClassState3.klass, "reflect_horizontally", VALUEFUNC(_wrap_State3_reflect_horizontally), -1);
@@ -32449,6 +33028,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassState4.klass, "lose", VALUEFUNC(_wrap_State4_lose), -1);
   rb_define_method(SwigClassState4.klass, "max_value", VALUEFUNC(_wrap_State4_max_value), -1);
   rb_define_method(SwigClassState4.klass, "cells_available", VALUEFUNC(_wrap_State4_cells_available), -1);
+  rb_define_method(SwigClassState4.klass, "sum", VALUEFUNC(_wrap_State4_sum), -1);
   rb_define_method(SwigClassState4.klass, "to_a", VALUEFUNC(_wrap_State4_to_a), -1);
   rb_define_method(SwigClassState4.klass, "move", VALUEFUNC(_wrap_State4_move), -1);
   rb_define_method(SwigClassState4.klass, "reflect_horizontally", VALUEFUNC(_wrap_State4_reflect_horizontally), -1);
@@ -32796,6 +33376,39 @@ SWIGEXPORT void Init_twenty48(void) {
   SwigClassBuilder4.destroy = (void (*)(void *)) free_twenty48_builder_t_Sl_4_Sg_;
   SwigClassBuilder4.trackObjects = 0;
   
+  SwigClassLayerBuilder2.klass = rb_define_class_under(mTwenty48, "LayerBuilder2", rb_cObject);
+  SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_builder_tT_2_t, (void *) &SwigClassLayerBuilder2);
+  rb_define_alloc_func(SwigClassLayerBuilder2.klass, _wrap_LayerBuilder2_allocate);
+  rb_define_method(SwigClassLayerBuilder2.klass, "initialize", VALUEFUNC(_wrap_new_LayerBuilder2), -1);
+  rb_define_method(SwigClassLayerBuilder2.klass, "build_start_state_layers", VALUEFUNC(_wrap_LayerBuilder2_build_start_state_layers), -1);
+  rb_define_method(SwigClassLayerBuilder2.klass, "layer_path", VALUEFUNC(_wrap_LayerBuilder2_layer_path), -1);
+  rb_define_method(SwigClassLayerBuilder2.klass, "build_layer", VALUEFUNC(_wrap_LayerBuilder2_build_layer), -1);
+  SwigClassLayerBuilder2.mark = 0;
+  SwigClassLayerBuilder2.destroy = (void (*)(void *)) free_twenty48_layer_builder_t_Sl_2_Sg_;
+  SwigClassLayerBuilder2.trackObjects = 0;
+  
+  SwigClassLayerBuilder3.klass = rb_define_class_under(mTwenty48, "LayerBuilder3", rb_cObject);
+  SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_builder_tT_3_t, (void *) &SwigClassLayerBuilder3);
+  rb_define_alloc_func(SwigClassLayerBuilder3.klass, _wrap_LayerBuilder3_allocate);
+  rb_define_method(SwigClassLayerBuilder3.klass, "initialize", VALUEFUNC(_wrap_new_LayerBuilder3), -1);
+  rb_define_method(SwigClassLayerBuilder3.klass, "build_start_state_layers", VALUEFUNC(_wrap_LayerBuilder3_build_start_state_layers), -1);
+  rb_define_method(SwigClassLayerBuilder3.klass, "layer_path", VALUEFUNC(_wrap_LayerBuilder3_layer_path), -1);
+  rb_define_method(SwigClassLayerBuilder3.klass, "build_layer", VALUEFUNC(_wrap_LayerBuilder3_build_layer), -1);
+  SwigClassLayerBuilder3.mark = 0;
+  SwigClassLayerBuilder3.destroy = (void (*)(void *)) free_twenty48_layer_builder_t_Sl_3_Sg_;
+  SwigClassLayerBuilder3.trackObjects = 0;
+  
+  SwigClassLayerBuilder4.klass = rb_define_class_under(mTwenty48, "LayerBuilder4", rb_cObject);
+  SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_builder_tT_4_t, (void *) &SwigClassLayerBuilder4);
+  rb_define_alloc_func(SwigClassLayerBuilder4.klass, _wrap_LayerBuilder4_allocate);
+  rb_define_method(SwigClassLayerBuilder4.klass, "initialize", VALUEFUNC(_wrap_new_LayerBuilder4), -1);
+  rb_define_method(SwigClassLayerBuilder4.klass, "build_start_state_layers", VALUEFUNC(_wrap_LayerBuilder4_build_start_state_layers), -1);
+  rb_define_method(SwigClassLayerBuilder4.klass, "layer_path", VALUEFUNC(_wrap_LayerBuilder4_layer_path), -1);
+  rb_define_method(SwigClassLayerBuilder4.klass, "build_layer", VALUEFUNC(_wrap_LayerBuilder4_build_layer), -1);
+  SwigClassLayerBuilder4.mark = 0;
+  SwigClassLayerBuilder4.destroy = (void (*)(void *)) free_twenty48_layer_builder_t_Sl_4_Sg_;
+  SwigClassLayerBuilder4.trackObjects = 0;
+  
   SwigClassStateHashSet2.klass = rb_define_class_under(mTwenty48, "StateHashSet2", rb_cObject);
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__state_hash_set_tT_2_t, (void *) &SwigClassStateHashSet2);
   rb_define_alloc_func(SwigClassStateHashSet2.klass, _wrap_StateHashSet2_allocate);
@@ -32805,6 +33418,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassStateHashSet2.klass, "insert", VALUEFUNC(_wrap_StateHashSet2_insert), -1);
   rb_define_method(SwigClassStateHashSet2.klass, "member", VALUEFUNC(_wrap_StateHashSet2_member), -1);
   rb_define_method(SwigClassStateHashSet2.klass, "dump", VALUEFUNC(_wrap_StateHashSet2_dump), -1);
+  rb_define_method(SwigClassStateHashSet2.klass, "dump_binary", VALUEFUNC(_wrap_StateHashSet2_dump_binary), -1);
   rb_define_method(SwigClassStateHashSet2.klass, "to_a", VALUEFUNC(_wrap_StateHashSet2_to_a), -1);
   SwigClassStateHashSet2.mark = 0;
   SwigClassStateHashSet2.destroy = (void (*)(void *)) free_twenty48_state_hash_set_t_Sl_2_Sg_;
@@ -32819,6 +33433,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassStateHashSet3.klass, "insert", VALUEFUNC(_wrap_StateHashSet3_insert), -1);
   rb_define_method(SwigClassStateHashSet3.klass, "member", VALUEFUNC(_wrap_StateHashSet3_member), -1);
   rb_define_method(SwigClassStateHashSet3.klass, "dump", VALUEFUNC(_wrap_StateHashSet3_dump), -1);
+  rb_define_method(SwigClassStateHashSet3.klass, "dump_binary", VALUEFUNC(_wrap_StateHashSet3_dump_binary), -1);
   rb_define_method(SwigClassStateHashSet3.klass, "to_a", VALUEFUNC(_wrap_StateHashSet3_to_a), -1);
   SwigClassStateHashSet3.mark = 0;
   SwigClassStateHashSet3.destroy = (void (*)(void *)) free_twenty48_state_hash_set_t_Sl_3_Sg_;
@@ -32833,6 +33448,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassStateHashSet4.klass, "insert", VALUEFUNC(_wrap_StateHashSet4_insert), -1);
   rb_define_method(SwigClassStateHashSet4.klass, "member", VALUEFUNC(_wrap_StateHashSet4_member), -1);
   rb_define_method(SwigClassStateHashSet4.klass, "dump", VALUEFUNC(_wrap_StateHashSet4_dump), -1);
+  rb_define_method(SwigClassStateHashSet4.klass, "dump_binary", VALUEFUNC(_wrap_StateHashSet4_dump_binary), -1);
   rb_define_method(SwigClassStateHashSet4.klass, "to_a", VALUEFUNC(_wrap_StateHashSet4_to_a), -1);
   SwigClassStateHashSet4.mark = 0;
   SwigClassStateHashSet4.destroy = (void (*)(void *)) free_twenty48_state_hash_set_t_Sl_4_Sg_;

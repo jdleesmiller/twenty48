@@ -5,6 +5,7 @@
 #include "line.hpp"
 #include "state.hpp"
 #include "builder.hpp"
+#include "layer_builder.hpp"
 #include "state_hash_set.hpp"
 %}
 
@@ -89,6 +90,16 @@
 %template(Builder2) twenty48::builder_t<2>;
 %template(Builder3) twenty48::builder_t<3>;
 %template(Builder4) twenty48::builder_t<4>;
+
+/******************************************************************************/
+/* LayerBuilder */
+/******************************************************************************/
+
+%include "layer_builder.hpp"
+
+%template(LayerBuilder2) twenty48::layer_builder_t<2>;
+%template(LayerBuilder3) twenty48::layer_builder_t<3>;
+%template(LayerBuilder4) twenty48::layer_builder_t<4>;
 
 /******************************************************************************/
 /* StateHashSet */
