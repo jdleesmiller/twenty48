@@ -59,14 +59,22 @@ template <int board_size> struct state_hash_set_t {
     of.close();
   }
 
+  void load_binary(const char *pathname) {
+    std::ifstream is(pathname, std::ios::in | std::ios::binary);
+    while (is) {
+      insert(state_t<board_size>::read_bin(is));
+    }
+    is.close();
+  }
+
   void dump_binary(const char *pathname) const {
-    std::ofstream of(pathname, std::ios::out | std::ios::binary);
+    std::ofstream os(pathname, std::ios::out | std::ios::binary);
     for (typename state_hash_set_t<board_size>::data_t::const_iterator it =
       data.begin(); it != data.end(); ++it) {
       if (it->get_nybbles() == 0) continue;
-      write_state_bin(of, *it);
+      it->write_bin(os);
     }
-    of.close();
+    os.close();
   }
 
   std::vector<state_t<board_size> > to_a() const {
@@ -95,12 +103,6 @@ private:
       if (data[index] == state) return true;
       if (data[index].get_nybbles() == 0) return false;
     }
-  }
-
-  void write_state_bin(std::ostream &os,
-    const state_t<board_size> &state) const {
-    uint64_t nybbles = state.get_nybbles();
-    os.write(reinterpret_cast<char *>(&nybbles), sizeof(nybbles));
   }
 };
 

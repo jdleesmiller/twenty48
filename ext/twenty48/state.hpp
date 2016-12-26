@@ -200,6 +200,16 @@ template <int size> struct state_t {
     return nybbles < other.nybbles;
   }
 
+  static state_t<size> read_bin(std::istream &is) {
+    nybbles_t nybbles;
+    is.read(reinterpret_cast<char *>(&nybbles), sizeof(nybbles));
+    return nybbles;
+  }
+
+  void write_bin(std::ostream &os) const {
+    os.write(reinterpret_cast<const char *>(&nybbles), sizeof(nybbles));
+  }
+
 private:
   nybbles_t nybbles;
 

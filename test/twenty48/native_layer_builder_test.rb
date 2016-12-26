@@ -17,10 +17,16 @@ class NativeLayerBuilderTest < Twenty48NativeTest
         assert_equal 16, stat.size
       end
 
-      data = File.binread(File.join(tmp, '0004.bin'))
-      nybbles = data.unpack('Q*')
-      assert_equal make_state([0, 0, 1, 1]), State2.new(nybbles[0])
-      assert_equal make_state([0, 1, 1, 0]), State2.new(nybbles[1])
+      set = StateHashSet2.new(1024)
+      set.load_binary(File.join(tmp, '0004.bin'))
+      assert_states_equal [
+        [0, 0,
+         0, 0],
+        [0, 0,
+         1, 1],
+        [0, 1,
+         1, 0]
+      ], set.to_a.sort
     end
   end
 end

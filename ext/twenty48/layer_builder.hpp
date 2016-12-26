@@ -62,22 +62,37 @@ namespace twenty48 {
             layer_states.insert(*it);
           }
         }
-        layer_states.dump_binary(layer_path(layer_sum).c_str());
+        layer_states.dump_binary(make_layer_pathname(layer_sum).c_str());
       }
     }
 
-    std::string layer_path(int sum) const {
+    std::string make_layer_pathname(int sum) const {
       std::stringstream path;
       path << data_path << '/' << std::setfill('0') << std::setw(4) << sum <<
         ".bin";
       return path.str();
     }
 
-    void build_layer(int sum) const {
-      // TODO
+    void build_layer(int sum, int step, size_t max_states) const {
+      std::string input_layer_pathname = make_layer_pathname(sum);
+      std::string output_layer_pathname = make_layer_pathname(sum + step);
+      state_hash_set_t<size> output_layer(max_states);
+
+      output_layer.load_binary(output_layer_pathname.c_str());
+      std::ifstream is(input_layer_pathname, std::ios::in | std::ios::binary);
+      while (is) {
+        state_t<size> state = state_t<size>::read_bin(is);
+        expand(state, output_layer);
+      }
+      is.close();
     }
 
   private:
+    void expand(const state_t<size> &state,
+      state_hash_set_t<size> &successors) const {
+      // TODO
+    }
+
     const std::string data_path;
 
     const int MAX_EXPONENT = 11;
