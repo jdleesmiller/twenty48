@@ -3,11 +3,11 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
-#include <unordered_set>
 #include <vector>
 
 #include "twenty48.hpp"
 #include "state.hpp"
+#include "start_states.hpp"
 #include "state_hash_set.hpp"
 
 namespace twenty48 {
@@ -107,7 +107,6 @@ namespace twenty48 {
  */
 template <int size> struct builder_t {
   typedef typename state_t<size>::transitions_t transitions_t;
-  typedef std::unordered_set<state_t<size> > state_set_t;
   typedef std::vector<state_t<size> > state_vector_t;
 
   explicit builder_t(int max_exponent, int max_lose_depth,
@@ -123,20 +122,7 @@ template <int size> struct builder_t {
   }
 
   state_vector_t generate_start_states() {
-    state_set_t result;
-    state_t<size> empty_state;
-    transitions_t transitions_1 = empty_state.random_transitions();
-    for (typename transitions_t::const_iterator it = transitions_1.begin();
-      it != transitions_1.end(); ++it)
-    {
-      transitions_t transitions_2 = it->first.random_transitions();
-      for (typename transitions_t::const_iterator it2 = transitions_2.begin();
-        it2 != transitions_2.end(); ++it2)
-      {
-        result.insert(it2->first);
-      }
-    }
-    return state_vector_t(result.begin(), result.end());
+    return twenty48::generate_start_states<size>();
   }
 
   void build() {
