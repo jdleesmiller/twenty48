@@ -42,9 +42,15 @@ class Twenty48NativeTest < Minitest::Test
     Twenty48::NativeState.create(state_array)
   end
 
-  def make_builder(board_size, max_exponent,
-    max_lose_depth: 0, max_win_depth: 0)
-    Twenty48::NativeBuilder.create(board_size, max_exponent,
+  def make_resolver(board_size, max_exponent, max_win_depth)
+    Twenty48::NativeResolver.create(board_size, max_exponent,
+      max_win_depth, max_win_depth)
+  end
+
+  def make_builder(board_size, max_exponent, max_lose_depth: 0,
+    max_win_depth: 0)
+    resolver = Twenty48::NativeResolver.create(board_size, max_exponent,
       max_lose_depth, max_win_depth)
+    Twenty48::NativeBuilder.create(board_size, resolver)
   end
 end

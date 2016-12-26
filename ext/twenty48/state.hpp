@@ -159,14 +159,18 @@ template <int size> struct state_t {
    * in each empty cell. The states are canonicalized and the probabilities are
    * normalized.
    */
-  transitions_t random_transitions() const {
+  transitions_t random_transitions(int step = 0) const {
     transitions_t transitions;
     for (size_t i = 0; i < size * size; ++i) {
       if ((*this)[i] != 0) continue;
-      transitions[new_state_with_tile(i, 1).canonicalize()] +=
-        0.9 / (size * size);
-      transitions[new_state_with_tile(i, 2).canonicalize()] +=
-        0.1 / (size * size);
+      if (step == 0 || step == 1) {
+        transitions[new_state_with_tile(i, 1).canonicalize()] +=
+          0.9 / (size * size);
+      }
+      if (step == 0 || step == 2) {
+        transitions[new_state_with_tile(i, 2).canonicalize()] +=
+          0.1 / (size * size);
+      }
     }
     return transitions;
   }
