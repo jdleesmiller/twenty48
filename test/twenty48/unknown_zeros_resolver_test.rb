@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'helper'
+require_relative 'common/generic_resolver_tests'
 require_relative 'common/unknown_zeros_resolver_tests'
 
 class UnknownZerosResolverTest < Twenty48Test
   include Twenty48
+  include CommonGenericResolverTests
   include CommonUnknownZerosResolverTests
 
   def make_resolver(board_size, max_exponent, depth)
