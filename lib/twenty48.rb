@@ -28,6 +28,7 @@ module Twenty48
 
   RESOLVER_STRATEGIES = {
     exact: ExactResolver,
-    unknown_zeros: UnknownZerosResolver
+    unknown_zeros: UnknownZerosResolver,
+    bounded: BoundedResolver
   }.freeze
 end

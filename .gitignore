@@ -23,6 +23,10 @@ data/solvers/board_size-3.max_exponent-8*
 data/states
 data/layer_states
 
+data/models/*resolve_strategy-bounded*
+data/array_models/*resolve_strategy-bounded*
+data/solvers/*resolve_strategy-bounded*
+
 .Rproj.user
 
 data/.Rhistory

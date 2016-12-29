@@ -75,4 +75,17 @@ class BoundedResolveTest < Twenty48Test
     resolver_3 = make_resolver(3, 3, 3)
     assert_nil moves_to_win(resolver_3, state)
   end
+
+  def test_strict_resolve_3x3_to_16
+    # A similar example to the above: we can definitely win by going up, left
+    # and up again, but it might be enough to just go up and left, if the middle
+    # cell remains free.
+    state = [
+      2, 0, 1,
+      3, 2, 3,
+      0, 0, 1
+    ]
+    resolver = make_resolver(3, 4, 3)
+    assert_nil moves_to_win(resolver, state)
+  end
 end
