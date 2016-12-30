@@ -1,6 +1,7 @@
 #ifndef TWENTY48_RESOLVER_HPP
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -61,6 +62,10 @@ namespace twenty48 {
       return state;
     }
 
+    double value(const state_t<size> &state, double discount) const {
+      return inner_value(state, discount, max_win_depth());
+    }
+
   private:
     int max_exponent;
     int max_lose_depth;
@@ -115,6 +120,55 @@ namespace twenty48 {
 
       if (moves != UNKNOWN_MOVES_TO_WIN) moves += 1;
       return moves;
+    }
+
+    double inner_value(const state_t<size> &state, double discount,
+      int depth) const
+    {
+      int delta = max_exponent - state.max_value();
+      if (delta <= 0) return 1.0;
+      if (depth <= 0 || delta > depth) return nan("");
+
+      double action_values[4];
+      action_values[DIRECTION_LEFT] =
+        value_action(state, DIRECTION_LEFT, discount, depth);
+      action_values[DIRECTION_RIGHT] =
+        value_action(state, DIRECTION_RIGHT, discount, depth);
+      action_values[DIRECTION_UP] =
+        value_action(state, DIRECTION_UP, discount, depth);
+      action_values[DIRECTION_DOWN] =
+        value_action(state, DIRECTION_DOWN, discount, depth);
+
+      int max_action = -1;
+      for (int i = 0; i < 4; ++i) {
+        if (isnan(action_values[i])) continue;
+        if (max_action < 0 || action_values[i] > action_values[max_action]) {
+          max_action = i;
+        }
+      }
+      if (max_action < 0) return nan("");
+      return action_values[max_action];
+    }
+
+    double value_action(const state_t<size> &state, direction_t direction,
+      double discount, int depth) const
+    {
+      state_t<size> moved_state = state.move(direction);
+      if (moved_state == state) return nan(""); // Can't move in this direction.
+
+      // std::cout << "value_action" << state << " m " << direction << std::endl;
+      double result = 0.0;
+      transitions_t transitions = moved_state.random_transitions();
+      for (typename transitions_t::const_iterator it = transitions.begin();
+        it != transitions.end(); ++it)
+      {
+        double probability = it->second;
+        double successor_value = inner_value(it->first, discount, depth - 1);
+        // std::cout << it->first << " pr:" << probability << " v:" << successor_value << std::endl;
+        if (isnan(successor_value)) return nan("");
+        result += probability * discount * successor_value;
+      }
+      return result;
     }
   };
 

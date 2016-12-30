@@ -6,6 +6,7 @@
 #include "state.hpp"
 #include "builder.hpp"
 #include "layer_builder.hpp"
+#include "layer_solver.hpp"
 #include "state_hash_set.hpp"
 %}
 
@@ -111,6 +112,16 @@
 %template(LayerBuilder2) twenty48::layer_builder_t<2>;
 %template(LayerBuilder3) twenty48::layer_builder_t<3>;
 %template(LayerBuilder4) twenty48::layer_builder_t<4>;
+
+/******************************************************************************/
+/* LayerSolver */
+/******************************************************************************/
+
+%include "layer_solver.hpp"
+
+%template(LayerSolver2) twenty48::layer_solver_t<2>;
+%template(LayerSolver3) twenty48::layer_solver_t<3>;
+%template(LayerSolver4) twenty48::layer_solver_t<4>;
 
 /******************************************************************************/
 /* StateHashSet */

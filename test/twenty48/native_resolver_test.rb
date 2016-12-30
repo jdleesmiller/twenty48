@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'helper'
+require_relative 'common/generic_resolver_tests'
 require_relative 'common/unknown_zeros_resolver_tests'
 
 class NativeResolverTest < Twenty48NativeTest
   include Twenty48
+  include CommonGenericResolverTests
   include CommonUnknownZerosResolverTests
 
   def moves_to_win(native_builder, state_array)

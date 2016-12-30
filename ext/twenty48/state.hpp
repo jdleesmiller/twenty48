@@ -161,15 +161,16 @@ template <int size> struct state_t {
    */
   transitions_t random_transitions(int step = 0) const {
     transitions_t transitions;
+    size_t denominator = cells_available();
     for (size_t i = 0; i < size * size; ++i) {
       if ((*this)[i] != 0) continue;
       if (step == 0 || step == 1) {
         transitions[new_state_with_tile(i, 1).canonicalize()] +=
-          0.9 / (size * size);
+          0.9 / denominator;
       }
       if (step == 0 || step == 2) {
         transitions[new_state_with_tile(i, 2).canonicalize()] +=
-          0.1 / (size * size);
+          0.1 / denominator;
       }
     }
     return transitions;

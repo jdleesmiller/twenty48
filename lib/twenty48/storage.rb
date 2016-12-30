@@ -15,6 +15,9 @@ module Twenty48
     SOLVERS_PATH = File.join(ROOT, 'solvers')
     GRAPHS_PATH = File.join(ROOT, 'graphs')
 
+    LAYER_STATES_PATH = File.join(ROOT, 'layer_state')
+    LAYER_VALUES_PATH = File.join(ROOT, 'layer_values')
+
     MODELS_GLOB = File.join(MODELS_PATH, '*.json.bz2')
     ARRAY_MODELS_GLOB = File.join(ARRAY_MODELS_PATH, '*.bin.bz2')
     SOLVERS_GLOB = File.join(SOLVERS_PATH, '*.csv.bz2')
@@ -31,9 +34,13 @@ module Twenty48
       match_data.names.map(&:to_sym).zip(match_data.captures).to_h
     end
 
-    MODEL_NAME_RX = build_pathname_rx(
+    BASIC_NAME_RX = build_pathname_rx(
       /board_size-(?<board_size>\d+)/,
-      /max_exponent-(?<max_exponent>\d+)/,
+      /max_exponent-(?<max_exponent>\d+)/
+    )
+
+    MODEL_NAME_RX = build_pathname_rx(
+      BASIC_NAME_RX,
       /resolve_strategy-(?<resolve_strategy>\w+)/,
       /max_resolve_depth-(?<max_resolve_depth>\d+)/
     )
@@ -48,6 +55,14 @@ module Twenty48
     )
 
     SOLVER_PARAMS = SOLVER_NAME_RX.names.map(&:to_sym)
+
+    LAYER_STATES_NAME_RX = build_pathname_rx(
+      BASIC_NAME_RX,
+      /max_lose_depth-(?<max_lose_depth>\d+)/,
+      /max_win_depth-(?<max_win_depth>\d+)/
+    )
+
+    LAYER_STATES_PARAMS = LAYER_STATES_NAME_RX.names.map(&:to_sym)
 
     def bunzip(pathname)
       IO.popen("bunzip2 < #{pathname}") { |input| yield(input) }
@@ -80,9 +95,13 @@ module Twenty48
       cast_model_params(rx_captures_to_hash(Regexp.last_match))
     end
 
-    def cast_model_params(params)
+    def cast_basic_params(params)
       params[:board_size] = params[:board_size].to_i
       params[:max_exponent] = params[:max_exponent].to_i
+    end
+
+    def cast_model_params(params)
+      cast_basic_params(params)
       params[:resolve_strategy] = params[:resolve_strategy].to_sym
       params[:max_resolve_depth] = params[:max_resolve_depth].to_i
       params
@@ -138,6 +157,23 @@ module Twenty48
 
     def estimate_solver_state_count(solver_params)
       `bunzip2 < #{solver_pathname(solver_params)} | wc -l`.to_i - 2
+    end
+
+    #
+    # Layer builder / solver path handling
+    #
+
+    def cast_layer_params(params)
+      cast_basic_params(params)
+      params[:max_lose_depth] = params[:max_lose_depth].to_i
+      params[:max_win_depth] = params[:max_win_depth].to_i
+      params
+    end
+
+    def layer_params_from_pathname(pathname)
+      basename = File.basename(pathname)
+      raise "no layers in #{pathname}" unless basename =~ LAYER_STATES_NAME_RX
+      cast_layer_params(rx_captures_to_hash(Regexp.last_match))
     end
 
     #

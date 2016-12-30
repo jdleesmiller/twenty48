@@ -120,6 +120,21 @@ module Twenty48
   end
 
   #
+  # Common methods for the native LayerSolver class.
+  #
+  module NativeLayerSolver
+    def self.create(board_size, *args)
+      klass = case board_size
+              when 2 then LayerSolver2
+              when 3 then LayerSolver3
+              when 4 then LayerSolver4
+              else raise "bad layer solver board_size: #{board_size}"
+              end
+      klass.new(*args)
+    end
+  end
+
+  #
   # Common methods for the native StateHashSet classes.
   #
   module NativeStateHashSet

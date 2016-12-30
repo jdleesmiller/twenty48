@@ -49,5 +49,65 @@ module Twenty48
       resolver_3 = make_resolver(3, 3, 3)
       assert_equal 3, moves_to_win(resolver_3, state)
     end
+
+    def test_moves_to_definite_win_4x4_to_16_resolve_3
+      resolver = make_resolver(4, 4, 3)
+
+      assert_nil moves_to_win(resolver, [
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        2, 0, 0, 3,
+        2, 1, 2, 1
+      ])
+
+      assert_equal 1, moves_to_win(resolver, [
+        0, 0, 0, 0,
+        0, 0, 0, 1,
+        3, 0, 0, 0,
+        3, 0, 0, 0
+      ])
+
+      assert_equal 2, moves_to_win(resolver, [
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        2, 0, 0, 2,
+        0, 0, 0, 3
+      ])
+
+      #
+      # This state is tricky. It is actually possible to win, but you have to
+      # consider an "either or" argument. From
+      #
+      #    .    .    .    .
+      #    .    .    .    2
+      #    4    2    4    8
+      #    .    4    2    4
+      #
+      # Go left. If the new tile is on the top line, you get a state like this,
+      # and you can easily win in two (down and right).
+      #
+      #    .    .    .    2
+      #    .    .    .    2
+      #    8    4    2    4
+      #    .    4    2    4
+      #
+      # However, if the new tile is in the corner below the 8, you get a state
+      # like this one:
+      #
+      #    .    .    .    .
+      #    .    .    .    2
+      #    8    4    2    4
+      #    2    4    2    4
+      #
+      # From there, you win in two by going up and right. This is beyond what
+      # the heuristic can do.
+      #
+      assert_nil moves_to_win(resolver, [
+        0, 0, 0, 0,
+        0, 0, 0, 1,
+        2, 1, 2, 3,
+        0, 2, 1, 2
+      ])
+    end
   end
 end
