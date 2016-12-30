@@ -90,6 +90,27 @@ module Twenty48
   end
 
   #
+  # Native state resolver for 2x2 boards.
+  #
+  class Resolver2
+    alias lose_within? lose_within
+  end
+
+  #
+  # Native state resolver for 3x3 boards.
+  #
+  class Resolver3
+    alias lose_within? lose_within
+  end
+
+  #
+  # Native state resolver for 4x4 boards.
+  #
+  class Resolver4
+    alias lose_within? lose_within
+  end
+
+  #
   # Common methods for the native Builder class.
   #
   module NativeBuilder
