@@ -1,11 +1,10 @@
 #ifndef TWENTY48_LAYER_BUILDER_HPP
 
 #include <iostream>
-#include <sstream>
-#include <string>
 
 #include "twenty48.hpp"
 #include "builder.hpp"
+#include "layer_storage.hpp"
 #include "state.hpp"
 #include "state_hash_set.hpp"
 
@@ -68,10 +67,7 @@ namespace twenty48 {
     }
 
     std::string make_layer_pathname(int sum) const {
-      std::stringstream path;
-      path << data_path << '/' << std::setfill('0') << std::setw(4) << sum <<
-        ".bin";
-      return path.str();
+      return twenty48::make_layer_pathname(data_path, sum);
     }
 
     void build_layer(int sum, int step, size_t max_states) const {
