@@ -73,12 +73,9 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       )
       layer_builder = NativeLayerBuilder.create(2, states_path, valuer)
       max_sum = layer_builder.build(max_states)
-      # system "ls -l #{states_path}"
 
       states_by_layer = layer_builder.states_by_layer(max_states)
-
       layer_builder.sort_all_layers
-
       sorted_states_by_layer = layer_builder.states_by_layer(max_states)
 
       assert_equal states_by_layer.keys, sorted_states_by_layer.keys
@@ -95,11 +92,9 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       )
 
       loop do
-        puts "LAYER #{layer_solver.get_sum}"
         layer_solver.solve
         break unless layer_solver.move_to_lower_layer
       end
-      system "ls -l #{values_path}"
     end
   end
 end

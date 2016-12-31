@@ -21,6 +21,8 @@ module Twenty48
     MODELS_GLOB = File.join(MODELS_PATH, '*.json.bz2')
     ARRAY_MODELS_GLOB = File.join(ARRAY_MODELS_PATH, '*.bin.bz2')
     SOLVERS_GLOB = File.join(SOLVERS_PATH, '*.csv.bz2')
+    LAYER_STATES_GLOB = File.join(LAYER_STATES_PATH, '*') # folders
+    LAYER_VALUES_GLOB = File.join(LAYER_VALUES_PATH, '*') # folders
 
     def build_basename(**args)
       args.map { |key, value| "#{key}-#{value}" }.join('.')
@@ -62,6 +64,13 @@ module Twenty48
     )
 
     LAYER_STATES_PARAMS = LAYER_STATES_NAME_RX.names.map(&:to_sym)
+
+    LAYER_VALUES_NAME_RX = build_pathname_rx(
+      LAYER_STATES_NAME_RX,
+      /discount-(?<discount>[0-9.e+-]+)/
+    )
+
+    LAYER_VALUES_PARAMS = LAYER_VALUES_NAME_RX.names.map(&:to_sym)
 
     def bunzip(pathname)
       IO.popen("bunzip2 < #{pathname}") { |input| yield(input) }
@@ -162,16 +171,53 @@ module Twenty48
     # Layer builder / solver path handling
     #
 
-    def cast_layer_params(params)
+    def cast_layer_states_params(params)
       cast_basic_params(params)
       params[:max_depth] = params[:max_depth].to_i
       params
     end
 
-    def layer_params_from_pathname(pathname)
+    def layer_states_params_from_pathname(pathname)
       basename = File.basename(pathname)
       raise "no layers in #{pathname}" unless basename =~ LAYER_STATES_NAME_RX
-      cast_layer_params(rx_captures_to_hash(Regexp.last_match))
+      cast_layer_states_params(rx_captures_to_hash(Regexp.last_match))
+    end
+
+    def layer_states_basename(params)
+      build_basename(
+        board_size: params[:board_size],
+        max_exponent: params[:max_exponent],
+        max_depth: params[:max_depth]
+      )
+    end
+
+    def layer_states_pathname(params)
+      File.join(LAYER_STATES_PATH, layer_states_basename(params))
+    end
+
+    def cast_layer_values_params(params)
+      cast_layer_states_params(params)
+      params[:discount] = params[:discount].to_f
+      params
+    end
+
+    def layer_values_params_from_pathname(pathname)
+      basename = File.basename(pathname)
+      raise "no layers in #{pathname}" unless basename =~ LAYER_VALUES_NAME_RX
+      cast_layer_values_params(rx_captures_to_hash(Regexp.last_match))
+    end
+
+    def layer_values_basename(params)
+      build_basename(
+        board_size: params[:board_size],
+        max_exponent: params[:max_exponent],
+        max_depth: params[:max_depth],
+        discount: params[:discount]
+      )
+    end
+
+    def layer_values_pathname(params)
+      File.join(LAYER_VALUES_PATH, layer_values_basename(params))
     end
 
     #

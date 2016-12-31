@@ -185,18 +185,6 @@ template <int size> struct state_t {
     return any_row_or_col(adjacent_pair_t(value, zeros_unknown));
   }
 
-  struct adjacent_pair_t {
-    adjacent_pair_t(uint8_t value, bool zeros_unknown) :
-      value(value), zeros_unknown(zeros_unknown) { }
-
-    bool operator()(const line_t<size> &line) const {
-      return line.has_adjacent_pair(value, zeros_unknown);
-    }
-  private:
-    uint8_t value;
-    bool zeros_unknown;
-  };
-
   bool operator==(const state_t<size> &other) const {
     return nybbles == other.nybbles;
   }
@@ -317,6 +305,18 @@ private:
   template <typename Predicate> bool any_row_or_col(Predicate predicate) const {
     return any_row(predicate) || any_col(predicate);
   }
+
+  struct adjacent_pair_t {
+    adjacent_pair_t(uint8_t value, bool zeros_unknown) :
+      value(value), zeros_unknown(zeros_unknown) { }
+
+    bool operator()(const line_t<size> &line) const {
+      return line.has_adjacent_pair(value, zeros_unknown);
+    }
+  private:
+    uint8_t value;
+    bool zeros_unknown;
+  };
 
   state_t move_left(bool zeros_unknown) const {
     nybbles_t result = 0;

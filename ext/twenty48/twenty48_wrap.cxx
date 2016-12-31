@@ -1940,6 +1940,7 @@ static VALUE mTwenty48;
 #include "builder.hpp"
 #include "layer_builder.hpp"
 #include "layer_solver.hpp"
+#include "start_states.hpp"
 #include "state_hash_set.hpp"
 #include "state_value_map.hpp"
 
@@ -33370,6 +33371,54 @@ free_twenty48_layer_solver_t_Sl_4_Sg_(void *self) {
     delete arg1;
 }
 
+SWIGINTERN VALUE
+_wrap_generate_start_states_2(int argc, VALUE *argv, VALUE self) {
+  std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = twenty48::SWIGTEMPLATEDISAMBIGUATOR generate_start_states< 2 >();
+  vresult = swig::from(static_cast< std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_generate_start_states_3(int argc, VALUE *argv, VALUE self) {
+  std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = twenty48::SWIGTEMPLATEDISAMBIGUATOR generate_start_states< 3 >();
+  vresult = swig::from(static_cast< std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_generate_start_states_4(int argc, VALUE *argv, VALUE self) {
+  std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = twenty48::SWIGTEMPLATEDISAMBIGUATOR generate_start_states< 4 >();
+  vresult = swig::from(static_cast< std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 static swig_class SwigClassStateHashSet2;
 
 SWIGINTERN VALUE
@@ -34437,7 +34486,14 @@ _wrap_StateValueMap2_get_value(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 2 > const &","get_value", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::state_t< 2 > * >(argp2);
-  result = (double)((twenty48::state_value_map_t< 2 > const *)arg1)->get_value((twenty48::state_t< 2 > const &)*arg2);
+  {
+    try {
+      result = (double)((twenty48::state_value_map_t< 2 > const *)arg1)->get_value((twenty48::state_t< 2 > const &)*arg2);
+    }
+    catch (const std::invalid_argument& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
   vresult = SWIG_From_double(static_cast< double >(result));
   return vresult;
 fail:
@@ -34537,7 +34593,14 @@ _wrap_StateValueMap2_get_action(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 2 > const &","get_action", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::state_t< 2 > * >(argp2);
-  result = (twenty48::direction_t)((twenty48::state_value_map_t< 2 > const *)arg1)->get_action((twenty48::state_t< 2 > const &)*arg2);
+  {
+    try {
+      result = (twenty48::direction_t)((twenty48::state_value_map_t< 2 > const *)arg1)->get_action((twenty48::state_t< 2 > const &)*arg2);
+    }
+    catch (const std::invalid_argument& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
   vresult = SWIG_From_int(static_cast< int >(result));
   return vresult;
 fail:
@@ -34769,7 +34832,14 @@ _wrap_StateValueMap3_get_value(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 3 > const &","get_value", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::state_t< 3 > * >(argp2);
-  result = (double)((twenty48::state_value_map_t< 3 > const *)arg1)->get_value((twenty48::state_t< 3 > const &)*arg2);
+  {
+    try {
+      result = (double)((twenty48::state_value_map_t< 3 > const *)arg1)->get_value((twenty48::state_t< 3 > const &)*arg2);
+    }
+    catch (const std::invalid_argument& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
   vresult = SWIG_From_double(static_cast< double >(result));
   return vresult;
 fail:
@@ -34869,7 +34939,14 @@ _wrap_StateValueMap3_get_action(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 3 > const &","get_action", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::state_t< 3 > * >(argp2);
-  result = (twenty48::direction_t)((twenty48::state_value_map_t< 3 > const *)arg1)->get_action((twenty48::state_t< 3 > const &)*arg2);
+  {
+    try {
+      result = (twenty48::direction_t)((twenty48::state_value_map_t< 3 > const *)arg1)->get_action((twenty48::state_t< 3 > const &)*arg2);
+    }
+    catch (const std::invalid_argument& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
   vresult = SWIG_From_int(static_cast< int >(result));
   return vresult;
 fail:
@@ -35101,7 +35178,14 @@ _wrap_StateValueMap4_get_value(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 4 > const &","get_value", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::state_t< 4 > * >(argp2);
-  result = (double)((twenty48::state_value_map_t< 4 > const *)arg1)->get_value((twenty48::state_t< 4 > const &)*arg2);
+  {
+    try {
+      result = (double)((twenty48::state_value_map_t< 4 > const *)arg1)->get_value((twenty48::state_t< 4 > const &)*arg2);
+    }
+    catch (const std::invalid_argument& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
   vresult = SWIG_From_double(static_cast< double >(result));
   return vresult;
 fail:
@@ -35201,7 +35285,14 @@ _wrap_StateValueMap4_get_action(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::state_t< 4 > const &","get_action", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::state_t< 4 > * >(argp2);
-  result = (twenty48::direction_t)((twenty48::state_value_map_t< 4 > const *)arg1)->get_action((twenty48::state_t< 4 > const &)*arg2);
+  {
+    try {
+      result = (twenty48::direction_t)((twenty48::state_value_map_t< 4 > const *)arg1)->get_action((twenty48::state_t< 4 > const &)*arg2);
+    }
+    catch (const std::invalid_argument& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
   vresult = SWIG_From_int(static_cast< int >(result));
   return vresult;
 fail:
@@ -36734,6 +36825,9 @@ SWIGEXPORT void Init_twenty48(void) {
   SwigClassLayerSolver4.mark = 0;
   SwigClassLayerSolver4.destroy = (void (*)(void *)) free_twenty48_layer_solver_t_Sl_4_Sg_;
   SwigClassLayerSolver4.trackObjects = 0;
+  rb_define_module_function(mTwenty48, "generate_start_states_2", VALUEFUNC(_wrap_generate_start_states_2), -1);
+  rb_define_module_function(mTwenty48, "generate_start_states_3", VALUEFUNC(_wrap_generate_start_states_3), -1);
+  rb_define_module_function(mTwenty48, "generate_start_states_4", VALUEFUNC(_wrap_generate_start_states_4), -1);
   
   SwigClassStateHashSet2.klass = rb_define_class_under(mTwenty48, "StateHashSet2", rb_cObject);
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__state_hash_set_tT_2_t, (void *) &SwigClassStateHashSet2);

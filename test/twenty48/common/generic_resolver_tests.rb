@@ -158,6 +158,16 @@ module Twenty48
         1, 1,
         2, 3
       ])
+
+      # This state actually presents an interesting choice:
+      # - if you go left, you can win in 4 moves with probability 0.9
+      # - if you go up, you can win in 3 moves with probability 0.1
+      # With a resolve depth of 3, going left has unknown value, even though
+      # it's better than going up, which has a known value.
+      assert_nil moves_to_win(resolver, [
+        0, 1,
+        2, 3
+      ])
     end
 
     def test_moves_to_definite_win_3x3_to_8_resolve_1

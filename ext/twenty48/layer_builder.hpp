@@ -84,8 +84,9 @@ namespace twenty48 {
       size_t start_size = output_layer.size();
 
       std::ifstream is(input_layer_pathname, std::ios::in | std::ios::binary);
-      while (is) {
+      for (;;) {
         state_t<size> state = state_t<size>::read_bin(is);
+        if (!is) break;
         expand(state, step, output_layer);
       }
       is.close();

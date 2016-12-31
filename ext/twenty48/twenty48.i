@@ -7,6 +7,7 @@
 #include "builder.hpp"
 #include "layer_builder.hpp"
 #include "layer_solver.hpp"
+#include "start_states.hpp"
 #include "state_hash_set.hpp"
 #include "state_value_map.hpp"
 %}
@@ -135,6 +136,16 @@
 %template(LayerSolver4) twenty48::layer_solver_t<4>;
 
 /******************************************************************************/
+/* Start States */
+/******************************************************************************/
+
+%include "start_states.hpp"
+
+%template(generate_start_states_2) twenty48::generate_start_states<2>;
+%template(generate_start_states_3) twenty48::generate_start_states<3>;
+%template(generate_start_states_4) twenty48::generate_start_states<4>;
+
+/******************************************************************************/
 /* StateHashSet */
 /******************************************************************************/
 
@@ -160,6 +171,25 @@
 /******************************************************************************/
 
 %include "state_value_map.hpp"
+
+%extend twenty48::state_value_map_t {
+  %exception get_value {
+    try {
+      $action
+    }
+    catch (const std::invalid_argument& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
+  %exception get_action {
+    try {
+      $action
+    }
+    catch (const std::invalid_argument& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
+}
 
 %template(StateValueMap2) twenty48::state_value_map_t<2>;
 %template(StateValueMap3) twenty48::state_value_map_t<3>;

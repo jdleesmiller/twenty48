@@ -60,7 +60,7 @@ namespace twenty48 {
       for (;;) {
         state_t<size> state = state_t<size>::read_bin(is);
         if (!is) break;
-        std::cout << "SOLVE:" << state << " " << values->size() << std::endl;
+        // std::cout << "SOLVE:" << state << " " << values->size() << std::endl;
         backup_state(state);
       }
       is.close();

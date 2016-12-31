@@ -10,30 +10,47 @@ include Twenty48
 def build(board_size:, max_exponent:, max_depth:, max_states:)
   # Note: exact discount value doesn't matter for build step.
   discount = 0.95
-  folder = File.join(Storage::LAYER_STATES_PATH, Storage.build_basename(
+
+  states_path = Storage.layer_states_pathname(
     board_size: board_size,
     max_exponent: max_exponent,
     max_depth: max_depth
-  ))
-  FileUtils.mkdir_p folder
+  )
+  if Dir.exist?(states_path)
+    puts 'exists; skipping'
+    return
+  end
+  FileUtils.mkdir_p states_path
+
   valuer = NativeValuer.create(
     board_size: board_size,
     max_exponent: max_exponent,
     max_depth: max_depth,
     discount: discount
   )
-  layer_builder = NativeLayerBuilder.create(board_size, folder, valuer)
+  layer_builder = NativeLayerBuilder.create(board_size, states_path, valuer)
   layer_builder.build(max_states) do |layer_pathname, num_states|
     puts format('%s: %d states', layer_pathname, num_states)
   end
+
+  layer_builder.sort_all_layers do |layer_pathname|
+    puts "Sorting #{layer_pathname}"
+  end
 end
 
-build(
-  board_size: 2,
-  max_exponent: 5,
-  max_depth: 0,
-  max_states: 1024
-)
+#
+# 2x2
+#
+(3..7).each do |max_exponent|
+  (0..[3, max_exponent - 1].min).each do |max_depth|
+    build(
+      board_size: 2,
+      max_exponent: max_exponent,
+      max_depth: max_depth,
+      max_states: 1024
+    )
+  end
+end
 
 # build(
 #   board_size: 3,

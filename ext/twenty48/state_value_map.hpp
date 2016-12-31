@@ -55,8 +55,10 @@ struct state_value_map_t {
     reserve(count_records_in_file(pathname, sizeof(record_t)));
 
     std::ifstream is(pathname, std::ios::in | std::ios::binary);
-    while (is) {
-      data.push_back(record_t::read(is));
+    for (;;) {
+      record_t record(record_t::read(is));
+      if (!is) break;
+      data.push_back(record);
     }
     is.close();
   }
@@ -95,7 +97,7 @@ private:
 
     static record_t read(std::istream &is) {
       record_t result;
-      std::cout << "V record size" << sizeof(result) << std::endl;
+      // std::cout << "V record size" << sizeof(result) << std::endl;
       is.read(reinterpret_cast<char *>(&result), sizeof(result));
       return result;
     }
@@ -139,11 +141,9 @@ private:
     typename std::vector<record_t>::const_iterator it = std::lower_bound(
       data.begin(), data.end(), state);
     if (it == data.end()) {
-      std::cout << "STATE NOT FOUND: " << state << std::endl;
-      for (it = data.begin(); it != data.end(); ++it) {
-        std::cout << "STATE: " << it->get_state() << std::endl;
-      }
-      throw std::invalid_argument("get_value: state not found");
+      std::stringstream ss("get_value: ");
+      ss << state << " not found";
+      throw std::invalid_argument(ss.str());
     }
     return it;
   }

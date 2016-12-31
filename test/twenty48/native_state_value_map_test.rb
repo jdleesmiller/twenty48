@@ -23,5 +23,17 @@ class NativeStateValueMapTest < Twenty48NativeTest
     assert_equal 2, map.size
     assert_equal 0.456, map.get_value(state_1)
     assert_equal Twenty48::DIRECTION_UP, map.get_action(state_1)
+
+    map_data = []
+    map.each do |state, action, value|
+      map_data << [state, action, value]
+    end
+    assert_equal state_0, map_data[0][0]
+    assert_equal state_1, map_data[1][0]
+
+    # Fetching non-existent states should fail.
+    state_2 = make_state([0, 1, 2, 5])
+    assert_raises { map.get_value(state_2) }
+    assert_raises { map.get_action(state_2) }
   end
 end

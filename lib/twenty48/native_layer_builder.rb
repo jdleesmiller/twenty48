@@ -78,7 +78,9 @@ module Twenty48
 
     def sort_all_layers
       layer_sums.each do |sum|
-        sort_layer make_layer_pathname(sum)
+        layer_pathname = make_layer_pathname(sum)
+        yield layer_pathname if block_given?
+        NativeLayerBuilder.sort_layer layer_pathname
       end
     end
 

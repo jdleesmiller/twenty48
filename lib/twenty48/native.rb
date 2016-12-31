@@ -1,6 +1,21 @@
 # frozen_string_literal: true
 
+#
+# Native extensions for the Twenty48 solver.
+#
 module Twenty48
+  #
+  # Generate the start states for a model.
+  #
+  def generate_start_states(board_size:)
+    case board_size
+    when 2 then generate_start_states_2
+    when 3 then generate_start_states_3
+    when 4 then generate_start_states_4
+    else raise "bad start states size: #{board_size}"
+    end
+  end
+
   #
   # Common methods for the native board State classes.
   #
