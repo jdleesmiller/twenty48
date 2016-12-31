@@ -9,28 +9,11 @@
 # bin/layer_sort data/layer_states/board_size-3.*/*.bin
 #
 
-require 'tmpdir'
-require 'fileutils'
-
-RECORD_SIZE = 8
+require_relative '../lib/twenty48'
+include Twenty48
 
 ARGV.each do |input_file|
   input_size = File.stat(input_file).size
   puts "Sorting #{input_file} (#{input_size}B)"
-  Dir.mktmpdir do |tmp|
-    output_file = File.join(tmp, 'output.bin')
-    system <<-CMD
-    cat #{input_file} \
-        | xxd -cols #{RECORD_SIZE} -plain \
-        | sort \
-        | xxd -cols #{RECORD_SIZE} -plain -revert \
-        > #{output_file}
-    CMD
-    output_size = File.stat(output_file).size
-
-    raise "size mismatch: #{input_size} != #{output_size}" \
-      if input_size != output_size
-
-    FileUtils.mv output_file, input_file
-  end
+  NativeLayerBuilder.sort_layer(input_file)
 end

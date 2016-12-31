@@ -111,6 +111,21 @@ module Twenty48
   end
 
   #
+  # Common methods for the native Valuer class.
+  #
+  module NativeValuer
+    def self.create(board_size:, max_exponent:, max_depth:, discount:)
+      klass = case board_size
+              when 2 then Valuer2
+              when 3 then Valuer3
+              when 4 then Valuer4
+              else raise "bad valuer board_size: #{board_size}"
+              end
+      klass.new(max_exponent, max_depth, discount)
+    end
+  end
+
+  #
   # Common methods for the native Builder class.
   #
   module NativeBuilder
@@ -122,21 +137,6 @@ module Twenty48
               else raise "bad builder board_size: #{board_size}"
               end
       klass.new(resolver, max_states)
-    end
-  end
-
-  #
-  # Common methods for the native LayerBuilder class.
-  #
-  module NativeLayerBuilder
-    def self.create(board_size, data_path, resolver)
-      klass = case board_size
-              when 2 then LayerBuilder2
-              when 3 then LayerBuilder3
-              when 4 then LayerBuilder4
-              else raise "bad layer builder board_size: #{board_size}"
-              end
-      klass.new(data_path, resolver)
     end
   end
 
@@ -159,6 +159,16 @@ module Twenty48
   # Common methods for the native StateHashSet classes.
   #
   module NativeStateHashSet
+    def self.create(board_size, max_states)
+      klass = case board_size
+              when 2 then StateHashSet2
+              when 3 then StateHashSet3
+              when 4 then StateHashSet4
+              else raise "bad layer solver board_size: #{board_size}"
+              end
+      klass.new(max_states)
+    end
+
     def <<(state)
       insert state
     end
@@ -193,5 +203,48 @@ module Twenty48
     include NativeStateHashSet
 
     alias member? member
+  end
+
+  #
+  # Common methods for the native StateValueMap classes.
+  #
+  module NativeStateValueMap
+    def self.create(board_size)
+      klass = case board_size
+              when 2 then StateValueMap2
+              when 3 then StateValueMap3
+              when 4 then StateValueMap4
+              else raise "bad layer solver board_size: #{board_size}"
+              end
+      klass.new
+    end
+
+    def each
+      (0...size).each do |index|
+        state = get_state(index)
+        yield state, get_action(state), get_value(state)
+      end
+    end
+  end
+
+  #
+  # Value and action map for 2x2 states.
+  #
+  class StateValueMap2
+    include NativeStateValueMap
+  end
+
+  #
+  # Value and action map for 3x3 states.
+  #
+  class StateValueMap3
+    include NativeStateValueMap
+  end
+
+  #
+  # Value and action map for 4x4 states.
+  #
+  class StateValueMap4
+    include NativeStateValueMap
   end
 end

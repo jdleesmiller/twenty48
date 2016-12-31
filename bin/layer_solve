@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'tmpdir'
 require 'fileutils'
 
 require_relative '../lib/twenty48'
@@ -24,11 +23,11 @@ layer_sums = layer_files.map do |pathname|
   File.basename(pathname, '.bin').to_i
 end
 
-resolver = NativeResolver.create(
-  params[:board_size],
-  params[:max_exponent],
-  max_lose_depth: params[:max_lose_depth],
-  max_win_depth: params[:max_win_depth]
+valuer = NativeValuer.create(
+  board_size: params[:board_size],
+  max_exponent: params[:max_exponent],
+  max_depth: params[:max_depth],
+  discount: params[:discount]
 )
 
 solver = NativeLayerSolver.create(
@@ -36,8 +35,7 @@ solver = NativeLayerSolver.create(
   states_path,
   values_path,
   layer_sums.max,
-  params[:discount],
-  resolver
+  valuer
 )
 
 loop do
@@ -45,7 +43,3 @@ loop do
   solver.solve
   break unless solver.move_to_lower_layer
 end
-
-# layer_files.zip(layer_sums).sort_by { |_, sum| -sum }.each do |pathname, sum|
-  # puts "Solving #{pathname}"
-# end

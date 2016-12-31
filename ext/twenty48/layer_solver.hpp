@@ -6,9 +6,9 @@
 
 #include "twenty48.hpp"
 #include "layer_storage.hpp"
-#include "resolver.hpp"
 #include "state.hpp"
 #include "state_value_map.hpp"
+#include "valuer.hpp"
 
 namespace twenty48 {
   /**
@@ -23,10 +23,10 @@ namespace twenty48 {
     typedef typename state_t<size>::transitions_t transitions_t;
     typedef std::vector<state_t<size> > state_vector_t;
 
-    layer_solver_t(const char *states_path, const char *values_path,
-      int sum, double discount, const resolver_t<size> &resolver) :
+    layer_solver_t(const char *states_path, const char *values_path, int sum,
+      const valuer_t<size> &valuer) :
         states_path(states_path), values_path(values_path),
-        sum(sum), discount(discount), resolver(resolver),
+        sum(sum), valuer(valuer),
         values(new state_value_map_t<size>()),
         values_2(new state_value_map_t<size>()),
         values_4(new state_value_map_t<size>()) {
@@ -46,21 +46,26 @@ namespace twenty48 {
       return sum;
     }
 
+    double get_discount() const {
+      return valuer.get_discount();
+    }
+
     void solve() {
       std::string states_pathname = make_states_pathname(sum);
       values->reserve(count_records_in_file(
         states_pathname.c_str(), sizeof(state_t<size>)));
-      std::cout << states_pathname << std::endl;
+      // std::cout << states_pathname << std::endl;
 
       std::ifstream is(states_pathname, std::ios::in | std::ios::binary);
-      while (is) {
+      for (;;) {
         state_t<size> state = state_t<size>::read_bin(is);
-        std::cout << state << " " << values->size() << std::endl;
+        if (!is) break;
+        std::cout << "SOLVE:" << state << " " << values->size() << std::endl;
         backup_state(state);
       }
       is.close();
 
-      std::cout << make_values_pathname(sum) << std::endl;
+      // std::cout << make_values_pathname(sum) << std::endl;
 
       values->write(make_values_pathname(sum).c_str());
     }
@@ -78,8 +83,7 @@ namespace twenty48 {
     const std::string states_path;
     const std::string values_path;
     int sum;
-    double discount;
-    resolver_t<size> resolver;
+    valuer_t<size> valuer;
     std::unique_ptr<state_value_map_t<size> > values;
     std::unique_ptr<state_value_map_t<size> > values_2;
     std::unique_ptr<state_value_map_t<size> > values_4;
@@ -116,11 +120,11 @@ namespace twenty48 {
       for (typename transitions_t::const_iterator it = transitions.begin();
         it != transitions.end(); ++it)
       {
-        double value = resolver.value(it->first, discount);
+        double value = valuer.value(it->first);
         if (std::isnan(value)) {
           value = lookup_value(it->first);
         }
-        state_action_value += it->second * discount * value;
+        state_action_value += it->second * get_discount() * value;
       }
       return state_action_value;
     }

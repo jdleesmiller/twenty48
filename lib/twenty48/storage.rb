@@ -15,7 +15,7 @@ module Twenty48
     SOLVERS_PATH = File.join(ROOT, 'solvers')
     GRAPHS_PATH = File.join(ROOT, 'graphs')
 
-    LAYER_STATES_PATH = File.join(ROOT, 'layer_state')
+    LAYER_STATES_PATH = File.join(ROOT, 'layer_states')
     LAYER_VALUES_PATH = File.join(ROOT, 'layer_values')
 
     MODELS_GLOB = File.join(MODELS_PATH, '*.json.bz2')
@@ -58,8 +58,7 @@ module Twenty48
 
     LAYER_STATES_NAME_RX = build_pathname_rx(
       BASIC_NAME_RX,
-      /max_lose_depth-(?<max_lose_depth>\d+)/,
-      /max_win_depth-(?<max_win_depth>\d+)/
+      /max_depth-(?<max_depth>\d+)/
     )
 
     LAYER_STATES_PARAMS = LAYER_STATES_NAME_RX.names.map(&:to_sym)
@@ -165,8 +164,7 @@ module Twenty48
 
     def cast_layer_params(params)
       cast_basic_params(params)
-      params[:max_lose_depth] = params[:max_lose_depth].to_i
-      params[:max_win_depth] = params[:max_win_depth].to_i
+      params[:max_depth] = params[:max_depth].to_i
       params
     end
 

@@ -22,6 +22,7 @@ require_relative 'twenty48/storage'
 # Load native extension.
 require_relative 'twenty48/twenty48'
 require_relative 'twenty48/native'
+require_relative 'twenty48/native_layer_builder'
 
 module Twenty48
   DIRECTIONS = [:left, :right, :up, :down].freeze

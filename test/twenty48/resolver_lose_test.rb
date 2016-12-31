@@ -11,4 +11,8 @@ class ResolverLoseTest < Twenty48Test
     builder = Builder.new(board_size, max_exponent)
     Resolver.new(builder, depth)
   end
+
+  def resolve_lose?(resolver, state_array)
+    resolver.lose_within?(make_state(state_array), resolver.max_resolve_depth)
+  end
 end

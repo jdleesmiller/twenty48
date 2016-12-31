@@ -35,6 +35,10 @@ struct state_value_map_t {
     return find(state)->get_value();
   }
 
+  state_t<board_size> get_state(size_t index) const {
+    return data.at(index).get_state();
+  }
+
   size_t size() const {
     return data.size();
   }
@@ -62,7 +66,7 @@ struct state_value_map_t {
 
     for (typename std::vector<record_t>::const_iterator it =
       data.begin(); it != data.end(); ++it) {
-      std::cout << "writing" << it->get_state() << " sz " << sizeof(record_t) << std::endl;
+      // std::cout << "writing" << it->get_state() << " sz " << sizeof(record_t) << std::endl;
       it->write(os);
     }
     os.close();
@@ -135,6 +139,10 @@ private:
     typename std::vector<record_t>::const_iterator it = std::lower_bound(
       data.begin(), data.end(), state);
     if (it == data.end()) {
+      std::cout << "STATE NOT FOUND: " << state << std::endl;
+      for (it = data.begin(); it != data.end(); ++it) {
+        std::cout << "STATE: " << it->get_state() << std::endl;
+      }
       throw std::invalid_argument("get_value: state not found");
     }
     return it;

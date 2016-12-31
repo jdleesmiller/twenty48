@@ -3,38 +3,37 @@
 module Twenty48
   module CommonResolverLoseTests
     def test_lose_within_2x2_to_64
-      resolver = make_resolver(2, 6, 2)
-
-      state = make_state([
+      state = [
         2, 3,
         5, 3
-      ])
+      ]
 
-      refute resolver.lose_within?(state, 1)
-      assert resolver.lose_within?(state, 2)
+      refute resolve_lose?(make_resolver(2, 6, 1), state)
+      assert resolve_lose?(make_resolver(2, 6, 2), state)
     end
 
     def test_lose_within_3x3
-      resolver = make_resolver(3, 6, 1)
+      resolver_0 = make_resolver(3, 6, 0)
+      resolver_1 = make_resolver(3, 6, 1)
 
-      assert resolver.lose_within?(make_state([
+      assert resolve_lose?(resolver_0, [
         1, 2, 1,
         2, 1, 2,
         1, 2, 1
-      ]), 0)
+      ])
 
-      refute resolver.lose_within?(make_state([
+      refute resolve_lose?(resolver_1, [
         0, 2, 1,
         2, 1, 2,
         1, 2, 1
-      ]), 1)
+      ])
 
       # Not sure if this is reachable, but it does serve for the test.
-      assert resolver.lose_within?(make_state([
+      assert resolve_lose?(resolver_1, [
         3, 3, 3,
         5, 1, 5,
         1, 5, 1
-      ]), 1)
+      ])
     end
   end
 end

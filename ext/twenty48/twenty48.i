@@ -8,6 +8,7 @@
 #include "layer_builder.hpp"
 #include "layer_solver.hpp"
 #include "state_hash_set.hpp"
+#include "state_value_map.hpp"
 %}
 
 %include "stdint.i"
@@ -94,6 +95,16 @@
 %template(Resolver4) twenty48::resolver_t<4>;
 
 /******************************************************************************/
+/* Valuer */
+/******************************************************************************/
+
+%include "valuer.hpp"
+
+%template(Valuer2) twenty48::valuer_t<2>;
+%template(Valuer3) twenty48::valuer_t<3>;
+%template(Valuer4) twenty48::valuer_t<4>;
+
+/******************************************************************************/
 /* Builder */
 /******************************************************************************/
 
@@ -143,3 +154,13 @@
 %template(StateHashSet2) twenty48::state_hash_set_t<2>;
 %template(StateHashSet3) twenty48::state_hash_set_t<3>;
 %template(StateHashSet4) twenty48::state_hash_set_t<4>;
+
+/******************************************************************************/
+/* StateValueMap */
+/******************************************************************************/
+
+%include "state_value_map.hpp"
+
+%template(StateValueMap2) twenty48::state_value_map_t<2>;
+%template(StateValueMap3) twenty48::state_value_map_t<3>;
+%template(StateValueMap4) twenty48::state_value_map_t<4>;
