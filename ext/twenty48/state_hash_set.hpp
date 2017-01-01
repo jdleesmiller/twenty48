@@ -61,8 +61,10 @@ template <int board_size> struct state_hash_set_t {
 
   void load_binary(const char *pathname) {
     std::ifstream is(pathname, std::ios::in | std::ios::binary);
-    while (is) {
-      insert(state_t<board_size>::read_bin(is));
+    for (;;) {
+      state_t<board_size> state(state_t<board_size>::read_bin(is));
+      if (!is) break;
+      insert(state);
     }
     is.close();
   }

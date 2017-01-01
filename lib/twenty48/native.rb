@@ -1,6 +1,21 @@
 # frozen_string_literal: true
 
+#
+# Native extensions for the Twenty48 solver.
+#
 module Twenty48
+  #
+  # Generate the start states for a model.
+  #
+  def generate_start_states(board_size:)
+    case board_size
+    when 2 then generate_start_states_2
+    when 3 then generate_start_states_3
+    when 4 then generate_start_states_4
+    else raise "bad start states size: #{board_size}"
+    end
+  end
+
   #
   # Common methods for the native board State classes.
   #
@@ -90,6 +105,42 @@ module Twenty48
   end
 
   #
+  # Native state resolver for 2x2 boards.
+  #
+  class Resolver2
+    alias lose_within? lose_within
+  end
+
+  #
+  # Native state resolver for 3x3 boards.
+  #
+  class Resolver3
+    alias lose_within? lose_within
+  end
+
+  #
+  # Native state resolver for 4x4 boards.
+  #
+  class Resolver4
+    alias lose_within? lose_within
+  end
+
+  #
+  # Common methods for the native Valuer class.
+  #
+  module NativeValuer
+    def self.create(board_size:, max_exponent:, max_depth:, discount:)
+      klass = case board_size
+              when 2 then Valuer2
+              when 3 then Valuer3
+              when 4 then Valuer4
+              else raise "bad valuer board_size: #{board_size}"
+              end
+      klass.new(max_exponent, max_depth, discount)
+    end
+  end
+
+  #
   # Common methods for the native Builder class.
   #
   module NativeBuilder
@@ -105,17 +156,17 @@ module Twenty48
   end
 
   #
-  # Common methods for the native LayerBuilder class.
+  # Common methods for the native LayerSolver class.
   #
-  module NativeLayerBuilder
-    def self.create(board_size, data_path, resolver)
+  module NativeLayerSolver
+    def self.create(board_size, *args)
       klass = case board_size
-              when 2 then LayerBuilder2
-              when 3 then LayerBuilder3
-              when 4 then LayerBuilder4
-              else raise "bad layer builder board_size: #{board_size}"
+              when 2 then LayerSolver2
+              when 3 then LayerSolver3
+              when 4 then LayerSolver4
+              else raise "bad layer solver board_size: #{board_size}"
               end
-      klass.new(data_path, resolver)
+      klass.new(*args)
     end
   end
 
@@ -123,6 +174,16 @@ module Twenty48
   # Common methods for the native StateHashSet classes.
   #
   module NativeStateHashSet
+    def self.create(board_size, max_states)
+      klass = case board_size
+              when 2 then StateHashSet2
+              when 3 then StateHashSet3
+              when 4 then StateHashSet4
+              else raise "bad layer solver board_size: #{board_size}"
+              end
+      klass.new(max_states)
+    end
+
     def <<(state)
       insert state
     end
@@ -157,5 +218,48 @@ module Twenty48
     include NativeStateHashSet
 
     alias member? member
+  end
+
+  #
+  # Common methods for the native StateValueMap classes.
+  #
+  module NativeStateValueMap
+    def self.create(board_size)
+      klass = case board_size
+              when 2 then StateValueMap2
+              when 3 then StateValueMap3
+              when 4 then StateValueMap4
+              else raise "bad layer solver board_size: #{board_size}"
+              end
+      klass.new
+    end
+
+    def each
+      (0...size).each do |index|
+        state = get_state(index)
+        yield state, get_action(state), get_value(state)
+      end
+    end
+  end
+
+  #
+  # Value and action map for 2x2 states.
+  #
+  class StateValueMap2
+    include NativeStateValueMap
+  end
+
+  #
+  # Value and action map for 3x3 states.
+  #
+  class StateValueMap3
+    include NativeStateValueMap
+  end
+
+  #
+  # Value and action map for 4x4 states.
+  #
+  class StateValueMap4
+    include NativeStateValueMap
   end
 end

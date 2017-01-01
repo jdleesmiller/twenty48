@@ -2,256 +2,52 @@
 
 module Twenty48
   module CommonUnknownZerosResolverTests
-    def test_moves_to_definite_win_2x2_to_4_resolve_0
-      resolver = make_resolver(2, 2, 0)
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        0, 0
-      ])
-
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        0, 1
-      ])
-
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        1, 1
-      ])
-
-      assert_equal 0, moves_to_win(resolver, [
-        0, 0,
-        0, 2
-      ])
-    end
-
-    def test_moves_to_definite_win_2x2_to_4_resolve_1
-      resolver = make_resolver(2, 2, 1)
-
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        0, 0
-      ])
-
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        0, 1
-      ])
-
-      assert_equal 1, moves_to_win(resolver, [
-        0, 0,
-        1, 1
-      ])
-
-      assert_equal 1, moves_to_win(resolver, [
-        1, 0,
-        1, 1
-      ])
-
-      assert_equal 1, moves_to_win(resolver, [
-        1, 1,
-        1, 1
-      ])
-    end
-
-    def test_moves_to_definite_win_2x2_to_8_resolve_0
-      resolver = make_resolver(2, 3, 0)
-
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        0, 1
-      ])
-
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        2, 2
-      ])
-
-      assert_equal 0, moves_to_win(resolver, [
-        0, 0,
-        0, 3
-      ])
-    end
-
-    def test_moves_to_definite_win_2x2_to_8_resolve_1
-      resolver = make_resolver(2, 3, 1)
-
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        0, 1
-      ])
-
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        1, 1
-      ])
-
-      assert_equal 1, moves_to_win(resolver, [
-        0, 0,
-        2, 2
-      ])
-
-      # Need two moves to win.
-      assert_nil moves_to_win(resolver, [
-        1, 0,
-        1, 2
-      ])
-    end
-
-    def test_moves_to_definite_win_2x2_to_8_resolve_2
-      resolver = make_resolver(2, 3, 2)
-
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        1, 1
-      ])
-
-      assert_nil moves_to_win(resolver, [
-        0, 0,
-        1, 2
-      ])
-
-      assert_nil moves_to_win(resolver, [
-        0, 1,
-        1, 2
-      ])
-
-      assert_equal 1, moves_to_win(resolver, [
-        0, 0,
-        2, 2
-      ])
-
-      assert_equal 1, moves_to_win(resolver, [
-        1, 1,
-        2, 2
-      ])
-
-      assert_equal 1, moves_to_win(resolver, [
-        1, 2,
-        2, 2
-      ])
-
-      assert_equal 2, moves_to_win(resolver, [
-        1, 0,
-        1, 2
-      ])
-
-      assert_equal 2, moves_to_win(resolver, [
-        1, 1,
-        1, 2
-      ])
-    end
-
-    def test_moves_to_definite_win_2x2_to_16_resolve_2
-      resolver = make_resolver(2, 4, 2)
-
-      assert_nil moves_to_win(resolver, [
-        1, 1,
-        2, 3
-      ])
-    end
-
-    def test_moves_to_definite_win_2x2_to_16_resolve_3
-      resolver = make_resolver(2, 4, 3)
-
-      assert_equal 3, moves_to_win(resolver, [
-        1, 1,
-        2, 3
-      ])
-    end
-
-    def test_moves_to_definite_win_3x3_to_8_resolve_1
-      resolver = make_resolver(3, 3, 1)
-
-      assert_nil moves_to_win(resolver, [
+    def test_incorrect_resolve_depth_3x3_to_8
+      #
+      # If we start from this state:
+      # 0, 0, 0,
+      # 0, 0, 1,
+      # 1, 0, 2
+      # and go left, we get
+      # ?, ?, ?
+      # 1, ?, ?
+      # 1, 2, ?
+      # Now, no matter what, we can win in two more moves (down and then left).
+      # However, if the middle cell (for example) is 2^2, we can actually win in
+      # one more move (down). This example imposes a limit on how many states
+      # deep we can resolve and still have an exact value function. In
+      # particular, we can only resolve exactly 2 moves ahead.
+      #
+      # Does this only apply when the max_exponent is trivially small? If the
+      # max_exponent were larger, it would be harder to get one by chance. What
+      # if, instead of unknown zeros, we instead used a constraint solver idea:
+      # each cell starts out empty, and then after 1 move it's either 1 or 2
+      # instead of just '?'. Then we could define an 'uncertain merge' rule
+      # that says that if you slide a cell together with an uncertain cell,
+      # the result is any one of the possible values. We're basically saying
+      # at present that we never merge "?"s, which is a pessimistic assumption;
+      # it just pins the known cells, but it does have this problem. It could
+      # potentially let us resolve deeper, albeit at much higher cost.
+      #
+      state = [
         0, 0, 0,
-        0, 0, 0,
-        0, 1, 1
-      ])
-
-      assert_equal 1, moves_to_win(resolver, [
-        0, 0, 0,
-        0, 0, 0,
-        0, 2, 2
-      ])
-
-      assert_equal 1, moves_to_win(resolver, [
-        0, 0, 0,
-        0, 0, 0,
-        2, 2, 0
-      ])
-
-      assert_equal 1, moves_to_win(resolver, [
-        0, 2, 0,
-        0, 2, 0,
-        0, 0, 0
-      ])
-    end
-
-    def test_moves_to_definite_win_3x3_to_8_resolve_2
-      resolver = make_resolver(3, 3, 2)
-
-      assert_equal 2, moves_to_win(resolver, [
-        0, 0, 0,
-        0, 0, 0,
-        1, 1, 2
-      ])
-
-      assert_equal 2, moves_to_win(resolver, [
-        0, 0, 0,
-        1, 0, 0,
-        1, 2, 0
-      ])
-
-      assert_equal 2, moves_to_win(resolver, [
-        1, 0, 0,
-        1, 0, 0,
-        2, 0, 0
-      ])
-
-      assert_equal 2, moves_to_win(resolver, [
-        0, 0, 0,
-        0, 1, 0,
-        0, 1, 2
-      ])
-
-      assert_equal 2, moves_to_win(resolver, [
-        0, 0, 0,
-        1, 1, 0,
-        0, 2, 0
-      ])
-
-      assert_nil moves_to_win(resolver, [
-        0, 0, 0,
-        1, 0, 0,
+        0, 0, 1,
         1, 0, 2
-      ])
-    end
+      ]
 
-    def test_moves_to_definite_win_3x3_to_16_resolve_2
-      resolver = make_resolver(3, 4, 2)
+      resolver_0 = make_resolver(3, 3, 0)
+      assert_nil moves_to_win(resolver_0, state)
 
-      assert_nil moves_to_win(resolver, [
-        0, 0, 0,
-        1, 1, 3,
-        0, 2, 0
-      ])
-    end
+      resolver_1 = make_resolver(3, 3, 1)
+      assert_nil moves_to_win(resolver_1, state)
 
-    def test_moves_to_definite_win_4x4_to_8_resolve_2
-      resolver = make_resolver(4, 3, 2)
+      resolver_2 = make_resolver(3, 3, 2)
+      assert_nil moves_to_win(resolver_2, state)
 
-      #
-      # If we move right, we end up with two adjacent 2s, but the exact state
-      # after moving up or down in that position is unknown. We can however tell
-      # that it's a win. This tripped up an earlier version of the heuristic.
-      #
-      assert_equal 2, moves_to_win(resolver, [
-        0, 0, 0, 0,
-        0, 0, 0, 2,
-        0, 2, 0, 0,
-        0, 0, 0, 0
-      ])
+      # It's possible (but not certain), that we will win in 2 moves, even
+      # though we'll definitely win in 3.
+      resolver_3 = make_resolver(3, 3, 3)
+      assert_equal 3, moves_to_win(resolver_3, state)
     end
 
     def test_moves_to_definite_win_4x4_to_16_resolve_3

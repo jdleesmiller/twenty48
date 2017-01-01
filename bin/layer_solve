@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'fileutils'
+
+require_relative '../lib/twenty48'
+include Twenty48
+
+DISCOUNT = 0.95
+
+Dir.glob(Twenty48::Storage::LAYER_STATES_GLOB).sort.each do |states_path|
+  params = Storage.layer_states_params_from_pathname(states_path)
+  p params
+  params[:discount] = DISCOUNT
+
+  values_path = Storage.layer_values_pathname(params)
+  if Dir.exist?(values_path)
+    puts 'exists; skipping'
+    next
+  end
+  FileUtils.mkdir_p values_path
+
+  layer_files = Dir.glob(File.join(states_path, '*.bin'))
+  layer_sums = layer_files.map do |pathname|
+    File.basename(pathname, '.bin').to_i
+  end
+
+  valuer = NativeValuer.create(
+    board_size: params[:board_size],
+    max_exponent: params[:max_exponent],
+    max_depth: params[:max_depth],
+    discount: params[:discount]
+  )
+
+  solver = NativeLayerSolver.create(
+    params[:board_size],
+    states_path,
+    values_path,
+    layer_sums.max,
+    valuer
+  )
+
+  loop do
+    puts "Solving layer #{solver.get_sum}"
+    solver.solve
+    break unless solver.move_to_lower_layer
+  end
+end

@@ -6,7 +6,10 @@
 #include "state.hpp"
 #include "builder.hpp"
 #include "layer_builder.hpp"
+#include "layer_solver.hpp"
+#include "start_states.hpp"
 #include "state_hash_set.hpp"
+#include "state_value_map.hpp"
 %}
 
 %include "stdint.i"
@@ -93,6 +96,16 @@
 %template(Resolver4) twenty48::resolver_t<4>;
 
 /******************************************************************************/
+/* Valuer */
+/******************************************************************************/
+
+%include "valuer.hpp"
+
+%template(Valuer2) twenty48::valuer_t<2>;
+%template(Valuer3) twenty48::valuer_t<3>;
+%template(Valuer4) twenty48::valuer_t<4>;
+
+/******************************************************************************/
 /* Builder */
 /******************************************************************************/
 
@@ -111,6 +124,26 @@
 %template(LayerBuilder2) twenty48::layer_builder_t<2>;
 %template(LayerBuilder3) twenty48::layer_builder_t<3>;
 %template(LayerBuilder4) twenty48::layer_builder_t<4>;
+
+/******************************************************************************/
+/* LayerSolver */
+/******************************************************************************/
+
+%include "layer_solver.hpp"
+
+%template(LayerSolver2) twenty48::layer_solver_t<2>;
+%template(LayerSolver3) twenty48::layer_solver_t<3>;
+%template(LayerSolver4) twenty48::layer_solver_t<4>;
+
+/******************************************************************************/
+/* Start States */
+/******************************************************************************/
+
+%include "start_states.hpp"
+
+%template(generate_start_states_2) twenty48::generate_start_states<2>;
+%template(generate_start_states_3) twenty48::generate_start_states<3>;
+%template(generate_start_states_4) twenty48::generate_start_states<4>;
 
 /******************************************************************************/
 /* StateHashSet */
@@ -132,3 +165,32 @@
 %template(StateHashSet2) twenty48::state_hash_set_t<2>;
 %template(StateHashSet3) twenty48::state_hash_set_t<3>;
 %template(StateHashSet4) twenty48::state_hash_set_t<4>;
+
+/******************************************************************************/
+/* StateValueMap */
+/******************************************************************************/
+
+%include "state_value_map.hpp"
+
+%extend twenty48::state_value_map_t {
+  %exception get_value {
+    try {
+      $action
+    }
+    catch (const std::invalid_argument& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
+  %exception get_action {
+    try {
+      $action
+    }
+    catch (const std::invalid_argument& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
+}
+
+%template(StateValueMap2) twenty48::state_value_map_t<2>;
+%template(StateValueMap3) twenty48::state_value_map_t<3>;
+%template(StateValueMap4) twenty48::state_value_map_t<4>;

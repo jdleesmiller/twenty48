@@ -9,6 +9,10 @@ module CommonTestHelpers
     assert_in_delta x, y, 1e-6
   end
 
+  def assert_nan(x)
+    assert x.nan?, "expected #{x} to be NaN"
+  end
+
   def make_states(state_arrays)
     state_arrays.map { |state_array| make_state(state_array) }
   end

@@ -45,7 +45,7 @@ class NativeStateHashSetTest < Twenty48NativeTest
     assert_equal 6, set.size
     assert_equal 1, set.fill_factor
 
-    # # Can't insert existing state into full set.
+    # Can't insert existing state into full set.
     assert_raises do
       set << states.first
     end

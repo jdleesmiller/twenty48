@@ -161,15 +161,16 @@ template <int size> struct state_t {
    */
   transitions_t random_transitions(int step = 0) const {
     transitions_t transitions;
+    size_t denominator = cells_available();
     for (size_t i = 0; i < size * size; ++i) {
       if ((*this)[i] != 0) continue;
       if (step == 0 || step == 1) {
         transitions[new_state_with_tile(i, 1).canonicalize()] +=
-          0.9 / (size * size);
+          0.9 / denominator;
       }
       if (step == 0 || step == 2) {
         transitions[new_state_with_tile(i, 2).canonicalize()] +=
-          0.1 / (size * size);
+          0.1 / denominator;
       }
     }
     return transitions;
@@ -183,18 +184,6 @@ template <int size> struct state_t {
   bool has_adjacent_pair(uint8_t value, bool zeros_unknown) const {
     return any_row_or_col(adjacent_pair_t(value, zeros_unknown));
   }
-
-  struct adjacent_pair_t {
-    adjacent_pair_t(uint8_t value, bool zeros_unknown) :
-      value(value), zeros_unknown(zeros_unknown) { }
-
-    bool operator()(const line_t<size> &line) const {
-      return line.has_adjacent_pair(value, zeros_unknown);
-    }
-  private:
-    uint8_t value;
-    bool zeros_unknown;
-  };
 
   bool operator==(const state_t<size> &other) const {
     return nybbles == other.nybbles;
@@ -316,6 +305,18 @@ private:
   template <typename Predicate> bool any_row_or_col(Predicate predicate) const {
     return any_row(predicate) || any_col(predicate);
   }
+
+  struct adjacent_pair_t {
+    adjacent_pair_t(uint8_t value, bool zeros_unknown) :
+      value(value), zeros_unknown(zeros_unknown) { }
+
+    bool operator()(const line_t<size> &line) const {
+      return line.has_adjacent_pair(value, zeros_unknown);
+    }
+  private:
+    uint8_t value;
+    bool zeros_unknown;
+  };
 
   state_t move_left(bool zeros_unknown) const {
     nybbles_t result = 0;

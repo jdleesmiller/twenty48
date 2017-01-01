@@ -15,9 +15,14 @@ module Twenty48
     SOLVERS_PATH = File.join(ROOT, 'solvers')
     GRAPHS_PATH = File.join(ROOT, 'graphs')
 
+    LAYER_STATES_PATH = File.join(ROOT, 'layer_states')
+    LAYER_VALUES_PATH = File.join(ROOT, 'layer_values')
+
     MODELS_GLOB = File.join(MODELS_PATH, '*.json.bz2')
     ARRAY_MODELS_GLOB = File.join(ARRAY_MODELS_PATH, '*.bin.bz2')
     SOLVERS_GLOB = File.join(SOLVERS_PATH, '*.csv.bz2')
+    LAYER_STATES_GLOB = File.join(LAYER_STATES_PATH, '*') # folders
+    LAYER_VALUES_GLOB = File.join(LAYER_VALUES_PATH, '*') # folders
 
     def build_basename(**args)
       args.map { |key, value| "#{key}-#{value}" }.join('.')
@@ -31,9 +36,13 @@ module Twenty48
       match_data.names.map(&:to_sym).zip(match_data.captures).to_h
     end
 
-    MODEL_NAME_RX = build_pathname_rx(
+    BASIC_NAME_RX = build_pathname_rx(
       /board_size-(?<board_size>\d+)/,
-      /max_exponent-(?<max_exponent>\d+)/,
+      /max_exponent-(?<max_exponent>\d+)/
+    )
+
+    MODEL_NAME_RX = build_pathname_rx(
+      BASIC_NAME_RX,
       /resolve_strategy-(?<resolve_strategy>\w+)/,
       /max_resolve_depth-(?<max_resolve_depth>\d+)/
     )
@@ -48,6 +57,20 @@ module Twenty48
     )
 
     SOLVER_PARAMS = SOLVER_NAME_RX.names.map(&:to_sym)
+
+    LAYER_STATES_NAME_RX = build_pathname_rx(
+      BASIC_NAME_RX,
+      /max_depth-(?<max_depth>\d+)/
+    )
+
+    LAYER_STATES_PARAMS = LAYER_STATES_NAME_RX.names.map(&:to_sym)
+
+    LAYER_VALUES_NAME_RX = build_pathname_rx(
+      LAYER_STATES_NAME_RX,
+      /discount-(?<discount>[0-9.e+-]+)/
+    )
+
+    LAYER_VALUES_PARAMS = LAYER_VALUES_NAME_RX.names.map(&:to_sym)
 
     def bunzip(pathname)
       IO.popen("bunzip2 < #{pathname}") { |input| yield(input) }
@@ -80,9 +103,13 @@ module Twenty48
       cast_model_params(rx_captures_to_hash(Regexp.last_match))
     end
 
-    def cast_model_params(params)
+    def cast_basic_params(params)
       params[:board_size] = params[:board_size].to_i
       params[:max_exponent] = params[:max_exponent].to_i
+    end
+
+    def cast_model_params(params)
+      cast_basic_params(params)
       params[:resolve_strategy] = params[:resolve_strategy].to_sym
       params[:max_resolve_depth] = params[:max_resolve_depth].to_i
       params
@@ -138,6 +165,59 @@ module Twenty48
 
     def estimate_solver_state_count(solver_params)
       `bunzip2 < #{solver_pathname(solver_params)} | wc -l`.to_i - 2
+    end
+
+    #
+    # Layer builder / solver path handling
+    #
+
+    def cast_layer_states_params(params)
+      cast_basic_params(params)
+      params[:max_depth] = params[:max_depth].to_i
+      params
+    end
+
+    def layer_states_params_from_pathname(pathname)
+      basename = File.basename(pathname)
+      raise "no layers in #{pathname}" unless basename =~ LAYER_STATES_NAME_RX
+      cast_layer_states_params(rx_captures_to_hash(Regexp.last_match))
+    end
+
+    def layer_states_basename(params)
+      build_basename(
+        board_size: params[:board_size],
+        max_exponent: params[:max_exponent],
+        max_depth: params[:max_depth]
+      )
+    end
+
+    def layer_states_pathname(params)
+      File.join(LAYER_STATES_PATH, layer_states_basename(params))
+    end
+
+    def cast_layer_values_params(params)
+      cast_layer_states_params(params)
+      params[:discount] = params[:discount].to_f
+      params
+    end
+
+    def layer_values_params_from_pathname(pathname)
+      basename = File.basename(pathname)
+      raise "no layers in #{pathname}" unless basename =~ LAYER_VALUES_NAME_RX
+      cast_layer_values_params(rx_captures_to_hash(Regexp.last_match))
+    end
+
+    def layer_values_basename(params)
+      build_basename(
+        board_size: params[:board_size],
+        max_exponent: params[:max_exponent],
+        max_depth: params[:max_depth],
+        discount: params[:discount]
+      )
+    end
+
+    def layer_values_pathname(params)
+      File.join(LAYER_VALUES_PATH, layer_values_basename(params))
     end
 
     #

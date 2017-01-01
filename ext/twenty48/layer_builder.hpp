@@ -1,13 +1,13 @@
 #ifndef TWENTY48_LAYER_BUILDER_HPP
 
 #include <iostream>
-#include <sstream>
-#include <string>
 
 #include "twenty48.hpp"
 #include "builder.hpp"
+#include "layer_storage.hpp"
 #include "state.hpp"
 #include "state_hash_set.hpp"
+#include "valuer.hpp"
 
 namespace twenty48 {
   /**
@@ -49,8 +49,12 @@ namespace twenty48 {
     typedef typename state_t<size>::transitions_t transitions_t;
     typedef std::vector<state_t<size> > state_vector_t;
 
-    layer_builder_t(const char *data_path, const resolver_t<size> &resolver)
-      : data_path(data_path), resolver(resolver) { }
+    layer_builder_t(const char *states_path, const valuer_t<size> &valuer)
+      : states_path(states_path), valuer(valuer) { }
+
+    std::string get_states_path() const {
+      return states_path;
+    }
 
     void build_start_state_layers() const {
       const size_t max_layer_start_states = 1024;
@@ -68,10 +72,7 @@ namespace twenty48 {
     }
 
     std::string make_layer_pathname(int sum) const {
-      std::stringstream path;
-      path << data_path << '/' << std::setfill('0') << std::setw(4) << sum <<
-        ".bin";
-      return path.str();
+      return twenty48::make_layer_pathname(states_path, sum);
     }
 
     void build_layer(int sum, int step, size_t max_states) const {
@@ -83,8 +84,9 @@ namespace twenty48 {
       size_t start_size = output_layer.size();
 
       std::ifstream is(input_layer_pathname, std::ios::in | std::ios::binary);
-      while (is) {
+      for (;;) {
         state_t<size> state = state_t<size>::read_bin(is);
+        if (!is) break;
         expand(state, step, output_layer);
       }
       is.close();
@@ -96,8 +98,8 @@ namespace twenty48 {
     }
 
   private:
-    const std::string data_path;
-    resolver_t<size> resolver;
+    const std::string states_path;
+    valuer_t<size> valuer;
 
     static void call_build_layer(
       const layer_builder_t<size> &builder,
@@ -121,7 +123,8 @@ namespace twenty48 {
       transitions_t transitions = moved_state.random_transitions(step);
       for (typename transitions_t::const_iterator it = transitions.begin();
         it != transitions.end(); ++it) {
-        successors.insert(resolver.resolve(it->first));
+        if (!isnan(valuer.value(it->first))) continue;
+        successors.insert(it->first);
       }
     }
   };
