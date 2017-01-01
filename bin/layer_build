@@ -52,13 +52,19 @@ end
   end
 end
 
-# build(
-#   board_size: 3,
-#   max_exponent: 11,
-#   max_lose_depth: 0,
-#   max_win_depth: 0,
-#   max_states: 60 * 1024**2
-# )
+#
+# 3x3
+#
+(3..10).each do |max_exponent|
+  (0..[2, max_exponent - 1].min).each do |max_depth|
+    build(
+      board_size: 3,
+      max_exponent: max_exponent,
+      max_depth: max_depth,
+      max_states: 10_000_000
+    )
+  end
+end
 
 # build(
 #   board_size: 4,
