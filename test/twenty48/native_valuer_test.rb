@@ -49,4 +49,15 @@ class NativeResolverValueTest < Twenty48NativeTest
       2, 3
     ]))
   end
+
+  def test_value_3x3_to_16_resolve_2
+    valuer = make_resolver(3, 4, 2)
+
+    # We can neither win nor lose in two moves from this state.
+    assert_nan valuer.value(make_state([
+      0, 0, 0,
+      0, 0, 2,
+      2, 1, 1
+    ]))
+  end
 end

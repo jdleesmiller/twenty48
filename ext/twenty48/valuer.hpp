@@ -72,7 +72,7 @@ namespace twenty48 {
       if (!can_win) {
         int available = (int)state.cells_available();
         bool can_lose = depth >= available;
-        if (!can_lose) return nan("");
+        if (!can_lose) return -pow(discount, delta);
       }
 
       // Don't bother doing a big search if there are an adjacent pair of tiles
