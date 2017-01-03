@@ -126,6 +126,7 @@ namespace twenty48 {
 
     double value_moved_state(const state_t<size> &moved_state, int depth) const
     {
+      double sign = 1.0;
       double result = 0.0;
       transitions_t transitions = moved_state.random_transitions();
       for (typename transitions_t::const_iterator it = transitions.begin();
@@ -135,10 +136,13 @@ namespace twenty48 {
         // std::cout << std::setw(4*(max_depth - depth)) << depth << ": value_moved_state: " << moved_state << " -> " << it->first << " pr:" << probability << std::endl;
         double successor_value = inner_value(it->first, depth - 1);
         // std::cout << std::setw(4*(max_depth - depth)) << depth << ": value_moved_state: succ val: " << it->first << " = " << successor_value << std::endl;
-        if (successor_value < 0 && result > 0) result = -result;
+        if (successor_value < 0) {
+          sign = -1.0;
+          successor_value *= -1;
+        }
         result += probability * discount * successor_value;
       }
-      return result;
+      return sign * result;
     }
   };
 

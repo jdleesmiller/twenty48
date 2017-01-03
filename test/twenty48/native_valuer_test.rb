@@ -38,6 +38,15 @@ class NativeResolverValueTest < Twenty48NativeTest
     valuer.value(make_state(state_array)) == 0
   end
 
+  def test_value_3x3_to_8_resolve_2
+    valuer = make_resolver(3, 3, 2)
+    assert_nan valuer.value(make_state([
+      0, 0, 2,
+      0, 0, 0,
+      2, 0, 0
+    ]))
+  end
+
   def test_value_2x2_to_16_resolve_4
     valuer = make_resolver(2, 4, 4)
 
