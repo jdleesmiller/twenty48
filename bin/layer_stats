@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'fileutils'
+
+require_relative '../lib/twenty48'
+include Twenty48
+
+column_names = %w(
+  board_size max_exponent max_depth discount layer_sum
+  states min_value mean_value max_value
+)
+puts column_names.join(',')
+
+Dir.glob(Storage::LAYER_VALUES_GLOB).sort.each do |values_path|
+  params = Storage.layer_values_params_from_pathname(values_path)
+  $stderr.puts [Time.now, params].inspect
+
+  Dir.glob(File.join(values_path, '*.bin')).each do |layer_pathname|
+    layer_sum = File.basename(layer_pathname, '.bin').to_i
+    map = NativeStateValueMap.create(params[:board_size])
+    map.read(layer_pathname)
+
+    layer_states = 0
+    layer_min_value = nil
+    layer_max_value = nil
+    layer_total_value = 0.0
+    map.each do |_state, _action, value|
+      layer_states += 1
+      layer_min_value = value if layer_min_value.nil? || value < layer_min_value
+      layer_max_value = value if layer_max_value.nil? || value > layer_max_value
+      layer_total_value += value
+    end
+
+    layer_mean_value = layer_total_value / layer_states
+    values = params.values + [
+      layer_sum,
+      layer_states,
+      layer_min_value,
+      layer_mean_value,
+      layer_max_value
+    ]
+    puts values.join(',')
+  end
+end
