@@ -168,7 +168,7 @@ namespace twenty48 {
         if (depth <= 0) return nan("");
 
         double moved_value = value_moved_state(moved_state, discount, depth);
-        if (isnan(moved_value)) {
+        if (std::isnan(moved_value)) {
           // If we are looking for a definite loss, a NaN value for one of the
           // actions means this is not a definite loss, so we can stop early.
           if (!can_win) return nan("");
@@ -176,7 +176,7 @@ namespace twenty48 {
           continue;
         }
 
-        if (isnan(best_value)) {
+        if (std::isnan(best_value)) {
           best_value = moved_value;
         } else {
           if (moved_value > best_value) {
@@ -208,7 +208,7 @@ namespace twenty48 {
         std::cout << std::setw(4*(max_win_depth() - depth)) << depth << ": value_moved_state: " << moved_state << " -> " << it->first << " pr:" << probability << std::endl;
         double successor_value = inner_value(it->first, discount, depth - 1);
         std::cout << std::setw(4*(max_win_depth() - depth)) << depth << ": value_moved_state: succ val: " << it->first << " = " << successor_value << std::endl;
-        if (isnan(successor_value)) return nan("");
+        if (std::isnan(successor_value)) return nan("");
         result += probability * discount * successor_value;
       }
       if (result < 1e-12) {

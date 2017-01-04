@@ -99,26 +99,26 @@ namespace twenty48 {
         // std::cout << std::setw(4*(max_depth - depth)) << depth << ": inner_value: moved: " << direction << " new state: " << moved_state << " value: " << moved_value << std::endl;
         if (moved_value >= 0) {
           // Value is known.
-          if (isnan(best_known) || moved_value > best_known) {
+          if (std::isnan(best_known) || moved_value > best_known) {
             best_known = moved_value;
           }
         } else {
           // Value is not known.
-          if (isnan(best_unknown) || -moved_value > best_unknown) {
+          if (std::isnan(best_unknown) || -moved_value > best_unknown) {
             best_unknown = -moved_value;
           }
         }
       }
 
       if (!any_possible_moves) return 0.0;
-      if (!isnan(best_known) && !isnan(best_unknown)) {
+      if (!std::isnan(best_known) && !std::isnan(best_unknown)) {
         if (best_known > best_unknown) return best_known;
         return -best_unknown;
       }
-      if (!isnan(best_known)) {
+      if (!std::isnan(best_known)) {
         return best_known;
       }
-      if (!isnan(best_unknown)) {
+      if (!std::isnan(best_unknown)) {
         return -best_unknown;
       }
       throw std::logic_error("no known or unknown values");

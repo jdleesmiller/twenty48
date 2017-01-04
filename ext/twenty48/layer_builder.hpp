@@ -123,7 +123,7 @@ namespace twenty48 {
       transitions_t transitions = moved_state.random_transitions(step);
       for (typename transitions_t::const_iterator it = transitions.begin();
         it != transitions.end(); ++it) {
-        if (!isnan(valuer.value(it->first))) continue;
+        if (!std::isnan(valuer.value(it->first))) continue;
         successors.insert(it->first);
       }
     }
