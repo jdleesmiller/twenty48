@@ -17,7 +17,7 @@ Dir.glob(Storage::LAYER_VALUES_GLOB).sort.each do |values_path|
   params = Storage.layer_values_params_from_pathname(values_path)
   $stderr.puts [Time.now, params].inspect
 
-  start_states = generate_start_states(board_size: params[:board_size])
+  start_states = Twenty48.generate_start_states(board_size: params[:board_size])
 
   total_states = 0
   total_start_state_value = 0.0

@@ -49,63 +49,26 @@ namespace twenty48 {
     typedef typename state_t<size>::transitions_t transitions_t;
     typedef std::vector<state_t<size> > state_vector_t;
 
-    layer_builder_t(const char *states_path, const valuer_t<size> &valuer)
-      : states_path(states_path), valuer(valuer) { }
+    layer_builder_t(const valuer_t<size> &valuer) : valuer(valuer) { }
 
-    std::string get_states_path() const {
-      return states_path;
-    }
-
-    void build_start_state_layers() const {
-      const size_t max_layer_start_states = 1024;
-      state_vector_t start_states(twenty48::generate_start_states<size>());
-      for (int layer_sum = 4; layer_sum <= 8; layer_sum += 2) {
-        state_hash_set_t<size> layer_states(max_layer_start_states);
-        for (typename state_vector_t::const_iterator it = start_states.begin();
-          it != start_states.end(); ++it) {
-          if (it->sum() == layer_sum) {
-            layer_states.insert(*it);
-          }
-        }
-        layer_states.dump_binary(make_layer_pathname(layer_sum).c_str());
-      }
-    }
-
-    std::string make_layer_pathname(int sum) const {
-      return twenty48::make_layer_pathname(states_path, sum);
-    }
-
-    void build_layer(int sum, int step, size_t max_states) const {
-      std::string input_layer_pathname = make_layer_pathname(sum);
-      std::string output_layer_pathname = make_layer_pathname(sum + 2 * step);
-      state_hash_set_t<size> output_layer(max_states);
-
-      output_layer.load_binary(output_layer_pathname.c_str());
-      size_t start_size = output_layer.size();
-
+    void build_layer(const char *input_layer_pathname,
+      twenty48::state_hash_set_t<size> &output_layer, int step,
+      size_t offset, int count) const
+    {
       std::ifstream is(input_layer_pathname, std::ios::in | std::ios::binary);
-      for (;;) {
+      is.seekg(offset * sizeof(state_t<size>));
+
+      for (; count > 0; --count) {
         state_t<size> state = state_t<size>::read_bin(is);
         if (!is) break;
         expand(state, step, output_layer);
       }
-      is.close();
 
-      size_t end_size = output_layer.size();
-      if (end_size > start_size) {
-        output_layer.dump_binary(output_layer_pathname.c_str());
-      }
+      is.close();
     }
 
   private:
-    const std::string states_path;
     valuer_t<size> valuer;
-
-    static void call_build_layer(
-      const layer_builder_t<size> &builder,
-      int sum, int step, size_t max_states) {
-      builder.build_layer(sum, step, max_states);
-    }
 
     void expand(const state_t<size> &state, int step,
       state_hash_set_t<size> &successors) const {

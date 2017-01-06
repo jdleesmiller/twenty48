@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
     ' finite Markov Decision Processes.'
 
   s.add_runtime_dependency 'finite_mdp', '~> 0.3.0'
+  s.add_runtime_dependency 'parallel', '~> 1.10.0'
 
   s.add_development_dependency 'gemma', '~> 4.1.0'
   s.add_development_dependency 'ruby-prof', '~> 0.15.9'
