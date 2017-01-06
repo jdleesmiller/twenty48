@@ -270,7 +270,7 @@ module Twenty48
     #
     def sort_parallel
       return [] if RUBY_PLATFORM =~ /darwin/
-      ['--parallel', Parallel.processor_count]
+      ['--parallel', Parallel.processor_count.to_s]
     end
 
     def sort_and_merge(input_pathnames, output_pathname)
