@@ -79,6 +79,18 @@ template <int board_size> struct state_hash_set_t {
     os.close();
   }
 
+  void dump_hex(const char *pathname) const {
+    std::ofstream os(pathname);
+    os << std::hex << std::setfill('0');
+    for (typename state_hash_set_t<board_size>::data_t::const_iterator it =
+      data.begin(); it != data.end(); ++it) {
+      uint64_t nybbles = it->get_nybbles();
+      if (nybbles == 0) continue;
+      os << std::setw(16) << nybbles << std::endl;
+    }
+    os.close();
+  }
+
   std::vector<state_t<board_size> > to_a() const {
     std::vector<state_t<board_size> > result;
     result.reserve(count);

@@ -59,4 +59,16 @@ class NativeStateHashSetTest < Twenty48NativeTest
 
     assert_equal ([lose_state] + states.take(5)).sort, set.to_a.sort
   end
+
+  def test_state_hash_set_dump_hex_2
+    set = StateHashSet2.new(10)
+    set.insert(make_state([0, 0, 0, 1]))
+    set.insert(make_state([0, 0, 1, 1]))
+    Dir.mktmpdir do |dir|
+      pathname = File.join(dir, 'set.hex')
+      set.dump_hex(pathname)
+      result = File.readlines(pathname).sort.map(&:chomp)
+      assert_equal %w(0000000000000001 0000000000000011), result
+    end
+  end
 end

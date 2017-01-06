@@ -33509,6 +33509,38 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_StateHashSet2_dump_hex(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_hash_set_t< 2 > *arg1 = (twenty48::state_hash_set_t< 2 > *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_hash_set_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_hash_set_t< 2 > const *","dump_hex", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_hash_set_t< 2 > * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(argv[0], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","dump_hex", 2, argv[0] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  ((twenty48::state_hash_set_t< 2 > const *)arg1)->dump_hex((char const *)arg2);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+}
+
+
 
 /*
   Document-method: Twenty48::StateHashSet2.to_a
@@ -33836,6 +33868,38 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_StateHashSet3_dump_hex(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_hash_set_t< 3 > *arg1 = (twenty48::state_hash_set_t< 3 > *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_hash_set_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_hash_set_t< 3 > const *","dump_hex", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_hash_set_t< 3 > * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(argv[0], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","dump_hex", 2, argv[0] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  ((twenty48::state_hash_set_t< 3 > const *)arg1)->dump_hex((char const *)arg2);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+}
+
+
 
 /*
   Document-method: Twenty48::StateHashSet3.to_a
@@ -34155,6 +34219,38 @@ _wrap_StateHashSet4_dump_binary(int argc, VALUE *argv, VALUE self) {
   }
   arg2 = reinterpret_cast< char * >(buf2);
   ((twenty48::state_hash_set_t< 4 > const *)arg1)->dump_binary((char const *)arg2);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_StateHashSet4_dump_hex(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_hash_set_t< 4 > *arg1 = (twenty48::state_hash_set_t< 4 > *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_hash_set_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_hash_set_t< 4 > const *","dump_hex", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_hash_set_t< 4 > * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(argv[0], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","dump_hex", 2, argv[0] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  ((twenty48::state_hash_set_t< 4 > const *)arg1)->dump_hex((char const *)arg2);
   if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
   return Qnil;
 fail:
@@ -36633,6 +36729,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassStateHashSet2.klass, "dump", VALUEFUNC(_wrap_StateHashSet2_dump), -1);
   rb_define_method(SwigClassStateHashSet2.klass, "load_binary", VALUEFUNC(_wrap_StateHashSet2_load_binary), -1);
   rb_define_method(SwigClassStateHashSet2.klass, "dump_binary", VALUEFUNC(_wrap_StateHashSet2_dump_binary), -1);
+  rb_define_method(SwigClassStateHashSet2.klass, "dump_hex", VALUEFUNC(_wrap_StateHashSet2_dump_hex), -1);
   rb_define_method(SwigClassStateHashSet2.klass, "to_a", VALUEFUNC(_wrap_StateHashSet2_to_a), -1);
   SwigClassStateHashSet2.mark = 0;
   SwigClassStateHashSet2.destroy = (void (*)(void *)) free_twenty48_state_hash_set_t_Sl_2_Sg_;
@@ -36649,6 +36746,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassStateHashSet3.klass, "dump", VALUEFUNC(_wrap_StateHashSet3_dump), -1);
   rb_define_method(SwigClassStateHashSet3.klass, "load_binary", VALUEFUNC(_wrap_StateHashSet3_load_binary), -1);
   rb_define_method(SwigClassStateHashSet3.klass, "dump_binary", VALUEFUNC(_wrap_StateHashSet3_dump_binary), -1);
+  rb_define_method(SwigClassStateHashSet3.klass, "dump_hex", VALUEFUNC(_wrap_StateHashSet3_dump_hex), -1);
   rb_define_method(SwigClassStateHashSet3.klass, "to_a", VALUEFUNC(_wrap_StateHashSet3_to_a), -1);
   SwigClassStateHashSet3.mark = 0;
   SwigClassStateHashSet3.destroy = (void (*)(void *)) free_twenty48_state_hash_set_t_Sl_3_Sg_;
@@ -36665,6 +36763,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassStateHashSet4.klass, "dump", VALUEFUNC(_wrap_StateHashSet4_dump), -1);
   rb_define_method(SwigClassStateHashSet4.klass, "load_binary", VALUEFUNC(_wrap_StateHashSet4_load_binary), -1);
   rb_define_method(SwigClassStateHashSet4.klass, "dump_binary", VALUEFUNC(_wrap_StateHashSet4_dump_binary), -1);
+  rb_define_method(SwigClassStateHashSet4.klass, "dump_hex", VALUEFUNC(_wrap_StateHashSet4_dump_hex), -1);
   rb_define_method(SwigClassStateHashSet4.klass, "to_a", VALUEFUNC(_wrap_StateHashSet4_to_a), -1);
   SwigClassStateHashSet4.mark = 0;
   SwigClassStateHashSet4.destroy = (void (*)(void *)) free_twenty48_state_hash_set_t_Sl_4_Sg_;
