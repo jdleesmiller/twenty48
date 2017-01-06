@@ -29,10 +29,10 @@ module Twenty48
       size.to_f / max_size
     end
 
-    def load_xxd(xxd_pathname)
+    def load_hex(hex_pathname)
       Dir.mktmpdir do |tmp|
         bin_pathname = File.join(tmp, 'input.bin')
-        XxdStates.revert_xxd(xxd_pathname, bin_pathname, remove: false)
+        Twenty48.convert_hex_layer_to_bin(hex_pathname, bin_pathname)
         load_binary(bin_pathname)
       end
     end

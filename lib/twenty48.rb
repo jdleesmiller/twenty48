@@ -18,7 +18,6 @@ require_relative 'twenty48/unknown_zeros_resolver'
 require_relative 'twenty48/state'
 require_relative 'twenty48/state_hash_set'
 require_relative 'twenty48/storage'
-require_relative 'twenty48/xxd_states'
 
 # Load native extension.
 require_relative 'twenty48/twenty48'

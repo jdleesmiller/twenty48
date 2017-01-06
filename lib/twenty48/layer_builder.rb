@@ -10,19 +10,17 @@ module Twenty48
   # The general flow is
   # ```
   # [layer_folder]/[sum].bin
-  # -> tmp/[sum + 2]-1-[offset]-offset.bin.xxd
-  #   -> tmp/[sum + 2].xxd
-  #   -> (merge with [layer_folder]/[sum + 2].bin.xxd if it exists)
+  # -> tmp/[sum + 2]-1-[offset]-offset.hex
+  #   -> tmp/[sum + 2].hex
+  #   -> (merge with [layer_folder]/[sum + 2].hex if it exists)
   #   -> [layer_folder]/[sum + 2].bin
-  # -> tmp/[sum + 4]-2-[offset]-offset.bin
-  #   -> tmp/[sum + 4].xxd
-  #   -> (merge with [layer_folder]/[sum + 4].bin.xxd if it exists)
-  #   -> [layer_folder]/[sum + 4].bin.xxd
+  # -> tmp/[sum + 4]-2-[offset]-offset.hex
+  #   -> tmp/[sum + 4].hex
+  #   -> (merge with [layer_folder]/[sum + 4].hex if it exists)
+  #   -> [layer_folder]/[sum + 4].hex
   # ```
   #
   class LayerBuilder
-    include XxdStates
-
     def initialize(board_size, layer_folder, valuer)
       @layer_folder = layer_folder
       @builder = NativeLayerBuilder.create(board_size, valuer)
@@ -30,6 +28,8 @@ module Twenty48
 
     attr_reader :layer_folder
     attr_reader :builder
+
+    STATE_SIZE = 8
 
     def board_size
       builder.board_size
@@ -68,17 +68,17 @@ module Twenty48
     end
 
     def partial_layer_basename(layer_sum)
-      "#{layer_basename(layer_sum)}.xxd"
+      format('%04d.hex', layer_sum)
     end
 
-    def partial_layer_pathname(folder, layer_sum)
+    def partial_layer_pathname(layer_sum, folder: layer_folder)
       File.join(folder, partial_layer_basename(layer_sum))
     end
 
     #
     # Build the first 3 layers, which have sums 4, 6, and 8. The layer with sum
     # 4 is complete, so we just leave it in .bin form. The later layers we keep
-    # in xxd form for merging with the successors of the layer with sum 4.
+    # in hex form for merging with the successors of the layer with sum 4.
     #
     def build_start_state_layers
       max_states = 1024
@@ -91,10 +91,10 @@ module Twenty48
           layer_states.insert(state) if state.sum == layer_sum
         end
 
-        layer_states.dump_binary(layer_pathname(layer_sum))
-        if layer_sum > 4
-          xxd(layer_pathname(layer_sum),
-            partial_layer_pathname(layer_folder, layer_sum))
+        if layer_sum == 4
+          layer_states.dump_binary(layer_pathname(layer_sum))
+        else
+          layer_states.dump_hex(partial_layer_pathname(layer_sum))
         end
 
         layer_sum += 2
@@ -112,13 +112,14 @@ module Twenty48
         layer_sum += 2
 
         bin_pathname = layer_pathname(layer_sum)
-        xxd_pathname = partial_layer_pathname(layer_folder, layer_sum)
-        if File.exist?(bin_pathname) || File.exist?(xxd_pathname)
+        hex_pathname = partial_layer_pathname(layer_sum)
+        if File.exist?(bin_pathname) || File.exist?(hex_pathname)
           unless File.exist?(bin_pathname)
             # If there is no complete layer, but there is a partial, that means
             # that there were no successors from the previous layer, so the
             # partial layer actually has all of its states; complete it.
-            revert_xxd(xxd_pathname, bin_pathname)
+            Twenty48.convert_hex_layer_to_bin(hex_pathname, bin_pathname)
+            FileUtils.rm hex_pathname
           end
 
           skips = 0
@@ -152,10 +153,7 @@ module Twenty48
             max_successor_states
           )
           batch.build
-          if File.exist?(batch.bin_output_pathname)
-            xxd(batch.bin_output_pathname, batch.xxd_output_pathname)
-          end
-          [step, batch.xxd_output_pathname]
+          [step, batch.output_pathname]
         end
         reduce work_folder, layer_sum, batches
       end
@@ -208,15 +206,11 @@ module Twenty48
       end
 
       def basename
-        format('%04d-step-%d-offset-%012d.bin', output_layer_sum, step, offset)
+        format('%04d-step-%d-offset-%012d.hex', output_layer_sum, step, offset)
       end
 
-      def bin_output_pathname
+      def output_pathname
         File.join(work_folder, basename)
-      end
-
-      def xxd_output_pathname
-        "#{bin_output_pathname}.xxd"
       end
 
       def build
@@ -233,7 +227,7 @@ module Twenty48
         )
 
         return if output_layer_hash.empty?
-        output_layer_hash.dump_binary(bin_output_pathname)
+        output_layer_hash.dump_hex(output_pathname)
       end
     end
 
@@ -243,9 +237,9 @@ module Twenty48
       [1, 2].each do |step|
         input_pathnames = batch_pathnames_for_step(batches, step)
         output_sum = input_layer_sum + 2 * step
-        work_xxd = partial_layer_pathname(work_folder, output_sum)
-        sort_and_merge(input_pathnames, work_xxd)
-        merge_results(step, output_sum, work_folder, work_xxd)
+        work_hex = partial_layer_pathname(output_sum, folder: work_folder)
+        sort_and_merge(input_pathnames, work_hex)
+        merge_results(step, output_sum, work_folder, work_hex)
       end
     end
 
@@ -253,16 +247,6 @@ module Twenty48
       batches.map do |batch_step, pathname|
         pathname if batch_step == step
       end.compact
-    end
-
-    #
-    # If the bytes are stored little-endian, the order of the bytes is reversed,
-    # but the order of the nybbles within each byte is correct.
-    #
-    def sort_keys
-      (1..8).to_a.reverse.map do |c|
-        "-k1.#{2 * c - 1},1.#{2 * c}"
-      end
     end
 
     #
@@ -276,53 +260,50 @@ module Twenty48
     def sort_and_merge(input_pathnames, output_pathname)
       input_pathnames.select! { |pathname| File.exist?(pathname) }
       return if input_pathnames.empty?
-      cmd = %w(sort --unique) + sort_keys + sort_parallel +
-        ['--output', output_pathname] + input_pathnames
+      cmd = %w(sort --unique) + sort_parallel + ['--output', output_pathname] +
+        input_pathnames
       system(*cmd)
       raise 'sort failed' unless $CHILD_STATUS.exitstatus == 0
     end
 
-    def merge_results(step, output_sum, work_folder, work_xxd)
-      return unless File.exist?(work_xxd)
-      partial_xxd = partial_layer_pathname(layer_folder, output_sum)
-      case step
-      when 1 then
-        output_pathname = layer_pathname(output_sum)
-        if File.exist?(partial_xxd)
-          merge_partials_and_revert_xxd(work_xxd, partial_xxd, output_pathname)
-          FileUtils.rm partial_xxd
+    def merge_results(step, output_sum, work_folder, work_hex)
+      #p ['merge_results', step, output_sum, work_hex]
+      return unless File.exist?(work_hex)
+      output_pathname = layer_pathname(output_sum)
+      partial_pathname = partial_layer_pathname(output_sum)
+
+      if File.exist?(partial_pathname)
+        #p ['merge_results: exists', partial_pathname, File.read(work_hex), File.read(partial_pathname)]
+        temp_pathname = File.join(work_folder, 'new_partial.hex')
+        merge_partials(work_hex, partial_pathname, temp_pathname)
+        #p ['merge_partial:', File.read(temp_pathname)]
+
+        case step
+        when 1 then
+          FileUtils.rm partial_pathname
+          Twenty48.convert_hex_layer_to_bin(temp_pathname, output_pathname)
+        when 2 then
+          FileUtils.mv temp_pathname, partial_pathname
         else
-          revert_xxd(work_xxd, output_pathname)
-        end
-      when 2 then
-        if File.exist?(partial_xxd)
-          temp_xxd = File.join(work_folder, 'new_partial.xxd')
-          merge_partials(work_xxd, partial_xxd, temp_xxd)
-          FileUtils.mv temp_xxd, partial_xxd
-        else
-          FileUtils.mv work_xxd, partial_xxd
+          raise "bad step: #{step}"
         end
       else
-        raise "bad step: #{step}"
+        case step
+        when 1 then
+          Twenty48.convert_hex_layer_to_bin(work_hex, output_pathname)
+        when 2 then
+          FileUtils.mv work_hex, partial_pathname
+        else
+          raise "bad step: #{step}"
+        end
       end
     end
 
     def merge_partials(input_pathname_0, input_pathname_1, output_pathname)
-      cmd = %w(sort --unique) + sort_keys + sort_parallel +
+      cmd = %w(sort --unique --merge) + sort_parallel +
         ['--output', output_pathname, input_pathname_0, input_pathname_1]
       system(*cmd)
       raise 'merge failed' unless $CHILD_STATUS.exitstatus == 0
-    end
-
-    def merge_partials_and_revert_xxd(input_pathname_0, input_pathname_1,
-      output_pathname)
-      system <<-CMD
-      sort --unique #{sort_keys.join(' ')} #{sort_parallel.join(' ')} \
-        #{input_pathname_0} #{input_pathname_1} \
-      | xxd -cols #{STATE_SIZE} -plain -revert \
-      > #{output_pathname}
-      CMD
-      raise 'merge and revert failed' unless $CHILD_STATUS.exitstatus == 0
     end
   end
 end
