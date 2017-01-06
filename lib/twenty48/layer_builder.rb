@@ -111,29 +111,21 @@ module Twenty48
       while skips < 2
         layer_sum += 2
 
-        bin_pathname = layer_pathname(layer_sum)
-        hex_pathname = partial_layer_pathname(layer_sum)
-        if File.exist?(bin_pathname) || File.exist?(hex_pathname)
-          unless File.exist?(bin_pathname)
-            # If there is no complete layer, but there is a partial, that means
-            # that there were no successors from the previous layer, so the
-            # partial layer actually has all of its states; complete it.
-            Twenty48.convert_hex_layer_to_bin(hex_pathname, bin_pathname)
-            FileUtils.rm hex_pathname
-          end
-
+        num_states = build_layer(layer_sum, batch_size, max_successor_states,
+          &block)
+        if num_states > 0
           skips = 0
-          build_layer(layer_sum, batch_size, max_successor_states, &block)
         else
           skips += 1
         end
       end
+      remove_empty_layers(layer_sum + 4)
       layer_sum - skips * 2
     end
 
     def build_layer(layer_sum, batch_size, max_successor_states)
       input_layer_pathname = layer_pathname(layer_sum)
-      num_input_states = File.stat(input_layer_pathname).size / STATE_SIZE
+      num_input_states = file_size(input_layer_pathname) / STATE_SIZE
       num_batches, batch_size = find_num_batches(num_input_states, batch_size)
 
       yield input_layer_pathname, num_input_states if block_given?
@@ -157,6 +149,7 @@ module Twenty48
         end
         reduce work_folder, layer_sum, batches
       end
+      num_input_states
     end
 
     def layer_sums
@@ -214,7 +207,6 @@ module Twenty48
       end
 
       def build
-        # p ['build', input_layer_pathname, step, offset, batch_size]
         output_layer_hash =
           NativeStateHashSet.create(builder.board_size, max_successor_states)
 
@@ -226,7 +218,6 @@ module Twenty48
           batch_size
         )
 
-        return if output_layer_hash.empty?
         output_layer_hash.dump_hex(output_pathname)
       end
     end
@@ -258,7 +249,6 @@ module Twenty48
     end
 
     def sort_and_merge(input_pathnames, output_pathname)
-      input_pathnames.select! { |pathname| File.exist?(pathname) }
       return if input_pathnames.empty?
       cmd = %w(sort --unique) + sort_parallel + ['--output', output_pathname] +
         input_pathnames
@@ -267,35 +257,21 @@ module Twenty48
     end
 
     def merge_results(step, output_sum, work_folder, work_hex)
-      #p ['merge_results', step, output_sum, work_hex]
-      return unless File.exist?(work_hex)
       output_pathname = layer_pathname(output_sum)
       partial_pathname = partial_layer_pathname(output_sum)
+      FileUtils.touch partial_pathname
 
-      if File.exist?(partial_pathname)
-        #p ['merge_results: exists', partial_pathname, File.read(work_hex), File.read(partial_pathname)]
-        temp_pathname = File.join(work_folder, 'new_partial.hex')
-        merge_partials(work_hex, partial_pathname, temp_pathname)
-        #p ['merge_partial:', File.read(temp_pathname)]
+      temp_pathname = File.join(work_folder, 'new_partial.hex')
+      merge_partials(work_hex, partial_pathname, temp_pathname)
 
-        case step
-        when 1 then
-          FileUtils.rm partial_pathname
-          Twenty48.convert_hex_layer_to_bin(temp_pathname, output_pathname)
-        when 2 then
-          FileUtils.mv temp_pathname, partial_pathname
-        else
-          raise "bad step: #{step}"
-        end
+      case step
+      when 1 then
+        FileUtils.rm partial_pathname
+        Twenty48.convert_hex_layer_to_bin(temp_pathname, output_pathname)
+      when 2 then
+        FileUtils.mv temp_pathname, partial_pathname
       else
-        case step
-        when 1 then
-          Twenty48.convert_hex_layer_to_bin(work_hex, output_pathname)
-        when 2 then
-          FileUtils.mv work_hex, partial_pathname
-        else
-          raise "bad step: #{step}"
-        end
+        raise "bad step: #{step}"
       end
     end
 
@@ -304,6 +280,27 @@ module Twenty48
         ['--output', output_pathname, input_pathname_0, input_pathname_1]
       system(*cmd)
       raise 'merge failed' unless $CHILD_STATUS.exitstatus == 0
+    end
+
+    def file_size(pathname)
+      File.stat(pathname).size
+    end
+
+    def remove_if_empty(pathname)
+      FileUtils.rm pathname if file_size(pathname) == 0
+    rescue Errno::ENOENT # rubocop:disable Lint/HandleExceptions
+      # We were going to remove it anyway.
+    end
+
+    def remove_empty_layers(max_layer_sum)
+      # The build process can leave some empty .bin and .hex files, and it's
+      # easiest to just clean them up at the end.
+      layer_sum = 4
+      while layer_sum <= max_layer_sum
+        remove_if_empty(layer_pathname(layer_sum))
+        layer_sum += 2
+      end
+      remove_if_empty(partial_layer_pathname(max_layer_sum))
     end
   end
 end
