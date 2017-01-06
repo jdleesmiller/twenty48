@@ -11,10 +11,11 @@ class NativeLayerBuilderTest < Twenty48NativeTest
 
   def test_build_start_state_layers_2x2
     Dir.mktmpdir do |tmp|
+      max_states = 1024
       valuer = NativeValuer.create(
         board_size: 2, max_exponent: 8, max_depth: 0, discount: DISCOUNT
       )
-      layer_builder = LayerBuilder.new(2, tmp, valuer)
+      layer_builder = LayerBuilder.new(2, tmp, max_states, valuer)
       layer_builder.build_start_state_layers
 
       assert_equal 3, Dir.glob(File.join(tmp, '*')).size
@@ -43,20 +44,20 @@ class NativeLayerBuilderTest < Twenty48NativeTest
 
   def test_build_layer
     Dir.mktmpdir do |tmp|
+      batch_size = 2
+      max_states = 1024
+
       valuer = NativeValuer.create(
         board_size: 2, max_exponent: 8, max_depth: 0, discount: DISCOUNT
       )
-      layer_builder = LayerBuilder.new(2, tmp, valuer)
+      layer_builder = LayerBuilder.new(2, tmp, max_states, valuer)
       layer_builder.build_start_state_layers
-
-      batch_size = 2
-      max_states = 1024
 
       set = StateHashSet2.new(max_states)
       set.load_hex(layer_builder.partial_layer_pathname(6, folder: tmp))
       original_6_states = set.to_a
 
-      layer_builder.build_layer(4, batch_size, max_states)
+      layer_builder.build_layer(4, batch_size)
 
       set = StateHashSet2.new(max_states)
       set.load_binary(File.join(tmp, '0006.bin'))
@@ -71,7 +72,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       files.map! { |pathname| File.basename(pathname) }
       assert_equal %w(0004.bin 0006.bin 0008.hex), files.sort
 
-      layer_builder.build_layer(6, batch_size, max_states)
+      layer_builder.build_layer(6, batch_size)
 
       files = Dir.glob(File.join(tmp, '*'))
       files.map! { |pathname| File.basename(pathname) }
@@ -91,9 +92,9 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       valuer = NativeValuer.create(
         board_size: 2, max_exponent: 7, max_depth: 0, discount: DISCOUNT
       )
-      layer_builder = LayerBuilder.new(2, states_path, valuer)
+      layer_builder = LayerBuilder.new(2, states_path, max_states, valuer)
       layer_builder.build_start_state_layers
-      max_sum = layer_builder.build(batch_size, max_states)
+      max_sum = layer_builder.build(batch_size)
 
       states_by_layer = layer_builder.states_by_layer(max_states)
       assert_equal 24, states_by_layer.size

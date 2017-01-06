@@ -19,6 +19,7 @@ def build(board_size:, max_exponent:, max_depth:, max_states:)
     max_exponent: max_exponent,
     max_depth: max_depth
   )
+  puts states_path
   if Dir.exist?(states_path)
     puts 'exists; skipping'
     return
@@ -33,11 +34,10 @@ def build(board_size:, max_exponent:, max_depth:, max_states:)
     max_depth: max_depth,
     discount: discount
   )
-  layer_builder = LayerBuilder.new(board_size, states_path, valuer)
+  layer_builder = LayerBuilder.new(board_size, states_path, max_states, valuer,
+    verbose: true)
   layer_builder.build_start_state_layers
-  layer_builder.build(batch_size, max_states) do |layer_pathname, num_states|
-    puts format('%s: %d states', layer_pathname, num_states)
-  end
+  layer_builder.build batch_size
 end
 
 #
