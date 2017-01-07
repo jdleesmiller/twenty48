@@ -86,20 +86,20 @@ module Twenty48
     # in hex form for merging with the successors of the layer with sum 4.
     #
     def build_start_state_layers
-      max_states = 1024
       start_states = Twenty48.generate_start_states(board_size: board_size)
 
       layer_sum = 4
       while layer_sum <= 8
-        layer_states = NativeStateHashSet.create(board_size, max_states)
-        start_states.each do |state|
-          layer_states.insert(state) if state.sum == layer_sum
-        end
+        layer_start_states = start_states.select do |state|
+          state.sum == layer_sum
+        end.sort
 
         if layer_sum == 4
-          layer_states.dump_binary(layer_pathname(layer_sum))
+          Twenty48.write_states_bin(layer_start_states,
+            layer_pathname(layer_sum))
         else
-          layer_states.dump_hex(partial_layer_pathname(layer_sum))
+          Twenty48.write_states_hex(layer_start_states,
+            partial_layer_pathname(layer_sum))
         end
 
         layer_sum += 2
@@ -340,7 +340,8 @@ module Twenty48
       log format(
         'reduce %d (step %d): %.1fMiB (%.1fMiB max; %.3f max fill factor)',
         input_layer_sum, step,
-        total_size.to_f / 1024**2, max_size.to_f / 1024**2, max_fill_factor)
+        total_size.to_f / 1024**2, max_size.to_f / 1024**2, max_fill_factor
+      )
     end
   end
 end

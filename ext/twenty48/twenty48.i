@@ -131,6 +131,14 @@
 
 %include "layer_storage.hpp"
 
+%template(write_states_bin_2) twenty48::write_states_bin<2>;
+%template(write_states_bin_3) twenty48::write_states_bin<3>;
+%template(write_states_bin_4) twenty48::write_states_bin<4>;
+
+%template(write_states_hex_2) twenty48::write_states_hex<2>;
+%template(write_states_hex_3) twenty48::write_states_hex<3>;
+%template(write_states_hex_4) twenty48::write_states_hex<4>;
+
 /******************************************************************************/
 /* LayerSolver */
 /******************************************************************************/

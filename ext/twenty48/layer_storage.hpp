@@ -5,8 +5,10 @@
 #include <sstream>
 #include <string>
 #include <sys/stat.h>
+#include <vector>
 
 #include "twenty48.hpp"
+#include "state.hpp"
 
 namespace twenty48 {
   std::string make_layer_pathname(const std::string &data_path, int sum) {
@@ -65,6 +67,35 @@ namespace twenty48 {
     }
 
     is.close();
+    os.close();
+  }
+
+  /**
+   * Write states in order in binary format.
+   */
+  template <int size>
+  void write_states_bin(const std::vector<state_t<size> > &states,
+    const char *pathname) {
+    std::ofstream os(pathname, std::ios::out | std::ios::binary);
+    for (typename std::vector<state_t<size> >::const_iterator it =
+      states.begin(); it != states.end(); ++it) {
+      it->write_bin(os);
+    }
+    os.close();
+  }
+
+  /**
+   * Write states in order in hex format.
+   */
+  template <int size>
+  void write_states_hex(const std::vector<state_t<size> > &states,
+    const char *pathname) {
+    std::ofstream os(pathname);
+    os << std::hex << std::setfill('0');
+    for (typename std::vector<state_t<size> >::const_iterator it =
+      states.begin(); it != states.end(); ++it) {
+      os << std::setw(16) << it->get_nybbles() << std::endl;
+    }
     os.close();
   }
 

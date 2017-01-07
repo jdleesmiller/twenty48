@@ -86,6 +86,40 @@ module Twenty48
   end
 
   #
+  # Write a list of states in binary format.
+  #
+  def self.write_states_bin(states, pathname)
+    if states.empty?
+      File.touch pathname
+      File.truncate pathname
+      return
+    end
+    case states.first.board_size
+    when 2 then write_states_bin_2(states, pathname)
+    when 3 then write_states_bin_3(states, pathname)
+    when 4 then write_states_bin_4(states, pathname)
+    else raise 'write_states_bin: bad board size'
+    end
+  end
+
+  #
+  # Write a list of states in hex format.
+  #
+  def self.write_states_hex(states, pathname)
+    if states.empty?
+      File.touch pathname
+      File.truncate pathname
+      return
+    end
+    case states.first.board_size
+    when 2 then write_states_hex_2(states, pathname)
+    when 3 then write_states_hex_3(states, pathname)
+    when 4 then write_states_hex_4(states, pathname)
+    else raise 'write_states_hex: bad board size'
+    end
+  end
+
+  #
   # Common methods for the native Resolver class.
   #
   module NativeResolver
