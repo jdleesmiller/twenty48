@@ -32,12 +32,12 @@ class NativeLayerBuilderTest < Twenty48NativeTest
          1, 1],
         [0, 1,
          1, 0]
-      ], set.to_a.sort
+      ], set.to_a
 
       # The two unique states are:
       # 0 0  and  0 2
       # 2 4       4 0
-      lines = File.readlines(File.join(tmp, '0006.hex')).sort.map(&:chomp)
+      lines = File.readlines(File.join(tmp, '0006.hex')).map(&:chomp)
       assert_equal %w(0000000000000012 0000000000000120), lines
     end
   end

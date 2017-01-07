@@ -8,7 +8,7 @@ require_relative '../lib/twenty48'
 include Twenty48
 
 TOTAL_MEMORY = 8 * 1024**3
-WORKING_MEMORY = (0.9 * TOTAL_MEMORY).ceil
+WORKING_MEMORY = (0.8 * TOTAL_MEMORY).ceil
 
 def build(board_size:, max_exponent:, max_depth:, max_states:)
   # Note: exact discount value doesn't matter for build step.
@@ -58,7 +58,7 @@ end
 # 3x3
 #
 (3..10).each do |max_exponent|
-  (0..[2, max_exponent - 1].min).each do |max_depth|
+  (0..[1, max_exponent - 1].min).each do |max_depth|
     build(
       board_size: 3,
       max_exponent: max_exponent,
