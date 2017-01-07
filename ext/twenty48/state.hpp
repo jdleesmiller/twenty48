@@ -108,15 +108,79 @@ template <int size> struct state_t {
   }
 
   state_t<size> reflect_horizontally() const {
-    return transform(transform_reflect_horizontally);
+    nybbles_t c1, c2, c3, c4;
+    switch(size) {
+      case 2:
+        c1 = nybbles & 0x000000000000F0F0ULL;
+        c2 = nybbles & 0x0000000000000F0FULL;
+        return state_t<size>((c1 >> 4) | (c2 << 4));
+      case 3:
+        c1 = nybbles & 0x0000000F00F00F00ULL;
+        c2 = nybbles & 0x00000000F00F00F0ULL; // stays
+        c3 = nybbles & 0x000000000F00F00FULL;
+        return state_t<size>((c1 >> 8) | c2 | (c3 << 8));
+      case 4:
+        c1 = nybbles & 0xF000F000F000F000ULL;
+        c2 = nybbles & 0x0F000F000F000F00ULL;
+        c3 = nybbles & 0x00F000F000F000F0ULL;
+        c4 = nybbles & 0x000F000F000F000FULL;
+        return state_t<size>((c1 >> 12) | (c2 >> 4) | (c3 << 4) | (c4 << 12));
+      default:
+        throw std::invalid_argument("reflect_horizontally: bad size");
+    }
   }
 
   state_t<size> reflect_vertically() const {
-    return transform(transform_reflect_vertically);
+    nybbles_t r1, r2, r3, r4;
+    switch(size) {
+      case 2:
+        r1 = nybbles & 0x000000000000FF00ULL;
+        r2 = nybbles & 0x00000000000000FFULL;
+        return state_t<size>((r1 >> 8) | (r2 << 8));
+      case 3:
+        r1 = nybbles & 0x0000000FFF000000ULL;
+        r2 = nybbles & 0x0000000000FFF000ULL; // stays
+        r3 = nybbles & 0x0000000000000FFFULL;
+        return state_t<size>((r1 >> 24) | r2 | (r3 << 24));
+      case 4:
+        r1 = nybbles & 0xFFFF000000000000ULL;
+        r2 = nybbles & 0x0000FFFF00000000ULL;
+        r3 = nybbles & 0x00000000FFFF0000ULL;
+        r4 = nybbles & 0x000000000000FFFFULL;
+        return state_t<size>((r1 >> 48) | (r2 >> 16) | (r3 << 16) | (r4 << 48));
+      default:
+        throw std::invalid_argument("reflect_vertically: bad size");
+    }
   }
 
   state_t<size> transpose() const {
-    return transform(transform_transpose);
+    nybbles_t a1, a2, a3, b1, b2, b3, a;
+    switch(size) {
+      case 2:
+        a1 = nybbles & 0x000000000000F00FULL; // diagonal
+        a2 = nybbles & 0x0000000000000F00ULL; // move 1 right
+        a3 = nybbles & 0x00000000000000F0ULL; // move 1 left
+        return state_t<size>(a1 | (a2 >> 4) | (a3 << 4));
+      case 3:
+        a1 = nybbles & 0x0000000F000F000FULL; // diagonal
+        a2 = nybbles & 0x00000000F000F000ULL; // move 2 right
+        a3 = nybbles & 0x000000000F000000ULL; // move 4 right
+        b1 = nybbles & 0x0000000000F000F0ULL; // move 2 left
+        b2 = nybbles & 0x0000000000000F00ULL; // move 4 left
+        return state_t<size>(
+          a1 | (a2 >> 8) | (a3 >> 16) | (b1 << 8) | (b2 << 16));
+      case 4:
+        a1 = nybbles & 0xF0F00F0FF0F00F0FULL; // diagonal
+        a2 = nybbles & 0x0000F0F00000F0F0ULL; // move 3 left
+        a3 = nybbles & 0x0F0F00000F0F0000ULL; // move 3 right
+        a = a1 | (a2 << 12) | (a3 >> 12);
+        b1 = a & 0xFF00FF0000FF00FFULL;
+        b2 = a & 0x00FF00FF00000000ULL;
+        b3 = a & 0x00000000FF00FF00ULL;
+        return state_t<size>(b1 | (b2 >> 24) | (b3 << 24));
+      default:
+        throw std::invalid_argument("transpose: bad size");
+    }
   }
 
   state_t<size> canonicalize() const {
@@ -215,49 +279,6 @@ private:
 
   state_t new_state_with_tile(size_t i, uint8_t value) const {
     return state_t(set_nybble(nybbles, i, value));
-  }
-
-  //
-  // Transformer is a function from an (x, y) coordinate to the index of the
-  // cell whose value we want to put into cell (x, y) in the result.
-  //
-  template <typename Transformer> state_t<size> transform(Transformer t) const {
-    nybbles_t new_nybbles = 0;
-    for (size_t i = 0; i < size * size; ++i) {
-      size_t x = i % size;
-      size_t y = i / size;
-      uint8_t value = (*this)[t(x, y)];
-      new_nybbles = set_nybble(new_nybbles, i, value);
-    }
-    return state_t<size>(new_nybbles);
-  }
-
-  //
-  // Reflections
-  //
-  // i = n * y + x
-  // x = i % n
-  // y = i / n
-  //
-  // x' = n - x - 1, y' = y =>
-  //   i' = n*y + n - 1 - x = n*(y + 1) - (x + 1)
-  //
-  static size_t transform_reflect_horizontally(size_t x, size_t y) {
-    return size * (y + 1) - (x + 1);
-  }
-
-  //
-  // y' = n - y - 1, x' = x => i' = n*(n - y - 1) + x
-  //
-  static size_t transform_reflect_vertically(size_t x, size_t y) {
-    return size * (size - y - 1) + x;
-  }
-
-  //
-  // x' = y, y' = x => i' = n*x + y
-  //
-  static size_t transform_transpose(size_t x, size_t y) {
-    return size * x + y;
   }
 
   template <typename Predicate> bool any_row(Predicate predicate) const {
