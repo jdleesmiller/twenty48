@@ -110,18 +110,17 @@ module Twenty48
     # Starting with the output from `build_start_state_layers`, build each
     # subsequent layer.
     #
-    def build(batch_size)
+    def build(batch_size, start_layer_sum: 4)
       skips = 0
-      layer_sum = 2
+      layer_sum = start_layer_sum
       while skips < 2
-        layer_sum += 2
-
         num_states = build_layer(layer_sum, batch_size)
         if num_states > 0
           skips = 0
         else
           skips += 1
         end
+        layer_sum += 2
       end
       remove_empty_layers(layer_sum + 4)
       layer_sum - skips * 2
@@ -131,12 +130,17 @@ module Twenty48
       input_layer_pathname = layer_pathname(layer_sum)
       num_input_states = file_size(input_layer_pathname) / STATE_BINARY_SIZE
       num_batches, batch_size = find_num_batches(num_input_states, batch_size)
+      batch_max_successors = [max_successor_states, 10 * batch_size].min
 
-      log_build_layer(layer_sum, num_input_states, num_batches, batch_size)
+      log_build_layer(
+        layer_sum, num_input_states, num_batches, batch_size,
+        batch_max_successors
+      )
 
       jobs = (0..num_batches).to_a.product((1..2).to_a)
 
       Dir.mktmpdir do |work_folder|
+        GC.start
         batches = Parallel.map(jobs) do |batch_index, step|
           batch = Batch.new(
             builder,
@@ -146,9 +150,11 @@ module Twenty48
             batch_index,
             step,
             batch_size,
-            max_successor_states
+            batch_max_successors,
+            @verbose
           )
           batch.build
+          GC.start
           [step, batch.output_pathname]
         end
         reduce work_folder, layer_sum, batches
@@ -192,7 +198,8 @@ module Twenty48
       :batch_index,
       :step,
       :batch_size,
-      :max_successor_states
+      :max_successor_states,
+      :verbose
     ) do
       def output_layer_sum
         input_layer_sum + 2 * step
@@ -223,10 +230,13 @@ module Twenty48
         )
 
         output_layer_hash.dump_hex(output_pathname)
+        STDOUT.write('.') if verbose
       end
     end
 
     def reduce(work_folder, input_layer_sum, batches)
+      puts if @verbose # put a line break after the dots from the batches
+
       # If we have enough cores, it might make sense to run the sorts for both
       # steps in parallel. TBD.
       [1, 2].each do |step|
@@ -313,9 +323,13 @@ module Twenty48
       puts "#{Time.now}: #{message}"
     end
 
-    def log_build_layer(layer_sum, num_input_states, num_batches, batch_size)
-      log format('build %d: %d states (%d batches of ~%d)',
-        layer_sum, num_input_states, num_batches, batch_size)
+    def log_build_layer(
+      layer_sum, num_input_states, num_batches, batch_size,
+      batch_max_successors
+    )
+      log format('build %d: %d states (%d batches of ~%d); up to %d',
+        layer_sum, num_input_states, num_batches, batch_size,
+        batch_max_successors)
     end
 
     def log_reduce_step(input_layer_sum, step, input_pathnames)
@@ -323,8 +337,10 @@ module Twenty48
       total_size = sizes.inject(&:+)
       max_size = sizes.max
       max_fill_factor = (max_size / STATE_HEX_SIZE.to_f) / max_successor_states
-      log format('reduce %d (step %d): %dB (%dB max; %.3f max fill factor)',
-        input_layer_sum, step, total_size, max_size, max_fill_factor)
+      log format(
+        'reduce %d (step %d): %.1fMiB (%.1fMiB max; %.3f max fill factor)',
+        input_layer_sum, step,
+        total_size.to_f / 1024**2, max_size.to_f / 1024**2, max_fill_factor)
     end
   end
 end
