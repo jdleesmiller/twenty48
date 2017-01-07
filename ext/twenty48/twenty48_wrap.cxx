@@ -16424,62 +16424,6 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_State2_any_at_least(int argc, VALUE *argv, VALUE self) {
-  twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
-  uint8_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned char val2 ;
-  int ecode2 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_2_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 2 > const *","any_at_least", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::state_t< 2 > * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_char(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint8_t","any_at_least", 2, argv[0] ));
-  } 
-  arg2 = static_cast< uint8_t >(val2);
-  result = (bool)((twenty48::state_t< 2 > const *)arg1)->any_at_least(arg2);
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_State2_no_cells_available(int argc, VALUE *argv, VALUE self) {
-  twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_2_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 2 > const *","no_cells_available", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::state_t< 2 > * >(argp1);
-  result = (bool)((twenty48::state_t< 2 > const *)arg1)->no_cells_available();
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
 _wrap_State2_lose(int argc, VALUE *argv, VALUE self) {
   twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
   void *argp1 = 0 ;
@@ -17368,62 +17312,6 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_State3_any_at_least(int argc, VALUE *argv, VALUE self) {
-  twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
-  uint8_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned char val2 ;
-  int ecode2 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_3_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 3 > const *","any_at_least", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::state_t< 3 > * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_char(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint8_t","any_at_least", 2, argv[0] ));
-  } 
-  arg2 = static_cast< uint8_t >(val2);
-  result = (bool)((twenty48::state_t< 3 > const *)arg1)->any_at_least(arg2);
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_State3_no_cells_available(int argc, VALUE *argv, VALUE self) {
-  twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_3_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 3 > const *","no_cells_available", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::state_t< 3 > * >(argp1);
-  result = (bool)((twenty48::state_t< 3 > const *)arg1)->no_cells_available();
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
 _wrap_State3_lose(int argc, VALUE *argv, VALUE self) {
   twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
   void *argp1 = 0 ;
@@ -18305,62 +18193,6 @@ _wrap_State4_get_nybbles(int argc, VALUE *argv, VALUE self) {
   arg1 = reinterpret_cast< twenty48::state_t< 4 > * >(argp1);
   result = (twenty48::state_t< 4 >::nybbles_t)((twenty48::state_t< 4 > const *)arg1)->get_nybbles();
   vresult = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_State4_any_at_least(int argc, VALUE *argv, VALUE self) {
-  twenty48::state_t< 4 > *arg1 = (twenty48::state_t< 4 > *) 0 ;
-  uint8_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned char val2 ;
-  int ecode2 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_4_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 4 > const *","any_at_least", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::state_t< 4 > * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_char(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint8_t","any_at_least", 2, argv[0] ));
-  } 
-  arg2 = static_cast< uint8_t >(val2);
-  result = (bool)((twenty48::state_t< 4 > const *)arg1)->any_at_least(arg2);
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_State4_no_cells_available(int argc, VALUE *argv, VALUE self) {
-  twenty48::state_t< 4 > *arg1 = (twenty48::state_t< 4 > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_4_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 4 > const *","no_cells_available", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::state_t< 4 > * >(argp1);
-  result = (bool)((twenty48::state_t< 4 > const *)arg1)->no_cells_available();
-  vresult = SWIG_From_bool(static_cast< bool >(result));
   return vresult;
 fail:
   return Qnil;
@@ -36574,8 +36406,6 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_alloc_func(SwigClassState2.klass, _wrap_State2_allocate);
   rb_define_method(SwigClassState2.klass, "initialize", VALUEFUNC(_wrap_new_State2), -1);
   rb_define_method(SwigClassState2.klass, "get_nybbles", VALUEFUNC(_wrap_State2_get_nybbles), -1);
-  rb_define_method(SwigClassState2.klass, "any_at_least", VALUEFUNC(_wrap_State2_any_at_least), -1);
-  rb_define_method(SwigClassState2.klass, "no_cells_available", VALUEFUNC(_wrap_State2_no_cells_available), -1);
   rb_define_method(SwigClassState2.klass, "lose", VALUEFUNC(_wrap_State2_lose), -1);
   rb_define_method(SwigClassState2.klass, "max_value", VALUEFUNC(_wrap_State2_max_value), -1);
   rb_define_method(SwigClassState2.klass, "cells_available", VALUEFUNC(_wrap_State2_cells_available), -1);
@@ -36604,8 +36434,6 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_alloc_func(SwigClassState3.klass, _wrap_State3_allocate);
   rb_define_method(SwigClassState3.klass, "initialize", VALUEFUNC(_wrap_new_State3), -1);
   rb_define_method(SwigClassState3.klass, "get_nybbles", VALUEFUNC(_wrap_State3_get_nybbles), -1);
-  rb_define_method(SwigClassState3.klass, "any_at_least", VALUEFUNC(_wrap_State3_any_at_least), -1);
-  rb_define_method(SwigClassState3.klass, "no_cells_available", VALUEFUNC(_wrap_State3_no_cells_available), -1);
   rb_define_method(SwigClassState3.klass, "lose", VALUEFUNC(_wrap_State3_lose), -1);
   rb_define_method(SwigClassState3.klass, "max_value", VALUEFUNC(_wrap_State3_max_value), -1);
   rb_define_method(SwigClassState3.klass, "cells_available", VALUEFUNC(_wrap_State3_cells_available), -1);
@@ -36634,8 +36462,6 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_alloc_func(SwigClassState4.klass, _wrap_State4_allocate);
   rb_define_method(SwigClassState4.klass, "initialize", VALUEFUNC(_wrap_new_State4), -1);
   rb_define_method(SwigClassState4.klass, "get_nybbles", VALUEFUNC(_wrap_State4_get_nybbles), -1);
-  rb_define_method(SwigClassState4.klass, "any_at_least", VALUEFUNC(_wrap_State4_any_at_least), -1);
-  rb_define_method(SwigClassState4.klass, "no_cells_available", VALUEFUNC(_wrap_State4_no_cells_available), -1);
   rb_define_method(SwigClassState4.klass, "lose", VALUEFUNC(_wrap_State4_lose), -1);
   rb_define_method(SwigClassState4.klass, "max_value", VALUEFUNC(_wrap_State4_max_value), -1);
   rb_define_method(SwigClassState4.klass, "cells_available", VALUEFUNC(_wrap_State4_cells_available), -1);

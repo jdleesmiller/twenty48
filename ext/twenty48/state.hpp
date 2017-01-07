@@ -39,20 +39,6 @@ template <int size> struct state_t {
     return nybbles;
   }
 
-  bool any_at_least(uint8_t top) const {
-    for (size_t i = 0; i < size * size; ++i) {
-      if ((*this)[i] >= top) return true;
-    }
-    return false;
-  }
-
-  bool no_cells_available() const {
-    for (size_t i = 0; i < size * size; ++i) {
-      if ((*this)[i] == 0) return false;
-    }
-    return true;
-  }
-
   bool lose() const {
     return
       move(DIRECTION_LEFT) == *this &&
