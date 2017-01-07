@@ -17,6 +17,32 @@ namespace twenty48 {
   }
 
   /**
+   * Read a list of 64bit integers in binary format and write them out
+   * in hexadecimal format.
+   */
+  void convert_bin_layer_to_hex(
+    const char *in_pathname,
+    const char *out_pathname) {
+    std::ifstream is(in_pathname, std::ios::in | std::ios::binary);
+    std::ofstream os(out_pathname);
+
+    os << std::hex << std::setfill('0');
+
+    for (;;) {
+      uint64_t data;
+      is.read(reinterpret_cast<char *>(&data), sizeof(data));
+      if (!is) break;
+      os << std::setw(16) << data << std::endl;
+      if (!os) {
+        throw std::runtime_error("convert_bin_layer_to_hex: write failed");
+      };
+    }
+
+    is.close();
+    os.close();
+  }
+
+  /**
    * Read a list of 64bit integers in hexadecimal format and write them out
    * in binary format.
    */
