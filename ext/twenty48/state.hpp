@@ -16,6 +16,11 @@ namespace twenty48 {
  * There are several places where it would be better (and more consistent with
  * line_t) to use a std::array<uint8_t, size * size> here, but swig (v3.0.10)
  * cannot handle the 'size * size' part, so we just use vectors.
+ *
+ * The bit twiddling techniques used here are largely based on
+ * https://github.com/nneonneo/2048-ai
+ * with some help from
+ * http://graphics.stanford.edu/~seander/bithacks.html
  */
 template <int size> struct state_t {
   typedef uint64_t nybbles_t;
@@ -49,18 +54,25 @@ template <int size> struct state_t {
 
   uint8_t max_value() const {
     uint8_t result = 0;
-    for (size_t i = 0; i < size * size; ++i) {
-      if ((*this)[i] > result) result = (*this)[i];
+    nybbles_t temp = nybbles;
+    while (temp) {
+      uint8_t value = uint8_t(temp & 0xF);
+      if (value > result) result = value;
+      temp >>= 4;
     }
     return result;
   }
 
   size_t cells_available() const {
-    size_t result = 0;
-    for (size_t i = 0; i < size * size; ++i) {
-      if ((*this)[i] == 0) ++result;
-    }
-    return result;
+    nybbles_t v = nybbles;
+    size_t c;
+    // Make each nybble 1 if it was non-zero or 0 if it was zero.
+    v |= (v >> 2) & 0x3333333333333333ULL;
+    v |= (v >> 1);
+    v &= 0x1111111111111111ULL;
+    // Count the number of bits set using the Kernighan method.
+    for (c = 0; v; c++) v &= v - 1;
+    return size * size - c;
   }
 
   uint8_t operator[](size_t i) const {
@@ -69,10 +81,11 @@ template <int size> struct state_t {
 
   int sum() const {
     int result = 0;
-    for (size_t i = 0; i < size * size; ++i) {
-      uint8_t value = (*this)[i];
-      if (value == 0) continue;
-      result += 1 << value;
+    nybbles_t temp = nybbles;
+    while (temp) {
+      uint8_t value = uint8_t(temp & 0xF);
+      if (value != 0) result += 1 << value;
+      temp >>= 4;
     }
     return result;
   }
