@@ -346,13 +346,11 @@ private:
     for (size_t y = 0; y < size; ++y) {
       size_t shift = 4 * size * y;
       uint16_t row_nybbles = (nybbles >> shift) & ROW_MASK;
-      // std::cout << "move_left: " << std::setfill('0') << std::hex << std::setw(size*size) << nybbles << " y=" << std::dec << y << " row=" << std::hex << std::setw(size) << row_nybbles << " mask=" << std::setw(size) << ROW_MASK;
       if (zeros_unknown) {
         row_nybbles = line_t<size>::lookup_move_zeros_unknown(row_nybbles);
       } else {
         row_nybbles = line_t<size>::lookup_move(row_nybbles);
       }
-      // std::cout << " row result=" << std::setw(4) << row_nybbles << std::endl;
       result |= nybbles_t(row_nybbles) << shift;
     }
     return state_t(result);
