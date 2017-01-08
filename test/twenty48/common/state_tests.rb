@@ -323,5 +323,49 @@ module Twenty48
       assert state.adjacent_pair?(1, false)
       assert state.adjacent_pair?(1, true)
     end
+
+    def test_cells_available_3x3
+      assert_equal 9, make_state([
+        0, 0, 0,
+        0, 0, 0,
+        0, 0, 0
+      ]).cells_available
+
+      assert_equal 0, make_state([
+        1, 1, 1,
+        1, 1, 1,
+        1, 1, 1
+      ]).cells_available
+    end
+
+    def test_cells_available_4x4
+      assert_equal 16, make_state([
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0
+      ]).cells_available
+
+      assert_equal 0, make_state([
+        1, 1, 1, 1,
+        1, 1, 1, 1,
+        1, 1, 1, 1,
+        1, 1, 1, 1
+      ]).cells_available
+
+      assert_equal 1, make_state([
+        0, 1, 1, 1,
+        1, 1, 1, 1,
+        1, 1, 1, 1,
+        1, 1, 1, 1
+      ]).cells_available
+
+      assert_equal 1, make_state([
+        1, 1, 1, 1,
+        1, 1, 1, 1,
+        1, 1, 1, 1,
+        1, 1, 1, 0
+      ]).cells_available
+    end
   end
 end

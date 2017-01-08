@@ -19,6 +19,8 @@ namespace twenty48 {
  *
  * The bit twiddling techniques used here are largely based on
  * https://github.com/nneonneo/2048-ai
+ * and
+ * https://github.com/kcwu/2048-c/blob/master/micro_optimize.cc
  * with some help from
  * http://graphics.stanford.edu/~seander/bithacks.html
  */
@@ -65,13 +67,18 @@ template <int size> struct state_t {
 
   size_t cells_available() const {
     nybbles_t v = nybbles;
-    size_t c;
     // Make each nybble 1 if it was non-zero or 0 if it was zero.
-    v |= (v >> 2) & 0x3333333333333333ULL;
+    v |= (v >> 2);
     v |= (v >> 1);
     v &= 0x1111111111111111ULL;
-    // Count the number of bits set using the Kernighan method.
-    for (c = 0; v; c++) v &= v - 1;
+    // Count the number of bits set. The multiplication has the effect of adding
+    // together all of the possible whole-nybble left shifts
+    // (v + (v << 4) + (v << 8) + ... + (v << 60)); this means that the highest-
+    // order nybble is the sum of c nybbles, each with value 1, where c is the
+    // number of nonzero nibbles in v. However, if there are no available cells,
+    // the count will overflow 1 nybble, so we have to trap that case.
+    nybbles_t c = ((v * 0x1111111111111111ULL) >> 60);
+    if (c == 0 && v != 0) return 0;
     return size * size - c;
   }
 
