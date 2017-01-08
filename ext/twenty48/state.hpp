@@ -288,11 +288,6 @@ private:
     return twenty48::set_nybble(data, i, value, size * size);
   }
 
-  static nybbles_t set_grid_nybble(nybbles_t data, size_t x, size_t y,
-    uint8_t value) {
-    return set_nybble(data, y * size + x, value);
-  }
-
   void set_nybble(size_t i, uint8_t value) {
     nybbles = set_nybble(nybbles, i, value);
   }
@@ -346,22 +341,19 @@ private:
   };
 
   state_t move_left(bool zeros_unknown) const {
+    const nybbles_t ROW_MASK = 0xFFFFULL >> (4 * (4 - size));
     nybbles_t result = 0;
     for (size_t y = 0; y < size; ++y) {
-      uint16_t row_nybbles = 0;
-      for (size_t x = 0; x < size; ++x) {
-        uint8_t value = get_grid_nybble(nybbles, x, y);
-        row_nybbles = line_t<size>::set_nybble(row_nybbles, x, value);
-      }
+      size_t shift = 4 * size * y;
+      uint16_t row_nybbles = (nybbles >> shift) & ROW_MASK;
+      // std::cout << "move_left: " << std::setfill('0') << std::hex << std::setw(size*size) << nybbles << " y=" << std::dec << y << " row=" << std::hex << std::setw(size) << row_nybbles << " mask=" << std::setw(size) << ROW_MASK;
       if (zeros_unknown) {
         row_nybbles = line_t<size>::lookup_move_zeros_unknown(row_nybbles);
       } else {
         row_nybbles = line_t<size>::lookup_move(row_nybbles);
       }
-      for (size_t x = 0; x < size; ++x) {
-        uint8_t value = line_t<size>::get_nybble(row_nybbles, x);
-        result = set_grid_nybble(result, x, y, value);
-      }
+      // std::cout << " row result=" << std::setw(4) << row_nybbles << std::endl;
+      result |= nybbles_t(row_nybbles) << shift;
     }
     return state_t(result);
   }
