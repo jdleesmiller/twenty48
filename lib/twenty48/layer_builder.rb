@@ -10,31 +10,30 @@ module Twenty48
   # The general flow is
   # ```
   # [layer_folder]/[sum].bin
-  # -> tmp/[sum + 2]-1-[offset]-offset.hex
-  #   -> tmp/[sum + 2].hex
-  #   -> (merge with [layer_folder]/[sum + 2].hex if it exists)
+  # -> tmp/[sum + 2]-1-[offset]-offset.bin
+  #   -> tmp/[sum + 2].bin
+  #   -> (merge with [layer_folder]/[sum + 2].bin if it exists)
   #   -> [layer_folder]/[sum + 2].bin
-  # -> tmp/[sum + 4]-2-[offset]-offset.hex
-  #   -> tmp/[sum + 4].hex
-  #   -> (merge with [layer_folder]/[sum + 4].hex if it exists)
-  #   -> [layer_folder]/[sum + 4].hex
+  # -> tmp/[sum + 4]-2-[offset]-offset.bin
+  #   -> tmp/[sum + 4].bin
+  #   -> (merge with [layer_folder]/[sum + 4].bin if it exists)
+  #   -> [layer_folder]/[sum + 4].bin
   # ```
   #
   class LayerBuilder
-    def initialize(board_size, layer_folder, max_successor_states, valuer,
+    def initialize(board_size, layer_folder, max_batch_size, valuer,
       verbose: false)
       @layer_folder = layer_folder
-      @max_successor_states = max_successor_states
       @builder = NativeLayerBuilder.create(board_size, valuer)
+      @max_batch_size = max_batch_size
       @verbose = verbose
     end
 
-    attr_reader :max_successor_states
+    attr_reader :max_batch_size
     attr_reader :layer_folder
     attr_reader :builder
 
     STATE_BINARY_SIZE = 8
-    STATE_HEX_SIZE = 17 # 16 plus a line ending
 
     def board_size
       builder.board_size
@@ -50,34 +49,14 @@ module Twenty48
     end
 
     #
-    # How many states can we process in one batch from the input layer without
-    # saturating the output state hash?
-    #
-    # We're going to have to monitor the fill factors to see what a realistic
-    # growth factor is. I wonder whether the growth factor will also be a
-    # function of the number of layers (and possibly the max exponent).
-    #
-    def self.find_states_per_batch(max_successor_states, growth_factor = 10.0)
-      (max_successor_states / growth_factor).ceil
-    end
-
-    #
     # File name for a complete layer with the given sum.
     #
     def layer_basename(layer_sum)
       format('%04d.bin', layer_sum)
     end
 
-    def layer_pathname(layer_sum)
-      File.join(layer_folder, layer_basename(layer_sum))
-    end
-
-    def partial_layer_basename(layer_sum)
-      format('%04d.hex', layer_sum)
-    end
-
-    def partial_layer_pathname(layer_sum, folder: layer_folder)
-      File.join(folder, partial_layer_basename(layer_sum))
+    def layer_pathname(layer_sum, folder: layer_folder)
+      File.join(folder, layer_basename(layer_sum))
     end
 
     #
@@ -93,15 +72,7 @@ module Twenty48
         layer_start_states = start_states.select do |state|
           state.sum == layer_sum
         end.sort
-
-        if layer_sum == 4
-          Twenty48.write_states_bin(layer_start_states,
-            layer_pathname(layer_sum))
-        else
-          Twenty48.write_states_hex(layer_start_states,
-            partial_layer_pathname(layer_sum))
-        end
-
+        Twenty48.write_states_bin(layer_start_states, layer_pathname(layer_sum))
         layer_sum += 2
       end
     end
@@ -110,11 +81,11 @@ module Twenty48
     # Starting with the output from `build_start_state_layers`, build each
     # subsequent layer.
     #
-    def build(batch_size, start_layer_sum: 4)
+    def build(start_layer_sum: 4)
       skips = 0
       layer_sum = start_layer_sum
       while skips < 2
-        num_states = build_layer(layer_sum, batch_size)
+        num_states = build_layer(layer_sum)
         if num_states > 0
           skips = 0
         else
@@ -126,16 +97,12 @@ module Twenty48
       layer_sum - skips * 2
     end
 
-    def build_layer(layer_sum, batch_size)
+    def build_layer(layer_sum)
       input_layer_pathname = layer_pathname(layer_sum)
       num_input_states = file_size(input_layer_pathname) / STATE_BINARY_SIZE
-      num_batches, batch_size = find_num_batches(num_input_states, batch_size)
-      batch_max_successors = [max_successor_states, 10 * batch_size].min
+      num_batches, batch_size = find_num_batches(num_input_states)
 
-      log_build_layer(
-        layer_sum, num_input_states, num_batches, batch_size,
-        batch_max_successors
-      )
+      log_build_layer(layer_sum, num_input_states, num_batches, batch_size)
 
       jobs = (0..num_batches).to_a.product((1..2).to_a)
 
@@ -150,7 +117,6 @@ module Twenty48
             batch_index,
             step,
             batch_size,
-            batch_max_successors,
             @verbose
           )
           batch.build
@@ -179,9 +145,9 @@ module Twenty48
 
     # Find the number of batches needed. If we don't have enough batches to keep
     # all of the CPUs busy, choose smaller batch sizes.
-    def find_num_batches(num_input_states, batch_size)
+    def find_num_batches(num_input_states)
       min_batches = (Parallel.processor_count / 2.0).ceil
-      num_batches = num_input_states / batch_size
+      num_batches = num_input_states / max_batch_size
       if num_batches < min_batches
         num_batches = min_batches
         batch_size = num_input_states / num_batches
@@ -198,7 +164,6 @@ module Twenty48
       :batch_index,
       :step,
       :batch_size,
-      :max_successor_states,
       :verbose
     ) do
       def output_layer_sum
@@ -210,7 +175,7 @@ module Twenty48
       end
 
       def basename
-        format('%04d-step-%d-offset-%012d.hex', output_layer_sum, step, offset)
+        format('%04d-step-%d-offset-%012d.bin', output_layer_sum, step, offset)
       end
 
       def output_pathname
@@ -218,18 +183,13 @@ module Twenty48
       end
 
       def build
-        output_layer_hash =
-          NativeStateHashSet.create(builder.board_size, max_successor_states)
-
         builder.build_layer(
           input_layer_pathname,
-          output_layer_hash,
+          output_pathname,
           step,
           offset,
           batch_size
         )
-
-        output_layer_hash.dump_hex(output_pathname)
         STDOUT.write('.') if verbose
       end
     end
@@ -243,9 +203,9 @@ module Twenty48
         input_pathnames = batch_pathnames_for_step(batches, step)
         log_reduce_step(input_layer_sum, step, input_pathnames)
         output_sum = input_layer_sum + 2 * step
-        work_hex = partial_layer_pathname(output_sum, folder: work_folder)
-        sort_and_merge(input_pathnames, work_hex)
-        merge_results(step, output_sum, work_folder, work_hex)
+        work_layer = layer_pathname(output_sum, folder: work_folder)
+        merge_files(input_pathnames, work_layer)
+        merge_results(output_sum, work_folder, work_layer)
       end
     end
 
@@ -255,46 +215,19 @@ module Twenty48
       end.compact
     end
 
-    #
-    # If sort supports --parallel, use it. The sort on mac doesn't.
-    #
-    def sort_parallel
-      return [] if RUBY_PLATFORM =~ /darwin/
-      ['--parallel', Parallel.processor_count.to_s]
-    end
-
-    def sort_and_merge(input_pathnames, output_pathname)
-      return if input_pathnames.empty?
-      cmd = %w(sort --unique) + sort_parallel + ['--output', output_pathname] +
-        input_pathnames
-      system(*cmd)
-      raise 'sort failed' unless $CHILD_STATUS.exitstatus == 0
-    end
-
-    def merge_results(step, output_sum, work_folder, work_hex)
+    def merge_results(output_sum, work_folder, work_layer)
       output_pathname = layer_pathname(output_sum)
-      partial_pathname = partial_layer_pathname(output_sum)
-      FileUtils.touch partial_pathname
-
-      temp_pathname = File.join(work_folder, 'new_partial.hex')
-      merge_partials(work_hex, partial_pathname, temp_pathname)
-
-      case step
-      when 1 then
-        FileUtils.rm partial_pathname
-        Twenty48.convert_hex_layer_to_bin(temp_pathname, output_pathname)
-      when 2 then
-        FileUtils.mv temp_pathname, partial_pathname
+      if File.exist?(output_pathname)
+        temp_pathname = File.join(work_folder, 'new_layer.bin')
+        merge_files([work_layer, output_pathname], temp_pathname)
+        FileUtils.mv temp_pathname, output_pathname
       else
-        raise "bad step: #{step}"
+        FileUtils.mv work_layer, output_pathname
       end
     end
 
-    def merge_partials(input_pathname_0, input_pathname_1, output_pathname)
-      cmd = %w(sort --unique --merge) + sort_parallel +
-        ['--output', output_pathname, input_pathname_0, input_pathname_1]
-      system(*cmd)
-      raise 'merge failed' unless $CHILD_STATUS.exitstatus == 0
+    def merge_files(input_files, output_file)
+      builder.merge_files(StringVector.new(input_files), output_file)
     end
 
     def file_size(pathname)
@@ -315,7 +248,7 @@ module Twenty48
         remove_if_empty(layer_pathname(layer_sum))
         layer_sum += 2
       end
-      remove_if_empty(partial_layer_pathname(max_layer_sum))
+      remove_if_empty(layer_pathname(max_layer_sum))
     end
 
     def log(message)
@@ -323,24 +256,19 @@ module Twenty48
       puts "#{Time.now}: #{message}"
     end
 
-    def log_build_layer(
-      layer_sum, num_input_states, num_batches, batch_size,
-      batch_max_successors
-    )
-      log format('build %d: %d states (%d batches of ~%d); up to %d',
-        layer_sum, num_input_states, num_batches, batch_size,
-        batch_max_successors)
+    def log_build_layer(layer_sum, num_input_states, num_batches, batch_size)
+      log format('build %d: %d states (%d batches of ~%d)',
+        layer_sum, num_input_states, num_batches, batch_size)
     end
 
     def log_reduce_step(input_layer_sum, step, input_pathnames)
       sizes = input_pathnames.map { |pathname| file_size(pathname) }
       total_size = sizes.inject(&:+)
       max_size = sizes.max
-      max_fill_factor = (max_size / STATE_HEX_SIZE.to_f) / max_successor_states
       log format(
-        'reduce %d (step %d): %.1fMiB (%.1fMiB max; %.3f max fill factor)',
+        'reduce %d (step %d): %.1fMiB (%.1fMiB max)',
         input_layer_sum, step,
-        total_size.to_f / 1024**2, max_size.to_f / 1024**2, max_fill_factor
+        total_size.to_f / 1024**2, max_size.to_f / 1024**2
       )
     end
   end

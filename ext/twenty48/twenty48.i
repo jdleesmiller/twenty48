@@ -104,6 +104,8 @@
 %template(LayerBuilder3) twenty48::layer_builder_t<3>;
 %template(LayerBuilder4) twenty48::layer_builder_t<4>;
 
+%template(StringVector) std::vector<std::string>;
+
 /******************************************************************************/
 /* LayerStorage */
 /******************************************************************************/

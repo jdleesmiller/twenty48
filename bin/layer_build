@@ -26,8 +26,6 @@ def build(board_size:, max_exponent:, max_depth:, max_states:)
   end
   FileUtils.mkdir_p states_path
 
-  batch_size = LayerBuilder.find_states_per_batch(max_states)
-
   valuer = NativeValuer.create(
     board_size: board_size,
     max_exponent: max_exponent,
@@ -37,7 +35,7 @@ def build(board_size:, max_exponent:, max_depth:, max_states:)
   layer_builder = LayerBuilder.new(board_size, states_path, max_states, valuer,
     verbose: true)
   layer_builder.build_start_state_layers
-  layer_builder.build batch_size
+  layer_builder.build
 end
 
 #
@@ -68,10 +66,12 @@ end
   end
 end
 
+# max_max_states = (
+#   0.25 * LayerBuilder.find_max_successor_states(WORKING_MEMORY)).ceil
 # build(
 #   board_size: 4,
 #   max_exponent: 11,
 #   max_lose_depth: 0,
 #   max_win_depth: 0,
-#   max_states: LayerBuilder.find_max_successor_states(WORKING_MEMORY)
+#   max_states: max_max_states
 # )
