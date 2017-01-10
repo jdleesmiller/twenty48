@@ -65,7 +65,7 @@ template <int size> struct state_t {
     return result;
   }
 
-  size_t cells_available() const {
+  int cells_available() const {
     nybbles_t v = nybbles;
     // Make each nybble 1 if it was non-zero or 0 if it was zero.
     v |= (v >> 2);
@@ -79,7 +79,7 @@ template <int size> struct state_t {
     // the count will overflow 1 nybble, so we have to trap that case.
     nybbles_t c = ((v * 0x1111111111111111ULL) >> 60);
     if (c == 0 && v != 0) return 0;
-    return size * size - c;
+    return int(size * size - c);
   }
 
   uint8_t operator[](size_t i) const {

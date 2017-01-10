@@ -67,7 +67,7 @@ namespace twenty48 {
         lose_within_after_move(state, moves, DIRECTION_RIGHT);
     }
 
-    bool lose_within_after_move(const state_t<size> &state, size_t moves,
+    bool lose_within_after_move(const state_t<size> &state, int moves,
       direction_t direction) const {
       // If we cannot move in this direction, we may have lost.
       state_t<size> moved_state = state.move(direction);
