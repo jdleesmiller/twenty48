@@ -120,46 +120,6 @@ module Twenty48
   end
 
   #
-  # Common methods for the native Resolver class.
-  #
-  module NativeResolver
-    def self.create(board_size, max_exponent,
-      max_lose_depth: 0, max_win_depth: 0)
-      win_states = ResolvedWinStateGenerator.new(
-        board_size, max_exponent, max_win_depth
-      ).build_wins.map { |state| NativeState.create(state.to_a) }
-      klass = case board_size
-              when 2 then Resolver2
-              when 3 then Resolver3
-              when 4 then Resolver4
-              else raise "bad resolver board_size: #{board_size}"
-              end
-      klass.new(max_exponent, max_lose_depth, win_states)
-    end
-  end
-
-  #
-  # Native state resolver for 2x2 boards.
-  #
-  class Resolver2
-    alias lose_within? lose_within
-  end
-
-  #
-  # Native state resolver for 3x3 boards.
-  #
-  class Resolver3
-    alias lose_within? lose_within
-  end
-
-  #
-  # Native state resolver for 4x4 boards.
-  #
-  class Resolver4
-    alias lose_within? lose_within
-  end
-
-  #
   # Common methods for the native Valuer class.
   #
   module NativeValuer
@@ -171,21 +131,6 @@ module Twenty48
               else raise "bad valuer board_size: #{board_size}"
               end
       klass.new(max_exponent, max_depth, discount)
-    end
-  end
-
-  #
-  # Common methods for the native Builder class.
-  #
-  module NativeBuilder
-    def self.create(board_size, resolver, max_states: 2**20)
-      klass = case board_size
-              when 2 then Builder2
-              when 3 then Builder3
-              when 4 then Builder4
-              else raise "bad builder board_size: #{board_size}"
-              end
-      klass.new(resolver, max_states)
     end
   end
 

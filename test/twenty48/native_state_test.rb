@@ -2,12 +2,14 @@
 
 require_relative 'helper'
 require_relative 'common/state_tests'
+require_relative 'common/state_adjacent_pair_with_known_tests'
 
 class NativeStateTest < Twenty48NativeTest
   include Twenty48
 
   # This is where the actual tests are defined.
   include CommonStateTests
+  include CommonStateAdjacentPairWithKnownTests
 
   def test_state_sum
     assert_equal 2 + 4 + 8, make_state([0, 1, 2, 3]).sum

@@ -2,10 +2,14 @@
 
 require_relative 'helper'
 require_relative 'common/state_tests'
+require_relative 'common/state_adjacent_pair_with_known_tests'
+require_relative 'common/state_adjacent_pair_with_unknown_tests'
 
 class StateTest < Minitest::Test
   include Twenty48
   include CommonStateTests
+  include CommonStateAdjacentPairWithKnownTests
+  include CommonStateAdjacentPairWithUnknownTests
 
   # For compatibility with native tests.
   def make_state(state_array)

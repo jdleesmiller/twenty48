@@ -110,19 +110,17 @@ template <int size> struct state_t {
    * At present, all of these are implemented in terms of moving left. There
    * may be some efficiency improvements possible.
    */
-  state_t move (twenty48::direction_t direction,
-    bool zeros_unknown = false) const {
+  state_t move (twenty48::direction_t direction) const {
     switch(direction) {
       case DIRECTION_LEFT:
-        return move_left(zeros_unknown);
+        return move_left();
       case DIRECTION_RIGHT:
-        return reflect_horizontally().
-          move(DIRECTION_LEFT, zeros_unknown).
+        return reflect_horizontally().move(DIRECTION_LEFT).
           reflect_horizontally();
       case DIRECTION_UP:
-        return transpose().move(DIRECTION_LEFT, zeros_unknown).transpose();
+        return transpose().move(DIRECTION_LEFT).transpose();
       case DIRECTION_DOWN:
-        return transpose().move(DIRECTION_RIGHT, zeros_unknown).transpose();
+        return transpose().move(DIRECTION_RIGHT).transpose();
     }
     throw std::invalid_argument("bad direction");
   }
@@ -248,11 +246,11 @@ template <int size> struct state_t {
 
   //
   // Does the state contain a pair of cells, both with value `value`, separated
-  // only by zero or more (known) zeros? If so, we can always swipe to get a
-  // `value + 1` tile.
+  // only by zero or more zeros? If so, we can always swipe to get a `value + 1`
+  // tile.
   //
-  bool has_adjacent_pair(uint8_t value, bool zeros_unknown) const {
-    return any_row_or_col(adjacent_pair_t(value, zeros_unknown));
+  bool has_adjacent_pair(uint8_t value) const {
+    return any_row_or_col(adjacent_pair_t(value));
   }
 
   bool operator==(const state_t<size> &other) const {
@@ -329,28 +327,23 @@ private:
   }
 
   struct adjacent_pair_t {
-    adjacent_pair_t(uint8_t value, bool zeros_unknown) :
-      value(value), zeros_unknown(zeros_unknown) { }
+    adjacent_pair_t(uint8_t value) :
+      value(value) { }
 
     bool operator()(const line_t<size> &line) const {
-      return line.has_adjacent_pair(value, zeros_unknown);
+      return line.has_adjacent_pair(value);
     }
   private:
     uint8_t value;
-    bool zeros_unknown;
   };
 
-  state_t move_left(bool zeros_unknown) const {
+  state_t move_left() const {
     const nybbles_t ROW_MASK = 0xFFFFULL >> (4 * (4 - size));
     nybbles_t result = 0;
     for (size_t y = 0; y < size; ++y) {
       size_t shift = 4 * size * y;
       uint16_t row_nybbles = (nybbles >> shift) & ROW_MASK;
-      if (zeros_unknown) {
-        row_nybbles = line_t<size>::lookup_move_zeros_unknown(row_nybbles);
-      } else {
-        row_nybbles = line_t<size>::lookup_move(row_nybbles);
-      }
+      row_nybbles = line_t<size>::lookup_move(row_nybbles);
       result |= nybbles_t(row_nybbles) << shift;
     }
     return state_t(result);

@@ -7,7 +7,7 @@ class NativeLineTest < Twenty48NativeTest
   include Twenty48
 
   # This is where the actual tests are defined; they call #move.
-  include CommonLineTests
+  include CommonLineWithKnownTests
 
   def make_line(array)
     case array.size
@@ -17,12 +17,12 @@ class NativeLineTest < Twenty48NativeTest
     end
   end
 
-  def move(line_array, unknown_zeros = false)
-    make_line(line_array).move(unknown_zeros).to_a
+  def move(line_array)
+    make_line(line_array).move().to_a
   end
 
-  def adjacent_pair?(line_array, value, zeros_unknown = false)
-    make_line(line_array).has_adjacent_pair(value, zeros_unknown)
+  def adjacent_pair?(line_array, value)
+    make_line(line_array).has_adjacent_pair(value)
   end
 
   def test_to_i

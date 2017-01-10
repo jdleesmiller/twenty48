@@ -4,7 +4,6 @@
 #include <sstream>
 #include "line.hpp"
 #include "state.hpp"
-#include "builder.hpp"
 #include "layer_builder.hpp"
 #include "layer_solver.hpp"
 #include "start_states.hpp"
@@ -86,16 +85,6 @@
 %template(TransitionMap4) std::map<twenty48::state_t<4>, double>;
 
 /******************************************************************************/
-/* Resolver */
-/******************************************************************************/
-
-%include "resolver.hpp"
-
-%template(Resolver2) twenty48::resolver_t<2>;
-%template(Resolver3) twenty48::resolver_t<3>;
-%template(Resolver4) twenty48::resolver_t<4>;
-
-/******************************************************************************/
 /* Valuer */
 /******************************************************************************/
 
@@ -104,16 +93,6 @@
 %template(Valuer2) twenty48::valuer_t<2>;
 %template(Valuer3) twenty48::valuer_t<3>;
 %template(Valuer4) twenty48::valuer_t<4>;
-
-/******************************************************************************/
-/* Builder */
-/******************************************************************************/
-
-%include "builder.hpp"
-
-%template(Builder2) twenty48::builder_t<2>;
-%template(Builder3) twenty48::builder_t<3>;
-%template(Builder4) twenty48::builder_t<4>;
 
 /******************************************************************************/
 /* LayerBuilder */

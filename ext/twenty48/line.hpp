@@ -26,22 +26,14 @@ template <int size> class line_t {
     }
   }
 
-  line_t<size> move(bool zeros_unknown = false) {
+  line_t<size> move() {
     array_t line = to_a();
 
     size_t done = 0;
     size_t merged = 0;
-    bool unknown = false;
     for (size_t i = 0; i < size; ++i) {
-      // If zeros are unknown, zero everything once we hit a zero.
-      if (unknown) {
-        line[i] = 0;
-        continue;
-      }
-
       uint8_t value = line[i];
       if (value == 0) {
-        if (zeros_unknown) unknown = true;
         continue;
       }
 
@@ -63,19 +55,15 @@ template <int size> class line_t {
 
   /**
    * Does the line contain a pair of cells, both with value `value`, separated
-   * only by zero or more (known) zeros? If so, we can always swipe along the
-   * line to get the `value + 1` tile.
-   *
-   * @param zeros_unknown treat zero as 'unknown', not 'empty'
+   * only by zero or more zeros? If so, we can always swipe along the line to
+   * get the `value + 1` tile.
    */
-  bool has_adjacent_pair(uint8_t value, bool zeros_unknown = false) const {
+  bool has_adjacent_pair(uint8_t value) const {
     bool found_first = false;
     for (size_t i = 0; i < size; ++i) {
       uint8_t cell_value = (*this)[i];
       if (found_first) {
-        if (!zeros_unknown && cell_value == 0) {
-          continue;
-        }
+        if (cell_value == 0) continue;
         return cell_value == value;
       }
       if (cell_value == value) {
@@ -109,9 +97,9 @@ template <int size> class line_t {
 
     uint16_t table[TABLE_SIZE + 1];
 
-    table_t(bool zeros_unknown = false) {
+    table_t() {
       for (uint32_t nybbles = 0; nybbles <= TABLE_SIZE; ++nybbles) {
-        table[nybbles] = line_t(nybbles).move(zeros_unknown).get_nybbles();
+        table[nybbles] = line_t(nybbles).move().get_nybbles();
       }
     }
   };
@@ -122,14 +110,6 @@ template <int size> class line_t {
    */
   static uint16_t lookup_move(uint16_t nybbles) {
     static table_t table;
-    return table.table[nybbles];
-  };
-
-  /**
-   * Look up the result of moving the given line if zeros are unknown.
-   */
-  static uint16_t lookup_move_zeros_unknown(uint16_t nybbles) {
-    static table_t table(true);
     return table.table[nybbles];
   };
 

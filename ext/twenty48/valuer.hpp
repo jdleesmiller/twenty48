@@ -39,7 +39,7 @@ namespace twenty48 {
 
       // If we're searching one move ahead, see whether we're about to win.
       if (win_delta == 1 && max_depth > 0) {
-        if (state.has_adjacent_pair(max_exponent - 1, false)) return discount;
+        if (state.has_adjacent_pair(max_exponent - 1)) return discount;
       }
 
       // We can't lose unless the board is full, and the number of available

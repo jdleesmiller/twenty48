@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "twenty48.hpp"
-#include "builder.hpp"
 #include "layer_storage.hpp"
 #include "state.hpp"
 #include "state_hash_set.hpp"
