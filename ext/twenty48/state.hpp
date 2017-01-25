@@ -244,6 +244,11 @@ template <int size> struct state_t {
     return transitions;
   }
 
+  state_t new_state_with_tile(size_t i, uint8_t value) const {
+    return state_t(set_nybble(nybbles, i, value));
+  }
+
+
   //
   // Does the state contain a pair of cells, both with value `value`, separated
   // only by zero or more zeros? If so, we can always swipe to get a `value + 1`
@@ -288,10 +293,6 @@ private:
 
   void set_nybble(size_t i, uint8_t value) {
     nybbles = set_nybble(nybbles, i, value);
-  }
-
-  state_t new_state_with_tile(size_t i, uint8_t value) const {
-    return state_t(set_nybble(nybbles, i, value));
   }
 
   template <typename Predicate> bool any_row(Predicate predicate) const {

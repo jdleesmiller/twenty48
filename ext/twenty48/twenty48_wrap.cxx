@@ -16560,6 +16560,46 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_State2_new_state_with_tile(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
+  size_t arg2 ;
+  uint8_t arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  unsigned char val3 ;
+  int ecode3 = 0 ;
+  twenty48::state_t< 2 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 2 > const *","new_state_with_tile", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 2 > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","new_state_with_tile", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","new_state_with_tile", 3, argv[1] ));
+  } 
+  arg3 = static_cast< uint8_t >(val3);
+  result = ((twenty48::state_t< 2 > const *)arg1)->new_state_with_tile(arg2,arg3);
+  vresult = SWIG_NewPointerObj((new twenty48::state_t< 2 >(static_cast< const twenty48::state_t< 2 >& >(result))), SWIGTYPE_p_twenty48__state_tT_2_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_State2_has_adjacent_pair(int argc, VALUE *argv, VALUE self) {
   twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
   uint8_t arg2 ;
@@ -17343,6 +17383,46 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_State3_new_state_with_tile(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
+  size_t arg2 ;
+  uint8_t arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  unsigned char val3 ;
+  int ecode3 = 0 ;
+  twenty48::state_t< 3 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 3 > const *","new_state_with_tile", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 3 > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","new_state_with_tile", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","new_state_with_tile", 3, argv[1] ));
+  } 
+  arg3 = static_cast< uint8_t >(val3);
+  result = ((twenty48::state_t< 3 > const *)arg1)->new_state_with_tile(arg2,arg3);
+  vresult = SWIG_NewPointerObj((new twenty48::state_t< 3 >(static_cast< const twenty48::state_t< 3 >& >(result))), SWIGTYPE_p_twenty48__state_tT_3_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_State3_has_adjacent_pair(int argc, VALUE *argv, VALUE self) {
   twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
   uint8_t arg2 ;
@@ -18121,6 +18201,46 @@ fail:
     "    twenty48::state_t< 4 >::transitions_t State4.random_transitions(int step)\n"
     "    twenty48::state_t< 4 >::transitions_t State4.random_transitions()\n");
   
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_State4_new_state_with_tile(int argc, VALUE *argv, VALUE self) {
+  twenty48::state_t< 4 > *arg1 = (twenty48::state_t< 4 > *) 0 ;
+  size_t arg2 ;
+  uint8_t arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  unsigned char val3 ;
+  int ecode3 = 0 ;
+  twenty48::state_t< 4 > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__state_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 4 > const *","new_state_with_tile", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::state_t< 4 > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","new_state_with_tile", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","new_state_with_tile", 3, argv[1] ));
+  } 
+  arg3 = static_cast< uint8_t >(val3);
+  result = ((twenty48::state_t< 4 > const *)arg1)->new_state_with_tile(arg2,arg3);
+  vresult = SWIG_NewPointerObj((new twenty48::state_t< 4 >(static_cast< const twenty48::state_t< 4 >& >(result))), SWIGTYPE_p_twenty48__state_tT_4_t, SWIG_POINTER_OWN |  0 );
+  return vresult;
+fail:
   return Qnil;
 }
 
@@ -36547,6 +36667,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassState2.klass, "transpose", VALUEFUNC(_wrap_State2_transpose), -1);
   rb_define_method(SwigClassState2.klass, "canonicalize", VALUEFUNC(_wrap_State2_canonicalize), -1);
   rb_define_method(SwigClassState2.klass, "random_transitions", VALUEFUNC(_wrap_State2_random_transitions), -1);
+  rb_define_method(SwigClassState2.klass, "new_state_with_tile", VALUEFUNC(_wrap_State2_new_state_with_tile), -1);
   rb_define_method(SwigClassState2.klass, "has_adjacent_pair", VALUEFUNC(_wrap_State2_has_adjacent_pair), -1);
   rb_define_method(SwigClassState2.klass, "==", VALUEFUNC(_wrap_State2___eq__), -1);
   rb_define_method(SwigClassState2.klass, "<", VALUEFUNC(_wrap_State2___lt__), -1);
@@ -36575,6 +36696,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassState3.klass, "transpose", VALUEFUNC(_wrap_State3_transpose), -1);
   rb_define_method(SwigClassState3.klass, "canonicalize", VALUEFUNC(_wrap_State3_canonicalize), -1);
   rb_define_method(SwigClassState3.klass, "random_transitions", VALUEFUNC(_wrap_State3_random_transitions), -1);
+  rb_define_method(SwigClassState3.klass, "new_state_with_tile", VALUEFUNC(_wrap_State3_new_state_with_tile), -1);
   rb_define_method(SwigClassState3.klass, "has_adjacent_pair", VALUEFUNC(_wrap_State3_has_adjacent_pair), -1);
   rb_define_method(SwigClassState3.klass, "==", VALUEFUNC(_wrap_State3___eq__), -1);
   rb_define_method(SwigClassState3.klass, "<", VALUEFUNC(_wrap_State3___lt__), -1);
@@ -36603,6 +36725,7 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_method(SwigClassState4.klass, "transpose", VALUEFUNC(_wrap_State4_transpose), -1);
   rb_define_method(SwigClassState4.klass, "canonicalize", VALUEFUNC(_wrap_State4_canonicalize), -1);
   rb_define_method(SwigClassState4.klass, "random_transitions", VALUEFUNC(_wrap_State4_random_transitions), -1);
+  rb_define_method(SwigClassState4.klass, "new_state_with_tile", VALUEFUNC(_wrap_State4_new_state_with_tile), -1);
   rb_define_method(SwigClassState4.klass, "has_adjacent_pair", VALUEFUNC(_wrap_State4_has_adjacent_pair), -1);
   rb_define_method(SwigClassState4.klass, "==", VALUEFUNC(_wrap_State4___eq__), -1);
   rb_define_method(SwigClassState4.klass, "<", VALUEFUNC(_wrap_State4___lt__), -1);

@@ -158,11 +158,22 @@ namespace twenty48 {
       state_t<size> moved_state = state.move(direction);
       if (moved_state == state) return; // Cannot move in this direction.
 
-      transitions_t transitions = moved_state.random_transitions(step);
-      for (typename transitions_t::const_iterator it = transitions.begin();
-        it != transitions.end(); ++it) {
-        if (!std::isnan(valuer.value(it->first))) continue;
-        successors.insert(it->first);
+      for (size_t i = 0; i < size * size; ++i) {
+        if (moved_state[i] != 0) continue;
+        if (step == 0 || step == 1) {
+          state_t<size> successor =
+            moved_state.new_state_with_tile(i, 1).canonicalize();
+          if (std::isnan(valuer.value(successor))) {
+            successors.insert(successor);
+          }
+        }
+        if (step == 0 || step == 2) {
+          state_t<size> successor =
+            moved_state.new_state_with_tile(i, 2).canonicalize();
+          if (std::isnan(valuer.value(successor))) {
+            successors.insert(successor);
+          }
+        }
       }
     }
 
