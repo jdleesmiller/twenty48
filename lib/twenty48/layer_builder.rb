@@ -151,8 +151,10 @@ module Twenty48
       if num_batches < min_batches
         num_batches = min_batches
         batch_size = num_input_states / num_batches
+        batch_size = 1 if batch_size < 1
+      else
+        batch_size = max_batch_size
       end
-      batch_size = 1 if batch_size < 1
       [num_batches, batch_size]
     end
 
