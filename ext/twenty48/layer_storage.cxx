@@ -70,7 +70,6 @@ void convert_bin_layer_to_vbyte(
     uint64_t value;
     is.read(reinterpret_cast<char *>(&value), sizeof(value));
     if (!is) break;
-    std::cout << "conv value " << std::hex << value << std::endl;
     vbyte_writer.write(value);
   }
 }
