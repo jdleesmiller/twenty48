@@ -29887,7 +29887,7 @@ _wrap_LayerBuilder2_build_layer(int argc, VALUE *argv, VALUE self) {
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   int arg4 ;
-  size_t arg5 ;
+  int arg5 ;
   int arg6 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -29899,7 +29899,7 @@ _wrap_LayerBuilder2_build_layer(int argc, VALUE *argv, VALUE self) {
   int alloc3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
-  size_t val5 ;
+  int val5 ;
   int ecode5 = 0 ;
   int val6 ;
   int ecode6 = 0 ;
@@ -29927,11 +29927,11 @@ _wrap_LayerBuilder2_build_layer(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), Ruby_Format_TypeError( "", "int","build_layer", 4, argv[2] ));
   } 
   arg4 = static_cast< int >(val4);
-  ecode5 = SWIG_AsVal_size_t(argv[3], &val5);
+  ecode5 = SWIG_AsVal_int(argv[3], &val5);
   if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), Ruby_Format_TypeError( "", "size_t","build_layer", 5, argv[3] ));
+    SWIG_exception_fail(SWIG_ArgError(ecode5), Ruby_Format_TypeError( "", "int","build_layer", 5, argv[3] ));
   } 
-  arg5 = static_cast< size_t >(val5);
+  arg5 = static_cast< int >(val5);
   ecode6 = SWIG_AsVal_int(argv[4], &val6);
   if (!SWIG_IsOK(ecode6)) {
     SWIG_exception_fail(SWIG_ArgError(ecode6), Ruby_Format_TypeError( "", "int","build_layer", 6, argv[4] ));
@@ -29960,6 +29960,8 @@ _wrap_LayerBuilder2_merge_files(int argc, VALUE *argv, VALUE self) {
   int res3 ;
   char *buf3 = 0 ;
   int alloc3 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
   
   if ((argc < 2) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
@@ -29982,9 +29984,10 @@ _wrap_LayerBuilder2_merge_files(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","merge_files", 3, argv[1] ));
   }
   arg3 = reinterpret_cast< char * >(buf3);
-  ((twenty48::layer_builder_t< 2 > const *)arg1)->merge_files((std::vector< std::string,std::allocator< std::string > > const &)*arg2,(char const *)arg3);
+  result = ((twenty48::layer_builder_t< 2 > const *)arg1)->merge_files((std::vector< std::string,std::allocator< std::string > > const &)*arg2,(char const *)arg3);
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
   if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
-  return Qnil;
+  return vresult;
 fail:
   if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   return Qnil;
@@ -30046,7 +30049,7 @@ _wrap_LayerBuilder3_build_layer(int argc, VALUE *argv, VALUE self) {
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   int arg4 ;
-  size_t arg5 ;
+  int arg5 ;
   int arg6 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -30058,7 +30061,7 @@ _wrap_LayerBuilder3_build_layer(int argc, VALUE *argv, VALUE self) {
   int alloc3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
-  size_t val5 ;
+  int val5 ;
   int ecode5 = 0 ;
   int val6 ;
   int ecode6 = 0 ;
@@ -30086,11 +30089,11 @@ _wrap_LayerBuilder3_build_layer(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), Ruby_Format_TypeError( "", "int","build_layer", 4, argv[2] ));
   } 
   arg4 = static_cast< int >(val4);
-  ecode5 = SWIG_AsVal_size_t(argv[3], &val5);
+  ecode5 = SWIG_AsVal_int(argv[3], &val5);
   if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), Ruby_Format_TypeError( "", "size_t","build_layer", 5, argv[3] ));
+    SWIG_exception_fail(SWIG_ArgError(ecode5), Ruby_Format_TypeError( "", "int","build_layer", 5, argv[3] ));
   } 
-  arg5 = static_cast< size_t >(val5);
+  arg5 = static_cast< int >(val5);
   ecode6 = SWIG_AsVal_int(argv[4], &val6);
   if (!SWIG_IsOK(ecode6)) {
     SWIG_exception_fail(SWIG_ArgError(ecode6), Ruby_Format_TypeError( "", "int","build_layer", 6, argv[4] ));
@@ -30119,6 +30122,8 @@ _wrap_LayerBuilder3_merge_files(int argc, VALUE *argv, VALUE self) {
   int res3 ;
   char *buf3 = 0 ;
   int alloc3 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
   
   if ((argc < 2) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
@@ -30141,9 +30146,10 @@ _wrap_LayerBuilder3_merge_files(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","merge_files", 3, argv[1] ));
   }
   arg3 = reinterpret_cast< char * >(buf3);
-  ((twenty48::layer_builder_t< 3 > const *)arg1)->merge_files((std::vector< std::string,std::allocator< std::string > > const &)*arg2,(char const *)arg3);
+  result = ((twenty48::layer_builder_t< 3 > const *)arg1)->merge_files((std::vector< std::string,std::allocator< std::string > > const &)*arg2,(char const *)arg3);
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
   if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
-  return Qnil;
+  return vresult;
 fail:
   if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   return Qnil;
@@ -30205,7 +30211,7 @@ _wrap_LayerBuilder4_build_layer(int argc, VALUE *argv, VALUE self) {
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   int arg4 ;
-  size_t arg5 ;
+  int arg5 ;
   int arg6 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -30217,7 +30223,7 @@ _wrap_LayerBuilder4_build_layer(int argc, VALUE *argv, VALUE self) {
   int alloc3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
-  size_t val5 ;
+  int val5 ;
   int ecode5 = 0 ;
   int val6 ;
   int ecode6 = 0 ;
@@ -30245,11 +30251,11 @@ _wrap_LayerBuilder4_build_layer(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), Ruby_Format_TypeError( "", "int","build_layer", 4, argv[2] ));
   } 
   arg4 = static_cast< int >(val4);
-  ecode5 = SWIG_AsVal_size_t(argv[3], &val5);
+  ecode5 = SWIG_AsVal_int(argv[3], &val5);
   if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), Ruby_Format_TypeError( "", "size_t","build_layer", 5, argv[3] ));
+    SWIG_exception_fail(SWIG_ArgError(ecode5), Ruby_Format_TypeError( "", "int","build_layer", 5, argv[3] ));
   } 
-  arg5 = static_cast< size_t >(val5);
+  arg5 = static_cast< int >(val5);
   ecode6 = SWIG_AsVal_int(argv[4], &val6);
   if (!SWIG_IsOK(ecode6)) {
     SWIG_exception_fail(SWIG_ArgError(ecode6), Ruby_Format_TypeError( "", "int","build_layer", 6, argv[4] ));
@@ -30278,6 +30284,8 @@ _wrap_LayerBuilder4_merge_files(int argc, VALUE *argv, VALUE self) {
   int res3 ;
   char *buf3 = 0 ;
   int alloc3 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
   
   if ((argc < 2) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
@@ -30300,9 +30308,10 @@ _wrap_LayerBuilder4_merge_files(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","merge_files", 3, argv[1] ));
   }
   arg3 = reinterpret_cast< char * >(buf3);
-  ((twenty48::layer_builder_t< 4 > const *)arg1)->merge_files((std::vector< std::string,std::allocator< std::string > > const &)*arg2,(char const *)arg3);
+  result = ((twenty48::layer_builder_t< 4 > const *)arg1)->merge_files((std::vector< std::string,std::allocator< std::string > > const &)*arg2,(char const *)arg3);
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
   if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
-  return Qnil;
+  return vresult;
 fail:
   if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   return Qnil;
@@ -32597,14 +32606,16 @@ SWIGINTERN VALUE
 _wrap_make_layer_pathname(int argc, VALUE *argv, VALUE self) {
   std::string *arg1 = 0 ;
   int arg2 ;
+  std::string *arg3 = 0 ;
   int res1 = SWIG_OLDOBJ ;
   int val2 ;
   int ecode2 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
   std::string result;
   VALUE vresult = Qnil;
   
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  if ((argc < 3) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
   }
   {
     std::string *ptr = (std::string *)0;
@@ -32622,12 +32633,25 @@ _wrap_make_layer_pathname(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","twenty48::make_layer_pathname", 2, argv[1] ));
   } 
   arg2 = static_cast< int >(val2);
-  result = twenty48::make_layer_pathname((std::string const &)*arg1,arg2);
+  {
+    std::string *ptr = (std::string *)0;
+    res3 = SWIG_AsPtr_std_string(argv[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "std::string const &","twenty48::make_layer_pathname", 3, argv[2] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","twenty48::make_layer_pathname", 3, argv[2])); 
+    }
+    arg3 = ptr;
+  }
+  result = twenty48::make_layer_pathname((std::string const &)*arg1,arg2,(std::string const &)*arg3);
   vresult = SWIG_From_std_string(static_cast< std::string >(result));
   if (SWIG_IsNewObj(res1)) delete arg1;
+  if (SWIG_IsNewObj(res3)) delete arg3;
   return vresult;
 fail:
   if (SWIG_IsNewObj(res1)) delete arg1;
+  if (SWIG_IsNewObj(res3)) delete arg3;
   return Qnil;
 }
 
@@ -32961,6 +32985,204 @@ _wrap_write_states_hex_4(int argc, VALUE *argv, VALUE self) {
   }
   arg2 = reinterpret_cast< char * >(buf2);
   twenty48::SWIGTEMPLATEDISAMBIGUATOR write_states_hex< 4 >((std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > const &)*arg1,(char const *)arg2);
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_read_states_vbyte_2(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","twenty48::read_states_vbyte<(2)>", 1, argv[0] ));
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = twenty48::SWIGTEMPLATEDISAMBIGUATOR read_states_vbyte< 2 >((char const *)arg1);
+  vresult = swig::from(static_cast< std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > >(result));
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_read_states_vbyte_3(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","twenty48::read_states_vbyte<(3)>", 1, argv[0] ));
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = twenty48::SWIGTEMPLATEDISAMBIGUATOR read_states_vbyte< 3 >((char const *)arg1);
+  vresult = swig::from(static_cast< std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > >(result));
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_read_states_vbyte_4(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","twenty48::read_states_vbyte<(4)>", 1, argv[0] ));
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = twenty48::SWIGTEMPLATEDISAMBIGUATOR read_states_vbyte< 4 >((char const *)arg1);
+  vresult = swig::from(static_cast< std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > >(result));
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_write_states_vbyte_2(int argc, VALUE *argv, VALUE self) {
+  std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > *arg1 = 0 ;
+  char *arg2 = (char *) 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  {
+    std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > *ptr = (std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > *)0;
+    res1 = swig::asptr(argv[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > const &","twenty48::write_states_vbyte<(2)>", 1, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > const &","twenty48::write_states_vbyte<(2)>", 1, argv[0])); 
+    }
+    arg1 = ptr;
+  }
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","twenty48::write_states_vbyte<(2)>", 2, argv[1] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  twenty48::SWIGTEMPLATEDISAMBIGUATOR write_states_vbyte< 2 >((std::vector< twenty48::state_t< 2 >,std::allocator< twenty48::state_t< 2 > > > const &)*arg1,(char const *)arg2);
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_write_states_vbyte_3(int argc, VALUE *argv, VALUE self) {
+  std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > *arg1 = 0 ;
+  char *arg2 = (char *) 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  {
+    std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > *ptr = (std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > *)0;
+    res1 = swig::asptr(argv[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > const &","twenty48::write_states_vbyte<(3)>", 1, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > const &","twenty48::write_states_vbyte<(3)>", 1, argv[0])); 
+    }
+    arg1 = ptr;
+  }
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","twenty48::write_states_vbyte<(3)>", 2, argv[1] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  twenty48::SWIGTEMPLATEDISAMBIGUATOR write_states_vbyte< 3 >((std::vector< twenty48::state_t< 3 >,std::allocator< twenty48::state_t< 3 > > > const &)*arg1,(char const *)arg2);
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_write_states_vbyte_4(int argc, VALUE *argv, VALUE self) {
+  std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > *arg1 = 0 ;
+  char *arg2 = (char *) 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  {
+    std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > *ptr = (std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > *)0;
+    res1 = swig::asptr(argv[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > const &","twenty48::write_states_vbyte<(4)>", 1, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > const &","twenty48::write_states_vbyte<(4)>", 1, argv[0])); 
+    }
+    arg1 = ptr;
+  }
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","twenty48::write_states_vbyte<(4)>", 2, argv[1] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  twenty48::SWIGTEMPLATEDISAMBIGUATOR write_states_vbyte< 4 >((std::vector< twenty48::state_t< 4 >,std::allocator< twenty48::state_t< 4 > > > const &)*arg1,(char const *)arg2);
   if (SWIG_IsNewObj(res1)) delete arg1;
   if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
   return Qnil;
@@ -37125,6 +37347,12 @@ SWIGEXPORT void Init_twenty48(void) {
   rb_define_module_function(mTwenty48, "write_states_hex_2", VALUEFUNC(_wrap_write_states_hex_2), -1);
   rb_define_module_function(mTwenty48, "write_states_hex_3", VALUEFUNC(_wrap_write_states_hex_3), -1);
   rb_define_module_function(mTwenty48, "write_states_hex_4", VALUEFUNC(_wrap_write_states_hex_4), -1);
+  rb_define_module_function(mTwenty48, "read_states_vbyte_2", VALUEFUNC(_wrap_read_states_vbyte_2), -1);
+  rb_define_module_function(mTwenty48, "read_states_vbyte_3", VALUEFUNC(_wrap_read_states_vbyte_3), -1);
+  rb_define_module_function(mTwenty48, "read_states_vbyte_4", VALUEFUNC(_wrap_read_states_vbyte_4), -1);
+  rb_define_module_function(mTwenty48, "write_states_vbyte_2", VALUEFUNC(_wrap_write_states_vbyte_2), -1);
+  rb_define_module_function(mTwenty48, "write_states_vbyte_3", VALUEFUNC(_wrap_write_states_vbyte_3), -1);
+  rb_define_module_function(mTwenty48, "write_states_vbyte_4", VALUEFUNC(_wrap_write_states_vbyte_4), -1);
   
   SwigClassLayerSolver2.klass = rb_define_class_under(mTwenty48, "LayerSolver2", rb_cObject);
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_solver_tT_2_t, (void *) &SwigClassLayerSolver2);

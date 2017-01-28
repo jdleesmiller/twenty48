@@ -9,12 +9,15 @@
 
 #include "twenty48.hpp"
 #include "state.hpp"
+#include "vbyte_writer.hpp"
+#include "vbyte_reader.hpp"
 
 namespace twenty48 {
-  std::string make_layer_pathname(const std::string &data_path, int sum) {
+  std::string make_layer_pathname(const std::string &data_path, int sum,
+    const std::string &extension) {
     std::stringstream path;
     path << data_path << '/' << std::setfill('0') << std::setw(4) << sum <<
-      ".bin";
+      extension;
     return path.str();
   }
 
@@ -68,6 +71,34 @@ namespace twenty48 {
 
     is.close();
     os.close();
+  }
+
+  /**
+   * Read states in sorted compressed vbyte format.
+   */
+  template <int size>
+  std::vector<state_t<size> > read_states_vbyte(const char *pathname) {
+    vbyte_reader_t vbyte_reader(pathname);
+    std::vector<state_t<size> > result;
+    for (;;) {
+      uint64_t nybbles = vbyte_reader.read();
+      if (nybbles == 0) break;
+      result.push_back(state_t<size>(nybbles));
+    }
+    return result;
+  }
+
+  /**
+   * Write states in sorted compressed vbyte format.
+   */
+  template <int size>
+  void write_states_vbyte(const std::vector<state_t<size> > &states,
+    const char *pathname) {
+    vbyte_writer_t vbyte_writer(pathname);
+    for (typename std::vector<state_t<size> >::const_iterator it =
+      states.begin(); it != states.end(); ++it) {
+      vbyte_writer.write(it->get_nybbles());
+    }
   }
 
   /**

@@ -8,6 +8,8 @@
 #include "layer_storage.hpp"
 #include "state.hpp"
 #include "valuer.hpp"
+#include "vbyte_reader.hpp"
+#include "vbyte_writer.hpp"
 
 namespace twenty48 {
   /**
@@ -46,7 +48,6 @@ namespace twenty48 {
    * list itself.
    */
   template <int size> struct layer_builder_t {
-    typedef typename state_t<size>::transitions_t transitions_t;
     typedef std::vector<state_t<size> > state_vector_t;
     typedef btree::btree_set<state_t<size> > state_set_t;
 
@@ -54,49 +55,49 @@ namespace twenty48 {
 
     void build_layer(const char *input_layer_pathname,
       const char *output_layer_pathname, int step,
-      size_t offset, int count) const
+      int remainder, int divisor) const
     {
-      std::ifstream is(input_layer_pathname, std::ios::in | std::ios::binary);
-      is.seekg(offset * sizeof(state_t<size>));
+      vbyte_reader_t vbyte_reader(input_layer_pathname);
 
       state_set_t output_layer;
-      for (; count > 0; --count) {
-        state_t<size> state = state_t<size>::read_bin(is);
-        if (!is) break;
+      for (size_t index = 0; ; ++index) {
+        uint64_t nybbles = vbyte_reader.read();
+        if (nybbles == 0) break;
+        if (index % divisor != remainder) continue;
+        state_t<size> state(nybbles);
         expand(state, step, output_layer);
       }
 
-      is.close();
       write_states(output_layer_pathname, output_layer);
     }
 
-    void merge_files(const std::vector<std::string> &input_pathnames,
+    size_t merge_files(const std::vector<std::string> &input_pathnames,
       const char *output_pathname) const
     {
+      size_t num_states = 0;
       const size_t n = input_pathnames.size();
       const state_t<size> inf_state = state_t<size>(
         std::numeric_limits<uint64_t>::max());
-      typedef std::vector<std::unique_ptr<std::ifstream> > stream_vector_t;
+      typedef std::vector<std::unique_ptr<vbyte_reader_t> > reader_vector_t;
 
-      std::ofstream os(output_pathname, std::ios::out | std::ios::binary);
+      vbyte_writer_t vbyte_writer(output_pathname);
 
       // Open input files.
-      stream_vector_t inputs;
+      reader_vector_t inputs;
       for (typename std::vector<std::string>::const_iterator it =
         input_pathnames.begin(); it != input_pathnames.end(); ++it) {
-        inputs.emplace_back(
-          new std::ifstream(*it, std::ios::in | std::ios::binary));
+        inputs.emplace_back(new vbyte_reader_t(it->c_str()));
       }
 
       // Read first value from each file.
       state_vector_t heads;
-      for (typename stream_vector_t::iterator it = inputs.begin();
+      for (typename reader_vector_t::iterator it = inputs.begin();
         it != inputs.end(); ++it) {
-        state_t<size> state = state_t<size>::read_bin(**it);
-        if (**it) {
-          heads.push_back(state);
-        } else {
+        uint64_t nybbles = (*it)->read();
+        if (nybbles == 0) {
           heads.push_back(inf_state);
+        } else {
+          heads.push_back(state_t<size>(nybbles));
         }
       }
 
@@ -115,31 +116,26 @@ namespace twenty48 {
         }
 
         // If all heads are infinite, we're done.
-        if (min_state == inf_state) {
-          for (typename stream_vector_t::iterator it = inputs.begin();
-            it != inputs.end(); ++it) {
-            (*it)->close();
-          }
-          os.close();
-          return;
-        }
+        if (min_state == inf_state) break;
 
         // Write the min state.
-        min_state.write_bin(os);
+        vbyte_writer.write(min_state.get_nybbles());
+        num_states += 1;
 
         // Pop the head states that matched the min state we just wrote.
         for (typename std::vector<size_t>::const_iterator it =
           min_indexes.begin(); it != min_indexes.end(); ++it) {
-          state_t<size> next_state = state_t<size>::read_bin(*inputs[*it]);
-          if (*inputs[*it]) {
-            heads[*it] = next_state;
-          } else {
+          uint64_t next_nybbles = inputs[*it]->read();
+          if (next_nybbles == 0) {
             heads[*it] = inf_state;
+          } else {
+            heads[*it] = state_t<size>(next_nybbles);
           }
         }
 
         min_indexes.clear();
       }
+      return num_states;
     }
 
   private:
@@ -178,12 +174,11 @@ namespace twenty48 {
     }
 
     void write_states(const char *pathname, const state_set_t &layer) const {
-      std::ofstream os(pathname, std::ios::out | std::ios::binary);
+      vbyte_writer_t vbyte_writer(pathname);
       for (typename state_set_t::const_iterator it = layer.begin();
         it != layer.end(); ++it) {
-        it->write_bin(os);
+        vbyte_writer.write(it->get_nybbles());
       }
-      os.close();
     }
   };
 }

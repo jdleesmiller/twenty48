@@ -18,28 +18,35 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       layer_builder = LayerBuilder.new(2, tmp, max_states, valuer)
       layer_builder.build_start_state_layers
 
-      assert_equal 3, Dir.glob(File.join(tmp, '*')).size
-      assert_equal 16, File.stat(File.join(tmp, '0004.bin')).size
-      assert_equal 16, File.stat(File.join(tmp, '0006.bin')).size
-      assert_equal 16, File.stat(File.join(tmp, '0008.bin')).size
+      assert_equal 6, Dir.glob(File.join(tmp, '*')).size
+      states_4 = read_states_vbyte_2(File.join(tmp, '0004.vbyte'))
+      states_6 = read_states_vbyte_2(File.join(tmp, '0006.vbyte'))
+      states_8 = read_states_vbyte_2(File.join(tmp, '0008.vbyte'))
 
-      set = StateHashSet2.new(1024)
-      set.load_binary(File.join(tmp, '0004.bin'))
+      assert_equal 2, states_4.size
+      assert_equal 2, states_6.size
+      assert_equal 2, states_8.size
+
+      assert_equal 2, layer_builder.count_states(4)
+      assert_equal 2, layer_builder.count_states(6)
+      assert_equal 2, layer_builder.count_states(8)
+
       assert_states_equal [
-        [0, 0,
-         0, 0],
         [0, 0,
          1, 1],
         [0, 1,
          1, 0]
-      ], set.to_a
+      ], states_4
 
       # The two unique states are:
       # 0 0  and  0 2
       # 2 4       4 0
-      states = File.read(File.join(tmp, '0006.bin')).unpack('Q*')
-      assert_equal %w(0000000000000012 0000000000000120),
-        states.map { |value| format('%016x', value) }
+      assert_states_equal [
+        [0, 0,
+         1, 2],
+        [0, 1,
+         2, 0]
+      ], states_6
     end
   end
 
@@ -53,30 +60,35 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       layer_builder = LayerBuilder.new(2, tmp, max_states, valuer)
       layer_builder.build_start_state_layers
 
-      set = StateHashSet2.new(max_states)
-      set.load_binary(layer_builder.layer_pathname(6, folder: tmp))
-      original_6_states = set.to_a
+      pathname_6 = layer_builder.layer_pathname(6, folder: tmp)
+      original_6_states = read_states_vbyte_2(pathname_6)
 
       layer_builder.build_layer(4)
 
-      set = StateHashSet2.new(max_states)
-      set.load_binary(File.join(tmp, '0006.bin'))
-      new_6_states = set.to_a
+      new_6_states = read_states_vbyte_2(pathname_6)
 
       assert_states_equal [
         [0, 1,
          1, 1]
       ], new_6_states - original_6_states
 
-      files = Dir.glob(File.join(tmp, '*'))
+      files = Dir.glob(File.join(tmp, '*.vbyte'))
       files.map! { |pathname| File.basename(pathname) }
-      assert_equal %w(0004.bin 0006.bin 0008.bin), files.sort
+      assert_equal %w(0004.vbyte 0006.vbyte 0008.vbyte), files.sort
+
+      files = Dir.glob(File.join(tmp, '*.json'))
+      files.map! { |pathname| File.basename(pathname) }
+      assert_equal %w(0004.json 0006.json 0008.json), files.sort
 
       layer_builder.build_layer(6)
 
-      files = Dir.glob(File.join(tmp, '*'))
+      files = Dir.glob(File.join(tmp, '*.vbyte'))
       files.map! { |pathname| File.basename(pathname) }
-      assert_equal %w(0004.bin 0006.bin 0008.bin 0010.bin), files.sort
+      assert_equal %w(0004.vbyte 0006.vbyte 0008.vbyte 0010.vbyte), files.sort
+
+      files = Dir.glob(File.join(tmp, '*.json'))
+      files.map! { |pathname| File.basename(pathname) }
+      assert_equal %w(0004.json 0006.json 0008.json 0010.json), files.sort
     end
   end
 
@@ -95,7 +107,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       layer_builder.build_start_state_layers
       max_sum = layer_builder.build
 
-      states_by_layer = layer_builder.states_by_layer(max_states)
+      states_by_layer = layer_builder.states_by_layer
       assert_equal 24, states_by_layer.size
       assert_equal 74, states_by_layer.values.flatten(1).count { |s| s.sum > 0 }
 

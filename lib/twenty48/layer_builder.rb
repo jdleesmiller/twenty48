@@ -33,7 +33,7 @@ module Twenty48
     attr_reader :layer_folder
     attr_reader :builder
 
-    STATE_BINARY_SIZE = 8
+    STATE_BYTE_SIZE = 8
 
     def board_size
       builder.board_size
@@ -45,18 +45,26 @@ module Twenty48
     #
     def self.find_max_successor_states(working_memory)
       batch_memory = working_memory / Parallel.processor_count
-      batch_memory / STATE_BINARY_SIZE
+      batch_memory / STATE_BYTE_SIZE
     end
 
     #
     # File name for a complete layer with the given sum.
     #
     def layer_basename(layer_sum)
-      format('%04d.bin', layer_sum)
+      format('%04d.vbyte', layer_sum)
     end
 
     def layer_pathname(layer_sum, folder: layer_folder)
       File.join(folder, layer_basename(layer_sum))
+    end
+
+    def layer_info_basename(layer_sum)
+      format('%04d.json', layer_sum)
+    end
+
+    def layer_info_pathname(layer_sum)
+      File.join(layer_folder, layer_info_basename(layer_sum))
     end
 
     #
@@ -72,7 +80,9 @@ module Twenty48
         layer_start_states = start_states.select do |state|
           state.sum == layer_sum
         end.sort
-        Twenty48.write_states_bin(layer_start_states, layer_pathname(layer_sum))
+        Twenty48.write_states_vbyte(layer_start_states,
+          layer_pathname(layer_sum))
+        write_layer_info(layer_sum, num_states: layer_start_states.size)
         layer_sum += 2
       end
     end
@@ -99,12 +109,12 @@ module Twenty48
 
     def build_layer(layer_sum)
       input_layer_pathname = layer_pathname(layer_sum)
-      num_input_states = file_size(input_layer_pathname) / STATE_BINARY_SIZE
-      num_batches, batch_size = find_num_batches(num_input_states)
+      num_input_states = count_states(layer_sum)
+      num_batches = find_num_batches(num_input_states)
 
-      log_build_layer(layer_sum, num_input_states, num_batches, batch_size)
+      log_build_layer(layer_sum, num_input_states, num_batches)
 
-      jobs = (0..num_batches).to_a.product((1..2).to_a)
+      jobs = (0...num_batches).to_a.product((1..2).to_a)
 
       Dir.mktmpdir do |work_folder|
         GC.start
@@ -114,9 +124,9 @@ module Twenty48
             work_folder,
             layer_sum,
             input_layer_pathname,
-            batch_index,
             step,
-            batch_size,
+            batch_index,
+            num_batches,
             @verbose
           )
           batch.build
@@ -129,33 +139,42 @@ module Twenty48
     end
 
     def layer_sums
-      layer_files = Dir.glob(File.join(layer_folder, '*.bin'))
-      layer_files.map { |pathname| File.basename(pathname, '.bin').to_i }
+      layer_files = Dir.glob(File.join(layer_folder, '*.vbyte'))
+      layer_files.map { |pathname| File.basename(pathname, '.vbyte').to_i }
     end
 
-    def states_by_layer(max_states)
+    def states_by_layer
       Hash[layer_sums.map do |layer_sum|
-        state_set = NativeStateHashSet.create(board_size, max_states)
-        state_set.load_binary(layer_pathname(layer_sum))
-        [layer_sum, state_set.to_a]
+        states = Twenty48.read_states_vbyte(board_size,
+          layer_pathname(layer_sum))
+        [layer_sum, states]
       end]
+    end
+
+    def read_layer_info(layer_sum)
+      JSON.parse(File.read(layer_info_pathname(layer_sum)))
+    end
+
+    def count_states(layer_sum)
+      read_layer_info(layer_sum)['num_states']
     end
 
     private
 
+    def write_layer_info(layer_sum, num_states:)
+      File.open(layer_info_pathname(layer_sum), 'w') do |info_file|
+        JSON.dump({
+          num_states: num_states
+        }, info_file)
+      end
+    end
+
     # Find the number of batches needed. If we don't have enough batches to keep
-    # all of the CPUs busy, choose smaller batch sizes.
+    # all of the CPUs busy, use more batches than necessary.
     def find_num_batches(num_input_states)
       min_batches = (Parallel.processor_count / 2.0).ceil
       num_batches = num_input_states / max_batch_size
-      if num_batches < min_batches
-        num_batches = min_batches
-        batch_size = num_input_states / num_batches
-        batch_size = 1 if batch_size < 1
-      else
-        batch_size = max_batch_size
-      end
-      [num_batches, batch_size]
+      [min_batches, num_batches].max
     end
 
     Batch = Struct.new(
@@ -163,21 +182,18 @@ module Twenty48
       :work_folder,
       :input_layer_sum,
       :input_layer_pathname,
-      :batch_index,
       :step,
-      :batch_size,
+      :remainder,
+      :divisor,
       :verbose
     ) do
       def output_layer_sum
         input_layer_sum + 2 * step
       end
 
-      def offset
-        batch_index * batch_size
-      end
-
       def basename
-        format('%04d-step-%d-offset-%012d.bin', output_layer_sum, step, offset)
+        format('%04d-step-%d-remainder-%04d-divisor-%04d.vbyte',
+          output_layer_sum, step, remainder, divisor)
       end
 
       def output_pathname
@@ -189,8 +205,8 @@ module Twenty48
           input_layer_pathname,
           output_pathname,
           step,
-          offset,
-          batch_size
+          remainder,
+          divisor
         )
         STDOUT.write('.') if verbose
       end
@@ -206,8 +222,8 @@ module Twenty48
         log_reduce_step(input_layer_sum, step, input_pathnames)
         output_sum = input_layer_sum + 2 * step
         work_layer = layer_pathname(output_sum, folder: work_folder)
-        merge_files(input_pathnames, work_layer)
-        merge_results(output_sum, work_folder, work_layer)
+        num_work_states = merge_files(input_pathnames, work_layer)
+        merge_results(output_sum, work_folder, work_layer, num_work_states)
       end
     end
 
@@ -217,13 +233,15 @@ module Twenty48
       end.compact
     end
 
-    def merge_results(output_sum, work_folder, work_layer)
+    def merge_results(output_sum, work_folder, work_layer, num_work_states)
       output_pathname = layer_pathname(output_sum)
       if File.exist?(output_pathname)
-        temp_pathname = File.join(work_folder, 'new_layer.bin')
-        merge_files([work_layer, output_pathname], temp_pathname)
+        temp_pathname = File.join(work_folder, 'new_layer.vbyte')
+        num_states = merge_files([work_layer, output_pathname], temp_pathname)
+        write_layer_info(output_sum, num_states: num_states)
         FileUtils.mv temp_pathname, output_pathname
       else
+        write_layer_info(output_sum, num_states: num_work_states)
         FileUtils.mv work_layer, output_pathname
       end
     end
@@ -236,21 +254,29 @@ module Twenty48
       File.stat(pathname).size
     end
 
-    def remove_if_empty(pathname)
-      FileUtils.rm pathname if file_size(pathname) == 0
-    rescue Errno::ENOENT # rubocop:disable Lint/HandleExceptions
-      # We were going to remove it anyway.
+    def count_states_if_any(layer_sum)
+      count_states(layer_sum)
+    rescue Errno::ENOENT
+      0
     end
 
     def remove_empty_layers(max_layer_sum)
-      # The build process can leave some empty .bin and .hex files, and it's
-      # easiest to just clean them up at the end.
+      # The build process can leave some empty files, and it's easiest to just
+      # clean them up at the end.
       layer_sum = 4
       while layer_sum <= max_layer_sum
-        remove_if_empty(layer_pathname(layer_sum))
+        remove_empty_layer(layer_sum) if count_states_if_any(layer_sum) == 0
         layer_sum += 2
       end
-      remove_if_empty(layer_pathname(max_layer_sum))
+    end
+
+    def remove_empty_layer(layer_sum)
+      pathname = layer_pathname(layer_sum)
+      if File.exist?(pathname)
+        raise "nonempty layer: #{layer_sum}" if file_size(pathname) > 0
+        FileUtils.rm pathname
+      end
+      FileUtils.rm_f layer_info_pathname(layer_sum)
     end
 
     def log(message)
@@ -258,9 +284,9 @@ module Twenty48
       puts "#{Time.now}: #{message}"
     end
 
-    def log_build_layer(layer_sum, num_input_states, num_batches, batch_size)
-      log format('build %d: %d states (%d batches of ~%d)',
-        layer_sum, num_input_states, num_batches, batch_size)
+    def log_build_layer(layer_sum, num_input_states, num_batches)
+      log format('build %d: %d states (%d batches)',
+        layer_sum, num_input_states, num_batches)
     end
 
     def log_reduce_step(input_layer_sum, step, input_pathnames)

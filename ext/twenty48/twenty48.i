@@ -120,6 +120,14 @@
 %template(write_states_hex_3) twenty48::write_states_hex<3>;
 %template(write_states_hex_4) twenty48::write_states_hex<4>;
 
+%template(read_states_vbyte_2) twenty48::read_states_vbyte<2>;
+%template(read_states_vbyte_3) twenty48::read_states_vbyte<3>;
+%template(read_states_vbyte_4) twenty48::read_states_vbyte<4>;
+
+%template(write_states_vbyte_2) twenty48::write_states_vbyte<2>;
+%template(write_states_vbyte_3) twenty48::write_states_vbyte<3>;
+%template(write_states_vbyte_4) twenty48::write_states_vbyte<4>;
+
 /******************************************************************************/
 /* LayerSolver */
 /******************************************************************************/

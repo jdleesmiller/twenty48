@@ -20,9 +20,9 @@ Dir.glob(Twenty48::Storage::LAYER_STATES_GLOB).sort.each do |states_path|
   end
   FileUtils.mkdir_p values_path
 
-  layer_files = Dir.glob(File.join(states_path, '*.bin'))
+  layer_files = Dir.glob(File.join(states_path, '*.vbyte'))
   layer_sums = layer_files.map do |pathname|
-    File.basename(pathname, '.bin').to_i
+    File.basename(pathname, '.vbyte').to_i
   end
 
   valuer = NativeValuer.create(
