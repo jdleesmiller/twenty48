@@ -48,40 +48,52 @@ int compress() {
   return 0;
 }
 
-int decompress() {
-  std::cout << "decomp" << std::endl;
+int uncompress() {
   std::ifstream is(VBYTE_FILE, std::ios::in | std::ios::binary);
-  std::vector<uint8_t> in;
-  std::vector<uint64_t> values;
+  std::ofstream os(BIN_OUT_FILE, std::ios::out | std::ios::binary);
 
   size_t num_values;
   is.read(reinterpret_cast<char *>(&num_values), sizeof(num_values));
-  std::cout << num_values << std::endl;
+  std::cout << "num values " << num_values << std::endl;
 
-  std::cout << "decomp 1" << std::endl;
-  for (;;) {
-    uint8_t value;
-    is.read(reinterpret_cast<char *>(&value), sizeof(value));
-    if (!is) break;
-    in.push_back(value);
-  }
+  uint64_t previous = 0;
+  const size_t buf_size = 16;
+  uint8_t buf[buf_size];
+  size_t buf_length = 0;
+  bool eof = false;
+  do {
+    if (!eof) {
+      is.read(reinterpret_cast<char *>(buf + buf_length), buf_size - buf_length);
+      buf_length += is.gcount();
+      if (!is) eof = true;
+    }
 
-  std::cout << "decomp 2" << std::endl;
-  values.resize(num_values * sizeof(uint64_t));
-  size_t num_bytes_in = vbyte_uncompress_sorted64(
-    in.data(), values.data(), 0, num_values);
+    uint64_t value;
+    size_t bytes_in = vbyte_uncompress_sorted64(buf, &value, previous, 1);
 
-  std::cout << "processed " << num_bytes_in << std::endl;
+    os.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    if (!os) {
+      std::cout << "uncompress: write failed" << std::endl;
+      return 1;
+    }
+    previous = value;
 
-  std::ofstream os(BIN_OUT_FILE, std::ios::out | std::ios::binary);
-  for (size_t i = 0; i < num_values; ++i) {
-    os.write(reinterpret_cast<const char*>(values.data() + i), sizeof(uint64_t));
-    if (!os) return 1;
-  }
+    // Shift the bytes we've already read out of the buffer and replace them
+    // with bytes we've already read from the file (if any).
+    // std::cout << "bytes_in=" << bytes_in << " buf_length=" << buf_length << std::endl;
+    if (bytes_in > buf_length) {
+      std::cout << "uncompress: bytes_in too large" << std::endl;
+      return 1;
+    }
+    for (size_t i = 0; i + bytes_in < buf_size; ++i) {
+      buf[i] = buf[i + bytes_in];
+    }
+    buf_length -= bytes_in;
+  } while (buf_length > 0);
   return 0;
 }
 
 int main() {
-  return compress();
-  // return compress() || decompress();
+  return uncompress();
+  // return compress() || uncompress();
 }
