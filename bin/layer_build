@@ -71,7 +71,6 @@ end
 # build(
 #   board_size: 4,
 #   max_exponent: 11,
-#   max_lose_depth: 0,
-#   max_win_depth: 0,
+#   max_depth: 1,
 #   max_states: max_max_states
 # )
