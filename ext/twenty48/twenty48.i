@@ -139,6 +139,10 @@
 
 %include "vbyte_reader.hpp"
 
+%rename(VByteWriter) twenty48::vbyte_writer_t;
+
+%include "vbyte_writer.hpp"
+
 %include "merge_states.hpp"
 
 /******************************************************************************/

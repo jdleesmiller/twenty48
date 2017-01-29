@@ -1902,14 +1902,15 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 #define SWIGTYPE_p_twenty48__valuer_tT_4_t swig_types[72]
 #define SWIGTYPE_p_twenty48__vbyte_index_entry_t swig_types[73]
 #define SWIGTYPE_p_twenty48__vbyte_reader_t swig_types[74]
-#define SWIGTYPE_p_unsigned_char swig_types[75]
-#define SWIGTYPE_p_unsigned_int swig_types[76]
-#define SWIGTYPE_p_unsigned_long_long swig_types[77]
-#define SWIGTYPE_p_unsigned_short swig_types[78]
-#define SWIGTYPE_p_value_type swig_types[79]
-#define SWIGTYPE_p_void swig_types[80]
-static swig_type_info *swig_types[82];
-static swig_module_info swig_module = {swig_types, 81, 0, 0, 0, 0};
+#define SWIGTYPE_p_twenty48__vbyte_writer_t swig_types[75]
+#define SWIGTYPE_p_unsigned_char swig_types[76]
+#define SWIGTYPE_p_unsigned_int swig_types[77]
+#define SWIGTYPE_p_unsigned_long_long swig_types[78]
+#define SWIGTYPE_p_unsigned_short swig_types[79]
+#define SWIGTYPE_p_value_type swig_types[80]
+#define SWIGTYPE_p_void swig_types[81]
+static swig_type_info *swig_types[83];
+static swig_module_info swig_module = {swig_types, 82, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -36014,6 +36015,132 @@ fail:
 }
 
 
+static swig_class SwigClassVByteWriter;
+
+SWIGINTERN VALUE
+#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
+_wrap_VByteWriter_allocate(VALUE self)
+#else
+_wrap_VByteWriter_allocate(int argc, VALUE *argv, VALUE self)
+#endif
+{
+  VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_twenty48__vbyte_writer_t);
+#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
+  rb_obj_call_init(vresult, argc, argv);
+#endif
+  return vresult;
+}
+
+
+SWIGINTERN VALUE
+_wrap_new_VByteWriter(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  twenty48::vbyte_writer_t *result = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","vbyte_writer_t", 1, argv[0] ));
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = (twenty48::vbyte_writer_t *)new twenty48::vbyte_writer_t((char const *)arg1);
+  DATA_PTR(self) = result;
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return self;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return Qnil;
+}
+
+
+SWIGINTERN void
+free_twenty48_vbyte_writer_t(void *self) {
+    twenty48::vbyte_writer_t *arg1 = (twenty48::vbyte_writer_t *)self;
+    delete arg1;
+}
+
+SWIGINTERN VALUE
+_wrap_VByteWriter_get_bytes_written(int argc, VALUE *argv, VALUE self) {
+  twenty48::vbyte_writer_t *arg1 = (twenty48::vbyte_writer_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  uint64_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__vbyte_writer_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::vbyte_writer_t const *","get_bytes_written", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::vbyte_writer_t * >(argp1);
+  result = (uint64_t)((twenty48::vbyte_writer_t const *)arg1)->get_bytes_written();
+  vresult = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_VByteWriter_get_previous(int argc, VALUE *argv, VALUE self) {
+  twenty48::vbyte_writer_t *arg1 = (twenty48::vbyte_writer_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  uint64_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__vbyte_writer_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::vbyte_writer_t const *","get_previous", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::vbyte_writer_t * >(argp1);
+  result = (uint64_t)((twenty48::vbyte_writer_t const *)arg1)->get_previous();
+  vresult = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_VByteWriter_write(int argc, VALUE *argv, VALUE self) {
+  twenty48::vbyte_writer_t *arg1 = (twenty48::vbyte_writer_t *) 0 ;
+  uint64_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned long long val2 ;
+  int ecode2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__vbyte_writer_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::vbyte_writer_t *","write", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::vbyte_writer_t * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint64_t","write", 2, argv[0] ));
+  } 
+  arg2 = static_cast< uint64_t >(val2);
+  (arg1)->write(arg2);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 SWIGINTERN VALUE
 _wrap_merge_states(int argc, VALUE *argv, VALUE self) {
   std::vector< std::string,std::allocator< std::string > > *arg1 = 0 ;
@@ -39027,6 +39154,7 @@ static swig_type_info _swigt__p_twenty48__valuer_tT_3_t = {"_p_twenty48__valuer_
 static swig_type_info _swigt__p_twenty48__valuer_tT_4_t = {"_p_twenty48__valuer_tT_4_t", "twenty48::valuer_t< 4 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__vbyte_index_entry_t = {"_p_twenty48__vbyte_index_entry_t", "twenty48::vbyte_index_entry_t *|std::vector< twenty48::vbyte_index_entry_t >::value_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__vbyte_reader_t = {"_p_twenty48__vbyte_reader_t", "twenty48::vbyte_reader_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_twenty48__vbyte_writer_t = {"_p_twenty48__vbyte_writer_t", "twenty48::vbyte_writer_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *|uint_least8_t *|uint_fast8_t *|uint8_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "uintptr_t *|uint_least32_t *|uint_fast32_t *|uint32_t *|unsigned int *|uint_fast16_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_long_long = {"_p_unsigned_long_long", "uint_least64_t *|uint_fast64_t *|uint64_t *|unsigned long long *|uintmax_t *", 0, 0, (void*)0, 0};
@@ -39110,6 +39238,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_twenty48__valuer_tT_4_t,
   &_swigt__p_twenty48__vbyte_index_entry_t,
   &_swigt__p_twenty48__vbyte_reader_t,
+  &_swigt__p_twenty48__vbyte_writer_t,
   &_swigt__p_unsigned_char,
   &_swigt__p_unsigned_int,
   &_swigt__p_unsigned_long_long,
@@ -39193,6 +39322,7 @@ static swig_cast_info _swigc__p_twenty48__valuer_tT_3_t[] = {  {&_swigt__p_twent
 static swig_cast_info _swigc__p_twenty48__valuer_tT_4_t[] = {  {&_swigt__p_twenty48__valuer_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__vbyte_index_entry_t[] = {  {&_swigt__p_twenty48__vbyte_index_entry_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__vbyte_reader_t[] = {  {&_swigt__p_twenty48__vbyte_reader_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_twenty48__vbyte_writer_t[] = {  {&_swigt__p_twenty48__vbyte_writer_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_long_long[] = {  {&_swigt__p_unsigned_long_long, 0, 0, 0},{0, 0, 0, 0}};
@@ -39276,6 +39406,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_twenty48__valuer_tT_4_t,
   _swigc__p_twenty48__vbyte_index_entry_t,
   _swigc__p_twenty48__vbyte_reader_t,
+  _swigc__p_twenty48__vbyte_writer_t,
   _swigc__p_unsigned_char,
   _swigc__p_unsigned_int,
   _swigc__p_unsigned_long_long,
@@ -40315,6 +40446,17 @@ SWIGEXPORT void Init_twenty48(void) {
   SwigClassVByteReader.mark = 0;
   SwigClassVByteReader.destroy = (void (*)(void *)) free_twenty48_vbyte_reader_t;
   SwigClassVByteReader.trackObjects = 0;
+  
+  SwigClassVByteWriter.klass = rb_define_class_under(mTwenty48, "VByteWriter", rb_cObject);
+  SWIG_TypeClientData(SWIGTYPE_p_twenty48__vbyte_writer_t, (void *) &SwigClassVByteWriter);
+  rb_define_alloc_func(SwigClassVByteWriter.klass, _wrap_VByteWriter_allocate);
+  rb_define_method(SwigClassVByteWriter.klass, "initialize", VALUEFUNC(_wrap_new_VByteWriter), -1);
+  rb_define_method(SwigClassVByteWriter.klass, "get_bytes_written", VALUEFUNC(_wrap_VByteWriter_get_bytes_written), -1);
+  rb_define_method(SwigClassVByteWriter.klass, "get_previous", VALUEFUNC(_wrap_VByteWriter_get_previous), -1);
+  rb_define_method(SwigClassVByteWriter.klass, "write", VALUEFUNC(_wrap_VByteWriter_write), -1);
+  SwigClassVByteWriter.mark = 0;
+  SwigClassVByteWriter.destroy = (void (*)(void *)) free_twenty48_vbyte_writer_t;
+  SwigClassVByteWriter.trackObjects = 0;
   rb_define_module_function(mTwenty48, "merge_states", VALUEFUNC(_wrap_merge_states), -1);
   
   SwigClassLayerSolver2.klass = rb_define_class_under(mTwenty48, "LayerSolver2", rb_cObject);

@@ -17,7 +17,7 @@ struct vbyte_writer_t {
   void write(uint64_t value);
 
 private:
-  const static int BUFFER_SIZE = 2 * sizeof(uint64_t);
+  static const int BUFFER_SIZE = 2 * sizeof(uint64_t);
   std::ofstream os;
   size_t bytes_written;
   uint64_t previous;
