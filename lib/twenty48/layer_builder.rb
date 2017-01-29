@@ -151,7 +151,7 @@ module Twenty48
     def read_layer_info(layer_sum)
       info = JSON.parse(File.read(layer_info_pathname(layer_sum)))
       entries = info['index'].map do |entry|
-        VByteIndexEntry.new(entry['byte_offset'], entry['previous'])
+        VByteIndexEntry.from_raw(entry)
       end
       entries.unshift(VByteIndexEntry.new)
       info['index'] = VByteIndex.new(entries)

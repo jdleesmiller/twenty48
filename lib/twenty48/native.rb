@@ -152,10 +152,14 @@ module Twenty48
   # An entry in a layer index. See VByteIndex for info.
   #
   class VByteIndexEntry
+    def self.from_raw(raw)
+      new(raw['byte_offset'], raw['previous'].to_i(16))
+    end
+
     def to_json(*args)
       {
         byte_offset: byte_offset,
-        previous: previous
+        previous: previous.to_s(16)
       }.to_json(*args)
     end
   end
