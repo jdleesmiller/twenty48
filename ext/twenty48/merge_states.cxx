@@ -1,6 +1,7 @@
 #include "merge_states.hpp"
 
 #include <limits>
+#include <memory>
 
 #include "vbyte_reader.hpp"
 #include "vbyte_writer.hpp"
