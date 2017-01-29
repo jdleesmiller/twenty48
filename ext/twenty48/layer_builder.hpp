@@ -8,6 +8,7 @@
 #include "layer_storage.hpp"
 #include "state.hpp"
 #include "valuer.hpp"
+#include "vbyte_index.hpp"
 #include "vbyte_reader.hpp"
 #include "vbyte_writer.hpp"
 
@@ -53,17 +54,13 @@ namespace twenty48 {
 
     layer_builder_t(const valuer_t<size> &valuer) : valuer(valuer) { }
 
-    void build_layer(const char *input_layer_pathname,
-      const char *output_layer_pathname, int step,
-      int remainder, int divisor) const
+    void build_layer(twenty48::vbyte_reader_t &vbyte_reader,
+      const char *output_layer_pathname, int step) const
     {
-      vbyte_reader_t vbyte_reader(input_layer_pathname);
-
       state_set_t output_layer;
-      for (size_t index = 0; ; ++index) {
+      for (;;) {
         uint64_t nybbles = vbyte_reader.read();
         if (nybbles == 0) break;
-        if (index % divisor != remainder) continue;
         state_t<size> state(nybbles);
         expand(state, step, output_layer);
       }
@@ -72,7 +69,8 @@ namespace twenty48 {
     }
 
     size_t merge_files(const std::vector<std::string> &input_pathnames,
-      const char *output_pathname) const
+      const char *output_pathname,
+      size_t index_stride, twenty48::vbyte_index_t &vbyte_index) const
     {
       size_t num_states = 0;
       const size_t n = input_pathnames.size();
@@ -121,6 +119,13 @@ namespace twenty48 {
         // Write the min state.
         vbyte_writer.write(min_state.get_nybbles());
         num_states += 1;
+
+        // Update index if necessary.
+        if (num_states % index_stride == 0) {
+          vbyte_index.push_back(vbyte_index_entry_t(
+            vbyte_writer.get_bytes_written(),
+            vbyte_writer.get_previous()));
+        }
 
         // Pop the head states that matched the min state we just wrote.
         for (typename std::vector<size_t>::const_iterator it =

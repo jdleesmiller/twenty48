@@ -149,6 +149,18 @@ module Twenty48
   end
 
   #
+  # An entry in a layer index. See VByteIndex for info.
+  #
+  class VByteIndexEntry
+    def to_json(*args)
+      {
+        byte_offset: byte_offset,
+        previous: previous
+      }.to_json(*args)
+    end
+  end
+
+  #
   # Common methods for the native Valuer class.
   #
   module NativeValuer

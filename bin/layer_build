@@ -47,7 +47,7 @@ end
       board_size: 2,
       max_exponent: max_exponent,
       max_depth: max_depth,
-      max_states: 1024
+      max_states: 2
     )
   end
 end
@@ -61,7 +61,7 @@ end
       board_size: 3,
       max_exponent: max_exponent,
       max_depth: max_depth,
-      max_states: 100_000
+      max_states: 10_000
     )
   end
 end

@@ -128,6 +128,16 @@
 %template(write_states_vbyte_3) twenty48::write_states_vbyte<3>;
 %template(write_states_vbyte_4) twenty48::write_states_vbyte<4>;
 
+%rename(VByteIndexEntry) twenty48::vbyte_index_entry_t;
+
+%include "vbyte_index.hpp"
+
+%template(VByteIndex) std::vector<twenty48::vbyte_index_entry_t>;
+
+%rename(VByteReader) twenty48::vbyte_reader_t;
+
+%include "vbyte_reader.hpp"
+
 /******************************************************************************/
 /* LayerSolver */
 /******************************************************************************/
