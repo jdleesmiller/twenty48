@@ -245,7 +245,7 @@ module Twenty48
 
     def merge_files(input_files, output_file)
       vbyte_index = VByteIndex.new
-      num_states = builder.merge_files(StringVector.new(input_files),
+      num_states = Twenty48.merge_states(StringVector.new(input_files),
         output_file, batch_size, vbyte_index)
       [num_states, vbyte_index]
     end

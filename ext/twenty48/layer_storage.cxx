@@ -62,18 +62,6 @@ void convert_hex_layer_to_bin(
   os.close();
 }
 
-void convert_bin_layer_to_vbyte(
-  const char *in_pathname, const char *out_pathname) {
-  std::ifstream is(in_pathname, std::ios::in | std::ios::binary);
-  vbyte_writer_t vbyte_writer(out_pathname);
-  for (;;) {
-    uint64_t value;
-    is.read(reinterpret_cast<char *>(&value), sizeof(value));
-    if (!is) break;
-    vbyte_writer.write(value);
-  }
-}
-
 size_t count_records_in_file(const char *pathname, size_t record_size) {
   struct stat stat_buf;
   int rc = stat(pathname, &stat_buf);

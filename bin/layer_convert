@@ -6,24 +6,51 @@ require 'fileutils'
 require_relative '../lib/twenty48'
 include Twenty48
 
-ARGV.each do |bin_pathname|
-  puts bin_pathname
-  raise "bad: #{bin_pathname}" unless File.extname(bin_pathname) == '.bin'
-  stem = File.join(
-    File.dirname(bin_pathname),
-    File.basename(bin_pathname, '.bin')
-  )
-  vbyte_pathname = "#{stem}.vbyte"
-  info_pathname = "#{stem}.json"
+batch_size = 50_000_000
 
-  num_states = File.stat(bin_pathname).size / 8
-  puts "num_states: #{num_states}"
+ARGV.each do |vbyte_pathname|
+  raise "bad: #{vbyte_pathname}" unless File.extname(vbyte_pathname) == '.vbyte'
+  puts vbyte_pathname
+
+  stem = File.join(
+    File.dirname(vbyte_pathname),
+    File.basename(vbyte_pathname, '.vbyte')
+  )
+  info_pathname = "#{stem}.json"
+  info = JSON.parse(File.read(info_pathname))
+
+  info_num_states = info['num_states']
+
+  bin_pathname = "#{stem}.bin"
+  if File.exist?(bin_pathname)
+    bin_num_states = File.stat(bin_pathname) / 8
+    if bin_num_states != info_num_states
+      raise "#{stem}: bin state count does not match info"
+    end
+  else
+    puts 'no bin found'
+  end
+
+  if info['index']
+    puts 'skipping'
+    next
+  end
+
+  vbyte_index = VByteIndex.new
+  num_states = Twenty48.merge_states(StringVector.new([vbyte_pathname]),
+    '/dev/null', batch_size, vbyte_index)
+
+  if num_states != info_num_states
+    raise "#{stem}: counted num states does not match info"
+  end
+
+  FileUtils.cp info_pathname, info_pathname + '.bak'
 
   File.open(info_pathname, 'w') do |info_file|
     JSON.dump({
-      num_states: num_states
+      num_states: num_states,
+      batch_size: batch_size,
+      index: vbyte_index.to_a
     }, info_file)
   end
-
-  convert_bin_layer_to_vbyte bin_pathname, vbyte_pathname
 end

@@ -6,6 +6,7 @@
 #include "state.hpp"
 #include "layer_builder.hpp"
 #include "layer_solver.hpp"
+#include "merge_states.hpp"
 #include "start_states.hpp"
 #include "state_hash_set.hpp"
 #include "state_value_map.hpp"
@@ -137,6 +138,8 @@
 %rename(VByteReader) twenty48::vbyte_reader_t;
 
 %include "vbyte_reader.hpp"
+
+%include "merge_states.hpp"
 
 /******************************************************************************/
 /* LayerSolver */
