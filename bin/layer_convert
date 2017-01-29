@@ -23,7 +23,7 @@ ARGV.each do |vbyte_pathname|
 
   bin_pathname = "#{stem}.bin"
   if File.exist?(bin_pathname)
-    bin_num_states = File.stat(bin_pathname) / 8
+    bin_num_states = File.stat(bin_pathname).size / 8
     if bin_num_states != info_num_states
       raise "#{stem}: bin state count does not match info"
     end
@@ -41,7 +41,7 @@ ARGV.each do |vbyte_pathname|
     '/dev/null', batch_size, vbyte_index)
 
   if num_states != info_num_states
-    raise "#{stem}: counted num states does not match info"
+    raise "#{stem}: counted num states #{num_states} does not match info"
   end
 
   FileUtils.cp info_pathname, info_pathname + '.bak'
