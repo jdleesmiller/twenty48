@@ -91,6 +91,14 @@ namespace twenty48 {
   }
 
   /**
+   * Convert a layer in binary format to compressed vbyte format.
+   * @param in_pathname bin file
+   * @param out_pathname vbyte file
+   */
+  void convert_bin_layer_to_vbyte(
+    const char *in_pathname, const char *out_pathname);
+
+  /**
    * Count records in a fixed-size file.
    */
   size_t count_records_in_file(const char *pathname, size_t record_size);
