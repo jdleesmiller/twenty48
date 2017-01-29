@@ -7,9 +7,6 @@ require_relative '../lib/twenty48'
 
 include Twenty48
 
-TOTAL_MEMORY = 8 * 1024**3
-WORKING_MEMORY = (0.8 * TOTAL_MEMORY).ceil
-
 def build(board_size:, max_exponent:, max_depth:, max_states:)
   # Note: exact discount value doesn't matter for build step.
   discount = 0.95
@@ -47,7 +44,7 @@ end
       board_size: 2,
       max_exponent: max_exponent,
       max_depth: max_depth,
-      max_states: 1024
+      max_states: 2
     )
   end
 end
@@ -61,16 +58,37 @@ end
       board_size: 3,
       max_exponent: max_exponent,
       max_depth: max_depth,
-      max_states: 100_000
+      max_states: 10_000
     )
   end
 end
 
-# max_max_states = (
+#
+# 4x4
+#
+# Test builds for comparison with ruby results:
+#
+[3].each do |max_exponent|
+  [0, 1].each do |max_depth|
+    build(
+      board_size: 4,
+      max_exponent: max_exponent,
+      max_depth: max_depth,
+      max_states: 1000
+    )
+  end
+end
+
+# Estimated batch size for build:
+# TOTAL_MEMORY = 8 * 1024**3
+# WORKING_MEMORY = (0.8 * TOTAL_MEMORY).ceil
+# max_states = (
 #   0.25 * LayerBuilder.find_max_successor_states(WORKING_MEMORY)).ceil
+# => 53,687,091
+
 # build(
 #   board_size: 4,
 #   max_exponent: 11,
 #   max_depth: 1,
-#   max_states: max_max_states
+#   max_states: 50_000_000
 # )

@@ -6,7 +6,8 @@
 namespace twenty48 {
 
 vbyte_writer_t::vbyte_writer_t(const char *pathname) :
-  os(pathname, std::ios::out | std::ios::binary), previous(0) { }
+  os(pathname, std::ios::out | std::ios::binary),
+  bytes_written(0), previous(0) { }
 
 vbyte_writer_t::~vbyte_writer_t() {
   os.close();
@@ -18,6 +19,7 @@ void vbyte_writer_t::write(uint64_t value) {
   if (!os) {
     throw std::runtime_error("vbyte_writer: write failed");
   }
+  bytes_written += bytes_out;
   previous = value;
 }
 

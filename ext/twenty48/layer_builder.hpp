@@ -53,89 +53,18 @@ namespace twenty48 {
 
     layer_builder_t(const valuer_t<size> &valuer) : valuer(valuer) { }
 
-    void build_layer(const char *input_layer_pathname,
-      const char *output_layer_pathname, int step,
-      int remainder, int divisor) const
+    void build_layer(twenty48::vbyte_reader_t &vbyte_reader,
+      const char *output_layer_pathname, int step) const
     {
-      vbyte_reader_t vbyte_reader(input_layer_pathname);
-
       state_set_t output_layer;
-      for (size_t index = 0; ; ++index) {
+      for (;;) {
         uint64_t nybbles = vbyte_reader.read();
         if (nybbles == 0) break;
-        if (index % divisor != remainder) continue;
         state_t<size> state(nybbles);
         expand(state, step, output_layer);
       }
 
       write_states(output_layer_pathname, output_layer);
-    }
-
-    size_t merge_files(const std::vector<std::string> &input_pathnames,
-      const char *output_pathname) const
-    {
-      size_t num_states = 0;
-      const size_t n = input_pathnames.size();
-      const state_t<size> inf_state = state_t<size>(
-        std::numeric_limits<uint64_t>::max());
-      typedef std::vector<std::unique_ptr<vbyte_reader_t> > reader_vector_t;
-
-      vbyte_writer_t vbyte_writer(output_pathname);
-
-      // Open input files.
-      reader_vector_t inputs;
-      for (typename std::vector<std::string>::const_iterator it =
-        input_pathnames.begin(); it != input_pathnames.end(); ++it) {
-        inputs.emplace_back(new vbyte_reader_t(it->c_str()));
-      }
-
-      // Read first value from each file.
-      state_vector_t heads;
-      for (typename reader_vector_t::iterator it = inputs.begin();
-        it != inputs.end(); ++it) {
-        uint64_t nybbles = (*it)->read();
-        if (nybbles == 0) {
-          heads.push_back(inf_state);
-        } else {
-          heads.push_back(state_t<size>(nybbles));
-        }
-      }
-
-      std::vector<size_t> min_indexes;
-      for (;;) {
-        // Find the smallest state among the current heads.
-        state_t<size> min_state(inf_state);
-        for (size_t i = 0; i < n; ++i) {
-          if (heads[i] < min_state) {
-            min_state = heads[i];
-            min_indexes.clear();
-            min_indexes.push_back(i);
-          } else if (heads[i] == min_state) {
-            min_indexes.push_back(i);
-          }
-        }
-
-        // If all heads are infinite, we're done.
-        if (min_state == inf_state) break;
-
-        // Write the min state.
-        vbyte_writer.write(min_state.get_nybbles());
-        num_states += 1;
-
-        // Pop the head states that matched the min state we just wrote.
-        for (typename std::vector<size_t>::const_iterator it =
-          min_indexes.begin(); it != min_indexes.end(); ++it) {
-          uint64_t next_nybbles = inputs[*it]->read();
-          if (next_nybbles == 0) {
-            heads[*it] = inf_state;
-          } else {
-            heads[*it] = state_t<size>(next_nybbles);
-          }
-        }
-
-        min_indexes.clear();
-      }
-      return num_states;
     }
 
   private:

@@ -21,15 +21,14 @@ module Twenty48
   # ```
   #
   class LayerBuilder
-    def initialize(board_size, layer_folder, max_batch_size, valuer,
-      verbose: false)
+    def initialize(board_size, layer_folder, batch_size, valuer, verbose: false)
       @layer_folder = layer_folder
       @builder = NativeLayerBuilder.create(board_size, valuer)
-      @max_batch_size = max_batch_size
+      @batch_size = batch_size
       @verbose = verbose
     end
 
-    attr_reader :max_batch_size
+    attr_reader :batch_size
     attr_reader :layer_folder
     attr_reader :builder
 
@@ -109,8 +108,9 @@ module Twenty48
 
     def build_layer(layer_sum)
       input_layer_pathname = layer_pathname(layer_sum)
-      num_input_states = count_states(layer_sum)
-      num_batches = find_num_batches(num_input_states)
+      input_info = read_layer_info(layer_sum)
+      num_input_states = input_info['num_states']
+      num_batches = input_info['index'].size
 
       log_build_layer(layer_sum, num_input_states, num_batches)
 
@@ -120,13 +120,10 @@ module Twenty48
         GC.start
         batches = Parallel.map(jobs) do |batch_index, step|
           batch = Batch.new(
-            builder,
-            work_folder,
-            layer_sum,
-            input_layer_pathname,
-            step,
+            builder, work_folder, layer_sum, input_layer_pathname, step,
             batch_index,
-            num_batches,
+            input_info['index'][batch_index],
+            batch_size,
             @verbose
           )
           batch.build
@@ -152,7 +149,13 @@ module Twenty48
     end
 
     def read_layer_info(layer_sum)
-      JSON.parse(File.read(layer_info_pathname(layer_sum)))
+      info = JSON.parse(File.read(layer_info_pathname(layer_sum)))
+      entries = info['index'].map do |entry|
+        VByteIndexEntry.new(entry['byte_offset'], entry['previous'])
+      end
+      entries.unshift(VByteIndexEntry.new)
+      info['index'] = VByteIndex.new(entries)
+      info
     end
 
     def count_states(layer_sum)
@@ -161,20 +164,14 @@ module Twenty48
 
     private
 
-    def write_layer_info(layer_sum, num_states:)
+    def write_layer_info(layer_sum, num_states:, index: [])
       File.open(layer_info_pathname(layer_sum), 'w') do |info_file|
         JSON.dump({
-          num_states: num_states
+          num_states: num_states,
+          batch_size: batch_size,
+          index: index.to_a
         }, info_file)
       end
-    end
-
-    # Find the number of batches needed. If we don't have enough batches to keep
-    # all of the CPUs busy, use more batches than necessary.
-    def find_num_batches(num_input_states)
-      min_batches = (Parallel.processor_count / 2.0).ceil
-      num_batches = num_input_states / max_batch_size
-      [min_batches, num_batches].max
     end
 
     Batch = Struct.new(
@@ -183,8 +180,9 @@ module Twenty48
       :input_layer_sum,
       :input_layer_pathname,
       :step,
-      :remainder,
-      :divisor,
+      :batch_index,
+      :index_entry,
+      :batch_size,
       :verbose
     ) do
       def output_layer_sum
@@ -192,8 +190,8 @@ module Twenty48
       end
 
       def basename
-        format('%04d-step-%d-remainder-%04d-divisor-%04d.vbyte',
-          output_layer_sum, step, remainder, divisor)
+        format('%04d-step-%d-index-%04d.vbyte',
+          output_layer_sum, step, batch_index)
       end
 
       def output_pathname
@@ -201,13 +199,9 @@ module Twenty48
       end
 
       def build
-        builder.build_layer(
-          input_layer_pathname,
-          output_pathname,
-          step,
-          remainder,
-          divisor
-        )
+        vbyte_reader = VByteReader.new(input_layer_pathname,
+          index_entry.byte_offset, index_entry.previous, batch_size)
+        builder.build_layer(vbyte_reader, output_pathname, step)
         STDOUT.write('.') if verbose
       end
     end
@@ -222,8 +216,7 @@ module Twenty48
         log_reduce_step(input_layer_sum, step, input_pathnames)
         output_sum = input_layer_sum + 2 * step
         work_layer = layer_pathname(output_sum, folder: work_folder)
-        num_work_states = merge_files(input_pathnames, work_layer)
-        merge_results(output_sum, work_folder, work_layer, num_work_states)
+        merge_results(output_sum, work_folder, work_layer, input_pathnames)
       end
     end
 
@@ -233,21 +226,28 @@ module Twenty48
       end.compact
     end
 
-    def merge_results(output_sum, work_folder, work_layer, num_work_states)
+    def merge_results(output_sum, work_folder, work_layer, input_pathnames)
+      num_work_states, work_index = merge_files(input_pathnames, work_layer)
       output_pathname = layer_pathname(output_sum)
       if File.exist?(output_pathname)
         temp_pathname = File.join(work_folder, 'new_layer.vbyte')
-        num_states = merge_files([work_layer, output_pathname], temp_pathname)
-        write_layer_info(output_sum, num_states: num_states)
+        num_states, vbyte_index = merge_files([work_layer, output_pathname],
+          temp_pathname)
+        write_layer_info(output_sum,
+          num_states: num_states, index: vbyte_index)
         FileUtils.mv temp_pathname, output_pathname
       else
-        write_layer_info(output_sum, num_states: num_work_states)
+        write_layer_info(output_sum,
+          num_states: num_work_states, index: work_index)
         FileUtils.mv work_layer, output_pathname
       end
     end
 
     def merge_files(input_files, output_file)
-      builder.merge_files(StringVector.new(input_files), output_file)
+      vbyte_index = VByteIndex.new
+      num_states = Twenty48.merge_states(StringVector.new(input_files),
+        output_file, batch_size, vbyte_index)
+      [num_states, vbyte_index]
     end
 
     def file_size(pathname)

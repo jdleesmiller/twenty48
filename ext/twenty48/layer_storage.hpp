@@ -11,6 +11,7 @@
 #include "state.hpp"
 #include "vbyte_reader.hpp"
 #include "vbyte_writer.hpp"
+#include "vbyte_index.hpp"
 
 namespace twenty48 {
   std::string make_layer_pathname(const std::string &data_path, int sum,
@@ -31,14 +32,6 @@ namespace twenty48 {
   void convert_hex_layer_to_bin(
     const char *in_pathname,
     const char *out_pathname);
-
-  /**
-   * Convert a layer in binary format to compressed vbyte format.
-   * @param in_pathname bin file
-   * @param out_pathname vbyte file
-   */
-  void convert_bin_layer_to_vbyte(
-    const char *in_pathname, const char *out_pathname);
 
   /**
    * Read states in sorted compressed vbyte format.

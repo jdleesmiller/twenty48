@@ -47,6 +47,12 @@ class NativeLayerBuilderTest < Twenty48NativeTest
         [0, 1,
          2, 0]
       ], states_6
+
+      # Don't bother saving an index on start states.
+      index_4 = layer_builder.read_layer_info(4)['index']
+      assert_equal 1, index_4.size
+      assert_equal 0, index_4[0].byte_offset
+      assert_equal 0, index_4[0].previous
     end
   end
 

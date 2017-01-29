@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
+require 'English'
 require 'gemma'
 require 'rake/extensiontask'
 
@@ -19,6 +20,7 @@ SWIG_FILES = [ext_file("#{NAME}.i")] + Dir.glob(ext_file('*.hpp'))
 file WRAP_FILE => SWIG_FILES do
   Dir.chdir(EXT_DIR) do
     system "swig -c++ -ruby #{NAME}.i"
+    raise unless $CHILD_STATUS.exitstatus == 0
   end
 end
 
