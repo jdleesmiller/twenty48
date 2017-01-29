@@ -36093,12 +36093,6 @@ fail:
 }
 
 
-SWIGINTERN void
-free_twenty48_vbyte_writer_t(void *self) {
-    twenty48::vbyte_writer_t *arg1 = (twenty48::vbyte_writer_t *)self;
-    delete arg1;
-}
-
 SWIGINTERN VALUE
 _wrap_VByteWriter_get_bytes_written(int argc, VALUE *argv, VALUE self) {
   twenty48::vbyte_writer_t *arg1 = (twenty48::vbyte_writer_t *) 0 ;
@@ -36175,6 +36169,12 @@ fail:
   return Qnil;
 }
 
+
+SWIGINTERN void
+free_twenty48_vbyte_writer_t(void *self) {
+    twenty48::vbyte_writer_t *arg1 = (twenty48::vbyte_writer_t *)self;
+    delete arg1;
+}
 
 SWIGINTERN VALUE
 _wrap_merge_states(int argc, VALUE *argv, VALUE self) {

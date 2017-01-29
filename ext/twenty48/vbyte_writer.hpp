@@ -9,7 +9,6 @@ namespace twenty48 {
  */
 struct vbyte_writer_t {
   explicit vbyte_writer_t(const char *pathname);
-  ~vbyte_writer_t();
 
   uint64_t get_bytes_written() const { return bytes_written; }
   uint64_t get_previous() const { return previous; }

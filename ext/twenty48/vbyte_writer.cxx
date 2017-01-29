@@ -9,10 +9,6 @@ vbyte_writer_t::vbyte_writer_t(const char *pathname) :
   os(pathname, std::ios::out | std::ios::binary),
   bytes_written(0), previous(0) { }
 
-vbyte_writer_t::~vbyte_writer_t() {
-  os.close();
-}
-
 void vbyte_writer_t::write(uint64_t value) {
   size_t bytes_out = vbyte_append_sorted64(buffer, previous, value);
   os.write(reinterpret_cast<const char*>(buffer), bytes_out);
