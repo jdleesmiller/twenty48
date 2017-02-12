@@ -7,6 +7,8 @@
 #include "layer_builder.hpp"
 #include "layer_solver.hpp"
 #include "merge_states.hpp"
+#include "policy_reader.hpp"
+#include "policy_writer.hpp"
 #include "start_states.hpp"
 #include "state_hash_set.hpp"
 #include "state_value_map.hpp"
@@ -154,6 +156,28 @@
 %template(LayerSolver2) twenty48::layer_solver_t<2>;
 %template(LayerSolver3) twenty48::layer_solver_t<3>;
 %template(LayerSolver4) twenty48::layer_solver_t<4>;
+
+/******************************************************************************/
+/* Policy Reader/Writer */
+/******************************************************************************/
+
+%rename(PolicyReader) twenty48::policy_reader_t;
+
+%extend twenty48::policy_reader_t {
+  %exception read {
+    try {
+      $action
+    }
+    catch (const std::runtime_error& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
+}
+
+%include "policy_reader.hpp"
+
+%rename(PolicyWriter) twenty48::policy_writer_t;
+%include "policy_writer.hpp"
 
 /******************************************************************************/
 /* Start States */
