@@ -12,7 +12,6 @@ struct vbyte_reader_t {
   explicit vbyte_reader_t(const char *pathname,
     size_t byte_offset = 0, uint64_t previous = 0,
     size_t max_states = std::numeric_limits<size_t>::max());
-  ~vbyte_reader_t();
 
   uint64_t read();
 

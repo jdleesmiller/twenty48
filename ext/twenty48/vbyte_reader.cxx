@@ -14,10 +14,6 @@ vbyte_reader_t::vbyte_reader_t(
     is.seekg(byte_offset);
   }
 
-vbyte_reader_t::~vbyte_reader_t() {
-  is.close();
-}
-
 uint64_t vbyte_reader_t::read() {
   if (states_read >= max_states) return 0;
 
