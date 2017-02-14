@@ -20,11 +20,6 @@ Dir.glob(Twenty48::Storage::LAYER_STATES_GLOB).sort.each do |states_path|
   end
   FileUtils.mkdir_p values_path
 
-  layer_files = Dir.glob(File.join(states_path, '*.vbyte'))
-  layer_sums = layer_files.map do |pathname|
-    File.basename(pathname, '.vbyte').to_i
-  end
-
   valuer = NativeValuer.create(
     board_size: params[:board_size],
     max_exponent: params[:max_exponent],
@@ -32,17 +27,13 @@ Dir.glob(Twenty48::Storage::LAYER_STATES_GLOB).sort.each do |states_path|
     discount: params[:discount]
   )
 
-  solver = NativeLayerSolver.create(
+  solver = LayerSolver.new(
     params[:board_size],
     states_path,
     values_path,
-    layer_sums.max,
-    valuer
+    valuer,
+    verbose: true
   )
 
-  loop do
-    puts "Solving layer #{solver.get_sum}"
-    solver.solve
-    break unless solver.move_to_lower_layer
-  end
+  solver.solve
 end

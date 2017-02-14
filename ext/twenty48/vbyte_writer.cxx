@@ -19,4 +19,8 @@ void vbyte_writer_t::write(uint64_t value) {
   previous = value;
 }
 
+void vbyte_writer_t::close() {
+  os.close();
+}
+
 }

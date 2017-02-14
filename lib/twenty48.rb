@@ -24,7 +24,9 @@ require_relative 'twenty48/twenty48'
 require_relative 'twenty48/native'
 require_relative 'twenty48/native_layer_builder'
 require_relative 'twenty48/native_state_hash_set'
+require_relative 'twenty48/layers'
 require_relative 'twenty48/layer_builder'
+require_relative 'twenty48/layer_solver'
 
 module Twenty48
   DIRECTIONS = [:left, :right, :up, :down].freeze

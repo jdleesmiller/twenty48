@@ -14,6 +14,7 @@ struct vbyte_writer_t {
   uint64_t get_previous() const { return previous; }
 
   void write(uint64_t value);
+  void close();
 
 private:
   static const int BUFFER_SIZE = 2 * sizeof(uint64_t);

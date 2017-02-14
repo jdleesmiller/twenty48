@@ -11,27 +11,37 @@ column_names = %w(
 )
 puts column_names.join(',')
 
-VALUES_RECORD_SIZE = 16 # bytes
+VALUES_RECORD_SIZE = 8 # bytes
 
 Dir.glob(Storage::LAYER_VALUES_GLOB).sort.each do |values_path|
   params = Storage.layer_values_params_from_pathname(values_path)
   $stderr.puts [Time.now, params].inspect
+
+  states_pathname = Storage.layer_states_pathname(params)
 
   start_states = Twenty48.generate_start_states(board_size: params[:board_size])
 
   total_states = 0
   total_start_state_value = 0.0
   num_start_states = 0
-  Dir.glob(File.join(values_path, '*.bin')).each do |layer_pathname|
-    layer_size = File.stat(layer_pathname).size
-    raise "bad layer size #{layer_pathname}" unless
-      layer_size % VALUES_RECORD_SIZE == 0
+  Dir.glob(File.join(values_path, '*.values')).each do |values_pathname|
+    values_size = File.stat(values_pathname).size
+    raise "bad layer size #{values_pathname}" unless
+      values_size % VALUES_RECORD_SIZE == 0
 
-    layer_sum = File.basename(layer_pathname, '.bin').to_i
+    layer_sum = File.basename(values_pathname, '.values').to_i
+    layer_states_pathname = File.join(states_pathname,
+      format('%04d.vbyte', layer_sum))
+    raise 'missing states file' unless File.exist?(layer_states_pathname)
+
     if layer_sum <= 8
-      map = NativeStateValueMap.create(params[:board_size])
-      map.read(layer_pathname)
-      map.each do |state, _action, value|
+      values = File.read(values_pathname).unpack('D*')
+      vbyte_reader = VByteReader.new(layer_states_pathname)
+      values.each do |value|
+        nybbles = vbyte_reader.read
+        raise 'out of states' if nybbles == 0
+        state = NativeState.create_from_nybbles(params[:board_size], nybbles)
+
         next unless start_states.member?(state)
         # p ['start state', state]
         num_start_states += 1
@@ -39,7 +49,7 @@ Dir.glob(Storage::LAYER_VALUES_GLOB).sort.each do |values_path|
       end
     end
 
-    total_states += layer_size / VALUES_RECORD_SIZE
+    total_states += values_size / VALUES_RECORD_SIZE
   end
 
   raise 'start state mismatch' if num_start_states != start_states.size
