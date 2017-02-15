@@ -42,6 +42,9 @@ module Twenty48
     def solve
       layer_sum = end_layer_sum
       while layer_sum >= 4
+        # Run a GC to make sure we close file handles in VByteReaders.
+        GC.start
+
         puts "Solving layer #{layer_sum}" if @verbose
         solve_layer(layer_sum)
         prepare_lower_layer(layer_sum)
@@ -61,6 +64,7 @@ module Twenty48
       policy_pathname = layer_policy_pathname(layer_sum)
       vbyte_reader = VByteReader.new(states_pathname)
       @solver.solve(vbyte_reader, values_pathname, policy_pathname)
+      vbyte_reader = nil
     end
 
     def prepare_lower_layer(layer_sum)
