@@ -112,6 +112,10 @@ module Twenty48
       num_input_states = input_info['num_states']
       num_batches = input_info['index'].size
 
+      # Can't currently handle too many; we may run out of file descriptors
+      # when we try to merge.
+      raise "too many batches: #{num_batches}" if num_batches > 1000
+
       log_build_layer(layer_sum, num_input_states, num_batches)
 
       jobs = (0...num_batches).to_a.product((1..2).to_a)
