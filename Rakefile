@@ -21,7 +21,7 @@ file WRAP_FILE => SWIG_FILES do
   break if ENV['NOSWIG']
   Dir.chdir(EXT_DIR) do
     system "swig -c++ -ruby #{NAME}.i"
-    raise unless $CHILD_STATUS.exitstatus == 0
+    raise 'swig failed' unless $CHILD_STATUS.exitstatus == 0
   end
 end
 

@@ -46,6 +46,9 @@ Metrics/PerceivedComplexity:
   Exclude:
     - 'test/**/*'
 
+Metrics/ParameterLists:
+  Max: 10
+
 Metrics/MethodLength:
   Max: 25
   Exclude:

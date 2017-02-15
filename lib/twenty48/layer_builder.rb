@@ -21,6 +21,8 @@ module Twenty48
   # ```
   #
   class LayerBuilder
+    include Layers
+
     def initialize(board_size, layer_folder, batch_size, valuer, verbose: false)
       @layer_folder = layer_folder
       @builder = NativeLayerBuilder.create(board_size, valuer)
@@ -45,25 +47,6 @@ module Twenty48
     def self.find_max_successor_states(working_memory)
       batch_memory = working_memory / Parallel.processor_count
       batch_memory / STATE_BYTE_SIZE
-    end
-
-    #
-    # File name for a complete layer with the given sum.
-    #
-    def layer_basename(layer_sum)
-      format('%04d.vbyte', layer_sum)
-    end
-
-    def layer_pathname(layer_sum, folder: layer_folder)
-      File.join(folder, layer_basename(layer_sum))
-    end
-
-    def layer_info_basename(layer_sum)
-      format('%04d.json', layer_sum)
-    end
-
-    def layer_info_pathname(layer_sum)
-      File.join(layer_folder, layer_info_basename(layer_sum))
     end
 
     #
@@ -103,7 +86,7 @@ module Twenty48
         layer_sum += 2
       end
       remove_empty_layers(layer_sum + 4)
-      layer_sum - skips * 2
+      nil
     end
 
     def build_layer(layer_sum)

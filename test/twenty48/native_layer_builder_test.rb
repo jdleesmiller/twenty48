@@ -98,7 +98,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
     end
   end
 
-  def test_build_and_solve
+  def test_build_and_solve_2x2_to_128
     Dir.mktmpdir do |tmp|
       states_path = File.join(tmp, 'states')
       values_path = File.join(tmp, 'values')
@@ -111,24 +111,66 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       )
       layer_builder = LayerBuilder.new(2, states_path, max_states, valuer)
       layer_builder.build_start_state_layers
-      max_sum = layer_builder.build
+      layer_builder.build
 
       states_by_layer = layer_builder.states_by_layer
       assert_equal 24, states_by_layer.size
       assert_equal 74, states_by_layer.values.flatten(1).count { |s| s.sum > 0 }
 
-      layer_solver = NativeLayerSolver.create(
+      layer_solver = LayerSolver.new(
         2,
         states_path,
         values_path,
-        max_sum,
         valuer
       )
 
-      loop do
-        layer_solver.solve
-        break unless layer_solver.move_to_lower_layer
-      end
+      layer_solver.solve
+
+      values_4_file = File.join(values_path, '0004.values')
+      assert File.exist?(values_4_file)
+      assert_equal 16, File.size(values_4_file)
+
+      # This game is not winnable.
+      assert_equal [0, 0], File.read(values_4_file).unpack('D*')
+    end
+  end
+
+  def test_build_and_solve_2x2_to_32
+    Dir.mktmpdir do |tmp|
+      states_path = File.join(tmp, 'states')
+      values_path = File.join(tmp, 'values')
+      FileUtils.mkdir_p states_path
+      FileUtils.mkdir_p values_path
+
+      max_states = 1024
+      valuer = NativeValuer.create(
+        board_size: 2, max_exponent: 5, max_depth: 0, discount: DISCOUNT
+      )
+      layer_builder = LayerBuilder.new(2, states_path, max_states, valuer)
+      layer_builder.build_start_state_layers
+      layer_builder.build
+
+      states_by_layer = layer_builder.states_by_layer
+      assert_equal 18, states_by_layer.size
+      assert_equal 57, states_by_layer.values.flatten(1).count { |s| s.sum > 0 }
+
+      layer_solver = LayerSolver.new(
+        2,
+        states_path,
+        values_path,
+        valuer
+      )
+
+      layer_solver.solve
+
+      values_4_file = File.join(values_path, '0004.values')
+      assert File.exist?(values_4_file)
+      assert_equal 16, File.size(values_4_file)
+
+      # This game is quite hard to win.
+      values = File.read(values_4_file).unpack('D*')
+      assert_close 0.03831963657896261, values[0]
+      assert_close 0.03831963657896261, values[1]
     end
   end
 end

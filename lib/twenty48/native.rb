@@ -22,6 +22,16 @@ module Twenty48
   module NativeState
     include CommonState
 
+    def self.create_from_nybbles(board_size, nybbles)
+      case board_size
+      when 2 then Twenty48::State2.new(nybbles)
+      when 3 then Twenty48::State3.new(nybbles)
+      when 4 then Twenty48::State4.new(nybbles)
+      else
+        raise "bad state board size: #{board_size}"
+      end
+    end
+
     def self.create(state_array)
       case state_array.size
       when 4 then Twenty48::State2.new(state_array)
