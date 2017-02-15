@@ -79,13 +79,24 @@ end
   end
 end
 
-[4, 5].each do |max_exponent|
+[4].each do |max_exponent|
   [0, 1].each do |max_depth|
     build(
       board_size: 4,
       max_exponent: max_exponent,
       max_depth: max_depth,
-      max_states: 100_000
+      max_states: 1_000_000
+    )
+  end
+end
+
+[5].each do |max_exponent|
+  [0, 1].each do |max_depth|
+    build(
+      board_size: 4,
+      max_exponent: max_exponent,
+      max_depth: max_depth,
+      max_states: 10_000_000
     )
   end
 end

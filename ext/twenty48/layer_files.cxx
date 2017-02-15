@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sys/mman.h>
 #include <sstream>
+#include <string.h>
 #include <unistd.h>
 
 #include "layer_files.hpp"
