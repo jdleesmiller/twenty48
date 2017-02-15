@@ -1,3 +1,6 @@
+#include <string.h>
+#include <sstream>
+
 #include "policy_writer.hpp"
 
 namespace twenty48 {
@@ -21,7 +24,9 @@ void policy_writer_t::flush() {
   if (offset == 0) return;
   os.write(reinterpret_cast<const char *>(&data), sizeof(data));
   if (!os) {
-    throw std::runtime_error("policy_writer_t: write failed");
+    std::ostringstream oss;
+    oss << "policy_writer_t: write failed: " << errno << " " << strerror(errno);
+    throw std::runtime_error(oss.str());
   }
   data = 0;
   offset = 0;
