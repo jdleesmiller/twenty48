@@ -79,6 +79,17 @@ end
   end
 end
 
+[4, 5].each do |max_exponent|
+  [0, 1].each do |max_depth|
+    build(
+      board_size: 4,
+      max_exponent: max_exponent,
+      max_depth: max_depth,
+      max_states: 100_000
+    )
+  end
+end
+
 # Estimated batch size for build:
 # TOTAL_MEMORY = 8 * 1024**3
 # WORKING_MEMORY = (0.8 * TOTAL_MEMORY).ceil
