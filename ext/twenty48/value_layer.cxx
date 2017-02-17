@@ -98,7 +98,7 @@ void value_layer_t::build_index() {
     total_bytes_in += bytes_in;
     page_bytes_in += bytes_in;
     if (page_bytes_in >= page_bytes) {
-      std::cout << "index " << std::hex << value << " " << std::dec << total_bytes_in << " " << offset << std::endl;
+      // std::cout << "index " << std::hex << value << " " << std::dec << total_bytes_in << " " << offset << std::endl;
       index.push_back(index_entry_t(value, total_bytes_in, offset));
       page_bytes_in -= page_bytes;
     }
