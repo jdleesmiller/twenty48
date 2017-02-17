@@ -19,7 +19,7 @@ struct policy_reader_t {
 private:
   std::ifstream is;
   uint8_t data;
-  size_t offset;
+  int offset;
 };
 
 }

@@ -19,7 +19,7 @@ struct policy_writer_t {
 private:
   std::ofstream os;
   uint8_t data;
-  size_t offset;
+  int offset;
 };
 
 }
