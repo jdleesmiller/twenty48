@@ -12,6 +12,7 @@
 #include "start_states.hpp"
 #include "state_hash_set.hpp"
 #include "state_value_map.hpp"
+#include "value_layer.hpp"
 %}
 
 %include "stdint.i"

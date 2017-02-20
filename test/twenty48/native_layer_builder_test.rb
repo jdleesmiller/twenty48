@@ -18,25 +18,33 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       layer_builder = LayerBuilder.new(2, tmp, max_states, valuer)
       layer_builder.build_start_state_layers
 
-      assert_equal 6, Dir.glob(File.join(tmp, '*')).size
-      states_4 = read_states_vbyte_2(File.join(tmp, '0004.vbyte'))
-      states_6 = read_states_vbyte_2(File.join(tmp, '0006.vbyte'))
-      states_8 = read_states_vbyte_2(File.join(tmp, '0008.vbyte'))
+      # One layer part (json and vbyte) and two fragments (just vbyte)
+      assert_equal 4, Dir.glob(File.join(tmp, '*')).size
 
-      assert_equal 2, states_4.size
-      assert_equal 2, states_6.size
-      assert_equal 2, states_8.size
-
-      assert_equal 2, layer_builder.count_states(4)
-      assert_equal 2, layer_builder.count_states(6)
-      assert_equal 2, layer_builder.count_states(8)
-
+      assert_equal 2, layer_builder.count_states(4, 1)
+      layer_part_names = LayerPartName.glob(tmp)
+      assert_equal 1, layer_part_names.size
+      assert_equal 4, layer_part_names[0].sum
+      assert_equal 1, layer_part_names[0].max_value
+      states_4 = layer_part_names.first.read_states(2, folder: tmp)
       assert_states_equal [
         [0, 0,
          1, 1],
         [0, 1,
          1, 0]
       ], states_4
+
+      layer_fragment_names = LayerFragmentName.glob(tmp).sort_by(&:output_sum)
+      assert_equal 2, layer_fragment_names.size
+      assert_equal 6, layer_fragment_names[0].output_sum
+      assert_equal 8, layer_fragment_names[1].output_sum
+
+      states_6 = layer_fragment_names[0].read_states(2, folder: tmp)
+      states_8 = layer_fragment_names[1].read_states(2, folder: tmp)
+
+      assert_equal 2, states_4.size
+      assert_equal 2, states_6.size
+      assert_equal 2, states_8.size
 
       # The two unique states are:
       # 0 0  and  0 2
@@ -47,13 +55,37 @@ class NativeLayerBuilderTest < Twenty48NativeTest
         [0, 1,
          2, 0]
       ], states_6
-
-      # Don't bother saving an index on start states.
-      index_4 = layer_builder.read_layer_info(4)['index']
-      assert_equal 1, index_4.size
-      assert_equal 0, index_4[0].byte_offset
-      assert_equal 0, index_4[0].previous
     end
+  end
+
+  def check_layer_part_names_to_6(names)
+    names = names.sort_by { |name| [name.sum, name.max_value] }
+    assert_equal 3, names.count { |name| name.sum <= 6 }
+    assert_equal 4, names[0].sum
+    assert_equal 6, names[1].sum
+    assert_equal 1, names[1].max_value
+    assert_equal 6, names[2].sum
+    assert_equal 2, names[2].max_value
+    names
+  end
+
+  def check_layer_part_names_to_8(names)
+    names = check_layer_part_names_to_6(names)
+    assert_equal 6, names.count { |name| name.sum <= 8 }
+    assert_equal 8, names[3].sum
+    assert_equal 1, names[3].max_value
+    assert_equal 8, names[4].sum
+    assert_equal 2, names[4].max_value
+    assert_equal 8, names[5].sum
+    assert_equal 3, names[5].max_value
+    names
+  end
+
+  def check_layer_part_names_to_8_nonempty(names)
+    assert_equal 4, names.size
+    names = names.sort_by { |name| [name.sum, name.max_value] }
+    assert_equal [4, 6, 6, 8], names.map(&:sum)
+    assert_equal [1, 1, 2, 2], names.map(&:max_value)
   end
 
   def test_build_layer
@@ -66,35 +98,54 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       layer_builder = LayerBuilder.new(2, tmp, max_states, valuer)
       layer_builder.build_start_state_layers
 
-      pathname_6 = layer_builder.layer_pathname(6, folder: tmp)
-      original_6_states = read_states_vbyte_2(pathname_6)
-
-      layer_builder.build_layer(4)
-
-      new_6_states = read_states_vbyte_2(pathname_6)
+      #
+      # Build from layer 4.
+      #
+      assert_equal 2, layer_builder.build_layer(4)
+      assert_equal 2, layer_builder.count_states(4, 1)
 
       assert_states_equal [
         [0, 1,
          1, 1]
-      ], new_6_states - original_6_states
+      ], read_states_vbyte_2(layer_builder.layer_part_pathname(6, 1))
+      assert_equal 1, layer_builder.count_states(6, 1)
 
-      files = Dir.glob(File.join(tmp, '*.vbyte'))
-      files.map! { |pathname| File.basename(pathname) }
-      assert_equal %w(0004.vbyte 0006.vbyte 0008.vbyte), files.sort
+      assert_states_equal [
+        [0, 0,
+         1, 2],
+        [0, 1,
+         2, 0]
+      ], read_states_vbyte_2(layer_builder.layer_part_pathname(6, 2))
+      assert_equal 2, layer_builder.count_states(6, 2)
 
-      files = Dir.glob(File.join(tmp, '*.json'))
-      files.map! { |pathname| File.basename(pathname) }
-      assert_equal %w(0004.json 0006.json 0008.json), files.sort
+      check_layer_part_names_to_6(LayerPartName.glob(tmp))
+      check_layer_part_names_to_6(LayerPartInfoName.glob(tmp))
 
+      #
+      # Build from layer 6.
+      #
       layer_builder.build_layer(6)
 
-      files = Dir.glob(File.join(tmp, '*.vbyte'))
-      files.map! { |pathname| File.basename(pathname) }
-      assert_equal %w(0004.vbyte 0006.vbyte 0008.vbyte 0010.vbyte), files.sort
+      check_layer_part_names_to_8(LayerPartName.glob(tmp))
+      assert_states_equal [],
+        read_states_vbyte_2(layer_builder.layer_part_pathname(8, 1))
+      assert_equal 0, layer_builder.count_states(8, 1)
+      assert_equal 4,
+        read_states_vbyte_2(layer_builder.layer_part_pathname(8, 2)).size
+      assert_equal 4, layer_builder.count_states(8, 2)
+      assert_states_equal [],
+        read_states_vbyte_2(layer_builder.layer_part_pathname(8, 3))
+      assert_equal 0, layer_builder.count_states(8, 3)
 
-      files = Dir.glob(File.join(tmp, '*.json'))
-      files.map! { |pathname| File.basename(pathname) }
-      assert_equal %w(0004.json 0006.json 0008.json 0010.json), files.sort
+      check_layer_part_names_to_8(LayerPartInfoName.glob(tmp))
+
+      #
+      # Test cleanup.
+      #
+      layer_builder.remove_empty_layer_parts(8)
+
+      check_layer_part_names_to_8_nonempty(LayerPartName.glob(tmp))
+      check_layer_part_names_to_8_nonempty(LayerPartInfoName.glob(tmp))
     end
   end
 
@@ -113,9 +164,11 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       layer_builder.build_start_state_layers
       layer_builder.build
 
-      states_by_layer = layer_builder.states_by_layer
-      assert_equal 24, states_by_layer.size
-      assert_equal 74, states_by_layer.values.flatten(1).count { |s| s.sum > 0 }
+      part_names = LayerPartName.glob(states_path)
+      assert_equal 24, part_names.map(&:sum).uniq.size
+      assert_equal(74, part_names.map do |part|
+        part.read_states(2, folder: states_path).size
+      end.inject(:+))
 
       layer_solver = LayerSolver.new(
         2,
@@ -126,12 +179,14 @@ class NativeLayerBuilderTest < Twenty48NativeTest
 
       layer_solver.solve
 
-      values_4_file = File.join(values_path, '0004.values')
+      values_4_file = File.join(values_path, 'sum-0004.max_value-1.values')
       assert File.exist?(values_4_file)
-      assert_equal 16, File.size(values_4_file)
+      assert_equal 32, File.size(values_4_file)
 
       # This game is not winnable.
-      assert_equal [0, 0], File.read(values_4_file).unpack('D*')
+      values = File.read(values_4_file).unpack('D*')
+      assert_equal 0, values[1]
+      assert_equal 0, values[3]
     end
   end
 
@@ -150,9 +205,11 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       layer_builder.build_start_state_layers
       layer_builder.build
 
-      states_by_layer = layer_builder.states_by_layer
-      assert_equal 18, states_by_layer.size
-      assert_equal 57, states_by_layer.values.flatten(1).count { |s| s.sum > 0 }
+      part_names = LayerPartName.glob(states_path)
+      assert_equal 18, part_names.map(&:sum).uniq.size
+      assert_equal(57, part_names.map do |part|
+        part.read_states(2, folder: states_path).size
+      end.inject(:+))
 
       layer_solver = LayerSolver.new(
         2,
@@ -163,14 +220,14 @@ class NativeLayerBuilderTest < Twenty48NativeTest
 
       layer_solver.solve
 
-      values_4_file = File.join(values_path, '0004.values')
+      values_4_file = File.join(values_path, 'sum-0004.max_value-1.values')
       assert File.exist?(values_4_file)
-      assert_equal 16, File.size(values_4_file)
+      assert_equal 32, File.size(values_4_file)
 
       # This game is quite hard to win.
       values = File.read(values_4_file).unpack('D*')
-      assert_close 0.03831963657896261, values[0]
       assert_close 0.03831963657896261, values[1]
+      assert_close 0.03831963657896261, values[3]
     end
   end
 end

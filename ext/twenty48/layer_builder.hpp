@@ -8,7 +8,7 @@
 #include "layer_storage.hpp"
 #include "state.hpp"
 #include "valuer.hpp"
-#include "vbyte_reader.hpp"
+#include "mmap_vbyte_reader.hpp"
 #include "vbyte_writer.hpp"
 
 namespace twenty48 {
@@ -17,89 +17,91 @@ namespace twenty48 {
    * decompose into layers by sum. If you are in a state with sum N, you can
    * only progress to a state with sum N + 2 or N + 4 (or you can lose). That
    * means that we should never actually have to load the whole state space
-   * at once. We only have to load two layers. (And we could potentially load
-   * only one layer, if we generated all of the N + 2 successors in one pass,
-   * and then all of the N + 4 successors in a second pass.)
-   *
-   * The '2' transitions correspond to transitions to the next layer. The '4'
-   * transitions skip the next layer for the one after.
-   *
-   * This also helps us when we want to solve: if each layer is a Q function,
-   * we can work backwards through the layers to update the Q. No update in
-   * a lower-sum Q layer can affect a higher-sum Q layer, so we should be able
-   * to solve in a single backward induction pass.
-   *
-   * Previously I've regenerated the lower layers for each max_exponent, but I
-   * think that, if we don't use win resolution, which isn't very effective in
-   * the lower layers anyway, we should just be able to do this once for each
-   * board size.
-   *
-   * How to get started? The start states can have sum 2, 6 or 8, so probably
-   * the best thing to do is to build this so that the layer builder can load
-   * an existing layer and add to it. We can then pre-populate the first 3
-   * layers.
-   *
-   * Should we just store states or jump straight to storing Q's? We may want
-   * to have a separate Q build step that reads in the states, sorts them and
-   * outputs the Q. In principle, we only need to store the Q for three layers
-   * at a time, and then for later layers we can just store the policy. If we
-   * pack the state into 7 bytes, the remaining byte could store the optimal
-   * action, so that's only slightly more than what we'd need to store the state
-   * list itself.
+   * at once.
    */
   template <int size> struct layer_builder_t {
     typedef std::vector<state_t<size> > state_vector_t;
     typedef btree::btree_set<state_t<size> > state_set_t;
 
-    layer_builder_t(const valuer_t<size> &valuer) : valuer(valuer) { }
+    layer_builder_t(const char *input_pathname, uint8_t input_max_value,
+      const valuer_t<size> &valuer)
+      : input(input_pathname), input_max_value(input_max_value), valuer(valuer),
+        output_count(0)
+    { }
 
-    void build_layer(twenty48::vbyte_reader_t &vbyte_reader,
-      const char *output_layer_pathname, int step) const
+    bool build_layer(size_t remainder, size_t divisor, size_t max_output_states)
     {
-      state_set_t output_layer;
-      for (;;) {
-        uint64_t nybbles = vbyte_reader.read();
-        if (nybbles == 0) break;
-        state_t<size> state(nybbles);
-        expand(state, step, output_layer);
+      while(output_count < max_output_states) {
+        uint64_t nybbles = input.read();
+        if (nybbles == 0) return true;
+        expand(state_t<size>(nybbles));
       }
+      return false;
+    }
 
-      write_states(output_layer_pathname, output_layer);
+    void write_outputs(const char *pathname_1_0, const char *pathname_1_1,
+      const char *pathname_2_0, const char *pathname_2_1) {
+      write_states(pathname_1_0, output_1_0);
+      output_1_0.clear();
+      write_states(pathname_1_1, output_1_1);
+      output_1_1.clear();
+      write_states(pathname_2_0, output_2_0);
+      output_2_0.clear();
+      write_states(pathname_2_1, output_2_1);
+      output_2_1.clear();
+      output_count = 0;
     }
 
   private:
+    mmap_vbyte_reader_t input;
+    uint8_t input_max_value;
     valuer_t<size> valuer;
+    size_t output_count;
+    state_set_t output_1_0;
+    state_set_t output_1_1;
+    state_set_t output_2_0;
+    state_set_t output_2_1;
 
-    void expand(const state_t<size> &state, int step,
-      state_set_t &successors) const {
-      move(state, step, DIRECTION_UP, successors);
-      move(state, step, DIRECTION_DOWN, successors);
-      move(state, step, DIRECTION_LEFT, successors);
-      move(state, step, DIRECTION_RIGHT, successors);
+    void expand(const state_t<size> &state) {
+      move(state, DIRECTION_UP);
+      move(state, DIRECTION_DOWN);
+      move(state, DIRECTION_LEFT);
+      move(state, DIRECTION_RIGHT);
     }
 
-    void move(const state_t<size> &state, int step,
-      direction_t direction, state_set_t &successors) const {
+    void move(const state_t<size> &state, direction_t direction)
+    {
       state_t<size> moved_state = state.move(direction);
       if (moved_state == state) return; // Cannot move in this direction.
 
       for (size_t i = 0; i < size * size; ++i) {
         if (moved_state[i] != 0) continue;
-        if (step == 0 || step == 1) {
-          state_t<size> successor =
-            moved_state.new_state_with_tile(i, 1).canonicalize();
-          if (std::isnan(valuer.value(successor))) {
-            successors.insert(successor);
-          }
+        add_successor(moved_state, i, 1);
+        add_successor(moved_state, i, 2);
+      }
+    }
+
+    void add_successor(const state_t<size> &moved_state, size_t i, int step)
+    {
+      state_t<size> successor =
+        moved_state.new_state_with_tile(i, step).canonicalize();
+      if (!std::isnan(valuer.value(successor))) return;
+
+      uint8_t new_max_value = successor.max_value();
+      if (step == 1) {
+        if (input_max_value == new_max_value) {
+          output_1_0.insert(successor);
+        } else {
+          output_1_1.insert(successor);
         }
-        if (step == 0 || step == 2) {
-          state_t<size> successor =
-            moved_state.new_state_with_tile(i, 2).canonicalize();
-          if (std::isnan(valuer.value(successor))) {
-            successors.insert(successor);
-          }
+      } else if (step == 2) {
+        if (input_max_value == new_max_value) {
+          output_2_0.insert(successor);
+        } else {
+          output_2_1.insert(successor);
         }
       }
+      output_count += 1;
     }
 
     void write_states(const char *pathname, const state_set_t &layer) const {

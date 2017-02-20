@@ -1,4 +1,9 @@
 PATH
+  remote: ../key_value_name
+  specs:
+    key_value_name (0.0.1)
+
+PATH
   remote: .
   specs:
     twenty48 (0.0.1)
@@ -47,6 +52,7 @@ PLATFORMS
 
 DEPENDENCIES
   gemma (~> 4.1.0)
+  key_value_name!
   rake-compiler (~> 1.0.1)
   rubocop (~> 0.42.0)
   ruby-prof (~> 0.15.9)
@@ -56,4 +62,4 @@ RUBY VERSION
    ruby 2.4.0p0
 
 BUNDLED WITH
-   1.14.3
+   1.14.4

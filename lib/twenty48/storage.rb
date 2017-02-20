@@ -9,6 +9,34 @@ module Twenty48
   module Storage
     module_function
 
+    #
+    # TODO: See if we can convert these to KVN form to save some code.
+    #
+    # LayerPartName.new(sum: 123, max_value: 3).to_s
+    #
+    # LayerPartName.glob(folder: folder).each do |layer_part|
+    #   layer_part.sum
+    #   layer_part.max_value
+    # end
+    #
+    # GameName = KeyValueName.define do
+    #   key :board_size, type: Integer
+    #   key :max_exponent, type: Integer
+    # end
+    #
+    # ModelName = KeyValueName.define do
+    #   include_keys GameName
+    #   key :resolve_strategy, type: Symbol
+    #   key :max_resolve_depth, type: Integer
+    # end
+    #
+    # SolverName = KeyValueName.define do
+    #   include_keys ModelName
+    #   key :solve_strategy, type: Symbol
+    #   key :discount, type: Float
+    #   key :tolerance, type: Float
+    # end
+
     ROOT = File.join('.', 'data')
     MODELS_PATH = File.join(ROOT, 'models')
     ARRAY_MODELS_PATH = File.join(ROOT, 'array_models')
