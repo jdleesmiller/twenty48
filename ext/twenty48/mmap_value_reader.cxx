@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <sstream>
 
 #include "mmap_value_reader.hpp"
 
@@ -13,7 +14,9 @@ mmap_value_reader_t::mmap_value_reader_t(const char *pathname) : input(pathname)
 double mmap_value_reader_t::get_value(uint64_t state) const {
   state_value_t *record = std::lower_bound(input_data, input_end, state);
   if (record == input_end || record->state != state) {
-    throw std::runtime_error("state not found");
+    std::ostringstream os;
+    os << "mmap_value_reader: state not found: " << std::hex << state;
+    throw std::invalid_argument(os.str());
   }
   return record->value;
 }
