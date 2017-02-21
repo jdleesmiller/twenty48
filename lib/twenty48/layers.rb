@@ -56,8 +56,7 @@ module Twenty48
     n.key :input_max_value, type: Numeric, format: '%x'
     n.key :output_sum, type: Numeric, format: '%04d'
     n.key :output_max_value, type: Numeric, format: '%x'
-    n.key :remainder, type: Numeric, format: '%02d'
-    n.key :fragment, type: Numeric, format: '%04d'
+    n.key :batch, type: Numeric, format: '%04d'
     n.extension :vbyte
   end
 

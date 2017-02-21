@@ -9,7 +9,8 @@
 namespace twenty48 {
 
 size_t merge_states(const std::vector<std::string> &input_pathnames,
-  const char *output_pathname)
+  const char *output_pathname, size_t index_stride,
+  twenty48::vbyte_index_t &vbyte_index)
 {
   size_t num_states = 0;
   const size_t n = input_pathnames.size();
@@ -57,6 +58,13 @@ size_t merge_states(const std::vector<std::string> &input_pathnames,
     // Write the min state.
     vbyte_writer.write(min_value);
     num_states += 1;
+
+    // Update index if necessary.
+    if (num_states % index_stride == 0) {
+      vbyte_index.push_back(vbyte_index_entry_t(
+        vbyte_writer.get_bytes_written(),
+        vbyte_writer.get_previous()));
+    }
 
     // Pop the head states that matched the min state we just wrote.
     for (typename std::vector<size_t>::const_iterator it =
