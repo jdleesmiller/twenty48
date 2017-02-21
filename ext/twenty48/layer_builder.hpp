@@ -26,7 +26,7 @@ namespace twenty48 {
     layer_builder_t(const char *input_pathname, uint8_t input_max_value,
       const valuer_t<size> &valuer)
       : input(input_pathname), input_max_value(input_max_value), valuer(valuer),
-        output_count(0)
+        input_count(0), output_count(0)
     { }
 
     bool build_layer(size_t remainder, size_t divisor, size_t max_output_states)
@@ -34,7 +34,10 @@ namespace twenty48 {
       while(output_count < max_output_states) {
         uint64_t nybbles = input.read();
         if (nybbles == 0) return true;
-        expand(state_t<size>(nybbles));
+        if (input_count % divisor == remainder) {
+          expand(state_t<size>(nybbles));
+        }
+        ++input_count;
       }
       return false;
     }
@@ -56,6 +59,7 @@ namespace twenty48 {
     mmap_vbyte_reader_t input;
     uint8_t input_max_value;
     valuer_t<size> valuer;
+    size_t input_count;
     size_t output_count;
     state_set_t output_1_0;
     state_set_t output_1_1;
