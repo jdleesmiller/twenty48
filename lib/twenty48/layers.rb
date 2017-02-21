@@ -30,6 +30,22 @@ module Twenty48
     n.extension :values
   end
 
+  #
+  # A value function with fixed-size state / value pairs.
+  #
+  class LayerPartValuesName
+    def read(board_size, folder:)
+      pairs = []
+      File.open(self.in(folder), 'rb') do |f|
+        until f.eof?
+          nybbles, value = f.read(16).unpack('QD')
+          pairs << [NativeState.create_from_nybbles(board_size, nybbles), value]
+        end
+      end
+      pairs
+    end
+  end
+
   LayerPartPolicyName = KeyValueName.new do |n|
     n.include_keys LayerPartName
     n.extension :policy

@@ -179,14 +179,14 @@ class NativeLayerBuilderTest < Twenty48NativeTest
 
       layer_solver.solve
 
-      values_4_file = File.join(values_path, 'sum-0004.max_value-1.values')
-      assert File.exist?(values_4_file)
-      assert_equal 32, File.size(values_4_file)
+      values_4_file = LayerPartValuesName.glob(values_path)
+        .find { |name| name.sum == 4 && name.max_value == 1 }
+      assert_equal 32, File.size(values_4_file.in(values_path))
 
       # This game is not winnable.
-      values = File.read(values_4_file).unpack('D*')
-      assert_equal 0, values[1]
-      assert_equal 0, values[3]
+      state_values = values_4_file.read(2, folder: values_path)
+      assert_equal 0, state_values[0][1]
+      assert_equal 0, state_values[1][1]
     end
   end
 
@@ -220,14 +220,14 @@ class NativeLayerBuilderTest < Twenty48NativeTest
 
       layer_solver.solve
 
-      values_4_file = File.join(values_path, 'sum-0004.max_value-1.values')
-      assert File.exist?(values_4_file)
-      assert_equal 32, File.size(values_4_file)
+      values_4_file = LayerPartValuesName.glob(values_path)
+        .find { |name| name.sum == 4 && name.max_value == 1 }
+      assert_equal 32, File.size(values_4_file.in(values_path))
 
       # This game is quite hard to win.
-      values = File.read(values_4_file).unpack('D*')
-      assert_close 0.03831963657896261, values[1]
-      assert_close 0.03831963657896261, values[3]
+      state_values = values_4_file.read(2, folder: values_path)
+      assert_close 0.03831963657896261, state_values[0][1]
+      assert_close 0.03831963657896261, state_values[1][1]
     end
   end
 end
