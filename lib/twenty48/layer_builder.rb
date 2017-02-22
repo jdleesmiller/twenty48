@@ -122,13 +122,13 @@ module Twenty48
 
     def build_layer_part(sum, max_value)
       return if count_states(sum, max_value) == 0
-      builder = NativeLayerBuilder.create(
-        board_size, layer_part_pathname(sum, max_value), max_value, valuer
-      )
       divisor = Parallel.processor_count
       remainders = 0...divisor
       GC.start
       Parallel.each(remainders) do |remainder|
+        builder = NativeLayerBuilder.create(
+          board_size, layer_part_pathname(sum, max_value), max_value, valuer
+        )
         fragment = 0
         loop do
           done = builder.build_layer(remainder, divisor, max_output_states)
@@ -211,7 +211,7 @@ module Twenty48
       fragments_by_output_part.each do |output_name, input_names|
         # Can't currently handle too many; we may run out of file descriptors
         # when we try to merge.
-        raise "too many batches: #{num_batches}" if input_names.size > 1000
+        raise "too many batches: #{input_names.size}" if input_names.size > 1000
         input_pathnames = input_names.map { |name| name.in(layer_folder) }
         log_reduce_step(output_name.sum, output_name.max_value, input_pathnames)
 
