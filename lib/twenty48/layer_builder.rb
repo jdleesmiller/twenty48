@@ -106,6 +106,30 @@ module Twenty48
       nil
     end
 
+    #
+    # If we have to restart a build from layer N, we need to turn layer N+2
+    # back into fragments, so that we can merge the +2 successors of N into it
+    # and also generate the +4 successors.
+    #
+    def prepare_to_restart_from(layer_sum)
+      to_fragment = LayerPartName.glob(layer_folder).select do |name|
+        name.sum > layer_sum 
+      end
+
+      to_fragment.each do |name|
+        new_name = LayerFragmentName.new(
+          input_sum: name.sum,
+          input_max_value: name.max_value,
+          output_sum: name.sum,
+          output_max_value: name.max_value,
+          batch: 0
+        )
+
+        FileUtils.mv name.in(layer_folder), new_name.in(layer_folder)
+        FileUtils.rm layer_part_info_pathname(name.sum, name.max_value)
+      end
+    end
+
     def build_layer(layer_sum)
       max_values = find_max_values(layer_sum)
       num_states = max_values.map do |max_value|
