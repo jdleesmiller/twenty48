@@ -83,22 +83,22 @@ namespace twenty48 {
       const char *values_pathname_2_0, const char *values_pathname_2_1)
     {
       if (values_pathname_1_0 == NULL) {
-        value_readers[0][0].release();
+        value_readers[0][0].reset(NULL);
       } else {
         value_readers[0][0].reset(new mmap_value_reader_t(values_pathname_1_0));
       }
       if (values_pathname_1_1 == NULL) {
-        value_readers[0][1].release();
+        value_readers[0][1].reset(NULL);
       } else {
         value_readers[0][1].reset(new mmap_value_reader_t(values_pathname_1_1));
       }
       if (values_pathname_2_0 == NULL) {
-        value_readers[1][0].release();
+        value_readers[1][0].reset(NULL);
       } else {
         value_readers[1][0].reset(new mmap_value_reader_t(values_pathname_2_0));
       }
       if (values_pathname_2_1 == NULL) {
-        value_readers[1][1].release();
+        value_readers[1][1].reset(NULL);
       } else {
         value_readers[1][1].reset(new mmap_value_reader_t(values_pathname_2_1));
       }
@@ -126,10 +126,7 @@ namespace twenty48 {
         values_os.write(
           reinterpret_cast<const char *>(&record), sizeof(record));
         if (!values_os) {
-          std::ostringstream oss;
-          oss << "layer_solver: value write failed: " << errno << " " <<
-            strerror(errno);
-          throw std::runtime_error(oss.str());
+          throw std::runtime_error("layer_solver_t: value write failed");
         }
         policy_writer.write(direction);
       }
