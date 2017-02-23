@@ -126,7 +126,10 @@ namespace twenty48 {
         values_os.write(
           reinterpret_cast<const char *>(&record), sizeof(record));
         if (!values_os) {
-          throw std::runtime_error("layer_solver_t: value write failed");
+          std::ostringstream oss;
+          oss << "layer_solver: value write failed: " << errno << " " <<
+            strerror(errno);
+          throw std::runtime_error(oss.str());
         }
         policy_writer.write(direction);
       }
