@@ -8,7 +8,7 @@
 #include "layer_storage.hpp"
 #include "state.hpp"
 #include "valuer.hpp"
-#include "mmap_vbyte_reader.hpp"
+#include "vbyte_reader.hpp"
 #include "vbyte_writer.hpp"
 
 namespace twenty48 {
@@ -23,44 +23,27 @@ namespace twenty48 {
     typedef std::vector<state_t<size> > state_vector_t;
     typedef btree::btree_set<state_t<size> > state_set_t;
 
-    layer_builder_t(const char *input_pathname, uint8_t input_max_value,
+    layer_builder_t(twenty48::vbyte_reader_t &vbyte_reader,
+      uint8_t input_max_value,
+      const char *pathname_1_0, const char *pathname_1_1,
+      const char *pathname_2_0, const char *pathname_2_1,
       const valuer_t<size> &valuer)
-      : input(input_pathname), input_max_value(input_max_value), valuer(valuer),
-        input_count(0), output_count(0)
-    { }
-
-    bool build_layer(size_t remainder, size_t divisor, size_t max_output_states)
+      : input_max_value(input_max_value), valuer(valuer)
     {
-      while(output_count < max_output_states) {
-        uint64_t nybbles = input.read();
-        if (nybbles == 0) return true;
-        if (input_count % divisor == remainder) {
-          expand(state_t<size>(nybbles));
-        }
-        ++input_count;
+      for (;;) {
+        uint64_t nybbles = vbyte_reader.read();
+        if (nybbles == 0) break;
+        expand(state_t<size>(nybbles));
       }
-      return false;
-    }
-
-    void write_outputs(const char *pathname_1_0, const char *pathname_1_1,
-      const char *pathname_2_0, const char *pathname_2_1) {
       write_states(pathname_1_0, output_1_0);
-      output_1_0.clear();
       write_states(pathname_1_1, output_1_1);
-      output_1_1.clear();
       write_states(pathname_2_0, output_2_0);
-      output_2_0.clear();
       write_states(pathname_2_1, output_2_1);
-      output_2_1.clear();
-      output_count = 0;
     }
 
   private:
-    mmap_vbyte_reader_t input;
     uint8_t input_max_value;
     valuer_t<size> valuer;
-    size_t input_count;
-    size_t output_count;
     state_set_t output_1_0;
     state_set_t output_1_1;
     state_set_t output_2_0;
@@ -105,7 +88,6 @@ namespace twenty48 {
           output_2_1.insert(successor);
         }
       }
-      output_count += 1;
     }
 
     void write_states(const char *pathname, const state_set_t &layer) const {
