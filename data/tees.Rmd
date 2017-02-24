@@ -136,5 +136,42 @@ Sanity check: the numbers of states agree.
 ggplot(info, aes(x = sum)) +
   geom_point(aes(y = num_states, color = strategy, group = strategy)) +
   facet_grid(max_value ~ .)
-
 ```
+
+Sanity check: total the number of states per layer for comparison with previous build.
+
+```{r}
+readLsBin <- function () {
+  ls <- read.table('tees/ls-bin-2017-01-11.txt')
+  ls <- with(ls, data.frame(
+    sum = as.numeric(sub('^.+/(\\d+)[.]bin', '\\1', V11)),
+    mtime = as.POSIXct(paste(V6, V7, V8), tz = 'UTC', format = '%b %d %H:%M'),
+    byte_size = as.numeric(V5),
+    num_states = as.numeric(V5) / 8
+  ))
+  ls$build_duration <- c(0, diff(ls$mtime, units = 'secs'))
+  ls
+}
+head(readLsBin())
+```
+
+```{r}
+compareMethods <- function () {
+   # baseline from previous build
+  lsBin <- subset(readLsBin(), select=c(sum, num_states, build_duration))
+                  
+  summariseMethod <- function (s) {
+    sInfo <- subset(info, strategy == s)
+    merge(
+      aggregate(num_states ~ sum, sInfo, sum),
+      aggregate(build_duration ~ sum, sInfo, sum))
+  }
+  divRem <- summariseMethod('div-rem')
+  batch <- summariseMethod('batch')
+  res <- merge(
+    divRem, batch, all = TRUE, by = c('sum'), suffixes = c('.divrem', '.batch'))
+  merge(res, lsBin, all = TRUE)
+}
+View(compareMethods())
+```
+
