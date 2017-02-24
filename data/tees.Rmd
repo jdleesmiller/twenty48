@@ -1,0 +1,140 @@
+---
+title: "Tee Log Analysis"
+author: "JLM"
+date: "2/24/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(stringr)
+```
+
+I should probably added these summary stats to the info files... but until then, we can get some interesting stuff out of the logs that I saved with `tee`.
+
+```{r}
+extractInfo <- function (file) {
+  stampFormat <- '%Y-%m-%d %H:%M:%S +0000'
+  stampRx <- '^(\\d+-\\d+-\\d+ \\d+:\\d+:\\d+ \\+\\d+):'
+  buildRx <- paste(stampRx, 'build (\\d+)-(\\d+): (\\d+) states')
+  reduceRx <- paste(stampRx, 'reduce (\\d+)-(\\d+): ([0-9.]+)MiB \\(([0-9.]+)MiB max\\)$')
+  dotsRx <- '^([.]+)'
+  
+  lines <- readLines(file)
+  lineNumbers <- seq_along(lines)
+  isBuild <- grepl(buildRx, lines)
+  isReduce <- grepl(reduceRx, lines)
+  
+  build <- data.frame(
+    str_match(lines[isBuild], buildRx),
+    stringsAsFactors = FALSE)[,2:5]
+  names(build) <- c('build_stamp', 'sum', 'max_value', 'num_states')
+  build <- transform(
+    build,
+    build_line = lineNumbers[isBuild],
+    build_stamp = as.POSIXct(build_stamp, tz = 'UTC', format = stampFormat),
+    sum = as.numeric(sum),
+    max_value = as.numeric(max_value),
+    num_states = as.numeric(num_states)
+  )
+  
+  reduce <- data.frame(
+    str_match(lines[isReduce], reduceRx),
+    stringsAsFactors = FALSE)[,2:6]
+  names(reduce) <- c('reduce_stamp', 'sum', 'max_value', 'total_mb', 'max_mb')
+  reduce <- transform(
+    reduce,
+    reduce_line = lineNumbers[isReduce],
+    reduce_stamp = as.POSIXct(reduce_stamp, tz = 'UTC', format = stampFormat),
+    sum = as.numeric(sum),
+    max_value = as.numeric(max_value),
+    total_mb = as.numeric(total_mb),
+    max_mb = as.numeric(max_mb)
+  )
+  
+  merge(build, reduce, all = TRUE)
+}
+# head(extractInfo('div_rem-20170223.txt'), 20)
+# head(extractInfo('part-build-20170221.txt'), 20)
+```
+
+```{r}
+findDurations <- function (info) {
+  buildLines <- subset(
+    info, !is.na(build_line), select=c(build_line, build_stamp))
+  names(buildLines) <- c('line', 'stamp')
+  reduceLines <- subset(
+    info, !is.na(reduce_line), select=c(reduce_line, reduce_stamp))
+  names(reduceLines) <- c('line', 'stamp')
+  allLines <- rbind(buildLines, reduceLines)
+  
+  findDuration <- function (targetLine) {
+    stamp <- subset(allLines, line == targetLine)$stamp[1]
+    nextStamp <- subset(allLines, line > targetLine)$stamp[1]
+    difftime(nextStamp, stamp, units = 'secs')
+  }
+  
+  transform(
+    info,
+    build_duration = sapply(build_line, findDuration),
+    reduce_duration = sapply(reduce_line, findDuration))
+}
+# findDurations(head(extractInfo('div_rem-20170223.txt'), 20))
+```
+
+```{r}
+loadInfo <- function () {
+  divRemInfo <- findDurations(extractInfo('tees/div-rem-20170223.txt'))
+  divRemInfo$strategy <- 'div-rem'
+  batchInfo <- findDurations(extractInfo('tees/part-build-20170221.txt'))
+  batchInfo$strategy <- 'batch'
+  
+  rbind(divRemInfo, batchInfo)
+}
+info <- loadInfo()
+```
+
+At least as parameterised, the div-rem approach takes more disk space:
+
+```{r}
+ggplot(info, aes(x = sum)) +
+  geom_point(aes(y = total_mb, color = strategy, group = strategy)) +
+  facet_grid(max_value ~ .)
+```
+
+It generates more, smaller files, as expected:
+
+```{r}
+ggplot(info, aes(x = sum)) +
+  geom_point(aes(y = max_mb, color = strategy, group = strategy)) +
+  facet_grid(max_value ~ .)
+```
+
+It does not show any particularly consistent performance advantage, at least on these early layers:
+
+```{r}
+ggplot(info, aes(x = sum)) +
+  geom_point(aes(y = build_duration, color = strategy, group = strategy)) +
+  facet_grid(max_value ~ .)
+```
+
+It does spend a bit more time reducing, which is expected.
+
+```{r}
+ggplot(info, aes(x = sum)) +
+  geom_point(aes(y = reduce_duration, color = strategy, group = strategy)) +
+  facet_grid(max_value ~ .)
+```
+
+Sanity check: the numbers of states agree.
+
+```{r}
+ggplot(info, aes(x = sum)) +
+  geom_point(aes(y = num_states, color = strategy, group = strategy)) +
+  facet_grid(max_value ~ .)
+
+```
