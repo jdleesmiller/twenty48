@@ -69,6 +69,18 @@ module Twenty48
     end
   end
 
+  LayerFragmentValuesName = KeyValueName.new do |n|
+    n.include_keys LayerPartName
+    n.key :batch, type: Numeric, format: '%04d'
+    n.extension :values
+  end
+
+  LayerFragmentPolicyName = KeyValueName.new do |n|
+    n.include_keys LayerPartName
+    n.key :batch, type: Numeric, format: '%04d'
+    n.extension :policy
+  end
+
   #
   # Handling for layer files.
   #
@@ -86,6 +98,34 @@ module Twenty48
         .map { |name| name.max_value if name.sum == layer_sum }
         .compact
         .sort
+    end
+
+    def make_layer_part_batches(sum, max_value)
+      input_info = read_layer_part_info(sum, max_value)
+      return [] if input_info['num_states'] == 0
+
+      input_index = input_info['index']
+      batch_size = input_info['batch_size']
+      Array.new(input_index.size) do |i|
+        [i, input_index[i].byte_offset, input_index[i].previous, batch_size]
+      end
+    end
+
+    def read_layer_part_info(sum, max_value)
+      info = JSON.parse(File.read(layer_part_info_pathname(sum, max_value)))
+      entries = info['index'].map { |entry| VByteIndexEntry.from_raw(entry) }
+      entries.unshift(VByteIndexEntry.new)
+      info['index'] = VByteIndex.new(entries)
+      info
+    end
+
+    def count_states(sum, max_value)
+      read_layer_part_info(sum, max_value)['num_states']
+    end
+
+    def log(message)
+      return unless @verbose
+      puts "#{Time.now}: #{message}"
     end
   end
 end

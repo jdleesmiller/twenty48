@@ -141,31 +141,17 @@ module Twenty48
     end
 
     def build_layer_part(sum, max_value)
-      input_pathname = layer_part_pathname(sum, max_value)
-      input_info = read_layer_part_info(sum, max_value)
-      num_input_states = input_info['num_states']
-      input_batch_size = input_info['batch_size']
-      input_index = input_info['index']
-      num_batches = input_index.size
+      batches = make_layer_part_batches(sum, max_value)
 
-      return if num_input_states == 0
-      log_build_layer(sum, max_value, num_input_states, num_batches)
+      log_build_layer(sum, max_value, batches.size)
+
+      return if batches.empty?
 
       # Can't currently handle too many; we may run out of file descriptors
       # when we try to merge.
-      raise "too many batches: #{num_batches}" if num_batches > 1000
+      raise "too many batches: #{num_batches.size}" if batches.size > 1000
 
-      batches = Array.new(num_batches) do |i|
-        [i, input_index[i].byte_offset, input_index[i].previous]
-      end
-
-      build_layer_part_batches(
-        sum, max_value, input_pathname, input_batch_size, batches
-      )
-    end
-
-    def count_states(sum, max_value)
-      read_layer_part_info(sum, max_value)['num_states']
+      build_layer_part_batches(sum, max_value, batches)
     end
 
     #
@@ -186,14 +172,6 @@ module Twenty48
     end
 
     private
-
-    def read_layer_part_info(sum, max_value)
-      info = JSON.parse(File.read(layer_part_info_pathname(sum, max_value)))
-      entries = info['index'].map { |entry| VByteIndexEntry.from_raw(entry) }
-      entries.unshift(VByteIndexEntry.new)
-      info['index'] = VByteIndex.new(entries)
-      info
-    end
 
     def write_layer_part_info(layer_sum, max_value, num_states:, index: [])
       pathname = layer_part_info_pathname(layer_sum, max_value)
@@ -216,12 +194,12 @@ module Twenty48
       ).in(layer_folder)
     end
 
-    def build_layer_part_batches(
-      sum, max_value, input_pathname, input_batch_size, batches
-    )
-      Parallel.each(batches) do |index, offset, previous|
+    def build_layer_part_batches(sum, max_value, batches)
+      GC.start
+      Parallel.each(batches) do |index, offset, previous, batch_size|
+        input_pathname = layer_part_pathname(sum, max_value)
         vbyte_reader = VByteReader.new(input_pathname, offset, previous,
-          input_batch_size)
+          batch_size)
         NativeLayerBuilder.create(
           board_size, vbyte_reader, max_value,
           layer_fragment_pathname(sum, max_value, 1, 0, index),
@@ -285,14 +263,9 @@ module Twenty48
       File.stat(pathname).size
     end
 
-    def log(message)
-      return unless @verbose
-      puts "#{Time.now}: #{message}"
-    end
-
-    def log_build_layer(layer_sum, max_value, num_input_states, num_batches)
+    def log_build_layer(layer_sum, max_value, num_batches)
       log format('build %d-%x: %d states (%d batches)',
-        layer_sum, max_value, num_input_states, num_batches)
+        layer_sum, max_value, count_states(layer_sum, max_value), num_batches)
     end
 
     def log_reduce_step(sum, max_value, input_pathnames)

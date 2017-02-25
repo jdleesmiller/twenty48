@@ -156,7 +156,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       FileUtils.mkdir_p states_path
       FileUtils.mkdir_p values_path
 
-      max_states = 1024
+      max_states = 4
       valuer = NativeValuer.create(
         board_size: 2, max_exponent: 7, max_depth: 0, discount: DISCOUNT
       )
@@ -197,7 +197,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       FileUtils.mkdir_p states_path
       FileUtils.mkdir_p values_path
 
-      max_states = 1024
+      max_states = 4
       valuer = NativeValuer.create(
         board_size: 2, max_exponent: 5, max_depth: 0, discount: DISCOUNT
       )
