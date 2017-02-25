@@ -10,7 +10,6 @@
 #include "policy_reader.hpp"
 #include "policy_writer.hpp"
 #include "start_states.hpp"
-#include "value_layer.hpp"
 %}
 
 %include "stdint.i"
@@ -137,14 +136,6 @@
 %template(LayerSolver2) twenty48::layer_solver_t<2>;
 %template(LayerSolver3) twenty48::layer_solver_t<3>;
 %template(LayerSolver4) twenty48::layer_solver_t<4>;
-
-/******************************************************************************/
-/* Value Layer */
-/******************************************************************************/
-
-%rename(ValueLayer) twenty48::value_layer_t;
-
-%include "value_layer.hpp"
 
 /******************************************************************************/
 /* Policy Reader/Writer */

@@ -1893,22 +1893,20 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 #define SWIGTYPE_p_twenty48__state_tT_2_t swig_types[63]
 #define SWIGTYPE_p_twenty48__state_tT_3_t swig_types[64]
 #define SWIGTYPE_p_twenty48__state_tT_4_t swig_types[65]
-#define SWIGTYPE_p_twenty48__value_layer_t swig_types[66]
-#define SWIGTYPE_p_twenty48__valuer_tT_2_t swig_types[67]
-#define SWIGTYPE_p_twenty48__valuer_tT_3_t swig_types[68]
-#define SWIGTYPE_p_twenty48__valuer_tT_4_t swig_types[69]
-#define SWIGTYPE_p_twenty48__vbyte_index_entry_t swig_types[70]
-#define SWIGTYPE_p_twenty48__vbyte_reader_t swig_types[71]
-#define SWIGTYPE_p_twenty48__vbyte_writer_t swig_types[72]
-#define SWIGTYPE_p_unsigned_char swig_types[73]
-#define SWIGTYPE_p_unsigned_int swig_types[74]
-#define SWIGTYPE_p_unsigned_long_long swig_types[75]
-#define SWIGTYPE_p_unsigned_short swig_types[76]
-#define SWIGTYPE_p_value_t swig_types[77]
-#define SWIGTYPE_p_value_type swig_types[78]
-#define SWIGTYPE_p_void swig_types[79]
-static swig_type_info *swig_types[81];
-static swig_module_info swig_module = {swig_types, 80, 0, 0, 0, 0};
+#define SWIGTYPE_p_twenty48__valuer_tT_2_t swig_types[66]
+#define SWIGTYPE_p_twenty48__valuer_tT_3_t swig_types[67]
+#define SWIGTYPE_p_twenty48__valuer_tT_4_t swig_types[68]
+#define SWIGTYPE_p_twenty48__vbyte_index_entry_t swig_types[69]
+#define SWIGTYPE_p_twenty48__vbyte_reader_t swig_types[70]
+#define SWIGTYPE_p_twenty48__vbyte_writer_t swig_types[71]
+#define SWIGTYPE_p_unsigned_char swig_types[72]
+#define SWIGTYPE_p_unsigned_int swig_types[73]
+#define SWIGTYPE_p_unsigned_long_long swig_types[74]
+#define SWIGTYPE_p_unsigned_short swig_types[75]
+#define SWIGTYPE_p_value_type swig_types[76]
+#define SWIGTYPE_p_void swig_types[77]
+static swig_type_info *swig_types[79];
+static swig_module_info swig_module = {swig_types, 78, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1943,7 +1941,6 @@ static VALUE mTwenty48;
 #include "policy_reader.hpp"
 #include "policy_writer.hpp"
 #include "start_states.hpp"
-#include "value_layer.hpp"
 
 
 #include <stdint.h>		// Use the C99 official header
@@ -36312,130 +36309,6 @@ free_twenty48_layer_solver_t_Sl_4_Sg_(void *self) {
     delete arg1;
 }
 
-static swig_class SwigClassValueLayer;
-
-SWIGINTERN VALUE
-#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
-_wrap_ValueLayer_allocate(VALUE self)
-#else
-_wrap_ValueLayer_allocate(int argc, VALUE *argv, VALUE self)
-#endif
-{
-  VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_twenty48__value_layer_t);
-#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
-  rb_obj_call_init(vresult, argc, argv);
-#endif
-  return vresult;
-}
-
-
-SWIGINTERN VALUE
-_wrap_new_ValueLayer(int argc, VALUE *argv, VALUE self) {
-  char *arg1 = (char *) 0 ;
-  char *arg2 = (char *) 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  twenty48::value_layer_t *result = 0 ;
-  
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
-  }
-  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","value_layer_t", 1, argv[0] ));
-  }
-  arg1 = reinterpret_cast< char * >(buf1);
-  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","value_layer_t", 2, argv[1] ));
-  }
-  arg2 = reinterpret_cast< char * >(buf2);
-  result = (twenty48::value_layer_t *)new twenty48::value_layer_t((char const *)arg1,(char const *)arg2);
-  DATA_PTR(self) = result;
-  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
-  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
-  return self;
-fail:
-  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
-  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_ValueLayer_lookup(int argc, VALUE *argv, VALUE self) {
-  twenty48::value_layer_t *arg1 = (twenty48::value_layer_t *) 0 ;
-  uint64_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned long long val2 ;
-  int ecode2 = 0 ;
-  size_t result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__value_layer_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::value_layer_t const *","lookup", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::value_layer_t * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint64_t","lookup", 2, argv[0] ));
-  } 
-  arg2 = static_cast< uint64_t >(val2);
-  result = ((twenty48::value_layer_t const *)arg1)->lookup(arg2);
-  vresult = SWIG_From_size_t(static_cast< size_t >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_ValueLayer_get_value(int argc, VALUE *argv, VALUE self) {
-  twenty48::value_layer_t *arg1 = (twenty48::value_layer_t *) 0 ;
-  uint64_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned long long val2 ;
-  int ecode2 = 0 ;
-  twenty48::value_layer_t::value_t result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__value_layer_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::value_layer_t const *","get_value", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::value_layer_t * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint64_t","get_value", 2, argv[0] ));
-  } 
-  arg2 = static_cast< uint64_t >(val2);
-  result = (twenty48::value_layer_t::value_t)((twenty48::value_layer_t const *)arg1)->get_value(arg2);
-  vresult = SWIG_From_double(static_cast< double >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN void
-free_twenty48_value_layer_t(void *self) {
-    twenty48::value_layer_t *arg1 = (twenty48::value_layer_t *)self;
-    delete arg1;
-}
-
 static swig_class SwigClassPolicyReader;
 
 SWIGINTERN VALUE
@@ -36756,7 +36629,6 @@ static swig_type_info _swigt__p_twenty48__policy_writer_t = {"_p_twenty48__polic
 static swig_type_info _swigt__p_twenty48__state_tT_2_t = {"_p_twenty48__state_tT_2_t", "twenty48::state_t< 2 > *|std::map< twenty48::state_t< 2 >,double >::key_type *|std::vector< twenty48::state_t< 2 > >::value_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__state_tT_3_t = {"_p_twenty48__state_tT_3_t", "std::map< twenty48::state_t< 3 >,double >::key_type *|std::vector< twenty48::state_t< 3 > >::value_type *|twenty48::state_t< 3 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__state_tT_4_t = {"_p_twenty48__state_tT_4_t", "twenty48::state_t< 4 > *|std::map< twenty48::state_t< 4 >,double >::key_type *|std::vector< twenty48::state_t< 4 > >::value_type *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_twenty48__value_layer_t = {"_p_twenty48__value_layer_t", "twenty48::value_layer_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__valuer_tT_2_t = {"_p_twenty48__valuer_tT_2_t", "twenty48::valuer_t< 2 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__valuer_tT_3_t = {"_p_twenty48__valuer_tT_3_t", "twenty48::valuer_t< 3 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__valuer_tT_4_t = {"_p_twenty48__valuer_tT_4_t", "twenty48::valuer_t< 4 > *", 0, 0, (void*)0, 0};
@@ -36767,7 +36639,6 @@ static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned c
 static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "uintptr_t *|uint_least32_t *|uint_fast32_t *|uint32_t *|unsigned int *|uint_fast16_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_long_long = {"_p_unsigned_long_long", "uint_least64_t *|uint_fast64_t *|uint64_t *|unsigned long long *|uintmax_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_short = {"_p_unsigned_short", "unsigned short *|uint_least16_t *|uint16_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_value_t = {"_p_value_t", "value_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_value_type = {"_p_value_type", "value_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_void = {"_p_void", "VALUE|void *", 0, 0, (void*)0, 0};
 
@@ -36838,7 +36709,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_twenty48__state_tT_2_t,
   &_swigt__p_twenty48__state_tT_3_t,
   &_swigt__p_twenty48__state_tT_4_t,
-  &_swigt__p_twenty48__value_layer_t,
   &_swigt__p_twenty48__valuer_tT_2_t,
   &_swigt__p_twenty48__valuer_tT_3_t,
   &_swigt__p_twenty48__valuer_tT_4_t,
@@ -36849,7 +36719,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_unsigned_int,
   &_swigt__p_unsigned_long_long,
   &_swigt__p_unsigned_short,
-  &_swigt__p_value_t,
   &_swigt__p_value_type,
   &_swigt__p_void,
 };
@@ -36920,7 +36789,6 @@ static swig_cast_info _swigc__p_twenty48__policy_writer_t[] = {  {&_swigt__p_twe
 static swig_cast_info _swigc__p_twenty48__state_tT_2_t[] = {  {&_swigt__p_twenty48__state_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__state_tT_3_t[] = {  {&_swigt__p_twenty48__state_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__state_tT_4_t[] = {  {&_swigt__p_twenty48__state_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_twenty48__value_layer_t[] = {  {&_swigt__p_twenty48__value_layer_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__valuer_tT_2_t[] = {  {&_swigt__p_twenty48__valuer_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__valuer_tT_3_t[] = {  {&_swigt__p_twenty48__valuer_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__valuer_tT_4_t[] = {  {&_swigt__p_twenty48__valuer_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -36931,7 +36799,6 @@ static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 
 static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_long_long[] = {  {&_swigt__p_unsigned_long_long, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_short[] = {  {&_swigt__p_unsigned_short, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_value_t[] = {  {&_swigt__p_value_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_value_type[] = {  {&_swigt__p_value_type, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_void[] = {  {&_swigt__p_void, 0, 0, 0},{0, 0, 0, 0}};
 
@@ -37002,7 +36869,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_twenty48__state_tT_2_t,
   _swigc__p_twenty48__state_tT_3_t,
   _swigc__p_twenty48__state_tT_4_t,
-  _swigc__p_twenty48__value_layer_t,
   _swigc__p_twenty48__valuer_tT_2_t,
   _swigc__p_twenty48__valuer_tT_3_t,
   _swigc__p_twenty48__valuer_tT_4_t,
@@ -37013,7 +36879,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_unsigned_int,
   _swigc__p_unsigned_long_long,
   _swigc__p_unsigned_short,
-  _swigc__p_value_t,
   _swigc__p_value_type,
   _swigc__p_void,
 };
@@ -38077,16 +37942,6 @@ SWIGEXPORT void Init_twenty48(void) {
   SwigClassLayerSolver4.mark = 0;
   SwigClassLayerSolver4.destroy = (void (*)(void *)) free_twenty48_layer_solver_t_Sl_4_Sg_;
   SwigClassLayerSolver4.trackObjects = 0;
-  
-  SwigClassValueLayer.klass = rb_define_class_under(mTwenty48, "ValueLayer", rb_cObject);
-  SWIG_TypeClientData(SWIGTYPE_p_twenty48__value_layer_t, (void *) &SwigClassValueLayer);
-  rb_define_alloc_func(SwigClassValueLayer.klass, _wrap_ValueLayer_allocate);
-  rb_define_method(SwigClassValueLayer.klass, "initialize", VALUEFUNC(_wrap_new_ValueLayer), -1);
-  rb_define_method(SwigClassValueLayer.klass, "lookup", VALUEFUNC(_wrap_ValueLayer_lookup), -1);
-  rb_define_method(SwigClassValueLayer.klass, "get_value", VALUEFUNC(_wrap_ValueLayer_get_value), -1);
-  SwigClassValueLayer.mark = 0;
-  SwigClassValueLayer.destroy = (void (*)(void *)) free_twenty48_value_layer_t;
-  SwigClassValueLayer.trackObjects = 0;
   
   SwigClassPolicyReader.klass = rb_define_class_under(mTwenty48, "PolicyReader", rb_cObject);
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__policy_reader_t, (void *) &SwigClassPolicyReader);
