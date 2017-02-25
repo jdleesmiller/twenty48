@@ -10,7 +10,6 @@
 #include "policy_reader.hpp"
 #include "policy_writer.hpp"
 #include "start_states.hpp"
-#include "state_hash_set.hpp"
 #include "value_layer.hpp"
 %}
 
@@ -178,24 +177,3 @@
 %template(generate_start_states_2) twenty48::generate_start_states<2>;
 %template(generate_start_states_3) twenty48::generate_start_states<3>;
 %template(generate_start_states_4) twenty48::generate_start_states<4>;
-
-/******************************************************************************/
-/* StateHashSet */
-/******************************************************************************/
-
-%include "state_hash_set.hpp"
-
-%extend twenty48::state_hash_set_t {
-  %exception insert {
-    try {
-      $action
-    }
-    catch (const std::length_error& error) {
-      SWIG_exception(SWIG_RuntimeError, error.what());
-    }
-  }
-}
-
-%template(StateHashSet2) twenty48::state_hash_set_t<2>;
-%template(StateHashSet3) twenty48::state_hash_set_t<3>;
-%template(StateHashSet4) twenty48::state_hash_set_t<4>;
