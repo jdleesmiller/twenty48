@@ -8,14 +8,17 @@ module Twenty48
     def initialize
       @nodes = {}
       @edges = {}
+      @clusters = Hash.new { |h, k| h[k] = [] }
     end
 
     attr_reader :nodes
     attr_reader :edges
 
-    def add_node(name, properties = {})
+    def add_node(name, cluster = nil, properties = {})
       raise 'node already added' if @nodes.key?(name)
       @nodes[name] = properties
+      @clusters[cluster] << name if cluster
+      properties
     end
 
     def add_edge(node0_name, node1_name, properties = {})
@@ -35,6 +38,17 @@ module Twenty48
     end
 
     def to_dot
+      cluster_names = @clusters.keys.sort
+      cluster_dot = cluster_names.map do |cluster_name|
+        node_names = @clusters[cluster_name]
+        body = [
+          %(label="#{cluster_name}"),
+          'style=filled', 'color=grey95',
+          'margin=16',
+          node_names.map { |name| "#{name};" }.join(' ')
+        ].join('; ')
+        "subgraph cluster_#{cluster_name} { #{body} }"
+      end
       node_dot = @nodes.map do |node_name, properties|
         "#{node_name} [#{to_key_value(properties).join(', ')}];"
       end
@@ -42,7 +56,7 @@ module Twenty48
         key_values = to_key_value(properties)
         "#{node0_name} -> #{node1_name} [#{key_values.join(', ')}];"
       end
-      node_dot + edge_dot
+      cluster_dot + node_dot + edge_dot
     end
 
     private

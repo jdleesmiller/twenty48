@@ -25,7 +25,9 @@ def build_graph(builder, resolver, solver)
     optimal_action = policy[state]
     formatted_value = format('%.2f', value[state])
 
-    node_properties = graph.add_node(node_name(state))
+    cluster_name = format('%04d', state.sum) unless
+      state.lose? || state.win?(builder.max_exponent)
+    node_properties = graph.add_node(node_name(state), cluster_name)
     node_properties[:shape] = :record
 
     if state.win?(builder.max_exponent)

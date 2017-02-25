@@ -49,6 +49,10 @@ module Twenty48
       transform { |n, x, y| n * x + y }
     end
 
+    def sum
+      to_a.reject(&:zero?).map { |value| 2**value }.sum
+    end
+
     def max_value
       to_a.max
     end
