@@ -14,6 +14,7 @@ struct vbyte_reader_t {
     size_t max_states = std::numeric_limits<size_t>::max());
 
   uint64_t read();
+  void close();
 
 private:
   static const int BUFFER_SIZE = 2 * sizeof(uint64_t);

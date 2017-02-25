@@ -116,22 +116,6 @@
 
 %include "layer_storage.hpp"
 
-%template(write_states_bin_2) twenty48::write_states_bin<2>;
-%template(write_states_bin_3) twenty48::write_states_bin<3>;
-%template(write_states_bin_4) twenty48::write_states_bin<4>;
-
-%template(write_states_hex_2) twenty48::write_states_hex<2>;
-%template(write_states_hex_3) twenty48::write_states_hex<3>;
-%template(write_states_hex_4) twenty48::write_states_hex<4>;
-
-%template(read_states_vbyte_2) twenty48::read_states_vbyte<2>;
-%template(read_states_vbyte_3) twenty48::read_states_vbyte<3>;
-%template(read_states_vbyte_4) twenty48::read_states_vbyte<4>;
-
-%template(write_states_vbyte_2) twenty48::write_states_vbyte<2>;
-%template(write_states_vbyte_3) twenty48::write_states_vbyte<3>;
-%template(write_states_vbyte_4) twenty48::write_states_vbyte<4>;
-
 %rename(VByteIndexEntry) twenty48::vbyte_index_entry_t;
 
 %include "vbyte_index.hpp"
