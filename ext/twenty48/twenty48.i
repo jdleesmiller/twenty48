@@ -11,7 +11,6 @@
 #include "policy_writer.hpp"
 #include "start_states.hpp"
 #include "state_hash_set.hpp"
-#include "state_value_map.hpp"
 #include "value_layer.hpp"
 %}
 
@@ -114,8 +113,6 @@
 /* LayerStorage */
 /******************************************************************************/
 
-%include "layer_storage.hpp"
-
 %rename(VByteIndexEntry) twenty48::vbyte_index_entry_t;
 
 %include "vbyte_index.hpp"
@@ -202,32 +199,3 @@
 %template(StateHashSet2) twenty48::state_hash_set_t<2>;
 %template(StateHashSet3) twenty48::state_hash_set_t<3>;
 %template(StateHashSet4) twenty48::state_hash_set_t<4>;
-
-/******************************************************************************/
-/* StateValueMap */
-/******************************************************************************/
-
-%include "state_value_map.hpp"
-
-%extend twenty48::state_value_map_t {
-  %exception get_value {
-    try {
-      $action
-    }
-    catch (const std::invalid_argument& error) {
-      SWIG_exception(SWIG_RuntimeError, error.what());
-    }
-  }
-  %exception get_action {
-    try {
-      $action
-    }
-    catch (const std::invalid_argument& error) {
-      SWIG_exception(SWIG_RuntimeError, error.what());
-    }
-  }
-}
-
-%template(StateValueMap2) twenty48::state_value_map_t<2>;
-%template(StateValueMap3) twenty48::state_value_map_t<3>;
-%template(StateValueMap4) twenty48::state_value_map_t<4>;
