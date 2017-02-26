@@ -36,9 +36,13 @@ namespace twenty48 {
         expand(state_t<size>(nybbles));
       }
       write_states(pathname_1_0, output_1_0);
+      output_1_0.clear();
       write_states(pathname_1_1, output_1_1);
+      output_1_1.clear();
       write_states(pathname_2_0, output_2_0);
+      output_2_0.clear();
       write_states(pathname_2_1, output_2_1);
+      output_2_1.clear();
     }
 
   private:
