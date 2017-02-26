@@ -48,6 +48,28 @@ module Twenty48
       end
     end
 
+    #
+    # If we have not finished building, we can't really solve, but we can run
+    # the solve with fake values for the last two layers in order to test that
+    # the preceding layers are solvable (not missing states, corrupt, etc.).
+    #
+    def prepare_to_check_solve(fake_value = 0.01)
+      2.times do
+        find_max_values(end_layer_sum).each do |max_value|
+          log format('faking values: %d-%x', end_layer_sum, max_value)
+          vbyte_reader = VByteReader.new(
+            layer_part_pathname(end_layer_sum, max_value)
+          )
+          @solver.generate_values_for_check(
+            vbyte_reader,
+            fake_value,
+            layer_part_values_pathname(end_layer_sum, max_value)
+          )
+        end
+        @end_layer_sum -= 2
+      end
+    end
+
     def solve_layer(sum)
       find_max_values(sum).each do |max_value|
         load_values(sum, max_value)
@@ -65,14 +87,14 @@ module Twenty48
     end
 
     def next_value_pathnames(next_sum, max_value)
-      if next_sum <= end_layer_sum
-        next_max_values = find_max_values(next_sum)
-        if next_max_values.member?(max_value)
-          pathname_0 = layer_part_values_pathname(next_sum, max_value)
-        end
-        if next_max_values.member?(max_value + 1)
-          pathname_1 = layer_part_values_pathname(next_sum, max_value + 1)
-        end
+      next_max_values = find_max_values(next_sum)
+      if next_max_values.member?(max_value)
+        pathname_0 = layer_part_values_pathname(next_sum, max_value)
+        pathname_0 = nil if file_size_if_exists(pathname_0) == 0
+      end
+      if next_max_values.member?(max_value + 1)
+        pathname_1 = layer_part_values_pathname(next_sum, max_value + 1)
+        pathname_1 = nil if file_size_if_exists(pathname_1) == 0
       end
       [pathname_0, pathname_1]
     end

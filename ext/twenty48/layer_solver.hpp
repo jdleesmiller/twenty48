@@ -102,6 +102,27 @@ namespace twenty48 {
       }
     }
 
+    void generate_values_for_check(twenty48::vbyte_reader_t &vbyte_reader,
+      double fake_value, const char *output_values_pathname)
+    {
+      std::ofstream values_os(output_values_pathname,
+        std::ios::out | std::ios::binary);
+
+      for (;;) {
+        uint64_t nybbles = vbyte_reader.read();
+        if (nybbles == 0) break;
+
+        state_value_t record;
+        record.state = nybbles;
+        record.value = fake_value;
+        values_os.write(
+          reinterpret_cast<const char *>(&record), sizeof(record));
+        if (!values_os) {
+          throw std::runtime_error("layer_solver_t: check value write failed");
+        }
+      }
+    }
+
     void solve(twenty48::vbyte_reader_t &vbyte_reader,
       int sum, uint8_t max_value,
       const char *output_values_pathname, const char *output_policy_pathname)
