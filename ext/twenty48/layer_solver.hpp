@@ -5,11 +5,9 @@
 #include <memory>
 
 #include "twenty48.hpp"
-#include "layer_storage.hpp"
 #include "mmap_value_reader.hpp"
 #include "policy_writer.hpp"
 #include "state.hpp"
-#include "state_value_map.hpp"
 #include "valuer.hpp"
 #include "vbyte_reader.hpp"
 

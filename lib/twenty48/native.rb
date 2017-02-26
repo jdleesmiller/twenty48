@@ -96,49 +96,30 @@ module Twenty48
   end
 
   #
-  # Write a list of states in binary format.
-  #
-  def self.write_states_bin(states, pathname)
-    if states.empty?
-      File.touch pathname
-      File.truncate pathname
-      return
-    end
-    case states.first.board_size
-    when 2 then write_states_bin_2(states, pathname)
-    when 3 then write_states_bin_3(states, pathname)
-    when 4 then write_states_bin_4(states, pathname)
-    else raise 'write_states_bin: bad board size'
-    end
-  end
-
-  #
   # Read a list of states in compressed vbyte format.
   #
   def self.read_states_vbyte(board_size, pathname)
-    case board_size
-    when 2 then read_states_vbyte_2(pathname)
-    when 3 then read_states_vbyte_3(pathname)
-    when 4 then read_states_vbyte_4(pathname)
-    else raise 'read_states_vbyte: bad board size'
+    vbyte_reader = VByteReader.new(pathname)
+    result = []
+    loop do
+      nybbles = vbyte_reader.read
+      break if nybbles == 0
+      result << NativeState.create_from_nybbles(board_size, nybbles)
     end
+    vbyte_reader.close
+    result
   end
 
   #
   # Write a list of states in compressed vbyte format.
   #
   def self.write_states_vbyte(states, pathname)
-    if states.empty?
-      File.touch pathname
-      File.truncate pathname
-      return
+    vbyte_writer = VByteWriter.new(pathname)
+    states.each do |state|
+      vbyte_writer.write(state.get_nybbles)
     end
-    case states.first.board_size
-    when 2 then write_states_vbyte_2(states, pathname)
-    when 3 then write_states_vbyte_3(states, pathname)
-    when 4 then write_states_vbyte_4(states, pathname)
-    else raise 'write_states_vbyte: bad board size'
-    end
+    vbyte_writer.close
+    vbyte_writer.get_bytes_written
   end
 
   #

@@ -107,7 +107,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       assert_states_equal [
         [0, 1,
          1, 1]
-      ], read_states_vbyte_2(layer_builder.layer_part_pathname(6, 1))
+      ], Twenty48.read_states_vbyte(2, layer_builder.layer_part_pathname(6, 1))
       assert_equal 1, layer_builder.count_states(6, 1)
 
       assert_states_equal [
@@ -115,7 +115,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
          1, 2],
         [0, 1,
          2, 0]
-      ], read_states_vbyte_2(layer_builder.layer_part_pathname(6, 2))
+      ], Twenty48.read_states_vbyte(2, layer_builder.layer_part_pathname(6, 2))
       assert_equal 2, layer_builder.count_states(6, 2)
 
       check_layer_part_names_to_6(LayerPartName.glob(tmp))
@@ -128,13 +128,13 @@ class NativeLayerBuilderTest < Twenty48NativeTest
 
       check_layer_part_names_to_8(LayerPartName.glob(tmp))
       assert_states_equal [],
-        read_states_vbyte_2(layer_builder.layer_part_pathname(8, 1))
+        Twenty48.read_states_vbyte(2, layer_builder.layer_part_pathname(8, 1))
       assert_equal 0, layer_builder.count_states(8, 1)
-      assert_equal 4,
-        read_states_vbyte_2(layer_builder.layer_part_pathname(8, 2)).size
+      assert_equal 4, Twenty48.read_states_vbyte(2,
+        layer_builder.layer_part_pathname(8, 2)).size
       assert_equal 4, layer_builder.count_states(8, 2)
       assert_states_equal [],
-        read_states_vbyte_2(layer_builder.layer_part_pathname(8, 3))
+        Twenty48.read_states_vbyte(2, layer_builder.layer_part_pathname(8, 3))
       assert_equal 0, layer_builder.count_states(8, 3)
 
       check_layer_part_names_to_8(LayerPartInfoName.glob(tmp))
@@ -156,7 +156,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       FileUtils.mkdir_p states_path
       FileUtils.mkdir_p values_path
 
-      max_states = 1024
+      max_states = 4
       valuer = NativeValuer.create(
         board_size: 2, max_exponent: 7, max_depth: 0, discount: DISCOUNT
       )
@@ -197,7 +197,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
       FileUtils.mkdir_p states_path
       FileUtils.mkdir_p values_path
 
-      max_states = 1024
+      max_states = 4
       valuer = NativeValuer.create(
         board_size: 2, max_exponent: 5, max_depth: 0, discount: DISCOUNT
       )

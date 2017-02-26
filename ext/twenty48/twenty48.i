@@ -10,9 +10,6 @@
 #include "policy_reader.hpp"
 #include "policy_writer.hpp"
 #include "start_states.hpp"
-#include "state_hash_set.hpp"
-#include "state_value_map.hpp"
-#include "value_layer.hpp"
 %}
 
 %include "stdint.i"
@@ -114,24 +111,6 @@
 /* LayerStorage */
 /******************************************************************************/
 
-%include "layer_storage.hpp"
-
-%template(write_states_bin_2) twenty48::write_states_bin<2>;
-%template(write_states_bin_3) twenty48::write_states_bin<3>;
-%template(write_states_bin_4) twenty48::write_states_bin<4>;
-
-%template(write_states_hex_2) twenty48::write_states_hex<2>;
-%template(write_states_hex_3) twenty48::write_states_hex<3>;
-%template(write_states_hex_4) twenty48::write_states_hex<4>;
-
-%template(read_states_vbyte_2) twenty48::read_states_vbyte<2>;
-%template(read_states_vbyte_3) twenty48::read_states_vbyte<3>;
-%template(read_states_vbyte_4) twenty48::read_states_vbyte<4>;
-
-%template(write_states_vbyte_2) twenty48::write_states_vbyte<2>;
-%template(write_states_vbyte_3) twenty48::write_states_vbyte<3>;
-%template(write_states_vbyte_4) twenty48::write_states_vbyte<4>;
-
 %rename(VByteIndexEntry) twenty48::vbyte_index_entry_t;
 
 %include "vbyte_index.hpp"
@@ -157,14 +136,6 @@
 %template(LayerSolver2) twenty48::layer_solver_t<2>;
 %template(LayerSolver3) twenty48::layer_solver_t<3>;
 %template(LayerSolver4) twenty48::layer_solver_t<4>;
-
-/******************************************************************************/
-/* Value Layer */
-/******************************************************************************/
-
-%rename(ValueLayer) twenty48::value_layer_t;
-
-%include "value_layer.hpp"
 
 /******************************************************************************/
 /* Policy Reader/Writer */
@@ -197,53 +168,3 @@
 %template(generate_start_states_2) twenty48::generate_start_states<2>;
 %template(generate_start_states_3) twenty48::generate_start_states<3>;
 %template(generate_start_states_4) twenty48::generate_start_states<4>;
-
-/******************************************************************************/
-/* StateHashSet */
-/******************************************************************************/
-
-%include "state_hash_set.hpp"
-
-%extend twenty48::state_hash_set_t {
-  %exception insert {
-    try {
-      $action
-    }
-    catch (const std::length_error& error) {
-      SWIG_exception(SWIG_RuntimeError, error.what());
-    }
-  }
-}
-
-%template(StateHashSet2) twenty48::state_hash_set_t<2>;
-%template(StateHashSet3) twenty48::state_hash_set_t<3>;
-%template(StateHashSet4) twenty48::state_hash_set_t<4>;
-
-/******************************************************************************/
-/* StateValueMap */
-/******************************************************************************/
-
-%include "state_value_map.hpp"
-
-%extend twenty48::state_value_map_t {
-  %exception get_value {
-    try {
-      $action
-    }
-    catch (const std::invalid_argument& error) {
-      SWIG_exception(SWIG_RuntimeError, error.what());
-    }
-  }
-  %exception get_action {
-    try {
-      $action
-    }
-    catch (const std::invalid_argument& error) {
-      SWIG_exception(SWIG_RuntimeError, error.what());
-    }
-  }
-}
-
-%template(StateValueMap2) twenty48::state_value_map_t<2>;
-%template(StateValueMap3) twenty48::state_value_map_t<3>;
-%template(StateValueMap4) twenty48::state_value_map_t<4>;

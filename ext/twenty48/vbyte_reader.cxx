@@ -41,4 +41,8 @@ uint64_t vbyte_reader_t::read() {
   return value;
 }
 
+void vbyte_reader_t::close() {
+  is.close();
+}
+
 }

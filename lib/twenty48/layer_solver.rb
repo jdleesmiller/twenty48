@@ -43,7 +43,6 @@ module Twenty48
         # Run a GC to make sure we close file handles in VByteReaders.
         GC.start
 
-        puts "Solving layer #{layer_sum}" if @verbose
         solve_layer(layer_sum)
         layer_sum -= 2
       end
@@ -56,6 +55,7 @@ module Twenty48
       find_max_values(sum).each do |max_value|
         load_values(sum, max_value)
         solve_layer_part(sum, max_value)
+        reduce_layer_part(sum, max_value)
       end
     end
 
@@ -81,13 +81,67 @@ module Twenty48
     end
 
     def solve_layer_part(sum, max_value)
-      states_pathname = layer_part_pathname(sum, max_value)
-      values_pathname = layer_part_values_pathname(sum, max_value)
-      policy_pathname = layer_part_policy_pathname(sum, max_value)
-      vbyte_reader = VByteReader.new(states_pathname)
-      @solver.solve(
-        vbyte_reader, sum, max_value, values_pathname, policy_pathname
+      batches = make_layer_part_batches(sum, max_value)
+      log_solve_layer(sum, max_value, batches.size)
+      GC.start
+      Parallel.each(batches) do |index, offset, previous, batch_size|
+        states_pathname = layer_part_pathname(sum, max_value)
+        values_pathname = layer_fragment_values_pathname(sum, max_value, index)
+        policy_pathname = layer_fragment_policy_pathname(sum, max_value, index)
+        vbyte_reader = VByteReader.new(states_pathname, offset, previous,
+          batch_size)
+        @solver.solve(
+          vbyte_reader, sum, max_value, values_pathname, policy_pathname
+        )
+        STDOUT.write('.') if @verbose
+        GC.start
+      end
+      puts if @verbose # put a line break after the dots from the fragments
+    end
+
+    def reduce_layer_part(sum, max_value)
+      log_reduce_layer(sum, max_value)
+
+      concatenate(
+        find_layer_fragments(sum, max_value, LayerFragmentValuesName),
+        layer_part_values_pathname(sum, max_value)
       )
+      concatenate(
+        find_layer_fragments(sum, max_value, LayerFragmentPolicyName),
+        layer_part_policy_pathname(sum, max_value)
+      )
+    end
+
+    def find_layer_fragments(sum, max_value, klass)
+      files = klass.glob(values_folder) do |name|
+        name.sum == sum && name.max_value == max_value
+      end
+      files = files.sort_by { |name| [name.sum, name.max_value, name.batch] }
+      files.map { |name| name.in(values_folder) }
+    end
+
+    def concatenate(input_pathnames, output_pathname)
+      return if input_pathnames.empty?
+
+      first_pathname = input_pathnames.shift
+      FileUtils.mv first_pathname, output_pathname
+
+      input_pathnames.each do |input_pathname|
+        system %(cat "#{input_pathname}" >> "#{output_pathname}")
+        FileUtils.rm input_pathname
+      end
+    end
+
+    def layer_fragment_values_pathname(sum, max_value, batch)
+      LayerFragmentValuesName.new(
+        sum: sum, max_value: max_value, batch: batch
+      ).in(values_folder)
+    end
+
+    def layer_fragment_policy_pathname(sum, max_value, batch)
+      LayerFragmentPolicyName.new(
+        sum: sum, max_value: max_value, batch: batch
+      ).in(values_folder)
     end
 
     def layer_part_values_pathname(sum, max_value)
@@ -104,6 +158,15 @@ module Twenty48
 
     def find_max_layer_sum
       LayerPartName.glob(layer_folder).map(&:sum).max
+    end
+
+    def log_solve_layer(layer_sum, max_value, num_batches)
+      log format('solve %d-%x: %d states (%d batches)',
+        layer_sum, max_value, count_states(layer_sum, max_value), num_batches)
+    end
+
+    def log_reduce_layer(layer_sum, max_value)
+      log format('reduce %d-%x', layer_sum, max_value)
     end
   end
 end

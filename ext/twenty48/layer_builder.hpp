@@ -5,7 +5,6 @@
 #include "btree_set.h"
 
 #include "twenty48.hpp"
-#include "layer_storage.hpp"
 #include "state.hpp"
 #include "valuer.hpp"
 #include "vbyte_reader.hpp"
