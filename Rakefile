@@ -18,10 +18,11 @@ Gemma::RakeTasks.with_gemspec_file 'twenty48.gemspec'
 WRAP_FILE = ext_file("#{NAME}_wrap.cxx")
 SWIG_FILES = [ext_file("#{NAME}.i")] + Dir.glob(ext_file('*.hpp'))
 file WRAP_FILE => SWIG_FILES do
-  break if ENV['NOSWIG']
-  Dir.chdir(EXT_DIR) do
-    system "swig -c++ -ruby #{NAME}.i"
-    raise 'swig failed' unless $CHILD_STATUS.exitstatus == 0
+  unless ENV['NOSWIG']
+    Dir.chdir(EXT_DIR) do
+      system "swig -c++ -ruby #{NAME}.i"
+      raise 'swig failed' unless $CHILD_STATUS.exitstatus == 0
+    end
   end
 end
 
