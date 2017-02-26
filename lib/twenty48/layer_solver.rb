@@ -48,9 +48,6 @@ module Twenty48
       end
     end
 
-    # TODO: this is where we break up into batches
-    # no particular reason not to use the number of processors as the number
-    # of batches --- no upper limit on batch size
     def solve_layer(sum)
       find_max_values(sum).each do |max_value|
         load_values(sum, max_value)
