@@ -119,6 +119,16 @@ module Twenty48
       info
     end
 
+    def file_size(pathname)
+      File.stat(pathname).size
+    end
+
+    def file_size_if_exists(pathname)
+      file_size(pathname)
+    rescue Errno::ENOENT
+      0
+    end
+
     def count_states(sum, max_value)
       read_layer_part_info(sum, max_value)['num_states']
     end

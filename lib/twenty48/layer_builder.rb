@@ -259,10 +259,6 @@ module Twenty48
       [num_states, vbyte_index]
     end
 
-    def file_size(pathname)
-      File.stat(pathname).size
-    end
-
     def log_build_layer(layer_sum, max_value, num_batches)
       log format('build %d-%x: %d states (%d batches)',
         layer_sum, max_value, count_states(layer_sum, max_value), num_batches)

@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'fileutils'
+
+require_relative '../lib/twenty48'
+include Twenty48
+
+states_path = ARGV.first
+
+raise "bad states_path: #{states_path}" unless Dir.exist?(states_path)
+
+params = Storage.layer_states_params_from_pathname(states_path)
+params[:discount] = 0.95
+
+values_path = Storage.layer_values_pathname(params)
+FileUtils.mkdir_p values_path
+
+valuer = NativeValuer.create(
+  board_size: params[:board_size],
+  max_exponent: params[:max_exponent],
+  max_depth: params[:max_depth],
+  discount: params[:discount]
+)
+
+solver = LayerSolver.new(
+  params[:board_size],
+  states_path,
+  values_path,
+  valuer,
+  verbose: true
+)
+
+solver.prepare_to_check_solve
+solver.solve
