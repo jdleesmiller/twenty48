@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(stringr)
 library(jsonlite)
 library(ggplot2)
+library(reshape2)
 ```
 
 ## Parts
@@ -20,12 +21,12 @@ library(ggplot2)
 Plot the number of states in each layer part.
 
 ```{r}
-INFO_NAME_RX <- 'sum-(\\d+)[.]max_value-(\\d)[.]json'
 readPartSizes <- function(dir) {
+  PART_INFO_NAME_RX <- 'sum-(\\d+)[.]max_value-(\\d)[.]json'
   infoFiles <- list.files(dir, '*.json')
   stopifnot(length(infoFiles) > 0)
   
-  info <- str_match(infoFiles, INFO_NAME_RX)
+  info <- str_match(infoFiles, PART_INFO_NAME_RX)
   stopifnot(length(infoFiles) == nrow(info))
   
   colnames(info) <- c('file', 'sum', 'max_value')
@@ -40,25 +41,171 @@ readPartSizes <- function(dir) {
   
   info
 }
-# info <- readPartSizes('layer_states/board_size-2.max_exponent-7.max_depth-1')
-info <- readPartSizes('layer_states/board_size-3.max_exponent-10.max_depth-1')
+info3_10 <- readPartSizes('layer_states/board_size-3.max_exponent-10.max_depth-1')
 ```
 
+### 3x3 Board
+
 ```{r}
-ggplot(info, aes(x = sum, y = num_states)) +
-  geom_bar(aes(color = factor(max_value), fill = factor(max_value)), stat = 'identity') +
-  scale_color_brewer() +
-  scale_fill_brewer()
+plotLayerParts <- function (info) {
+  p <- ggplot(info, aes(x = sum, y = num_states)) +
+    geom_bar(aes(color = factor(max_value), fill = factor(max_value)), stat = 'identity') +
+    scale_color_brewer() +
+    scale_fill_brewer()
+  p
+}
+plotLayerParts(info3_10)
 ```
 
 If we look at it in a normalized way:
 
 ```{r}
-ggplot(info, aes(x = sum, y = num_states)) +
-  geom_bar(
-    aes(color = factor(max_value), fill = factor(max_value)),
-    stat = 'identity', position = 'fill') +
-  scale_color_brewer() +
-  scale_fill_brewer()
+plotLayerPartsNormalized <- function (info) {
+  ggplot(info, aes(x = sum, y = num_states)) +
+    geom_bar(
+      aes(color = factor(max_value), fill = factor(max_value)),
+      stat = 'identity', position = 'fill') +
+    scale_color_brewer() +
+    scale_fill_brewer()
+}
+plotLayerPartsNormalized(info3_10)
 ```
+
+### 4x4 Board
+
+```{r}
+info4_11 <- readPartSizes('layer_check/build-03')
+```
+
+```{r}
+plotLayerParts(info4_11)
+```
+
+```{r}
+plotLayerPartsNormalized(info4_11)
+```
+
+```{r}
+plotLayerPartsLog <- function (info) {
+  stacked <- do.call(rbind, by(info, info$sum, function (sumInfo) {
+    sumInfo <- sumInfo[order(sumInfo$max_value),]
+    transform(sumInfo, cum_states = cumsum(num_states))
+  }))
+  ggplot(stacked, aes(x = sum, y = cum_states)) +
+    geom_line(aes(color = factor(max_value)), size = 2) +
+    scale_color_brewer() +
+    scale_fill_brewer() +
+    scale_y_log10()
+}
+plotLayerPartsLog(info4_11)
+```
+
+## Check Builds
+
+### Build 1
+
+This was before we had parts, so we just have total layer sums to compare.
+
+```{r}
+readLayerSizes <- function (dir) {
+  INFO_NAME_RX <- '(\\d+)[.]json'
+  infoFiles <- list.files(dir, '*.json')
+  stopifnot(length(infoFiles) > 0)
+  
+  info <- str_match(infoFiles, INFO_NAME_RX)
+  stopifnot(length(infoFiles) == nrow(info))
+  
+  colnames(info) <- c('file', 'sum')
+  info <- transform(
+    info,
+    sum = as.numeric(as.character(sum)))
+  
+  info$num_states <- sapply(info$file, function (file) {
+    fromJSON(file.path(dir, file))$num_states
+  })
+  
+  info
+}
+infoBuild1 <- readLayerSizes('layer_check/build-01')
+head(infoBuild1)
+```
+
+```{r}
+compareBuildLayerTotals <- function (build1, partBuilds) {
+  build1$build <- 1
+  result <- subset(build1, select=c(build, sum, num_states))
+  for (i in seq_along(partBuilds)) {
+    partBuild <- partBuilds[[i]]
+    agg <- aggregate(num_states ~ sum, partBuild, sum)
+    agg$build <- i + 1
+    result <- rbind(result, subset(agg, select=c(build, sum, num_states)))
+  }
+  result
+}
+comp <- compareBuildLayerTotals(infoBuild1, list(
+  readPartSizes('layer_check/build-02'),
+  readPartSizes('layer_check/build-03')
+))
+```
+
+```{r}
+checkCompare <- function (comp) {
+  wideComp <- reshape(comp, idvar = 'sum', timevar = 'build', direction = 'wide')
+  numBuilds <- ncol(wideComp) - 1
+  for (i in seq_len(numBuilds - 1)) {
+    numStates1 <- wideComp[,2]
+    numStates2 <- wideComp[,i + 2]
+    ignore <- is.na(numStates1) | is.na(numStates2)
+    mismatch <- numStates1[!ignore] != numStates2[!ignore]
+    if (sum(mismatch) > 0) {
+      print('mismatch')
+      print(wideComp[mismatch,])
+    }
+  }
+  wideComp
+}
+checkCompare(comp)
+```
+
+```{r}
+plotCompareProgress <- function (comp) {
+  ggplot(comp, aes(x = sum, y = num_states)) +
+    geom_line(aes(color = factor(build))) +
+    scale_y_log10()
+}
+plotCompareProgress(comp)
+```
+
+## Build Step Memory
+
+```{r}
+readFree <- function (file) {
+  MEM_RX <- '^Mem:\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)$'
+  lines <- readLines(file)
+  mem <- as.data.frame(
+    str_match(lines[grepl(MEM_RX, lines)], MEM_RX)[,2:7],
+    stringsAsFactors = FALSE)
+  names(mem) <- c('total', 'used', 'free', 'shared', 'buffcache', 'available')
+  mem <- transform(
+    mem,
+    total = as.numeric(total),
+    used = as.numeric(used),
+    free = as.numeric(free),
+    shared = as.numeric(shared),
+    buffcache = as.numeric(buffcache),
+    available = as.numeric(available))
+  mem$t <- 1:nrow(mem)
+  mem
+}
+build3Free <- readFree('layer_check/free_2017-03-04.txt')
+```
+
+```{r}
+plotFree <- function (free) {
+  ggplot(melt(free, 't'), aes(x = t, y = value)) +
+    geom_line(aes(group = variable, color = variable))
+}
+plotFree(build3Free)
+```
+
 
