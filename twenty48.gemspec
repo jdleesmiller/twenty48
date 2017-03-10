@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'finite_mdp', '~> 0.3.0'
   s.add_runtime_dependency 'parallel', '~> 1.10.0'
 
-  s.add_development_dependency 'gemma', '~> 4.1.0'
+  s.add_development_dependency 'gemma', '~> 5.0.0'
   s.add_development_dependency 'ruby-prof', '~> 0.15.9'
   s.add_development_dependency 'rubocop', '~> 0.42.0'
   s.add_development_dependency 'rake-compiler', '~> 1.0.1'
