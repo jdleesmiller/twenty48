@@ -35,8 +35,8 @@ def build(board_size:, max_exponent:, max_depth:, max_states:)
     layer_builder.max_files < 8000
 #  layer_builder.build_start_state_layers
 #  layer_builder.build
-  layer_builder.prepare_to_restart_from(256)
-  layer_builder.build(start_layer_sum: 256)
+  layer_builder.prepare_to_restart_from(326)
+  layer_builder.build(start_layer_sum: 326)
 end
 
 # #
