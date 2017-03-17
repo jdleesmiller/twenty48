@@ -167,6 +167,17 @@ module Twenty48
       end
     end
 
+    #
+    # Find the maximum number of files we can open. This limit can be a problem
+    # when merging large parts. Note that we assume that this does not change
+    # over the lifetime of the process.
+    #
+    def max_files
+      grace = 16
+      @ulimit ||= `bash -c 'ulimit -n'`
+      @ulimit.chomp.to_i - grace
+    end
+
     private
 
     def write_layer_part_info(layer_sum, max_value, num_states:, index: [])
@@ -232,9 +243,9 @@ module Twenty48
     end
 
     def reduce_output_part_fragments(output_name, input_names)
-      # Can't currently handle too many; we may run out of file descriptors
-      # when we try to merge.
-      raise "too many batches: #{input_names.size}" if input_names.size > 2000
+      # We may run out of file descriptors when we try to merge a lot of files.
+      raise "too many batches: #{input_names.size}" if
+        input_names.size > max_files
       input_pathnames = input_names.map { |name| name.in(layer_folder) }
       log_reduce_step(output_name.sum, output_name.max_value, input_pathnames)
 
