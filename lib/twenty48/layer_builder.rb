@@ -147,10 +147,6 @@ module Twenty48
 
       return if batches.empty?
 
-      # Can't currently handle too many; we may run out of file descriptors
-      # when we try to merge.
-      raise "too many batches: #{num_batches.size}" if batches.size > 1000
-
       build_layer_part_batches(sum, max_value, batches)
     end
 
@@ -238,7 +234,7 @@ module Twenty48
     def reduce_output_part_fragments(output_name, input_names)
       # Can't currently handle too many; we may run out of file descriptors
       # when we try to merge.
-      raise "too many batches: #{num_batches}" if input_names.size > 1000
+      raise "too many batches: #{input_names.size}" if input_names.size > 2000
       input_pathnames = input_names.map { |name| name.in(layer_folder) }
       log_reduce_step(output_name.sum, output_name.max_value, input_pathnames)
 
