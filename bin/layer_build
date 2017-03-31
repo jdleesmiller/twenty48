@@ -31,6 +31,8 @@ def build(board_size:, max_exponent:, max_depth:, max_states:)
   )
   layer_builder = LayerBuilder.new(board_size, states_path, max_states, valuer,
     verbose: true)
+  raise "ulimit -n too low: #{layer_builder.max_files}" if
+    layer_builder.max_files < 1000
   layer_builder.build_start_state_layers
   layer_builder.build
 end
