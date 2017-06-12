@@ -1,0 +1,305 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+# Build a 2x2 model without state canonicalization.
+#
+
+require_relative '../lib/twenty48'
+
+include Twenty48
+
+BOARD_SIZE = 2
+MAX_EXPONENT = 5
+MAX_STATES = 10_000
+END_STATE = State.new([0, 0, 0, 0])
+WIN_STATE = State.new([0, 0, 0, MAX_EXPONENT])
+
+def find_start_states
+  empty_state = State.new([0] * BOARD_SIZE**2)
+  states = []
+  empty_state.random_successors.each do |one_tile_state|
+    one_tile_state.random_successors.each do |two_tile_state|
+      states << two_tile_state
+    end
+  end
+  states
+end
+
+def expand(state, open_states)
+  successors = {}
+  DIRECTIONS.each do |direction|
+    move_state = state.move(direction)
+    next if move_state == state
+    if move_state.win?(MAX_EXPONENT)
+      successors[direction] = { WIN_STATE => [1, 0] }
+      break
+    end
+    successors[direction] = Hash.new { |h, k| h[k] = [0, 0] }
+    cells_available = move_state.cells_available
+    move_state.to_a.each.with_index do |value, i|
+      next unless value.zero?
+      State::RANDOM_TILES.each do |new_value, value_probability|
+        new_state_array = move_state.to_a.dup
+        new_state_array[i] = new_value
+        new_state = State.new(new_state_array)
+        if new_state.lose?
+          new_state = END_STATE
+        else
+          open_states << new_state
+        end
+        successors[direction][new_state][0] +=
+          value_probability / cells_available
+      end
+    end
+  end
+  successors
+end
+
+def build
+  model = {}
+
+  model[END_STATE] = { up: { END_STATE => [1, 0] } }
+  model[WIN_STATE] = { up: { END_STATE => [1, 0] } }
+
+  open_states = find_start_states
+  loop do
+    state = open_states.pop
+    break unless state
+    next if model.key?(state)
+    model[state] = expand(state, open_states)
+  end
+
+  model
+end
+
+model_hash = build
+model_hash = Hash[
+  model_hash.keys.sort.map { |state| [state, model_hash[state]] }
+]
+model = FiniteMDP::HashModel.new(model_hash)
+model.check_transition_probabilities_sum
+raise 'model has terminal states' if model.terminal_states.any?
+# p FiniteMDP::TableModel.from_model(model)
+p model_hash.size
+
+#
+# How far can we get with some simple counting arguments?
+#
+# every state must contain at least one 2 or 4 tile.
+# subtract all states with no 2 or 4 tiles; i.e. all tiles are drawn from 3
+# possible tiles, instead of 5.
+# 5*5*5*5 - 3*3*3*3 = 625 - 81 = 544
+# (and add two for the win and end state)
+#
+# every state must have at least two non-empty tiles
+# subtract the single state with no non-empty tiles
+# subtract states with with one non-empty tile: 4 values, 4 positions
+# 5*5*5*5 - 1 - 4*4 = 608
+#
+# both rules: the requirement that we have at least one 2 or 4 tile takes care
+# of the all-empty state. Can still have states with one non-empty tile that
+# is a 2 or 4 tile.
+#
+# 5*5*5*5 - 81 - 16 + 8 = 536
+#
+# Still quite a few unreachable states.
+#
+states = []
+[0, 1, 2, 3, 4].each do |i1|
+  [0, 1, 2, 3, 4].each do |i2|
+    [0, 1, 2, 3, 4].each do |i3|
+      [0, 1, 2, 3, 4].each do |i4|
+        states << [i1, i2, i3, i4]
+      end
+    end
+  end
+end
+p states.size
+p states.select { |state| state.member?(1) || state.member?(2) }.size
+# => 544
+
+p states.select { |state| state.count(&:zero?) <= 2 }.size
+# => 608
+
+states_1 = states.select do |state|
+  (state.member?(1) || state.member?(2)) && state.count(&:zero?) <= 2
+end
+p states_1.size
+# => 536
+
+# states.reject! do |candidate_state|
+#   model.states.member?(State.new(candidate_state))
+# end
+# p states.size
+# # => 188 that are not reachable
+#
+# states.take(10).each do |state|
+#   p state
+# end
+#
+# canonical_states = states.map do |state|
+#   State.new(state).canonicalize
+# end
+# canonical_states.uniq!
+# canonical_states.each do |state|
+#   puts state.pretty_print + "\n\n"
+# end
+
+# Can't have e.g.
+#  .    .
+#  2   16
+# because the precursor would be like
+#  .   8
+#  .   8
+# which is also not allowed. We've also seen this in the layers: the N tile
+# does not appear in layer with sum N; there are always some extra tiles.
+# How to express this?
+# - There is a minimum number of required moves before you can get to a given
+#   tile value. Suppose you get 4 = 2^2 tiles for both starting tiles and on
+#   every subsequent move, and that you are always able to merge like tiles.
+#
+#   The sum of the tile values starts at 8 and increases by 4 on every move.
+#   For the sum to reach 2^i, for i >= 3, you need at least
+#   (2^i - 2^3) / 2^2 = 2^(i-2) - 2
+#   moves. So:
+#   sum:   8 16 32 64 128 256 512 1024 2048
+#   moves: 0  2  6 14  30  62 126  254  510
+#
+#   However, that's not the number of moves required to get to the desired tile,
+#   which is larger.
+#
+#   4 4
+#   4 8 <- 1 move
+#   4 4 8
+#   4 8 8
+#   4 4 16 <- 4 moves
+#   4 8 16
+#   4 4 8 16
+#   4 8 8 16
+#   4 4 16 16
+#   4 8 32 <- 9 moves
+#
+#   Continuing the sequence using the code below:
+# [4, 4, 16, 16]
+# "****** 9 MOVES to 32"
+# [4, 8, 32]
+# ...
+# [4, 8, 32, 32]
+# "****** 18 MOVES to 64"
+# [4, 4, 8, 64]
+# ...
+# [4, 4, 8, 64, 64]
+# "****** 35 MOVES to 128"
+# [4, 8, 8, 128]
+# ...
+# [4, 8, 8, 128, 128]
+# "****** 68 MOVES to 256"
+# [4, 4, 16, 256]
+# ...
+# [4, 4, 16, 256, 256]
+# "****** 133 MOVES to 512"
+# [4, 8, 16, 512]
+# ...
+# [4, 8, 16, 512, 512]
+# "****** 262 MOVES to 1024"
+# [4, 4, 8, 16, 1024]
+# ...
+# [4, 4, 8, 16, 1024, 1024]
+# "****** 519 MOVES to 2048"
+# [4, 8, 8, 16, 2048]
+#
+# So:
+# i      2 3  4  5  6   7   8   9   10   11
+# 2^i    4 8 16 32 64 128 256 512 1024 2048
+# moves  0 1  4  9 18  35  68 133  262  519
+#
+# So, it looks like for i >= 5 it is
+# M(i)  = 2 * M(i-1) - (i - 6) (with M(4) = 4)
+# M(5)  = 2 * M( 4) - ( 5 - 6) = 2 * 8 + 1 = 9
+# M(6)  = 2 * M( 5) - ( 6 - 6) = 2 * 9 = 18
+# M(7)  = 2 * M( 6) - ( 7 - 6) = 2 * 18 - 1 = 35
+# M(8)  = 2 * M( 7) - ( 8 - 6) = 2 * 35 - 2 = 68
+# M(9)  = 2 * M( 8) - ( 9 - 6) = 2 * 68 - 3 = 133
+# M(10) = 2 * M( 9) - (10 - 6) = 2 * 133 - 4 = 262
+# M(11) = 2 * M(10) - (11 - 6) = 2 * 262 - 5 = 519
+#
+# If we solve that, M(i) = (16c - 1)*2^{i-5} + i - 4
+# For M(4): (16c - 1)*2^{4-5} + 4 - 4 = (16c - 1) / 2 = 4
+#           16c - 1 = 8
+#           c = 9/16 => coefficient is 8
+# M(i) = 8*2^{i-5} + i - 4
+# For i >= 2, can simplify that to 2^{i-2} + i - 4
+
+# target_exponent = 3
+# tiles = [2, 2]
+# moves = 0
+# while target_exponent < 12
+#   while tiles.max < target_exponent
+#     p(tiles.map { |x| 2**x })
+#     i = 1
+#     while i < tiles.size
+#       if tiles[i - 1] == tiles[i]
+#         tiles[i - 1] += 1
+#         tiles.delete_at(i)
+#       end
+#       i += 1
+#     end
+#     tiles.unshift 2
+#     moves += 1
+#   end
+#   p "****** #{moves} MOVES to #{2**target_exponent}"
+#   target_exponent += 1
+# end
+
+# def moves_in_plus_4_model(i)
+#   2**(i - 2) + i - 4
+# end
+#
+# (2...12).each do |i|
+#   p [i, moves_in_plus_4_model(i)]
+# end
+
+# So... comparing those two expressions:
+# Sum to reach 2_i:      2^(i-2) - 2
+# Max tile to reach 2_i: 2^(i-2) + i - 4
+# They coincide for i = 2 (where both are -1, which kind of makes sense, given
+# that we started with two tiles), but then they diverge linearly in i.
+
+# What impact does this have on the number of reachable states?
+# For i >= 3, it implies that there are extra tiles worth at least 4*(i - 2) on
+# the board when we reach the 2^i tile. How many states does that remove?
+#
+
+states_2 = states_1.select do |state|
+  total = state.map { |x| x == 0 ? 0 : 2**x }.sum
+  total >= 2**state.max + 4 * (state.max - 2)
+end
+p states_2.size
+# => 460
+
+states_2.reject! do |candidate_state|
+  model.states.member?(State.new(candidate_state))
+end
+p states_2.size
+# => 164 that are not reachable
+
+states_2.take(10).each do |state|
+  p state
+end
+
+canonical_states = states_2.map do |state|
+  State.new(state).canonicalize
+end
+canonical_states.uniq!
+p canonical_states.size
+canonical_states.each do |state|
+  puts state.pretty_print + "\n\n"
+end
+
+# This still admits states like
+#  .    2
+# 16   16
+# and
+#  2    8
+#  8    8
