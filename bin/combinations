@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+# Print out the basic combinatorial state counts.
+#
+
+require 'csv'
+
+BOARD_SIZES = (2..4).to_a
+MAX_EXPONENTS = (3..11).to_a
+
+def number_with_comma(number)
+  number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
+end
+
+CSV(STDOUT) do |csv|
+  csv << [''] + BOARD_SIZES
+
+  MAX_EXPONENTS.each do |max_exponent|
+    row = [2**max_exponent]
+    # Basic estimate: K^C + 1
+    # BOARD_SIZES.each do |board_size|
+    #   cells = board_size**2
+    #   count = max_exponent**cells + 1
+    #   row << number_with_comma(count)
+    # end
+
+    # Slight refinement: K^C + 1 - (K-2)^C - 2*C
+    BOARD_SIZES.each do |board_size|
+      cells = board_size**2
+      count = max_exponent**cells + 1 - (max_exponent - 2)**cells - 2 * cells
+      row << number_with_comma(count)
+    end
+
+    csv << row
+  end
+end
