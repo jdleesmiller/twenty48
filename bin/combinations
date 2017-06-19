@@ -14,25 +14,173 @@ def number_with_comma(number)
   number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
 end
 
-CSV(STDOUT) do |csv|
-  csv << [''] + BOARD_SIZES
+# CSV(STDOUT) do |csv|
+#   csv << [''] + BOARD_SIZES
+#
+#   MAX_EXPONENTS.each do |max_exponent|
+#     row = [2**max_exponent]
+#     # Basic estimate: K^C + 1
+#     # BOARD_SIZES.each do |board_size|
+#     #   cells = board_size**2
+#     #   count = max_exponent**cells + 1
+#     #   row << number_with_comma(count)
+#     # end
+#
+#     # Slight refinement: K^C + 1 - (K-2)^C - 2*C
+#     BOARD_SIZES.each do |board_size|
+#       cells = board_size**2
+#       count = max_exponent**cells + 1 - (max_exponent - 2)**cells - 2 * cells
+#       row << number_with_comma(count)
+#     end
+#
+#     csv << row
+#   end
+# end
 
-  MAX_EXPONENTS.each do |max_exponent|
-    row = [2**max_exponent]
-    # Basic estimate: K^C + 1
-    # BOARD_SIZES.each do |board_size|
-    #   cells = board_size**2
-    #   count = max_exponent**cells + 1
-    #   row << number_with_comma(count)
-    # end
+# Check whether n is a power of 2 using the bitwise and trick.
+def power_of_2?(n)
+  n & (n - 1) == 0
+end
 
-    # Slight refinement: K^C + 1 - (K-2)^C - 2*C
-    BOARD_SIZES.each do |board_size|
-      cells = board_size**2
-      count = max_exponent**cells + 1 - (max_exponent - 2)**cells - 2 * cells
-      row << number_with_comma(count)
+# Implement the recurrence from
+# Chinn, Niederhausen (unknown). Compositions into Powers of 2
+# Add one new thing: instead of always using floor(log_2 n), allow the caller
+# to 'cap' the powers of 2 at a given threshold.
+def count_compositions(n_max, k_max, i_min = 0, i_max = nil)
+  ns = (1..n_max).to_a
+  ks = (2..k_max).to_a
+  c = ns.map do |n|
+    power_of_2?(n) && 2**i_min <= n && (i_max.nil? || n <= 2**i_max) ? [1] : [0]
+  end
+  ks.each do |k|
+    ns.each do |n|
+      next if k > n
+      i_max_n = i_max || Math.log2(n).floor.to_i
+      c[n - 1][k - 1] = (i_min..i_max_n).map do |i|
+        n_prev = n - 2**i
+        k_prev = k - 1
+        k_prev > n_prev ? 0 : c[n_prev - 1][k_prev - 1]
+      end.sum
     end
+  end
+  c
+end
 
-    csv << row
+#
+# Enumerator over all numbers with the given (mixed) radices.
+#
+def radix_sequence(size, radix)
+  array = [0] * size
+  Enumerator.new do |y|
+    loop do
+      y << array.dup
+      break unless spin_array(array, radix)
+    end
   end
 end
+
+def spin_array(array, radix)
+  (0...(array.size)).each do |i|
+    array[i] += 1
+    return true if array[i] <= radix
+    array[i] = 0
+  end
+  false
+end
+
+# Explicitly enumerate and check compositions of powers of two.
+# n = the sum, k = the number of parts
+def check_compositions(n, k, i_min = 0, i_max = nil)
+  i_max ||= Math.log2(n + 1).ceil.to_i
+  span = i_max - i_min
+  candidates = radix_sequence(k, span)
+  count = 0
+  candidates.each do |exponents|
+    # p(exponents.map { |i| 2**i }) if exponents.map { |i| 2**i }.sum == n
+    count += 1 if exponents.map { |i| 2**(i_min + i) }.sum == n
+  end
+  count
+end
+
+# Check the compositions table against the explicitly calculated values.
+def check_compositions_table(n_max, k_max, i_min = 0, i_max = nil)
+  table = count_compositions(n_max, k_max, i_min, i_max)
+  p table
+  (1..n_max).each do |n|
+    (1..k_max).each do |k|
+      next if k > n
+      check = check_compositions(n, k, i_min, i_max)
+      expected = table[n - 1][k - 1]
+      if check == expected
+        puts "OK #{n}, #{k}: #{expected}"
+      else
+        puts "mismatch: #{n}, #{k}: table #{expected} != check #{check}"
+      end
+    end
+  end
+end
+# p check_compositions(8, 1, 2)
+# check_compositions_table(10, 10)
+# check_compositions_table(10, 10, 0, 2)
+# check_compositions_table(10, 10, 1, 2)
+
+def factorial(n)
+  (1..n).inject(:*) || 1
+end
+
+def choose(n, k)
+  factorial(n) / (factorial(k) * factorial(n - k))
+end
+
+#
+# Estimate with only the max exponent constraint (no tile constraints).
+#
+def estimate_layer_counts(board_size, max_exponent)
+  num_cells = board_size**2
+  i_max = max_exponent - 2
+  max_sum = num_cells * 2**i_max
+  total = 0
+  table = count_compositions(max_sum, num_cells, 0, i_max)
+  table.each.with_index do |row, index|
+    sum = (index + 1) * 2
+    counts = row.map.with_index do |count_k, i|
+      k = i + 1
+      count_k * choose(num_cells, k)
+    end
+    total += counts.sum
+    puts [sum, counts.sum].join(',')
+  end
+  p total
+end
+# estimate_layer_counts(2, 5)
+# estimate_layer_counts(4, 11)
+
+#
+# Estimate with max exponent and tile constraints.
+#
+def count_row(row, num_cells)
+  row.map.with_index do |count_k, i|
+    k = i + 1
+    next 0 if k == 1
+    count_k * choose(num_cells, k)
+  end.sum
+end
+
+def estimate_layer_counts_with_24_tile(board_size, max_exponent)
+  num_cells = board_size**2
+  i_max = max_exponent - 2
+  max_sum = num_cells * 2**i_max
+  total = 0
+  table = count_compositions(max_sum, num_cells, 0, i_max)
+  table_4 = count_compositions(max_sum, num_cells, 2, i_max)
+  table.zip(table_4).each.with_index do |(row, row_4), index|
+    sum = (index + 1) * 2
+    count = count_row(row, num_cells) - count_row(row_4, num_cells)
+    puts [sum, count].join(',')
+    total += count
+  end
+  total + 1
+end
+
+# p estimate_layer_counts_with_24_tile(2, 5)
+p estimate_layer_counts_with_24_tile(4, 11)

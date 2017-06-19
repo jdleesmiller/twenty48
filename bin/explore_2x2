@@ -196,9 +196,10 @@ end
 
 #
 # Count states without canonicalization.
+# Note that individual losing states are not counted.
 #
 
-def expand_without_probabilities(state, open_states, max_exponent)
+def expand_next_layers(state, layers, max_exponent)
   DIRECTIONS.each do |direction|
     move_state = state.move(direction)
     next if move_state == state
@@ -210,35 +211,48 @@ def expand_without_probabilities(state, open_states, max_exponent)
         new_state_array[i] = new_value
         new_state = State.new(new_state_array)
         next if new_state.lose?
-        open_states << new_state
+        layers[new_state.sum] << new_state
       end
     end
   end
 end
 
-def count_states_without_canonicalization(board_size, max_exponent)
-  # Start with just the 'win' state.
+def count_states_without_canonicalization(board_size, max_exponent, layer_csv)
   win_state_array = [0] * board_size**2
   win_state_array[-1] = max_exponent
-  closed_states = Set[State.new(win_state_array)]
 
-  open_states = find_start_states(board_size)
-  loop do
-    state = open_states.pop
-    break unless state
-    next if closed_states.member?(state)
-    expand_without_probabilities(state, open_states, max_exponent)
-    closed_states << state
+  layers = Hash.new { |h, k| h[k] = Set.new }
+  layer_counts = {}
+  layers[2**max_exponent] << State.new(win_state_array)
+
+  find_start_states(board_size).each do |state|
+    layers[state.sum] << state
   end
 
-  closed_states
+  layer_sum = layers.keys.min
+  while layer_sum <= layers.keys.max
+    layers[layer_sum].each do |state|
+      expand_next_layers(state, layers, max_exponent)
+    end
+    layer_counts[layer_sum] = layers[layer_sum].size
+    layer_csv << [board_size, max_exponent, layer_sum, layer_counts[layer_sum]]
+    layers[layer_sum] = nil
+    layer_sum += 2
+  end
+  layer_counts
 end
 
-CSV(STDOUT) do |csv|
-  (2..4).each do |board_size|
-    (3..11).each do |max_exponent|
-      states = count_states_without_canonicalization(board_size, max_exponent)
-      csv << [board_size, max_exponent, states.size]
+CSV(STDOUT) do |sum_csv|
+  CSV(STDERR) do |layer_csv|
+    (2..4).each do |board_size|
+      (3..11).each do |max_exponent|
+        counts = count_states_without_canonicalization(
+          board_size, max_exponent, layer_csv
+        )
+        # Add one for the 'lose' / 'end' state, because we don't count
+        # individual losing states above.
+        sum_csv << [board_size, max_exponent, counts.values.sum + 1]
+      end
     end
   end
 end
@@ -465,3 +479,20 @@ end
 # and
 #  2    8
 #  8    8
+
+# Can we get estimates for the number of states in each layer by sum? There is a
+# constraint on the max exponent and also on the numbers that we can use in the
+# sum: they must all be powers of 2. That is:
+#
+# How many ways can we write
+# S = \sum_{i_n} 2^{i_n}
+# in terms of N integers, 2^{i_n} for n = 1, ..., N,
+# where i_n in 1, ..., K - 1. We'd then have to sum up over N from 2 to C.
+#
+# ACTUALLY: we want compositions not partitions, because order is important
+# Or: we want the number of partitions of an integer n into powers of 2 such
+# that there are no more than C parts. (The layer sums are even, so we can
+# divide by 2 and decrease exponents by 1.) The sequences are
+# http://oeis.org/A018819 (powers of 2)
+# http://oeis.org/A026820 (Euler's table)
+#
