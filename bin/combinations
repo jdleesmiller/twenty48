@@ -14,28 +14,44 @@ def number_with_comma(number)
   number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
 end
 
-# CSV(STDOUT) do |csv|
-#   csv << [''] + BOARD_SIZES
 #
-#   MAX_EXPONENTS.each do |max_exponent|
-#     row = [2**max_exponent]
-#     # Basic estimate: K^C + 1
-#     # BOARD_SIZES.each do |board_size|
-#     #   cells = board_size**2
-#     #   count = max_exponent**cells + 1
-#     #   row << number_with_comma(count)
-#     # end
+# Basic Estimate: K^C + 1
+# (for K = max exponent, C = number of cells)
 #
-#     # Slight refinement: K^C + 1 - (K-2)^C - 2*C
-#     BOARD_SIZES.each do |board_size|
-#       cells = board_size**2
-#       count = max_exponent**cells + 1 - (max_exponent - 2)**cells - 2 * cells
-#       row << number_with_comma(count)
-#     end
+CSV.open('data/combinatorics/total_basic.csv', 'w') do |csv|
+  csv << [''] + BOARD_SIZES
+
+  MAX_EXPONENTS.each do |max_exponent|
+    row = [2**max_exponent]
+    BOARD_SIZES.each do |board_size|
+      cells = board_size**2
+      count = max_exponent**cells + 1
+      row << number_with_comma(count)
+    end
+    csv << row
+  end
+end
+
 #
-#     csv << row
-#   end
-# end
+# Slight Refinement: K^C + 1 - (K-2)^C - 2*C
+#
+CSV.open('data/combinatorics/total.csv', 'w') do |csv|
+  csv << [''] + BOARD_SIZES
+
+  MAX_EXPONENTS.each do |max_exponent|
+    row = [2**max_exponent]
+    BOARD_SIZES.each do |board_size|
+      cells = board_size**2
+      count = max_exponent**cells + 1 - (max_exponent - 2)**cells - 2 * cells
+      row << number_with_comma(count)
+    end
+    csv << row
+  end
+end
+
+#
+# Layer sums using compositions.
+#
 
 # Check whether n is a power of 2 using the bitwise and trick.
 def power_of_2?(n)
@@ -44,26 +60,25 @@ end
 
 # Implement the recurrence from
 # Chinn, Niederhausen (unknown). Compositions into Powers of 2
-# Add one new thing: instead of always using floor(log_2 n), allow the caller
-# to 'cap' the powers of 2 at a given threshold.
+# Add one new thing: let the caller manipulate the bounds on the sum index.
 def count_compositions(n_max, k_max, i_min = 0, i_max = nil)
   ns = (1..n_max).to_a
   ks = (2..k_max).to_a
-  c = ns.map do |n|
+  table = ns.map do |n|
     power_of_2?(n) && 2**i_min <= n && (i_max.nil? || n <= 2**i_max) ? [1] : [0]
   end
   ks.each do |k|
     ns.each do |n|
       next if k > n
       i_max_n = i_max || Math.log2(n).floor.to_i
-      c[n - 1][k - 1] = (i_min..i_max_n).map do |i|
+      table[n - 1][k - 1] = (i_min..i_max_n).map do |i|
         n_prev = n - 2**i
         k_prev = k - 1
-        k_prev > n_prev ? 0 : c[n_prev - 1][k_prev - 1]
+        k_prev > n_prev ? 0 : table[n_prev - 1][k_prev - 1]
       end.sum
     end
   end
-  c
+  table
 end
 
 #
@@ -119,7 +134,6 @@ def check_compositions_table(n_max, k_max, i_min = 0, i_max = nil)
     end
   end
 end
-# p check_compositions(8, 1, 2)
 # check_compositions_table(10, 10)
 # check_compositions_table(10, 10, 0, 2)
 # check_compositions_table(10, 10, 1, 2)
@@ -139,24 +153,47 @@ def estimate_layer_counts(board_size, max_exponent)
   num_cells = board_size**2
   i_max = max_exponent - 2
   max_sum = num_cells * 2**i_max
-  total = 0
   table = count_compositions(max_sum, num_cells, 0, i_max)
-  table.each.with_index do |row, index|
+  table.map.with_index do |row, index|
     sum = (index + 1) * 2
     counts = row.map.with_index do |count_k, i|
       k = i + 1
       count_k * choose(num_cells, k)
     end
-    total += counts.sum
-    puts [sum, counts.sum].join(',')
+    [sum, counts.sum]
   end
-  p total
 end
 # estimate_layer_counts(2, 5)
-# estimate_layer_counts(4, 11)
+
+CSV.open('data/combinatorics/layers_basic.csv', 'w') do |layer_csv|
+  layer_csv << %w[board_size max_exponent layer_sum num_states]
+  CSV.open('data/combinatorics/layers_basic_total.csv', 'w') do |total_csv|
+    total_csv << %w[board_size max_exponent total_states]
+    BOARD_SIZES.each do |board_size|
+      MAX_EXPONENTS.each do |max_exponent|
+        counts = estimate_layer_counts(board_size, max_exponent)
+        counts.each do |layer_sum, count|
+          layer_csv << [
+            board_size,
+            max_exponent,
+            layer_sum,
+            count
+          ]
+        end
+        # This method doesn't count the zero state or the special win state,
+        # which the other 'basic' method does, so add two for comparability.
+        total = counts.map { |layer| layer[1] }.sum + 2
+        total_csv << [board_size, max_exponent, total]
+      end
+    end
+  end
+end
 
 #
-# Estimate with max exponent and tile constraints.
+# Estimate with max exponent and tile constraints. The approach is to calculate
+# the basic estimate but (1) ignore k = 1 (only one tile) and (2) subtract off
+# compositions that do not include a power of 2 larger than 4 (must have at
+# least one two or four tile).
 #
 def count_row(row, num_cells)
   row.map.with_index do |count_k, i|
@@ -166,21 +203,42 @@ def count_row(row, num_cells)
   end.sum
 end
 
-def estimate_layer_counts_with_24_tile(board_size, max_exponent)
+def estimate_layer_counts_with_restrictions(board_size, max_exponent)
   num_cells = board_size**2
   i_max = max_exponent - 2
   max_sum = num_cells * 2**i_max
-  total = 0
   table = count_compositions(max_sum, num_cells, 0, i_max)
   table_4 = count_compositions(max_sum, num_cells, 2, i_max)
-  table.zip(table_4).each.with_index do |(row, row_4), index|
+  table.zip(table_4).map.with_index do |(row, row_4), index|
     sum = (index + 1) * 2
     count = count_row(row, num_cells) - count_row(row_4, num_cells)
-    puts [sum, count].join(',')
-    total += count
+    [sum, count]
   end
-  total + 1
 end
 
+CSV.open('data/combinatorics/layers.csv', 'w') do |layer_csv|
+  layer_csv << %w[board_size max_exponent layer_sum num_states]
+  CSV.open('data/combinatorics/layers_total.csv', 'w') do |total_csv|
+    total_csv << %w[board_size max_exponent total_states]
+    BOARD_SIZES.each do |board_size|
+      MAX_EXPONENTS.each do |max_exponent|
+        counts = estimate_layer_counts_with_restrictions(
+          board_size, max_exponent
+        )
+        counts.each do |layer_sum, count|
+          layer_csv << [
+            board_size,
+            max_exponent,
+            layer_sum,
+            count
+          ]
+        end
+        # This method doesn't count the win state, which the other refined
+        # method does, so add one for comparability.
+        total = counts.map { |layer| layer[1] }.sum + 1
+        total_csv << [board_size, max_exponent, total]
+      end
+    end
+  end
+end
 # p estimate_layer_counts_with_24_tile(2, 5)
-p estimate_layer_counts_with_24_tile(4, 11)
