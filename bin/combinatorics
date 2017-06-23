@@ -205,15 +205,16 @@ end
 
 def estimate_layer_counts_with_restrictions(board_size, max_exponent)
   num_cells = board_size**2
-  i_max = max_exponent - 2
+  i_max = max_exponent - 1
   max_sum = num_cells * 2**i_max
-  table = count_compositions(max_sum, num_cells, 0, i_max)
-  table_4 = count_compositions(max_sum, num_cells, 2, i_max)
+  table = count_compositions(max_sum, num_cells, 1, i_max)
+  table_4 = count_compositions(max_sum, num_cells, 3, i_max)
   table.zip(table_4).map.with_index do |(row, row_4), index|
-    sum = (index + 1) * 2
+    sum = index + 1
+    next if sum.odd?
     count = count_row(row, num_cells) - count_row(row_4, num_cells)
     [sum, count]
-  end
+  end.compact
 end
 
 CSV.open('data/combinatorics/layers.csv', 'w') do |layer_csv|
