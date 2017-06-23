@@ -1,3 +1,4 @@
+board_size,max_exponent,layer_sum,num_states
 2,3,4,6
 2,3,6,16
 2,3,8,19
