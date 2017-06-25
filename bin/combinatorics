@@ -214,7 +214,7 @@ def estimate_layer_counts_with_restrictions(board_size, max_exponent)
     next if sum.odd?
     count = count_row(row, num_cells) - count_row(row_4, num_cells)
     [sum, count]
-  end.compact
+  end.compact.drop(1)
 end
 
 CSV.open('data/combinatorics/layers.csv', 'w') do |layer_csv|

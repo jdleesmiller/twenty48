@@ -1,4 +1,4 @@
-board_size,max_exponent,num_states
+board_size,max_exponent,total_states
 2,3,70
 2,4,198
 2,5,350
