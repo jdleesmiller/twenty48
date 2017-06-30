@@ -1,0 +1,67 @@
+Small test file:
+
+$ time md5 data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte
+MD5 (data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte) = 0fe3633a5b4fcf68bae59610c023a488
+
+real	0m0.036s
+user	0m0.014s
+sys	0m0.012s
+
+$ ls -l data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte*
+-rw-r--r--  1 john  staff  3457023  3 Mar 22:21 data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte
+
+#############
+time bzip2 -k data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte
+
+real	0m0.391s
+user	0m0.351s
+sys	0m0.022s
+
+#############
+time bro --input data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte --output data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte.bro
+
+real	0m7.671s
+user	0m7.558s
+sys	0m0.078s
+
+#############
+time zstd data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte
+
+data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte : 22.44%   (3457023 => 775738 bytes, data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte.zst)
+
+real	0m0.076s
+user	0m0.039s
+sys	0m0.023s
+
+#############
+time xz -k data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte
+
+real	0m1.625s
+user	0m1.558s
+sys	0m0.048s
+
+#############
+time tar cf - data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte | 7zr a -si data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte.tar.7z
+
+real	0m0.882s
+user	0m1.232s
+sys	0m0.078s
+
+#############
+time gzip -k data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte
+
+real	0m0.199s
+user	0m0.158s
+sys	0m0.023s
+
+#############
+
+$ ls -l data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte*
+
+-rw-r--r--  1 john  staff  3457023  3 Mar 22:21 data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte
+-rw-------  1 john  staff   478270  8 Mar 22:18 data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte.bro
+-rw-r--r--  1 john  staff   509940  3 Mar 22:21 data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte.bz2
+-rw-r--r--  1 john  staff   875473  3 Mar 22:21 data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte.gz
+-rw-r--r--  1 john  staff   507015  8 Mar 22:19 data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte.tar.7z
+-rw-r--r--  1 john  staff   489968  3 Mar 22:21 data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte.xz
+-rw-r--r--  1 john  staff   775738  3 Mar 22:21 data/layer_states/board_size-4.max_exponent-4.max_depth-0/sum-0060.max_value-3.vbyte.zst
