@@ -18,7 +18,7 @@ end
 # Basic Estimate: K^C + 1
 # (for K = max exponent, C = number of cells)
 #
-CSV.open('data/combinatorics/total_basic.csv', 'w') do |csv|
+CSV.open('data/blog/total_basic.csv', 'w') do |csv|
   csv << [''] + BOARD_SIZES
 
   MAX_EXPONENTS.each do |max_exponent|
@@ -35,7 +35,7 @@ end
 #
 # Slight Refinement: K^C + 1 - (K-2)^C - 2*C
 #
-CSV.open('data/combinatorics/total.csv', 'w') do |csv|
+CSV.open('data/blog/total.csv', 'w') do |csv|
   csv << [''] + BOARD_SIZES
 
   MAX_EXPONENTS.each do |max_exponent|
@@ -165,9 +165,9 @@ def estimate_layer_counts(board_size, max_exponent)
 end
 # estimate_layer_counts(2, 5)
 
-CSV.open('data/combinatorics/layers_basic.csv', 'w') do |layer_csv|
+CSV.open('data/blog/layers_basic.csv', 'w') do |layer_csv|
   layer_csv << %w[board_size max_exponent layer_sum num_states]
-  CSV.open('data/combinatorics/layers_basic_total.csv', 'w') do |total_csv|
+  CSV.open('data/blog/layers_basic_total.csv', 'w') do |total_csv|
     total_csv << %w[board_size max_exponent total_states]
     BOARD_SIZES.each do |board_size|
       MAX_EXPONENTS.each do |max_exponent|
@@ -217,9 +217,9 @@ def estimate_layer_counts_with_restrictions(board_size, max_exponent)
   end.compact.drop(1)
 end
 
-CSV.open('data/combinatorics/layers.csv', 'w') do |layer_csv|
+CSV.open('data/blog/layers.csv', 'w') do |layer_csv|
   layer_csv << %w[board_size max_exponent layer_sum num_states]
-  CSV.open('data/combinatorics/layers_total.csv', 'w') do |total_csv|
+  CSV.open('data/blog/layers_total.csv', 'w') do |total_csv|
     total_csv << %w[board_size max_exponent total_states]
     BOARD_SIZES.each do |board_size|
       MAX_EXPONENTS.each do |max_exponent|

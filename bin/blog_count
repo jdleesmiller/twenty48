@@ -1,0 +1,218 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'csv'
+
+require_relative '../lib/twenty48'
+include Twenty48
+
+#
+# Count states for the blog post summary tables.
+#
+
+TotalRow = Struct.new(:board_size, :max_exponent, :total_states) do
+  def self.from_row(row)
+    new(
+      row['board_size'].to_i,
+      row['max_exponent'].to_i,
+      row['total_states'].to_i
+    )
+  end
+
+  def self.from_layer_tabulate(row)
+    new(row['board_size'].to_i, row['max_exponent'].to_i, row['states'].to_i)
+  end
+
+  def same_game(other)
+    other.board_size == board_size && other.max_exponent == max_exponent
+  end
+end
+
+
+#
+# Check the sum for the complete games.
+# These are just the layer counts; they don't count win or lose/end states.
+#
+canonical = []
+[[2, (3..6)], [3, (3..11)], [4, (3..4)]].each do |board_size, max_exponents|
+  max_exponents.each do |max_exponent|
+    path = Storage.layer_states_pathname(
+      board_size: board_size,
+      max_exponent: max_exponent,
+      max_depth: 0
+    )
+    total_states = 0
+    LayerPartInfoName.glob(path).each do |layer_part_info|
+      info_string = File.read(File.join(path, layer_part_info.to_s))
+      info = JSON.parse(info_string)
+      total_states += info['num_states']
+    end
+
+    canonical << TotalRow.new(board_size, max_exponent, total_states)
+  end
+end
+
+#
+# For the 4x4 game, we can count the number of states in the game to 32 (2^6)
+# by counting the states up to the last layer with max value 5. We can also
+# count to 3 and 4 as a check. Again, these are just the layer counts; they
+# don't count the win or lose / end states.
+#
+check_folder = 'data/layer_check/build-03'
+(5..6).each do |max_exponent|
+  total_states = 0
+  LayerPartInfoName.glob(check_folder).each do |info|
+    info_data = JSON.parse(File.read(File.join(check_folder, info.to_s)))
+    num_states = info_data['num_states']
+    next if num_states == 0
+    next if info.max_value >= max_exponent 
+    total_states += num_states
+  end
+  canonical << TotalRow.new(4, max_exponent, total_states)
+end
+
+#
+# The 2x2 game stops at 6; fill in the rest.
+#
+total_states_2x2_6_row = canonical.find do |row|
+  row.board_size == 2 && row.max_exponent == 6
+end
+(7..11).each do |max_exponent|
+  canonical << TotalRow.new(
+    2,
+    max_exponent,
+    total_states_2x2_6_row.total_states
+  )
+end
+
+#
+# Check the canonical totals above against layer_tabulate.csv, which should
+# contain the same counts where available.
+#
+layer_tabulate = CSV.read('data/layer_tabulate.csv', headers: true).map do |row|
+  next unless row['max_depth'] == '0'
+  TotalRow.from_layer_tabulate(row)
+end.compact
+
+# TODO: Currently showing a mismatch on the game to 5. Rerun the solve.
+canonical.each do |row|
+  other = layer_tabulate.find { |other_row| other_row.same_game(row) }
+  next if other.nil?
+  next if other.total_states == row.total_states
+  p [row, other]
+end
+
+layer_tabulate.each do |row|
+  other = canonical.find { |other_row| other_row.same_game(row) }
+  next if other.nil?
+  next if other.total_states == row.total_states
+  p [row, other]
+end
+
+#
+# We also need to add one state for the 'win' state, for fair comparison
+# to the combinatorics results. We should only do this where it is
+# actually possible to win.
+# 
+
+canonical.each do |row|
+  next if row.board_size == 2 && row.max_exponent > 5
+  next if row.board_size == 3 && row.max_exponent > 10
+  row.total_states += 1
+end
+
+canonical.sort_by! do |row|
+  [row.board_size, row.max_exponent]
+end
+
+CSV.open('data/blog/canonical.csv', 'w') do |csv|
+  canonical.each do |row|
+    csv << row.to_a
+  end
+end
+
+#
+# Make the main summary table.
+#
+
+def read_total_csv(basename)
+  pathname = File.join('data/blog', basename)
+  CSV.read(pathname, headers: true).map do |row|
+    TotalRow.from_row(row)
+  end
+end
+
+TOTALS = {
+  basic: read_total_csv('layers_basic_total.csv'),
+  improved: read_total_csv('layers_total.csv'),
+  truncated: read_total_csv('layers_truncated_total.csv'),
+  reachable: read_total_csv('reachable.csv'),
+  canonical: canonical
+}.freeze
+
+def number_with_comma(number)
+  number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
+end
+
+def lookup(estimate, board_size, max_exponent)
+  result = TOTALS[estimate].find do |row|
+    row.board_size == board_size && row.max_exponent == max_exponent
+  end
+  if result
+    number_with_comma(result.total_states)
+  else
+    '?'
+  end
+end
+
+BOARD_SIZES = 2..4
+MAX_EXPONENTS = 3..11
+
+SUMMARY_TEMPLATE = <<HTML
+<table>
+  <thead>
+    <tr>
+      <th>Maximum Tile</th>
+      <th>Method</th>
+      <th colspan="3">Board Size</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th></th>
+      <th align="right">2x2</th>
+      <th align="right">3x3</th>
+      <th align="right">4x4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% MAX_EXPONENTS.each do |max_exponent| %>
+    <tr>
+      <th align="right" valign="top" rowspan="<%= TOTALS.size %>"><%= 2**max_exponent %></th>
+      <td>Baseline</td>
+      <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :basic, board_size, max_exponent %></td><% end %>
+    </tr>
+    <tr>
+      <td>Improved</td>
+      <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :improved, board_size, max_exponent %></td><% end %>
+    </tr>
+    <tr>
+      <td>Truncated</td>
+      <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :truncated, board_size, max_exponent %></td><% end %>
+    </tr>
+    <tr>
+      <td>Reachable</td>
+      <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :reachable, board_size, max_exponent %></td><% end %>
+    </tr>
+    <tr>
+      <td>Canonical</td>
+      <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :canonical, board_size, max_exponent %></td><% end %>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+HTML
+
+File.open('data/blog/summary_table.html', 'w') do |file|
+  file.puts ERB.new(SUMMARY_TEMPLATE).result
+end
+
