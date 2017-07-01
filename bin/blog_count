@@ -28,13 +28,13 @@ TotalRow = Struct.new(:board_size, :max_exponent, :total_states) do
   end
 end
 
-
 #
 # Check the sum for the complete games.
 # These are just the layer counts; they don't count win or lose/end states.
 #
+COMPLETE_GAMES = [[2, (3..6)], [3, (3..11)], [4, (3..4)]]
 canonical = []
-[[2, (3..6)], [3, (3..11)], [4, (3..4)]].each do |board_size, max_exponents|
+COMPLETE_GAMES.each do |board_size, max_exponents|
   max_exponents.each do |max_exponent|
     path = Storage.layer_states_pathname(
       board_size: board_size,
@@ -58,11 +58,11 @@ end
 # count to 3 and 4 as a check. Again, these are just the layer counts; they
 # don't count the win or lose / end states.
 #
-check_folder = 'data/layer_check/build-03'
+CHECK_FOLDER = 'data/layer_check/build-03'
 (5..6).each do |max_exponent|
   total_states = 0
-  LayerPartInfoName.glob(check_folder).each do |info|
-    info_data = JSON.parse(File.read(File.join(check_folder, info.to_s)))
+  LayerPartInfoName.glob(CHECK_FOLDER).each do |info|
+    info_data = JSON.parse(File.read(File.join(CHECK_FOLDER, info.to_s)))
     num_states = info_data['num_states']
     next if num_states == 0
     next if info.max_value >= max_exponent 
@@ -126,7 +126,79 @@ canonical.sort_by! do |row|
 end
 
 CSV.open('data/blog/canonical.csv', 'w') do |csv|
+  csv << %w[board_size max_exponent total_states]
   canonical.each do |row|
+    csv << row.to_a
+  end
+end
+
+#
+# Also build the layer dataset.
+#
+
+LayerRow = Struct.new(:board_size, :max_exponent, :layer_sum, :num_states)
+layers_canonical = []
+COMPLETE_GAMES.each do |board_size, max_exponents|
+  max_exponents.each do |max_exponent|
+    path = Storage.layer_states_pathname(
+      board_size: board_size,
+      max_exponent: max_exponent,
+      max_depth: 0
+    )
+    infos = LayerPartInfoName.glob(path).group_by(&:sum)
+    infos.keys.sort.each do |layer_sum|
+      num_states = 0
+      infos[layer_sum].each do |layer_part_info|
+        info_string = File.read(File.join(path, layer_part_info.to_s))
+        info = JSON.parse(info_string)
+        num_states += info['num_states']
+      end
+      layers_canonical << LayerRow.new(
+        board_size, max_exponent, layer_sum, num_states
+      )
+    end
+  end
+end
+
+# Repeat the 2x2 to 6 results for consistency.
+layers_2x2_6 = layers_canonical.select do |row|
+  row.board_size == 2 && row.max_exponent == 6
+end
+(7..11).each do |max_exponent|
+  layers_2x2_6.each do |row|
+    new_row = row.dup
+    new_row.max_exponent = max_exponent
+    layers_canonical << new_row
+  end
+end
+
+# Add results from the partial build.
+(5..6).each do |max_exponent|
+  total_states = 0
+  infos = LayerPartInfoName.glob(CHECK_FOLDER).group_by(&:sum)
+  infos.keys.sort.each do |layer_sum|
+    num_states = 0
+    infos[layer_sum].each do |layer_part_info|
+      info_string = File.read(File.join(CHECK_FOLDER, layer_part_info.to_s))
+      info = JSON.parse(info_string)
+      next if info['num_states'] == 0
+      next if layer_part_info.max_value >= max_exponent 
+      num_states += info['num_states']
+    end
+    next if num_states == 0
+    layers_canonical << LayerRow.new(
+      4, max_exponent, layer_sum, num_states
+    )
+  end
+end
+
+layers_canonical.sort_by! do |row|
+  [row.board_size, row.max_exponent, row.layer_sum]
+end
+
+CSV.open('data/blog/layers_canonical.csv', 'w') do |csv|
+  csv << %w[board_size max_exponent layer_sum num_states]
+  layers_canonical.each do |row|
     csv << row.to_a
   end
 end
