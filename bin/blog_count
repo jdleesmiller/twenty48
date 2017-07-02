@@ -32,7 +32,7 @@ end
 # Check the sum for the complete games.
 # These are just the layer counts; they don't count win or lose/end states.
 #
-COMPLETE_GAMES = [[2, (3..6)], [3, (3..11)], [4, (3..4)]]
+COMPLETE_GAMES = [[2, (3..6)], [3, (3..11)], [4, (3..4)]].freeze
 canonical = []
 COMPLETE_GAMES.each do |board_size, max_exponents|
   max_exponents.each do |max_exponent|
@@ -65,7 +65,7 @@ CHECK_FOLDER = 'data/layer_check/build-03'
     info_data = JSON.parse(File.read(File.join(CHECK_FOLDER, info.to_s)))
     num_states = info_data['num_states']
     next if num_states == 0
-    next if info.max_value >= max_exponent 
+    next if info.max_value >= max_exponent
     total_states += num_states
   end
   canonical << TotalRow.new(4, max_exponent, total_states)
@@ -113,7 +113,7 @@ end
 # We also need to add one state for the 'win' state, for fair comparison
 # to the combinatorics results. We should only do this where it is
 # actually possible to win.
-# 
+#
 
 canonical.each do |row|
   next if row.board_size == 2 && row.max_exponent > 5
@@ -174,7 +174,6 @@ end
 
 # Add results from the partial build.
 (5..6).each do |max_exponent|
-  total_states = 0
   infos = LayerPartInfoName.glob(CHECK_FOLDER).group_by(&:sum)
   infos.keys.sort.each do |layer_sum|
     num_states = 0
@@ -182,7 +181,7 @@ end
       info_string = File.read(File.join(CHECK_FOLDER, layer_part_info.to_s))
       info = JSON.parse(info_string)
       next if info['num_states'] == 0
-      next if layer_part_info.max_value >= max_exponent 
+      next if layer_part_info.max_value >= max_exponent
       num_states += info['num_states']
     end
     next if num_states == 0
@@ -240,51 +239,50 @@ end
 BOARD_SIZES = 2..4
 MAX_EXPONENTS = 3..11
 
-SUMMARY_TEMPLATE = <<HTML
-<table>
-  <thead>
-    <tr>
-      <th>Maximum Tile</th>
-      <th>Method</th>
-      <th colspan="3">Board Size</th>
-    </tr>
-    <tr>
-      <th></th>
-      <th></th>
-      <th align="right">2x2</th>
-      <th align="right">3x3</th>
-      <th align="right">4x4</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% MAX_EXPONENTS.each do |max_exponent| %>
-    <tr>
-      <th align="right" valign="top" rowspan="<%= TOTALS.size %>"><%= 2**max_exponent %></th>
-      <td>Baseline</td>
-      <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :basic, board_size, max_exponent %></td><% end %>
-    </tr>
-    <tr>
-      <td>Improved</td>
-      <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :improved, board_size, max_exponent %></td><% end %>
-    </tr>
-    <tr>
-      <td>Truncated</td>
-      <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :truncated, board_size, max_exponent %></td><% end %>
-    </tr>
-    <tr>
-      <td>Reachable</td>
-      <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :reachable, board_size, max_exponent %></td><% end %>
-    </tr>
-    <tr>
-      <td>Canonical</td>
-      <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :canonical, board_size, max_exponent %></td><% end %>
-    </tr>
-    <% end %>
-  </tbody>
-</table>
+SUMMARY_TEMPLATE = <<~HTML
+  <table>
+    <thead>
+      <tr>
+        <th>Maximum Tile</th>
+        <th>Method</th>
+        <th colspan="3">Board Size</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th></th>
+        <th align="right">2x2</th>
+        <th align="right">3x3</th>
+        <th align="right">4x4</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% MAX_EXPONENTS.each do |max_exponent| %>
+      <tr>
+        <th align="right" valign="top" rowspan="<%= TOTALS.size %>"><%= 2**max_exponent %></th>
+        <td>Baseline</td>
+        <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :basic, board_size, max_exponent %></td><% end %>
+      </tr>
+      <tr>
+        <td>Improved</td>
+        <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :improved, board_size, max_exponent %></td><% end %>
+      </tr>
+      <tr>
+        <td>Truncated</td>
+        <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :truncated, board_size, max_exponent %></td><% end %>
+      </tr>
+      <tr>
+        <td>Reachable</td>
+        <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :reachable, board_size, max_exponent %></td><% end %>
+      </tr>
+      <tr>
+        <td>Canonical</td>
+        <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :canonical, board_size, max_exponent %></td><% end %>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
 HTML
 
 File.open('data/blog/summary_table.html', 'w') do |file|
   file.puts ERB.new(SUMMARY_TEMPLATE).result
 end
-
