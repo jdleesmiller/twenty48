@@ -1,4 +1,5 @@
 library(ggplot2)
+library(reshape2)
 
 dBasicTotal <- transform(
   read.csv('layers_basic_total.csv'),
@@ -20,7 +21,14 @@ dReachable <- transform(
   estimate = 'reachable'
 )
 
-dTotals <- rbind(dBasicTotal, dCombinatorialTotal, dTruncatedTotal, dReachable)
+dCanonical <- transform(
+  read.csv('canonical.csv'),
+  estimate = 'canonical'
+)
+
+dTotals <- rbind(
+  dBasicTotal, dCombinatorialTotal, dTruncatedTotal, dReachable, dCanonical
+)
 
 ggplot(
   transform(
@@ -42,3 +50,22 @@ ggplot(
   scale_y_continuous(
     trans = 'log10',
     labels = function (n) format(n, scientific = FALSE, big.mark = ','))
+
+#
+# Plot the ratio of reachable to canonical states for known totals.
+#
+
+mTotals <- melt(
+  dTotals,
+  c('board_size', 'max_exponent', 'estimate'),
+  c('total_states'))
+
+dReachableCanonical <- transform(
+  dcast(mTotals, board_size + max_exponent ~ estimate),
+  reachableToCanonical = reachable / canonical)
+
+ggplot(
+  dReachableCanonical,
+  aes(max_exponent, reachableToCanonical, color = factor(board_size))
+) +
+  geom_line()

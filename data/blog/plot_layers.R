@@ -167,3 +167,95 @@ ggplot(
     minor_breaks = 10 ** seq(1, 16)) +
   xlab('Sum of Tiles in State (log scale)') +
   ylab('Number of States (log scale)')
+
+#
+# Plot the state reachability dataset.
+#
+
+dReachable <- read.csv('layers_reachable.csv')
+ggplot(
+  subset(
+    dReachable,
+    (
+      (board_size == 2 & max_exponent == 11) |
+      (board_size == 3 & max_exponent == 11) |
+      (board_size == 4 & max_exponent == 11)
+    )),
+  aes(x = layer_sum, y = num_states, color = factor(board_size))) +
+  geom_point(shape = '.') +
+  scale_color_discrete(name = 'Board Size') +
+  scale_x_continuous(
+    breaks = 2048 * seq(1, 8)) +
+  scale_y_continuous(
+    trans = 'log10',
+    labels = function (n) format(n, scientific = FALSE, big.mark = ','),
+    breaks = 10 ** seq(3, 15, by = 3),
+    minor_breaks = 10 ** seq(1, 16)) +
+  xlab('Sum of Tiles in State') +
+  ylab('Number of States (log scale)')
+
+#
+# Plot the canonicalized dataset.
+#
+
+dCanonical <- read.csv('layers_canonical.csv')
+ggplot(
+  subset(
+    dCanonical,
+    (
+      (board_size == 2 & max_exponent == 11) |
+      (board_size == 3 & max_exponent == 10) |
+      (board_size == 4 & max_exponent == 5)
+    )),
+  aes(x = layer_sum, y = num_states, color = factor(board_size))) +
+  geom_point(shape = '.') +
+  scale_color_discrete(name = 'Board Size') +
+  scale_x_continuous(
+    breaks = 256 * seq(1, 8)) +
+  scale_y_continuous(
+    trans = 'log10',
+    labels = function (n) format(n, scientific = FALSE, big.mark = ','),
+    breaks = 10 ** seq(3, 15, by = 3),
+    minor_breaks = 10 ** seq(1, 16)) +
+  xlab('Sum of Tiles in State') +
+  ylab('Number of States (log scale)')
+
+#
+# Plot the partial canonicalized dataset to 2048.
+#
+source('../layer_parts.R')
+info4_11 <- readPartSizes('../layer_check/build-03')
+
+info4Layers <- cbind(
+  board_size = 4,
+  max_exponent = 11,
+  aggregate(num_states ~ sum, info4_11, sum)
+)
+info4Layers$layer_sum <- info4Layers$sum
+info4Layers$sum <- NULL
+info4Layers <- info4Layers[,c(1,2,4,3)]
+
+dCanonicalPartial <- rbind(
+  subset(
+    dCanonical,
+    (
+      (board_size == 2 & max_exponent == 11) |
+      (board_size == 3 & max_exponent == 11)
+    )),
+  info4Layers
+)
+
+ggplot(
+  dCanonicalPartial,
+  aes(x = layer_sum, y = num_states, color = factor(board_size))) +
+  geom_point(shape = '.') +
+  scale_color_discrete(name = 'Board Size') +
+  scale_x_continuous(
+    breaks = 256 * seq(1, 8)) +
+  scale_y_continuous(
+    trans = 'log10',
+    labels = function (n) format(n, scientific = FALSE, big.mark = ','),
+    breaks = 10 ** seq(3, 15, by = 3),
+    minor_breaks = 10 ** seq(1, 16)) +
+  xlab('Sum of Tiles in State') +
+  ylab('Number of States (log scale)')
