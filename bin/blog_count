@@ -32,7 +32,7 @@ end
 # Check the sum for the complete games.
 # These are just the layer counts; they don't count win or lose/end states.
 #
-COMPLETE_GAMES = [[2, (3..6)], [3, (3..11)], [4, (3..4)]].freeze
+COMPLETE_GAMES = [[2, (3..6)], [3, (3..11)], [4, (3..5)]].freeze
 canonical = []
 COMPLETE_GAMES.each do |board_size, max_exponents|
   max_exponents.each do |max_exponent|
@@ -59,7 +59,7 @@ end
 # don't count the win or lose / end states.
 #
 CHECK_FOLDER = 'data/layer_check/build-03'
-(5..6).each do |max_exponent|
+[6].each do |max_exponent|
   total_states = 0
   LayerPartInfoName.glob(CHECK_FOLDER).each do |info|
     info_data = JSON.parse(File.read(File.join(CHECK_FOLDER, info.to_s)))
@@ -94,7 +94,7 @@ layer_tabulate = CSV.read('data/layer_tabulate.csv', headers: true).map do |row|
   TotalRow.from_layer_tabulate(row)
 end.compact
 
-# TODO: Currently showing a mismatch on the game to 5. Rerun the solve.
+# TODO: Expect a mismatch on the game to 6; will need to rerun.
 canonical.each do |row|
   other = layer_tabulate.find { |other_row| other_row.same_game(row) }
   next if other.nil?
