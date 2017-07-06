@@ -32,7 +32,7 @@ end
 # Check the sum for the complete games.
 # These are just the layer counts; they don't count win or lose/end states.
 #
-COMPLETE_GAMES = [[2, (3..6)], [3, (3..11)], [4, (3..5)]].freeze
+COMPLETE_GAMES = [[2, (3..6)], [3, (3..11)], [4, (3..6)]].freeze
 canonical = []
 COMPLETE_GAMES.each do |board_size, max_exponents|
   max_exponents.each do |max_exponent|
@@ -50,25 +50,6 @@ COMPLETE_GAMES.each do |board_size, max_exponents|
 
     canonical << TotalRow.new(board_size, max_exponent, total_states)
   end
-end
-
-#
-# For the 4x4 game, we can count the number of states in the game to 32 (2^6)
-# by counting the states up to the last layer with max value 5. We can also
-# count to 3 and 4 as a check. Again, these are just the layer counts; they
-# don't count the win or lose / end states.
-#
-CHECK_FOLDER = 'data/layer_check/build-03'
-[6].each do |max_exponent|
-  total_states = 0
-  LayerPartInfoName.glob(CHECK_FOLDER).each do |info|
-    info_data = JSON.parse(File.read(File.join(CHECK_FOLDER, info.to_s)))
-    num_states = info_data['num_states']
-    next if num_states == 0
-    next if info.max_value >= max_exponent
-    total_states += num_states
-  end
-  canonical << TotalRow.new(4, max_exponent, total_states)
 end
 
 #
@@ -94,7 +75,6 @@ layer_tabulate = CSV.read('data/layer_tabulate.csv', headers: true).map do |row|
   TotalRow.from_layer_tabulate(row)
 end.compact
 
-# TODO: Expect a mismatch on the game to 6; will need to rerun.
 canonical.each do |row|
   other = layer_tabulate.find { |other_row| other_row.same_game(row) }
   next if other.nil?
@@ -169,25 +149,6 @@ end
     new_row = row.dup
     new_row.max_exponent = max_exponent
     layers_canonical << new_row
-  end
-end
-
-# Add results from the partial build.
-(5..6).each do |max_exponent|
-  infos = LayerPartInfoName.glob(CHECK_FOLDER).group_by(&:sum)
-  infos.keys.sort.each do |layer_sum|
-    num_states = 0
-    infos[layer_sum].each do |layer_part_info|
-      info_string = File.read(File.join(CHECK_FOLDER, layer_part_info.to_s))
-      info = JSON.parse(info_string)
-      next if info['num_states'] == 0
-      next if layer_part_info.max_value >= max_exponent
-      num_states += info['num_states']
-    end
-    next if num_states == 0
-    layers_canonical << LayerRow.new(
-      4, max_exponent, layer_sum, num_states
-    )
   end
 end
 
