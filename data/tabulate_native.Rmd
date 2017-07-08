@@ -81,12 +81,12 @@ sum_{i}^{N} 1 + Z_i \le 1024
 
 Y_0 -> as above
 
-Y_1 -> 
+Y_1 ->
   2 + 2 = 4 w/ pr 0.9*0.9
   2 + 4 = 6 w/ pr 0.9*0.1
   4 + 2 = 6 w/ pr 0.1*0.9
   4 + 4 = 8 w/ pr 0.1*0.1
-  
+
 Y_2 ->
   2 + 2 + 2 = 6   w/ pr 0.9*0.9*0.9
   2 + 2 + 4 = 8   w/ pr 0.9*0.9*0.1
@@ -96,7 +96,7 @@ Y_2 ->
   4 + 2 + 4 = 10  w/ pr 0.1*0.9*0.1
   4 + 4 + 2 = 10  w/ pr 0.1*0.1*0.9
   4 + 4 + 4 = 12  w/ pr 0.1*0.1*0.1
-  
+
 If we let S be the sum of the Y_i, we have a recurrence
 
 P(S_n = s) = 0.9 * P(S_{n-1} = s - 2) + 0.1 * P(S_{n-1} = s - 4)
@@ -163,7 +163,7 @@ Let's see what it looks like.
 generateMovesToWin <- function(maxExponent, numTrials, p4 = 0.1) {
   winValue <- 2 ^ maxExponent
   maxTiles <- winValue / 2
-  
+
   winMoves <- rep(0, numTrials)
   for (i in 1:numTrials) {
     u <- runif(maxTiles)
@@ -216,9 +216,15 @@ ggplot(binomialMovesToWin, aes(x = moves)) +
 # to 16:
 # 4 moves: (4, 4, 4, 4)
 # 5 moves: (2, 2, 4, 4, 4)
-# 6 moves: (2, 2, 2, 2, 4, 4), 
+# 6 moves: (2, 2, 2, 2, 4, 4),
 # 7 moves: (2, 2, 2, 2, 2, 2, 4), (2, 2, 2, 2, 2, 4, 4)
 # 8 moves: (2, 2, 2, 2, 2, 2, 2, 2), (2, 2, 2, 2, 2, 2, 2, 4)
+#
+# So, the idea is, to get to x in n moves, you can either
+# a) hit it exactly with n 1's and x-n extra 1s, or
+# b) overshoot by one if you reach x-1 with n-1 1's + x-n extra 1's and then get
+#    an extra 1 on your nth move.
+#
 makeBinomialMovesToWin2 <- function(maxExponent, p4 = 0.1) {
   maxMoves <- 2 ^ (maxExponent - 1)
   n <- seq(1, maxMoves)
@@ -231,12 +237,12 @@ makeBinomialMovesToWin2 <- function(maxExponent, p4 = 0.1) {
 binomialMovesToWin2 <- makeBinomialMovesToWin2(11)
 ```
 
-So: the joint probability
+So: the joint probability of reaching x in n moves is:
 \[
-P(n) = B(n, x - n, p) + p * B(n - 1, x - n, p)
+P(x, n) = B(n, x - n, p) + p * B(n - 1, x - n, p)
 \]
 
-We can also get an expectation:
+We can also get an expectation (edit: not sure this is right):
 \[
 E(n) = np + (n-1)p*p
 \]
@@ -250,7 +256,82 @@ ggplot(subset(binomialMovesToWin2, prob > 0), aes(x = moves)) +
     data = data.frame(moves = movesToWin),
     aes(y = ..density..),
     binwidth = 1) +
-  geom_line(aes(y = prob), color='red') +
-  geom_abline(x = )
+  geom_line(aes(y = prob), color='red')
 ```
 
+In the actual game, however, we don't just want to hit a sum of 2048. There always have to be some other tiles on the board in order to get to the 2048 tile, in order to give us time to merge them in. Can we capture this?
+
+Idea: a 1d variant of the game in which (1) we merge all like tiles and (2) add a 2 or 4 tile at random.
+
+```{r}
+simulate1d <- function (maxExponent, p = 0.1) {
+  maxValue = 2 ^ maxExponent
+  place <- function(tiles) {
+    newTile <- 2 + 2 * (runif(1) < p)
+    sort(c(newTile, tiles))
+  }
+  move <- function(board) {
+    result <- c()
+    last <- 0
+    for (value in board) {
+      if (value == last) {
+        result[length(result)] <- 2 * last
+        last <- 0
+      } else {
+        last <- value
+        result <- c(result, value)
+      }
+    }
+    result
+  }
+  board <- place(place(c()))
+  moves <- 0
+  maxLength <- 0
+  maxSum <- 0
+  while (max(board) < maxValue) {
+    board <- place(move(board))
+    moves <- moves + 1
+    if (length(board) > maxLength) {
+      maxLength <- length(board)
+    }
+    if (sum(board) > maxSum) {
+      maxSum <- sum(board)
+    }
+  }
+  list(moves = moves, maxLength = maxLength, maxSum = maxSum)
+}
+# simulate1d(3)
+```
+
+```{r}
+
+simulate1dMultiple <- function (maxExponent, p = 0.1, numTrials = 10000) {
+  results <- NULL
+  for (i in 1:numTrials) {
+    results <- rbind(simulate1d(maxExponent, p), results)
+  }
+  # fix up the types
+  transform(
+    as.data.frame(results),
+    moves = as.numeric(moves),
+    maxLength = as.numeric(maxLength),
+    maxSum = as.numeric(maxSum)
+  )
+}
+results1d8 <- simulate1dMultiple(8)
+summary(results1d8)
+hist(results1d8$moves)
+hist(results1d8$maxLength)
+hist(results1d8$maxSum)
+
+```
+
+```{r}
+
+results1d11 <- simulate1dMultiple(11)
+summary(results1d11)
+hist(results1d11$moves)
+hist(results1d11$maxLength)
+hist(results1d11$maxSum)
+
+```
