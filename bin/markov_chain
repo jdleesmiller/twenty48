@@ -1,0 +1,388 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'csv'
+require 'narray'
+require 'tsort'
+
+PROBABILITY_OF_4 = 0.1
+OUTPUT_FOLDER = 'data/markov_chain'
+
+#
+# Merge adjacent tiles. This assumes that the board is sorted.
+#
+def move(board)
+  result = []
+  last = nil
+  board.each do |value|
+    if value == last
+      result[-1] = 2 * last
+      last = nil
+    else
+      result << value
+      last = value
+    end
+  end
+  result
+end
+
+#
+# Order states by sum, then lexically.
+#
+def sort_states(states)
+  states.sort_by do |state|
+    [state.sum, state]
+  end
+end
+
+def find_state_index(states, state)
+  key = [state.sum, state]
+  states.bsearch_index { |x| key <=> [x.sum, x] }
+end
+
+#
+# Simulate the markov chain model (well, an equivalent one).
+#
+def simulate_place(board)
+  new_tile = 2 + 2 * (rand < PROBABILITY_OF_4 ? 1 : 0)
+  board.unshift new_tile
+  board.sort!
+  board
+end
+
+def simulate(max_exponent)
+  max_value = 2**max_exponent
+  board = []
+  2.times { simulate_place(board) }
+  moves = 0
+  max_size = 0
+  while board.max < max_value
+    board = move(board)
+    simulate_place(board)
+
+    moves += 1
+    max_size = board.size if board.size > max_size
+  end
+  [moves, max_size, board]
+end
+
+def build_simulation_histograms(max_exponent, num_trials)
+  moves_histogram = Hash.new { |h, k| h[k] = 0 }
+  max_size_histogram = Hash.new { |h, k| h[k] = 0 }
+  final_state_histogram = Hash.new { |h, k| h[k] = 0 }
+  num_trials.times do
+    moves, max_size, final_state = simulate(max_exponent)
+    moves_histogram[moves] += 1
+    max_size_histogram[max_size] += 1
+    final_state_histogram[final_state] += 1
+  end
+  [moves_histogram, max_size_histogram, final_state_histogram]
+end
+
+def run_simulations(num_trials = 100_000)
+  moves_file = File.join(OUTPUT_FOLDER, 'moves_histogram.csv')
+  max_size_file = File.join(OUTPUT_FOLDER, 'max_size_histogram.csv')
+  final_state_file = File.join(OUTPUT_FOLDER, 'final_state_histogram.csv')
+  CSV.open(moves_file, 'w') do |moves_csv|
+    moves_csv << %w[max_exponent moves frequency]
+    CSV.open(max_size_file, 'w') do |max_size_csv|
+      max_size_csv << %w[max_exponent max_size frequency]
+      CSV.open(final_state_file, 'w') do |final_state_csv|
+        final_state_csv << %w[max_exponent final_state frequency]
+        (3..11).each do |max_exponent|
+          moves_histogram, max_size_histogram, final_state_histogram =
+            build_simulation_histograms(max_exponent, num_trials)
+          moves_histogram.keys.sort.each do |moves|
+            moves_csv << [max_exponent, moves, moves_histogram[moves]]
+          end
+          max_size_histogram.keys.sort.each do |max_size|
+            max_size_csv << [
+              max_exponent, max_size, max_size_histogram[max_size]
+            ]
+          end
+          sort_states(final_state_histogram.keys).each do |final_state|
+            final_state_csv << [
+              max_exponent, final_state, final_state_histogram[final_state]
+            ]
+          end
+        end
+      end
+    end
+  end
+end
+
+run_simulations
+
+exit
+
+# simulate(11)
+
+def generate_start_states
+  values = [2, 4]
+  values.product(values).map(&:sort).uniq
+end
+
+def build_layers(layers)
+  sum = 4
+  empty_layers = 0
+  while empty_layers < 2
+    if layers[sum].empty?
+      empty_layers += 1
+      next
+    end
+    empty_layers = 0
+    yield sum
+    sum += 2
+  end
+end
+
+def add_successor(layers, value, state)
+  new_state = [value] + state
+  new_state.sort!
+  layers[new_state.sum] << new_state
+end
+
+def build(max_exponent)
+  max_value = 2**max_exponent
+  layers = Hash.new { |h, k| h[k] = Set.new }
+  generate_start_states.each do |state|
+    layers[state.sum] << state
+  end
+
+  build_layers(layers) do |sum|
+    layers[sum].each do |state|
+      move_state = move(state)
+      next if move_state.max >= max_value
+      add_successor(layers, 2, move_state)
+      add_successor(layers, 4, move_state)
+    end
+  end
+
+  layers
+end
+
+# layers_11 = build(11)
+# layers_11.each do |sum, states|
+#   p [sum, states.to_a]
+# end
+# p layers_11.values.map(&:size).sum
+
+#
+# P[:s][:t] is the probability of transitioning from state s to state t.
+#
+def make_transition_hash
+  Hash.new do |h0, state0|
+    h0[state0] = Hash.new do |h1, state1|
+      h1[state1] = 0.0
+    end
+  end
+end
+
+NEW_TILES = { 2 => 0.9, 4 => 0.1 }.freeze
+
+#
+# Since it is not very big, let's build the Markov Chain and solve for expected
+# hitting times, following http://www.statslab.cam.ac.uk/~james/Markov/s13.pdf
+# (and many others).
+#
+def build_markov_chain(max_exponent)
+  transitions = make_transition_hash
+  prestart_state = []
+
+  open_states = []
+  NEW_TILES.each do |value0, pr0|
+    NEW_TILES.each do |value1, pr1|
+      start_state = [value0, value1].sort
+      open_states << start_state
+      transitions[prestart_state][start_state] += pr0 * pr1
+    end
+  end
+
+  until open_states.empty?
+    state = open_states.pop
+    next if transitions.key?(state)
+    move_state = move(state)
+    NEW_TILES.each do |value, pr|
+      new_state = ([value] + move_state).sort
+      transitions[state][new_state] += pr
+      open_states << new_state unless new_state.max >= 2**max_exponent
+    end
+  end
+
+  check_transitions(transitions, max_exponent)
+
+  transitions
+end
+
+def check_transitions(transitions, max_exponent)
+  transitions.each do |state0, successors|
+    total_pr = 0
+    successors.each do |state1, pr|
+      total_pr += pr
+      raise "terminal state #{state1}" unless
+          transitions.key?(state1) || state1.max >= 2**max_exponent
+    end
+    raise "pr does not sum to 1: #{state0}" unless (total_pr - 1).abs < 1e-6
+  end
+end
+
+def print_transitions(transitions)
+  transitions.each do |state0, successors|
+    successors.each do |state1, pr|
+      p [state0, state1, pr]
+    end
+  end
+end
+
+def setup_topological_sort(transitions)
+  class <<transitions
+    include TSort
+    alias_method :tsort_each_node, :each_key
+    def tsort_each_child(node0)
+      fetch(node0, {}).keys.each do |node1|
+        yield node1
+      end
+    end
+  end
+end
+
+def find_hitting_times(max_exponent)
+  transitions = build_markov_chain(max_exponent)
+
+  setup_topological_sort transitions
+  successor_states = transitions.tsort
+
+  win_states, other_states = successor_states.partition do |state|
+    !state.empty? && state.max >= 2**max_exponent
+  end
+  hitting_times = {}
+  win_states.each do |win_state|
+    hitting_times[win_state] = 0
+  end
+  other_states.each do |state|
+    hitting_times[state] = 1.0
+    transitions[state].each do |state1, pr|
+      hitting_times[state] += pr * hitting_times[state1]
+    end
+  end
+
+  hitting_times
+end
+# p find_hitting_times(11)
+
+def find_absorbing_states(transitions)
+  result = Set.new
+  transitions.each do |_state0, successors|
+    successors.each do |state1, _pr|
+      result << state1 unless transitions.key?(state1)
+    end
+  end
+  result.to_a
+end
+
+def make_transition_matrix(transitions, row_states, col_states)
+  matrix = NMatrix.float(col_states.size, row_states.size)
+  transitions.each do |state0, successors|
+    i = find_state_index(row_states, state0)
+    next unless i
+    successors.each do |state1, pr|
+      j = find_state_index(col_states, state1)
+      next unless j
+      matrix[j, i] = pr
+    end
+  end
+  matrix
+end
+
+def make_fundamental_matrices(max_exponent)
+  transitions = build_markov_chain(max_exponent)
+
+  transient_states = sort_states(transitions.keys)
+  transient_n = transient_states.size
+  transient_q = make_transition_matrix(
+    transitions, transient_states, transient_states
+  )
+
+  absorbing_states = sort_states(find_absorbing_states(transitions))
+  absorbing_n = absorbing_states.size
+  absorbing_r = make_transition_matrix(
+    transitions, transient_states, absorbing_states
+  )
+
+  identity = NMatrix.float(absorbing_n, absorbing_n).diagonal!(1)
+
+  n = transient_n + absorbing_n
+  fundamental = NMatrix.float(n, n)
+  fundamental[0...transient_n, 0...transient_n] = transient_q
+  fundamental[transient_n...n, 0...transient_n] = absorbing_r
+  fundamental[transient_n...n, transient_n...n] = identity
+
+  [
+    transient_states, absorbing_states,
+    transient_q, absorbing_r, identity,
+    fundamental
+  ]
+end
+#p make_fundamental_matrices(11)
+
+def find_expected_steps(max_exponent)
+  transient_states, _, transient_q, = make_fundamental_matrices(max_exponent)
+  transient_n = transient_states.size
+  identity = NMatrix.float(transient_n, transient_n).diagonal!(1)
+  ones = NVector.float(transient_n).fill!(1)
+
+  # Expectation: t = N1 for N = (I - Q)^{-1}
+  t = ones / (identity - transient_q)
+
+  # Variance: (2N - I)t - t_sq
+  # If (I-Q)v = 2t, then the variance is v - It - t_sq
+  v = (2 * t) / (identity - transient_q)
+  t_sq = NVector[NArray[t] * NArray[t]][nil, nil, 0]
+  vt = v - t - t_sq
+
+  [t, vt]
+end
+# The means should match:
+# p find_hitting_times(11)
+# p find_expected_steps(11)
+
+def find_absorbing_probabilities(max_exponent)
+  transient_states, absorbing_states, transient_q, absorbing_r =
+    make_fundamental_matrices(max_exponent)
+  transient_n = transient_states.size
+  identity = NMatrix.float(transient_n, transient_n).diagonal!(1)
+  pr = absorbing_r / (identity - transient_q)
+  Hash[absorbing_states.zip(pr[nil, 0].to_a.flatten)]
+end
+# p find_absorbing_probabilities(11)
+
+#
+# Find the fastest (always 4s) and slowest (always 2s).
+#
+def find_minmax_moves(max_exponent, new_tile)
+  board = [new_tile, new_tile]
+  moves = 0
+  while board.max < 2**max_exponent
+    board = move(board)
+    board = ([new_tile] + board).sort
+    moves += 1
+  end
+  moves
+end
+# p find_minmax_moves(11, 4)
+# p find_minmax_moves(11, 2)
+
+# TODO
+# - tabulate expected hitting times for games to lower sums
+#   (there is no notion of board size here)
+# - however, we can also track the largest board size
+#   but is it the largest one we need to worry about? it's more like... what's
+#   the minimum maximum size on any non-zero probability path? we know that you
+#   can't jump more than two layers at a time, so it should be pretty easy to
+#   rule out shorter paths; expected results: can't get to 64 on 2x2 or 2048 on
+#   3x3
+# - make a dot diagram with all of the states? maybe doable; or try a d3 viz?
+# - simulate the chain to get the full distribution; check the expectation
+#   matches my calcs
+# - is the number of move distributed as a mixture of binomials? weighted by
+#   the absorption probabilities?
