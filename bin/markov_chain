@@ -293,14 +293,32 @@ def find_expected_steps(max_exponent)
   # Variance: (2N - I)t - t_sq
   # If (I-Q)v = 2t, then the variance is v - It - t_sq
   v = (2 * t) / (identity - transient_q)
-  t_sq = NVector[NArray[t] * NArray[t]][nil, nil, 0]
+  t_sq = NVector[NArray[t] * NArray[t]][nil, 0, 0]
   vt = v - t - t_sq
 
-  [t, vt]
+  [transient_states, t, vt]
 end
 # The means should match:
 # p find_hitting_times(11)
 # p find_expected_steps(11)
+
+def save_expected_steps
+  CSV.open(File.join(OUTPUT_FOLDER, 'expected_steps.csv'), 'w') do |csv|
+    csv << %w[max_exponent state expected_steps variance_steps]
+    (3..11).each do |max_exponent|
+      states, expected_steps, variance_steps = find_expected_steps(max_exponent)
+      states.each.with_index do |state, i|
+        csv << [
+          max_exponent,
+          state,
+          expected_steps[i],
+          variance_steps[i]
+        ]
+      end
+    end
+  end
+end
+save_expected_steps
 
 def find_absorbing_probabilities(max_exponent)
   transient_states, absorbing_states, transient_q, absorbing_r =
@@ -311,6 +329,19 @@ def find_absorbing_probabilities(max_exponent)
   Hash[absorbing_states.zip(pr[nil, 0].to_a.flatten)]
 end
 # p find_absorbing_probabilities(11)
+
+def save_absorbing_probabilities
+  csv_file = File.join(OUTPUT_FOLDER, 'absorbing_probabilities.csv')
+  CSV.open(csv_file, 'w') do |csv|
+    csv << %w[max_exponent state probability]
+    (3..11).each do |max_exponent|
+      find_absorbing_probabilities(max_exponent).each do |state, pr|
+        csv << [max_exponent, state, pr]
+      end
+    end
+  end
+end
+save_absorbing_probabilities
 
 #
 # Find the fastest (always 4s) and slowest (always 2s).
