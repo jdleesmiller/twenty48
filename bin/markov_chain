@@ -111,61 +111,12 @@ def run_simulations(num_trials = 100_000)
   end
 end
 
-run_simulations
+# Takes a while...
+# run_simulations
 
-exit
-
-# simulate(11)
-
-def generate_start_states
-  values = [2, 4]
-  values.product(values).map(&:sort).uniq
-end
-
-def build_layers(layers)
-  sum = 4
-  empty_layers = 0
-  while empty_layers < 2
-    if layers[sum].empty?
-      empty_layers += 1
-      next
-    end
-    empty_layers = 0
-    yield sum
-    sum += 2
-  end
-end
-
-def add_successor(layers, value, state)
-  new_state = [value] + state
-  new_state.sort!
-  layers[new_state.sum] << new_state
-end
-
-def build(max_exponent)
-  max_value = 2**max_exponent
-  layers = Hash.new { |h, k| h[k] = Set.new }
-  generate_start_states.each do |state|
-    layers[state.sum] << state
-  end
-
-  build_layers(layers) do |sum|
-    layers[sum].each do |state|
-      move_state = move(state)
-      next if move_state.max >= max_value
-      add_successor(layers, 2, move_state)
-      add_successor(layers, 4, move_state)
-    end
-  end
-
-  layers
-end
-
-# layers_11 = build(11)
-# layers_11.each do |sum, states|
-#   p [sum, states.to_a]
-# end
-# p layers_11.values.map(&:size).sum
+#
+# Build explicit Markov Chain model.
+#
 
 #
 # P[:s][:t] is the probability of transitioning from state s to state t.
@@ -180,11 +131,6 @@ end
 
 NEW_TILES = { 2 => 0.9, 4 => 0.1 }.freeze
 
-#
-# Since it is not very big, let's build the Markov Chain and solve for expected
-# hitting times, following http://www.statslab.cam.ac.uk/~james/Markov/s13.pdf
-# (and many others).
-#
 def build_markov_chain(max_exponent)
   transitions = make_transition_hash
   prestart_state = []
@@ -246,6 +192,10 @@ def setup_topological_sort(transitions)
   end
 end
 
+#
+# Find expected hitting times directly, following the method in
+# http://www.statslab.cam.ac.uk/~james/Markov/s13.pdf (and many others).
+#
 def find_hitting_times(max_exponent)
   transitions = build_markov_chain(max_exponent)
 
@@ -269,6 +219,12 @@ def find_hitting_times(max_exponent)
   hitting_times
 end
 # p find_hitting_times(11)
+
+#
+# Find win state absorbing probabilities and check the hitting time
+# distributions using the canonical form equations from
+# https://en.wikipedia.org/wiki/Absorbing_Markov_chain
+#
 
 def find_absorbing_states(transitions)
   result = Set.new
@@ -323,7 +279,7 @@ def make_fundamental_matrices(max_exponent)
     fundamental
   ]
 end
-#p make_fundamental_matrices(11)
+# p make_fundamental_matrices(11)
 
 def find_expected_steps(max_exponent)
   transient_states, _, transient_q, = make_fundamental_matrices(max_exponent)
@@ -359,6 +315,7 @@ end
 #
 # Find the fastest (always 4s) and slowest (always 2s).
 #
+
 def find_minmax_moves(max_exponent, new_tile)
   board = [new_tile, new_tile]
   moves = 0
@@ -369,8 +326,20 @@ def find_minmax_moves(max_exponent, new_tile)
   end
   moves
 end
-# p find_minmax_moves(11, 4)
-# p find_minmax_moves(11, 2)
+
+def save_minmax_moves
+  CSV.open(File.join(OUTPUT_FOLDER, 'minmax_moves.csv'), 'w') do |csv|
+    csv << %w[max_exponent min_moves max_moves]
+    (3..11).each do |max_exponent|
+      csv << [
+        max_exponent,
+        find_minmax_moves(max_exponent, 4),
+        find_minmax_moves(max_exponent, 2)
+      ]
+    end
+  end
+end
+save_minmax_moves
 
 # TODO
 # - tabulate expected hitting times for games to lower sums
