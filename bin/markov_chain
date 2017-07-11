@@ -318,7 +318,7 @@ def save_expected_steps
     end
   end
 end
-save_expected_steps
+# save_expected_steps
 
 def find_absorbing_probabilities(max_exponent)
   transient_states, absorbing_states, transient_q, absorbing_r =
@@ -341,7 +341,7 @@ def save_absorbing_probabilities
     end
   end
 end
-save_absorbing_probabilities
+# save_absorbing_probabilities
 
 #
 # Find the fastest (always 4s) and slowest (always 2s).
@@ -370,17 +370,94 @@ def save_minmax_moves
     end
   end
 end
-save_minmax_moves
+# save_minmax_moves
+
+#
+# Find the minimum and maximum number of cells used. It is interesting to know
+# whether, under ideal conditions, we can win with a given number of cells to
+# work with.
+#
+
+def find_min_cells(max_exponent)
+  # ... how to do this?
+  # the max is easy, because all states in the model have nonzero probability
+  # the min seems harder... how to guarantee that there is a path using only
+  # a given number of cells... that seems easy enough. increase a threshold
+  # and see whether there's a way to get to a win state using states with
+  # only at most that number of states.
+  transitions = build_markov_chain(max_exponent)
+  (2..16).each do |threshold|
+    allowed_transitions = filter_states(transitions) do |state|
+      state.size <= threshold
+    end
+    return threshold if winnable?(allowed_transitions, max_exponent)
+  end
+  nil
+end
+
+def find_max_cells(max_exponent)
+  transitions = build_markov_chain(max_exponent)
+  each_state(transitions).map(&:size).max
+end
+
+def each_state(transitions)
+  return to_enum(:each_state, transitions) unless block_given?
+  transitions.each do |state0, successors|
+    yield state0
+    successors.each do |state1, pr|
+      yield state1 if pr > 0
+    end
+  end
+end
+
+#
+# Keep only those states that meet a given condition.
+#
+def filter_states(transitions)
+  Hash[transitions.map do |state0, successors|
+    next unless yield(state0)
+    [state0, Hash[successors.map do |state1, pr|
+      next unless yield(state1)
+      [state1, pr]
+    end.compact]]
+  end.compact]
+end
+
+#
+# Breadth-first search to determine whether we can reach a winning state from
+# the pre-start state.
+#
+def winnable?(transitions, max_exponent)
+  queue = [[]]
+  closed = Set.new
+  until queue.empty?
+    state0 = queue.shift
+    return true if !state0.empty? && state0.max >= 2**max_exponent
+    next if closed.member?(state0)
+    next unless transitions.key?(state0)
+    transitions[state0].each do |state1, pr|
+      queue << state1 if pr > 0
+    end
+    closed << state0
+  end
+  false
+end
+
+def save_minmax_cells
+  CSV.open(File.join(OUTPUT_FOLDER, 'minmax_cells.csv'), 'w') do |csv|
+    csv << %w[max_exponent min_cells max_cells]
+    (3..11).each do |max_exponent|
+      csv << [
+        max_exponent,
+        find_min_cells(max_exponent),
+        find_max_cells(max_exponent)
+      ]
+    end
+  end
+end
+save_minmax_cells
 
 # TODO
-# - tabulate expected hitting times for games to lower sums
-#   (there is no notion of board size here)
-# - however, we can also track the largest board size
-#   but is it the largest one we need to worry about? it's more like... what's
-#   the minimum maximum size on any non-zero probability path? we know that you
-#   can't jump more than two layers at a time, so it should be pretty easy to
-#   rule out shorter paths; expected results: can't get to 64 on 2x2 or 2048 on
-#   3x3
 # - make a dot diagram with all of the states? maybe doable; or try a d3 viz?
 # - simulate the chain to get the full distribution; check the expectation
 #   matches my calcs
