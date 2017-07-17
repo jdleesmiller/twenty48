@@ -79,7 +79,7 @@ def build_simulation_histograms(max_exponent, num_trials)
   [moves_histogram, max_size_histogram, final_state_histogram]
 end
 
-def run_simulations(num_trials = 100_000)
+def run_simulations(num_trials = 1_000_000)
   moves_file = File.join(OUTPUT_FOLDER, 'moves_histogram.csv')
   max_size_file = File.join(OUTPUT_FOLDER, 'max_size_histogram.csv')
   final_state_file = File.join(OUTPUT_FOLDER, 'final_state_histogram.csv')
