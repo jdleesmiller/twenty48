@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'csv'
+require 'json'
 require 'narray'
 require 'tsort'
 
@@ -455,11 +456,93 @@ def save_minmax_cells
     end
   end
 end
-save_minmax_cells
+# save_minmax_cells
 
-# TODO
-# - make a dot diagram with all of the states? maybe doable; or try a d3 viz?
-# - simulate the chain to get the full distribution; check the expectation
-#   matches my calcs
-# - is the number of move distributed as a mixture of binomials? weighted by
-#   the absorption probabilities?
+def save_states
+  CSV.open(File.join(OUTPUT_FOLDER, 'states.csv'), 'w') do |csv|
+    csv << %w[max_exponent state]
+    (3..11).each do |max_exponent|
+      transitions = build_markov_chain(max_exponent)
+      sort_states(each_state(transitions).uniq).each do |state|
+        csv << [max_exponent, state]
+      end
+    end
+  end
+end
+# save_states
+
+def save_fundamental_matrix(max_exponent)
+  file = "fundamental_matrix_#{max_exponent}.csv"
+  transient_states, absorbing_states, _, _, _, fundamental =
+    make_fundamental_matrices(max_exponent)
+  all_states = transient_states + absorbing_states
+  CSV.open(File.join(OUTPUT_FOLDER, file), 'w') do |csv|
+    csv << [nil] + all_states
+    (0...all_states.size).each do |i|
+      csv << [all_states[i]] + fundamental[nil, i].to_a[0]
+    end
+  end
+end
+# save_fundamental_matrix(4)
+
+def save_dot(max_exponent, max_sum, groups)
+  pathname = File.join(
+    OUTPUT_FOLDER,
+    "chain_#{max_exponent}_#{max_sum}_#{groups}.dot")
+  transient_states, absorbing_states, _, _, _, fundamental =
+    make_fundamental_matrices(max_exponent)
+  all_states = transient_states + absorbing_states
+  File.open(pathname, 'w') do |f|
+    f.puts 'digraph {'
+    f.puts '  rankdir=LR;'
+
+    if groups
+      all_states.group_by { |state| state.sum }.each do |sum, states|
+        next if sum < 4
+        next if sum > max_sum
+        cluster_name = format('%04d', sum)
+        f.puts "  subgraph cluster_#{cluster_name} {"
+        f.puts "    label=\"#{cluster_name}\";"
+        f.puts '    style=filled; color=grey95; margin=16;'
+        states.each do |state|
+          f.puts "    s_#{state.join('_')};"
+        end
+        f.puts '  }'
+      end
+    end
+
+    all_states.each do |state|
+      next if state.sum > max_sum
+      f.puts "  s_#{state.join('_')} [label=\"#{state.join(', ')}\"];"
+    end
+
+    (0...all_states.size).each do |i|
+      next if all_states[i].sum > max_sum
+      (0...all_states.size).each do |j|
+        next if fundamental[j, i] == 0
+        next if fundamental[j, i] == 1
+        next if all_states[j].sum > max_sum
+
+        pr = format('%.2f', fundamental[j, i])
+        style = []
+        style += ['style=dashed'] if pr == '0.10'
+        style += [format('label="%s"', pr)] if all_states[i].sum < 6
+
+        f.puts "  s_#{all_states[i].join('_')} ->" \
+          " s_#{all_states[j].join('_')} [#{style.join(', ')}]"
+      end
+    end
+    f.puts '}'
+  end
+end
+# save_dot(11, 8, false)
+# save_dot(11, 12, true)
+
+def save_json(max_exponent)
+  transitions = build_markov_chain(max_exponent)
+  pathname = File.join(OUTPUT_FOLDER, "transitions_#{max_exponent}.json")
+  File.open(pathname, 'w') do |f|
+    f.puts JSON.pretty_generate(transitions)
+  end
+end
+# save_json(11)
