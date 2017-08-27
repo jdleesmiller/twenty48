@@ -471,9 +471,9 @@ def save_states
 end
 # save_states
 
-def save_fundamental_matrix(max_exponent)
-  file = "fundamental_matrix_#{max_exponent}.csv"
-  transient_states, absorbing_states, _, _, _, fundamental =
+def save_canonical_matrix(max_exponent)
+  file = "canonical_matrix_#{max_exponent}.csv"
+  transient_states, absorbing_states, _, _, _, canonical =
     make_fundamental_matrices(max_exponent)
   all_states = transient_states + absorbing_states
   CSV.open(File.join(OUTPUT_FOLDER, file), 'w') do |csv|
@@ -483,7 +483,31 @@ def save_fundamental_matrix(max_exponent)
     end
   end
 end
-# save_fundamental_matrix(4)
+# save_canonical_matrix(4)
+
+def save_canonical_matrix_sparse(max_exponent)
+  matrix_file = "canonical_matrix_sparse_#{max_exponent}.csv"
+  states_file = "canonical_matrix_states_#{max_exponent}.csv"
+  transient_states, absorbing_states, _, _, _, canonical =
+    make_fundamental_matrices(max_exponent)
+  all_states = transient_states + absorbing_states
+  CSV.open(File.join(OUTPUT_FOLDER, states_file), 'w') do |csv|
+    csv << %w[i state]
+    all_states.each.with_index do |state, i|
+      csv << [i, state]
+    end
+  end
+  CSV.open(File.join(OUTPUT_FOLDER, matrix_file), 'w') do |csv|
+    csv << %w[i j probability]
+    (0...all_states.size).each do |i|
+      (0...all_states.size).each do |j|
+        next if canonical[j, i] == 0
+        csv << [i, j, canonical[j, i]]
+      end
+    end
+  end
+end
+save_canonical_matrix_sparse(11)
 
 def save_dot(max_exponent, max_sum, groups)
   pathname = File.join(
@@ -537,6 +561,7 @@ def save_dot(max_exponent, max_sum, groups)
 end
 # save_dot(11, 8, false)
 # save_dot(11, 12, true)
+# save_dot(11, 4096, true)
 
 def save_json(max_exponent)
   transitions = build_markov_chain(max_exponent)

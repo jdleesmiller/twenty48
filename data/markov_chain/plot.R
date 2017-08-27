@@ -1,4 +1,6 @@
 library(ggplot2)
+library(jsonlite)
+library(Matrix)
 
 movesHistogram <- read.csv('moves_histogram.csv')
 
@@ -172,3 +174,108 @@ local({
         fill = factor(state_sum)),
       position = 'stack', alpha = 0.5)
 })
+
+#
+# Count states
+#
+
+bindStateInfo <- function (frame) {
+  transform(
+    frame,
+    max_value = sapply(as.character(state), function (s) {
+      values <- as.numeric(fromJSON(s))
+      if (length(values) > 0) {
+        max(values)
+      } else {
+        0
+      }
+    }),
+    value_sum = sapply(as.character(state), function (s) {
+      sum(as.numeric(fromJSON(s)))
+    }),
+    num_tiles = sapply(as.character(state), function (s) {
+      length(as.numeric(fromJSON(s)))
+    })
+  )
+}
+
+states <- bindStateInfo(read.csv('states.csv'))
+
+numStates <- as.data.frame(xtabs( ~ max_exponent, states))
+numStates
+
+numStatesByMaxValue <- aggregate(
+  count ~ max_exponent + max_value,
+  transform(states, count = 1),
+  sum)
+subset(numStatesByMaxValue, max_exponent == 11)
+
+numStatesByValueSum <- aggregate(
+  count ~ max_exponent + value_sum,
+  transform(states, count = 1),
+  sum)
+
+ggplot(
+  subset(numStatesByValueSum, max_exponent == 11),
+  aes(x = value_sum, y = count))+
+  geom_step()
+
+max(subset(numStatesByValueSum, max_exponent == 11)$value_sum)
+
+numTilesByValueSum <- merge(
+  aggregate(num_tiles ~ max_exponent + value_sum, states, min),
+  aggregate(num_tiles ~ max_exponent + value_sum, states, max),
+  by = c('max_exponent', 'value_sum'),
+  suffixes = c('_min', '_max'))
+
+ggplot(
+  subset(numTilesByValueSum, max_exponent == 11)) +
+  geom_step(aes(x = value_sum, y = num_tiles_min), color = 'red') +
+  geom_step(aes(x = value_sum, y = num_tiles_max), color = 'blue')
+
+ggplot(
+  subset(numTilesByValueSum, max_exponent == 11)) +
+  geom_step(aes(x = value_sum, y = num_tiles_max - num_tiles_min))
+
+#
+# Have a look at the canonical matrix and the fundamental matrix
+#
+
+canonical <- read.csv('canonical_matrix_sparse_11.csv')
+canonicalStates <- read.csv('canonical_matrix_states_11.csv')
+
+canonicalMatrix <- local({
+  offset <- 0 # to zoom in on the lower corner
+  with(
+    subset(canonical, i >= offset & j >= offset),
+    sparseMatrix(i - offset, j - offset, x = probability, index1 = FALSE))
+})
+image(canonicalMatrix)
+
+canonicalQ <- 3461
+qMatrix <- canonicalMatrix[1:canonicalQ, 1:canonicalQ]
+nMatrix <- solve(diag(canonicalQ) - qMatrix)
+image(nMatrix[1:1000, 1:1000])
+image(nMatrix[3000:canonicalQ, 3000:canonicalQ])
+
+#
+# The first row of the N matrix tells us the probability that we'll ever visit
+# a state, which is an interesting way of collapsing the chain. We can see that
+# we pass through certain 'key states'.
+#
+
+plot(nMatrix[1,])
+
+nStates <- bindStateInfo(merge(
+  data.frame(i = 0:(nrow(nMatrix) - 1), probability = nMatrix[1, ]),
+  canonicalStates))
+row.names(nStates) <- NULL
+head(nStates)
+
+transform(
+  subset(nStates, probability >= 0.85,
+    select = c(state, probability, value_sum)),
+  ds = c(NA, diff(value_sum))
+)
+
+# maybe look at # of states per layer? probably low for high prob states
