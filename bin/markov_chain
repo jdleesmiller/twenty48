@@ -500,7 +500,7 @@ def save_dot(max_exponent, max_sum, groups)
       all_states.group_by { |state| state.sum }.each do |sum, states|
         next if sum < 4
         next if sum > max_sum
-        cluster_name = format('%04d', sum)
+        cluster_name = format('%d', sum)
         f.puts "  subgraph cluster_#{cluster_name} {"
         f.puts "    label=\"#{cluster_name}\";"
         f.puts '    style=filled; color=grey95; margin=16;'
@@ -513,7 +513,7 @@ def save_dot(max_exponent, max_sum, groups)
 
     all_states.each do |state|
       next if state.sum > max_sum
-      f.puts "  s_#{state.join('_')} [label=\"#{state.join(', ')}\"];"
+      f.puts "  s_#{state.join('_')} [label=\"{#{state.join(', ')}}\"];"
     end
 
     (0...all_states.size).each do |i|
