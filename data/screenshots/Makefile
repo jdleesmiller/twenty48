@@ -1,0 +1,4 @@
+initial_states.png: IMG_0593.PNG IMG_0594.PNG IMG_0595.PNG IMG_0596.PNG IMG_0597.PNG IMG_0598.PNG IMG_0599.PNG IMG_0600.PNG IMG_0601.PNG IMG_0602.PNG IMG_0603.PNG IMG_0604.PNG
+	montage $^ -crop 580x580+30+215 -geometry +4+2 $@
+
+default: initial_states.png
