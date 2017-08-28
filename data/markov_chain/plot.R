@@ -58,11 +58,17 @@ plotMovesHistogram <- function (maxExponent) {
   ggplot(
     subset(movesHistogram, max_exponent == maxExponent),
     aes(moves, density)) +
-    geom_bar(stat = 'identity') +
+    geom_bar(stat = 'identity', width = 1) +
     geom_vline(xintercept = expectedMean, color = 'blue') +
-    geom_vline(xintercept = empiricalMean, color = 'red', linetype = 'dotted')
+    # geom_vline(xintercept = empiricalMean, color = 'red', linetype = 'dotted') +
+    xlab('Moves to Win') +
+    ylab('Probability')
 }
 plotMovesHistogram(11)
+
+svg('markov_chain_moves_histogram.svg', width=8, height=6)
+plotMovesHistogram(11)
+dev.off()
 
 #
 # Binomial mixture idea. First, we need win states and weights.
@@ -75,109 +81,24 @@ parseState <- function (state) {
 }
 parseState('[2, 2, 16, 16, 2048]')
 
-absorbingProbabilities <- transform(
-  read.csv('absorbing_probabilities.csv'),
-  state_sum = sapply(state, function (s) sum(parseState(s)))
-)
-
-sumProbabilities <- aggregate(
-  probability ~ max_exponent + state_sum,
-  absorbingProbabilities, sum
-)
-sumProbabilities
-
-# check that probabilities sum to 1
-aggregate(probability ~ max_exponent, sumProbabilities, sum)
-
-#
-# Create the joint distribution of the number of moves and the sum of the values
-# after that number of moves. This is binomial:
-#
-# P(M = m, S = s) = B(s / 2 - m, m, p)
-#
-# Since, in m moves, we accumulate 2m for sure, plus 2 for each success (i.e.
-# we get a 4). That is, the sum is 2m + 2k, so if k = s/2 - m, the sum is
-# 2m + s - 2m = s.
-#
-makeBinomialJoint <- function () {
-  p <- 0.1
-  do.call(rbind, lapply(3:11, function (maxExponent) {
-    stateSums <- subset(sumProbabilities, max_exponent == maxExponent)$state_sum
-    do.call(rbind, lapply(stateSums, function (stateSum) {
-      maxMoves <- stateSum / 2
-      minMoves <- ceiling(maxMoves / 2)
-      numMoves <- seq(minMoves, maxMoves)
-      data.frame(
-        max_exponent = maxExponent,
-        num_moves = numMoves,
-        state_sum = stateSum,
-        probability = dbinom(stateSum / 2 - numMoves, numMoves, p)
-      )
-    }))
-  }))
+# For sorting states in numeric order, treat the log2 tile values as a base-12
+# integer.
+stateToNumber <- function (tiles) {
+  sum(log2(tiles) * 12 ** seq(from = 1, to = length(tiles)))
 }
-binomialJoint <- makeBinomialJoint()
-head(binomialJoint)
+stateToNumber(parseState('[2]'))
+stateToNumber(parseState('[2, 2]'))
+stateToNumber(parseState('[2, 2, 16, 16, 2048]'))
 
-#
-# We want P(M = m | S = s), which we can find from the joint distribution and
-# the marginal distribution of S by
-#
-# P(M = m | S = s) = P(M = m, S = s) / P(S = s)
-#
+zeroPadState <- function (tiles) {
+  c(rep(0, times = 16 - length(tiles)), tiles)
+}
+zeroPadState(parseState('[2, 2, 16, 16, 2048]'))
 
-binomialStateSumMargin <- aggregate(
-  probability ~ max_exponent + state_sum,
-  binomialJoint,
-  sum)
-
-binomialMoveGivenSum <- transform(
-  merge(binomialJoint, binomialStateSumMargin,
-    by = c('max_exponent', 'state_sum'),
-    suffixes = c('_joint', '_state_sum_margin')),
-  probability_moves_given_sum = probability_joint / probability_state_sum_margin
-)[, c('max_exponent', 'state_sum', 'num_moves', 'probability_moves_given_sum')]
-head(binomialMoveGivenSum)
-
-#
-# Finally, if we let W be the event that we've won, we have P(S = s | W) from
-# the absorption probabilities of the Markov chain.
-#
-# Want P(M = m, S = s | W) = P(M = m | S = s, W) * P(S = s | W)
-# P(MS|W) = P(M|SW)P(S|W)
-# P(M|SW) = P(M|S) because M and W are conditionally independent given S.
-#
-# Is an absorbing probability P(S|W)? We know we are going to be absorbed, so
-# it's just a question of which state. We've then aggregated up by sum, so I
-# think yes, P(S|W) is an absorbing probability.
-
-weightedMixture <- transform(
-  merge(
-    binomialMoveGivenSum, sumProbabilities,
-    by = c('max_exponent', 'state_sum')),
-  density = probability_moves_given_sum * probability
-)[, c('max_exponent', 'state_sum', 'num_moves', 'density')]
-head(weightedMixture)
-
-local({
-  maxExponent <- 3
-  ggplot(
-    subset(weightedMixture, max_exponent == maxExponent & density > 1e-6),
-    aes(num_moves, density)) +
-    geom_bar(
-      aes(x = moves),
-      data = subset(movesHistogram, max_exponent == maxExponent),
-      stat = 'identity') +
-    geom_area(
-      aes(x = num_moves - 2,
-        color = factor(state_sum),
-        fill = factor(state_sum)),
-      position = 'stack', alpha = 0.5)
-})
-
-#
-# Count states
-#
+toSetNotation <- function (states) {
+  sub('\\[', '{', sub('\\]', '}', states))
+}
+toSetNotation(c('[2]', '[2, 2]'))
 
 bindStateInfo <- function (frame) {
   transform(
@@ -198,6 +119,140 @@ bindStateInfo <- function (frame) {
     })
   )
 }
+
+absorbingProbabilities <- bindStateInfo(
+  read.csv('absorbing_probabilities.csv'))
+
+sumProbabilities <- aggregate(
+  probability ~ max_exponent + value_sum,
+  absorbingProbabilities, sum
+)
+sumProbabilities
+
+# check that probabilities sum to 1
+aggregate(probability ~ max_exponent, sumProbabilities, sum)
+
+plotAbsorbingProbabilities <- function () {
+  ap <- subset(absorbingProbabilities,
+    max_exponent == 11 & probability > 1e-3)
+  orderedStates <- with(ap,
+    state[order(value_sum,
+      sapply(lapply(lapply(state, parseState), zeroPadState), stateToNumber))])
+  ap <- transform(ap,
+    state = factor(state, orderedStates, toSetNotation(orderedStates),
+      ordered = TRUE)
+  )
+  ggplot(ap, aes(x = state, y = probability)) +
+    geom_bar(aes(fill = factor(value_sum, ordered = TRUE)), stat = 'identity') +
+    scale_fill_discrete(guide = guide_legend(title = 'Sum of Tiles')) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+    xlab('Absorbing State') +
+    ylab('Absorbing Probability')
+}
+plotAbsorbingProbabilities()
+
+svg('markov_chain_absorbing_probabilities.svg', width=8, height=6)
+plotAbsorbingProbabilities()
+dev.off()
+
+#
+# Create the joint distribution of the number of moves and the sum of the values
+# after that number of moves. This is binomial:
+#
+# P(M = m, S = s) = B(s / 2 - m, m, p)
+#
+# Since, in m moves, we accumulate 2m for sure, plus 2 for each success (i.e.
+# we get a 4). That is, the sum is 2m + 2k, so if k = s/2 - m, the sum is
+# 2m + s - 2m = s.
+#
+makeBinomialJoint <- function () {
+  p <- 0.1
+  do.call(rbind, lapply(3:11, function (maxExponent) {
+    valueSums <- subset(sumProbabilities, max_exponent == maxExponent)$value_sum
+    do.call(rbind, lapply(valueSums, function (valueSum) {
+      maxMoves <- valueSum / 2
+      minMoves <- ceiling(maxMoves / 2)
+      numMoves <- seq(minMoves, maxMoves)
+      data.frame(
+        max_exponent = maxExponent,
+        num_moves = numMoves,
+        value_sum = valueSum,
+        probability = dbinom(valueSum / 2 - numMoves, numMoves, p)
+      )
+    }))
+  }))
+}
+binomialJoint <- makeBinomialJoint()
+head(binomialJoint)
+
+#
+# We want P(M = m | S = s), which we can find from the joint distribution and
+# the marginal distribution of S by
+#
+# P(M = m | S = s) = P(M = m, S = s) / P(S = s)
+#
+
+binomialStateSumMargin <- aggregate(
+  probability ~ max_exponent + value_sum,
+  binomialJoint,
+  sum)
+
+binomialMoveGivenSum <- transform(
+  merge(binomialJoint, binomialStateSumMargin,
+    by = c('max_exponent', 'value_sum'),
+    suffixes = c('_joint', '_state_sum_margin')),
+  probability_moves_given_sum = probability_joint / probability_state_sum_margin
+)[, c('max_exponent', 'value_sum', 'num_moves', 'probability_moves_given_sum')]
+head(binomialMoveGivenSum)
+
+#
+# Finally, if we let W be the event that we've won, we have P(S = s | W) from
+# the absorption probabilities of the Markov chain.
+#
+# Want P(M = m, S = s | W) = P(M = m | S = s, W) * P(S = s | W)
+# P(MS|W) = P(M|SW)P(S|W)
+# P(M|SW) = P(M|S) because M and W are conditionally independent given S.
+#
+# Is an absorbing probability P(S|W)? We know we are going to be absorbed, so
+# it's just a question of which state. We've then aggregated up by sum, so I
+# think yes, P(S|W) is an absorbing probability.
+
+weightedMixture <- transform(
+  merge(
+    binomialMoveGivenSum, sumProbabilities,
+    by = c('max_exponent', 'value_sum')),
+  density = probability_moves_given_sum * probability
+)[, c('max_exponent', 'value_sum', 'num_moves', 'density')]
+head(weightedMixture)
+
+plotWeightedMixture <- function () {
+  maxExponent <- 11
+  ggplot(
+    subset(weightedMixture, max_exponent == maxExponent & density > 1e-5),
+    aes(num_moves, density)) +
+    geom_bar(
+      aes(x = moves),
+      data = subset(movesHistogram, max_exponent == maxExponent),
+      stat = 'identity', width = 1) +
+    geom_area(
+      aes(x = num_moves - 2,
+        color = factor(value_sum),
+        fill = factor(value_sum)),
+      position = 'stack', alpha = 0.5) +
+    scale_color_discrete(guide = guide_legend(title = 'Sum of Tiles')) +
+    scale_fill_discrete(guide = guide_legend(title = 'Sum of Tiles')) +
+    xlab('Moves to Win') +
+    ylab('Probability Density')
+}
+plotWeightedMixture()
+
+svg('markov_chain_weighted_mixture.svg', width=8, height=6)
+plotWeightedMixture()
+dev.off()
+
+#
+# Count states
+#
 
 states <- bindStateInfo(read.csv('states.csv'))
 
@@ -252,7 +307,64 @@ canonicalMatrix <- local({
 })
 image(canonicalMatrix)
 
+canonicalP <- nrow(canonicalMatrix)
 canonicalQ <- 3461
+
+plotCanonicalMatrix <- function () {
+  ggplot(canonical, aes(x = j, y = i)) +
+    geom_tile(aes(fill = probability)) +
+    scale_fill_gradient(low = 'gray', high = 'black',
+      guide = guide_legend(title = 'Probability', reverse = TRUE)) +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(trans = 'reverse', expand = c(0, 0)) +
+    coord_equal(ratio = 1) +
+    xlab('Transition Matrix Column') +
+    ylab('Transition Matrix Row')
+}
+plotCanonicalMatrix()
+
+svg('markov_chain_canonical.svg', width=8, height=5)
+plotCanonicalMatrix()
+dev.off()
+
+plotLowerRightCanonicalMatrix <- function () {
+  cutoff <- 3300
+  breaks <- c(cutoff, canonicalQ)
+  labelOffset <- 7
+  matrixNames <- data.frame(
+    i = c(
+      cutoff + labelOffset,
+      cutoff + labelOffset,
+      canonicalQ + labelOffset,
+      canonicalQ + labelOffset),
+    j = c(
+      canonicalQ - labelOffset,
+      canonicalP - labelOffset,
+      canonicalQ - labelOffset,
+      canonicalP - labelOffset),
+    label = c('bold(Q)', 'bold(R)', 'bold("0")', 'bold(I)[r]')
+  )
+  ggplot(
+    subset(canonical, i >= cutoff & j >= cutoff),
+    aes(x = j, y = i)) +
+    geom_tile(aes(fill = factor(format(probability, digits = 2))),
+      height = 1, width = 1) +
+    scale_fill_discrete(
+      guide = guide_legend(title = 'Probability', reverse = TRUE)) +
+    scale_x_continuous(breaks = breaks, expand = c(0, 0)) +
+    scale_y_continuous(breaks = breaks, expand = c(0, 0), trans = 'reverse') +
+    coord_equal(ratio = 1) +
+    theme(panel.grid.minor = element_blank()) +
+    xlab('Transition Matrix Column') +
+    ylab('Transition Matrix Row') +
+    geom_label(aes(label = label), data = matrixNames, parse = TRUE)
+}
+plotLowerRightCanonicalMatrix()
+
+svg('markov_chain_canonical_lower_right.svg', width=8, height=5)
+plotLowerRightCanonicalMatrix()
+dev.off()
+
 qMatrix <- canonicalMatrix[1:canonicalQ, 1:canonicalQ]
 nMatrix <- solve(diag(canonicalQ) - qMatrix)
 image(nMatrix[1:1000, 1:1000])
