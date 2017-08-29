@@ -2,6 +2,9 @@ library(ggplot2)
 library(jsonlite)
 library(Matrix)
 
+# Center plot titles.
+theme_update(plot.title = element_text(hjust = 0.5))
+
 movesHistogram <- read.csv('moves_histogram.csv')
 
 numTrials <- aggregate(frequency ~ max_exponent, movesHistogram, sum)
@@ -392,3 +395,47 @@ transform(
 )
 
 # maybe look at # of states per layer? probably low for high prob states
+
+#
+# Plot my human results
+#
+
+humanResults <- subset(
+  read.csv('../screenshots/results.csv'),
+  !is.na(Moves))
+
+plotHumanResults <- function () {
+  steps <- subset(expectedStepsFromStart, max_exponent == 11)
+  expectedMean <- steps$expected_steps - 1
+  stdDev <- sqrt(steps$variance_steps)
+  labels <- data.frame(
+    Moves = c(1025,
+      expectedMean + 1,
+      expectedMean - stdDev + 1,
+      expectedMean + stdDev + 1),
+    Tile.Sum = c(2070, 2250, 2250, 2250),
+    label = c(
+      'Minimum Tile Sum: 2066',
+      'Minimum Expected Moves: 938.8',
+      '-1 Standard Deviation', '+1 Standard Deviation'),
+    hjust = c(1, 0, 0, 0),
+    vjust = c(0, 0, 0, 0),
+    angle = c(0, -90, -90, -90)
+  )
+  ggplot(humanResults, aes(x = Moves, y = Tile.Sum)) +
+    geom_point() +
+    geom_vline(xintercept = expectedMean, color = 'blue') +
+    geom_vline(xintercept = expectedMean - stdDev, color = 'blue', linetype = 'dashed') +
+    geom_vline(xintercept = expectedMean + stdDev, color = 'blue', linetype = 'dashed') +
+    geom_hline(yintercept = 2066, color = 'red', linetype = 'dashed') +
+    geom_text(aes(label = label, hjust = hjust, vjust = vjust, angle = angle),
+      data = labels) +
+    xlab('Moves to Win') +
+    ylab('Sum of Tiles on the Board at Win') +
+    ggtitle('Moves to Win and Tiles on Board for 28 (Human) Games')
+}
+plotHumanResults()
+
+svg('markov_chain_human.svg', width=8, height=6)
+plotHumanResults()
+dev.off()
