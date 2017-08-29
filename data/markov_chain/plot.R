@@ -66,7 +66,8 @@ plotMovesHistogram <- function (maxExponent) {
     geom_vline(xintercept = expectedMean, color = 'blue') +
     # geom_vline(xintercept = empiricalMean, color = 'red', linetype = 'dotted') +
     xlab('Moves to Win') +
-    ylab('Probability')
+    ylab('Probability') +
+    ggtitle('Histogram of Minimum Moves to Win from the Markov Chain')
 }
 plotMovesHistogram(11)
 
@@ -151,7 +152,8 @@ plotAbsorbingProbabilities <- function () {
     scale_fill_discrete(guide = guide_legend(title = 'Sum of Tiles')) +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
     xlab('Absorbing State') +
-    ylab('Absorbing Probability')
+    ylab('Absorbing Probability') +
+    ggtitle('Absorbing Probabilities for the Markov Chain')
 }
 plotAbsorbingProbabilities()
 
@@ -246,7 +248,8 @@ plotWeightedMixture <- function () {
     scale_color_discrete(guide = guide_legend(title = 'Sum of Tiles')) +
     scale_fill_discrete(guide = guide_legend(title = 'Sum of Tiles')) +
     xlab('Moves to Win') +
-    ylab('Probability Density')
+    ylab('Probability Density') +
+    ggtitle('Simulated and Binomial Mixture Model Distributions for Minimum Moves to Win')
 }
 plotWeightedMixture()
 
@@ -323,7 +326,8 @@ plotCanonicalMatrix <- function () {
     scale_y_continuous(trans = 'reverse', expand = c(0, 0)) +
     coord_equal(ratio = 1) +
     xlab('Transition Matrix Column') +
-    ylab('Transition Matrix Row')
+    ylab('Transition Matrix Row') +
+    ggtitle('Complete Canonical Matrix for the 2048 Markov Chain')
 }
 plotCanonicalMatrix()
 
@@ -361,6 +365,7 @@ plotLowerRightCanonicalMatrix <- function () {
     theme(panel.grid.minor = element_blank()) +
     xlab('Transition Matrix Column') +
     ylab('Transition Matrix Row') +
+    ggtitle('Lower Right Corner of the Canonical Matrix') +
     geom_label(aes(label = label), data = matrixNames, parse = TRUE)
 }
 plotLowerRightCanonicalMatrix()
