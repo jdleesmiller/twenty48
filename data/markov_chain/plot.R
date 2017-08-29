@@ -35,7 +35,8 @@ expectedStepsFromStart <- subset(expectedSteps, state == '[]')
 transform(
   merge(movesMeanVariance, expectedStepsFromStart),
   error_mean = moves_mean - expected_steps,
-  error_variance = moves_variance - variance_steps)
+  error_variance = moves_variance - variance_steps,
+  stdev_steps = sqrt(variance_steps))
 
 #
 # Summary: not all that easy to read.
