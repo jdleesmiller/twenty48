@@ -71,7 +71,7 @@ plotMovesHistogram <- function (maxExponent) {
 }
 plotMovesHistogram(11)
 
-svg('markov_chain_moves_histogram.svg', width=8, height=6)
+svg('markov_chain_moves_histogram.svg', width=8, height=5)
 plotMovesHistogram(11)
 dev.off()
 
@@ -157,7 +157,7 @@ plotAbsorbingProbabilities <- function () {
 }
 plotAbsorbingProbabilities()
 
-svg('markov_chain_absorbing_probabilities.svg', width=8, height=6)
+svg('markov_chain_absorbing_probabilities.svg', width=8, height=5)
 plotAbsorbingProbabilities()
 dev.off()
 
@@ -253,7 +253,7 @@ plotWeightedMixture <- function () {
 }
 plotWeightedMixture()
 
-svg('markov_chain_weighted_mixture.svg', width=8, height=6)
+svg('markov_chain_weighted_mixture.svg', width=8, height=5)
 plotWeightedMixture()
 dev.off()
 
@@ -441,6 +441,6 @@ plotHumanResults <- function () {
 }
 plotHumanResults()
 
-svg('markov_chain_human.svg', width=8, height=6)
+svg('markov_chain_human.svg', width=8, height=5)
 plotHumanResults()
 dev.off()
