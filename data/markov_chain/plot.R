@@ -161,6 +161,26 @@ svg('markov_chain_absorbing_probabilities.svg', width=8, height=5)
 plotAbsorbingProbabilities()
 dev.off()
 
+plotSumProbabilities <- function () {
+  sumData <- transform(
+    subset(sumProbabilities, max_exponent == 11 & value_sum < 2080),
+    value_sum = factor(value_sum, ordered = TRUE)
+  )
+  ggplot(
+    sumData,
+    aes(x = value_sum, y = probability)) +
+    geom_bar(aes(fill = value_sum), stat = 'identity') +
+    scale_fill_discrete(guide = FALSE) +
+    xlab('Sum of Tiles at Absorption (Win)') +
+    ylab('Total Absorbing Probability') +
+    ggtitle('Total Absorbing Probabilities by Sum of Tiles')
+}
+plotSumProbabilities()
+
+svg('markov_chain_sum_probabilities.svg', width=8, height=5)
+plotSumProbabilities()
+dev.off()
+
 #
 # Create the joint distribution of the number of moves and the sum of the values
 # after that number of moves. This is binomial:
@@ -252,6 +272,11 @@ plotWeightedMixture <- function () {
     ggtitle('Simulated and Binomial Mixture Model Distributions for Minimum Moves to Win')
 }
 plotWeightedMixture()
+
+# For conversion to PNG.
+# pdf('markov_chain_weighted_mixture.pdf', width=8, height=4.2)
+# plotWeightedMixture()
+# dev.off()
 
 svg('markov_chain_weighted_mixture.svg', width=8, height=5)
 plotWeightedMixture()
