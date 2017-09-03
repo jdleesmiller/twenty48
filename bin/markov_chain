@@ -520,6 +520,7 @@ def save_dot(max_exponent, max_sum, groups)
   File.open(pathname, 'w') do |f|
     f.puts 'digraph {'
     f.puts '  rankdir=LR;'
+    f.puts '  ranksep=1;'
 
     if groups
       all_states.group_by(&:sum).each do |sum, states|
@@ -559,6 +560,15 @@ def save_dot(max_exponent, max_sum, groups)
           " s_#{all_states[j].join('_')} [#{style.join(', ')}]"
       end
     end
+
+    absorbing_states = all_states.select do |state|
+      !state.empty? && state.max >= 2048
+    end
+    absorbing_states.each do |state|
+      style = 'label="1.0", dir=back, color=red'
+      f.puts "  s_#{state.join('_')} -> s_#{state.join('_')} [#{style}];"
+    end
+
     f.puts '}'
   end
 end
