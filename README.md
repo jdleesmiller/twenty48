@@ -1,41 +1,25 @@
 # twenty48
 
-* TODO url
+* https://github.com/jdleesmiller/twenty48
 
 ## SYNOPSIS
 
-TODO description
+**Research-quality code** for studying 2048. The code in this repo backs what will be a series of blog posts:
 
-### Usage
+### 1. Minimum Moves to Win with Markov Chains
 
-  TODO (code sample of usage)
+Blog post: http://jdlm.info/articles/2017/08/05/markov-chain-2048.html
 
-## REQUIREMENTS
+Files:
 
-* TODO (list of requirements)
-
-## INSTALLATION
-
-  sudo gem install twenty48
-
-## DEVELOPMENT
-
-TODO developer advice
-
-The model files are stored as bzipped JSON. To make git diffs work on the
-underlying text, you can add
-```
-[diff "diff_bzcat"]
-	binary = true
-	textconv = /usr/bin/bzcat
-```
-to the `.git/config` in this repo once you have checked it out.
+- `bin/markov_chain` --- generates most of the data
+- `data/markov_chain/plot.R` --- scripts to create the plots
 
 ## LICENSE
 
 (The MIT License)
 
-Copyright (c) 2016 John Lees-Miller
+Copyright (c) 2016-2017 John Lees-Miller
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
