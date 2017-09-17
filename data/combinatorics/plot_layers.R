@@ -1,5 +1,8 @@
 library(ggplot2)
 
+# Center plot titles.
+theme_update(plot.title = element_text(hjust = 0.5))
+
 d <- read.csv('layers.csv')
 
 ggplot(
@@ -19,27 +22,33 @@ ggplot(
   scale_y_continuous(trans='log10') +
   geom_step()
 
-png('layers_summary.png', width = 8, height = 4, units = 'in', res = 2*72)
-ggplot(
-  subset(
-    d,
-    (
-      (board_size == 2 & max_exponent == 11) |
-      (board_size == 3 & max_exponent == 11) |
-      (board_size == 4 & max_exponent == 11)
-    )),
-  aes(x = layer_sum, y = num_states, color = factor(board_size))) +
-  geom_point(shape = '.') +
-  scale_color_discrete(name = 'Board Size') +
-  scale_x_continuous(
-    breaks = 2048 * seq(1, 8)) +
-  scale_y_continuous(
-    trans = 'log10',
-    labels = function (n) format(n, scientific = FALSE, big.mark = ','),
-    breaks = 10 ** seq(3, 15, by = 3),
-    minor_breaks = 10 ** seq(1, 16)) +
-  xlab('Sum of Tiles in State') +
-  ylab('Number of States (log scale)')
+plotLayersSummary <- function () {
+  ggplot(
+    subset(
+      d,
+      (
+        (board_size == 2 & max_exponent == 11) |
+        (board_size == 3 & max_exponent == 11) |
+        (board_size == 4 & max_exponent == 11)
+      )),
+    aes(x = layer_sum, y = num_states, color = factor(board_size))) +
+    geom_point(shape = '.') +
+    scale_color_discrete(name = 'Board Size') +
+    scale_x_continuous(
+      breaks = 2048 * seq(1, 8)) +
+    scale_y_continuous(
+      trans = 'log10',
+      labels = function (n) format(n, scientific = FALSE, big.mark = ','),
+      breaks = 10 ** seq(3, 15, by = 3),
+      minor_breaks = 10 ** seq(1, 16)) +
+    ggtitle('Number of States per Sum Layer for 2048') +
+    xlab('Sum of Tiles in State') +
+    ylab('Number of States (log scale)')
+}
+plotLayersSummary()
+
+png('layers_summary.png', width = 8, height = 4, units = 'in', res = 300)
+plotLayersSummary()
 dev.off()
 
 #
