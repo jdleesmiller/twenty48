@@ -7,7 +7,7 @@ require_relative '../lib/twenty48'
 include Twenty48
 
 #
-# Count states for the blog post summary tables.
+# Count states for the combinatorics blog post summary tables.
 #
 
 TotalRow = Struct.new(:board_size, :max_exponent, :total_states) do
@@ -105,7 +105,7 @@ canonical.sort_by! do |row|
   [row.board_size, row.max_exponent]
 end
 
-CSV.open('data/blog/canonical.csv', 'w') do |csv|
+CSV.open('data/combinatorics/canonical.csv', 'w') do |csv|
   csv << %w[board_size max_exponent total_states]
   canonical.each do |row|
     csv << row.to_a
@@ -156,7 +156,7 @@ layers_canonical.sort_by! do |row|
   [row.board_size, row.max_exponent, row.layer_sum]
 end
 
-CSV.open('data/blog/layers_canonical.csv', 'w') do |csv|
+CSV.open('data/combinatorics/layers_canonical.csv', 'w') do |csv|
   csv << %w[board_size max_exponent layer_sum num_states]
   layers_canonical.each do |row|
     csv << row.to_a
@@ -168,7 +168,7 @@ end
 #
 
 def read_total_csv(basename)
-  pathname = File.join('data/blog', basename)
+  pathname = File.join('data/combinatorics', basename)
   CSV.read(pathname, headers: true).map do |row|
     TotalRow.from_row(row)
   end
@@ -219,31 +219,19 @@ SUMMARY_TEMPLATE = <<~HTML
     <tbody>
       <% MAX_EXPONENTS.each do |max_exponent| %>
       <tr>
-        <th align="right" valign="top" rowspan="<%= TOTALS.size %>"><%= 2**max_exponent %></th>
+        <th align="right" valign="top" rowspan="2"><%= 2**max_exponent %></th>
         <td>Baseline</td>
-        <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :basic, board_size, max_exponent %></td><% end %>
-      </tr>
-      <tr>
-        <td>Improved</td>
         <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :improved, board_size, max_exponent %></td><% end %>
       </tr>
       <tr>
-        <td>Truncated</td>
+        <td>Layer Reachability</td>
         <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :truncated, board_size, max_exponent %></td><% end %>
-      </tr>
-      <tr>
-        <td>Reachable</td>
-        <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :reachable, board_size, max_exponent %></td><% end %>
-      </tr>
-      <tr>
-        <td>Canonical</td>
-        <% BOARD_SIZES.each do |board_size| %><td align="right"><%= lookup :canonical, board_size, max_exponent %></td><% end %>
       </tr>
       <% end %>
     </tbody>
   </table>
 HTML
 
-File.open('data/blog/summary_table.html', 'w') do |file|
+File.open('data/combinatorics/summary_table.html', 'w') do |file|
   file.puts ERB.new(SUMMARY_TEMPLATE).result
 end
