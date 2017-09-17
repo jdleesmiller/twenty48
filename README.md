@@ -15,6 +15,16 @@ Files:
 - `bin/markov_chain` --- generates most of the data
 - `data/markov_chain/plot.R` --- scripts to create the plots
 
+### 2. Number of States with Combinatorics
+
+Blog post: http://jdlm.info/articles/2017/09/17/counting-states-combinatorics-2048.html
+
+Files:
+
+- `bin/combinatorics` --- generates the data
+- `data/combinatorics/plot_layers.R` --- plot for the layer state counts
+- `data/combinatorics/plot_totals.R` --- plot for the total state counts
+
 ## LICENSE
 
 (The MIT License)
