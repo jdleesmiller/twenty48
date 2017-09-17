@@ -3,7 +3,12 @@ library(ggplot2)
 # Center plot titles.
 theme_update(plot.title = element_text(hjust = 0.5))
 
-d <- read.csv('layers.csv')
+d <- transform(
+  read.csv('layers.csv'),
+  board_size_factor = factor(
+    board_size,
+    levels = c(2, 3, 4),
+    labels = c('2x2', '3x3', '4x4')))
 
 ggplot(
   subset(d, board_size == 2 & max_exponent == 5),
@@ -31,7 +36,7 @@ plotLayersSummary <- function () {
         (board_size == 3 & max_exponent == 11) |
         (board_size == 4 & max_exponent == 11)
       )),
-    aes(x = layer_sum, y = num_states, color = factor(board_size))) +
+    aes(x = layer_sum, y = num_states, color = board_size_factor)) +
     geom_point(shape = '.') +
     scale_color_discrete(name = 'Board Size') +
     scale_x_continuous(
@@ -47,7 +52,9 @@ plotLayersSummary <- function () {
 }
 plotLayersSummary()
 
-png('layers_summary.png', width = 8, height = 4, units = 'in', res = 300)
+png(
+  'combinatorics_layers_summary.png',
+  width = 8, height = 4, units = 'in', res = 300)
 plotLayersSummary()
 dev.off()
 
