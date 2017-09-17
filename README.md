@@ -22,6 +22,7 @@ Blog post: http://jdlm.info/articles/2017/09/17/counting-states-combinatorics-20
 Files:
 
 - `bin/combinatorics` --- generates the data
+- `bin/combinatorics_summary` --- aggregation for the blog post
 - `data/combinatorics/plot_layers.R` --- plot for the layer state counts
 - `data/combinatorics/plot_totals.R` --- plot for the total state counts
 
