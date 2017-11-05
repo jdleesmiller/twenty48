@@ -178,7 +178,8 @@ end
 #     # p direction
 #     states.each do |state|
 #       # p state
-#       add_state_node(graph, state) unless graph.nodes.member?(node_name(state))
+#       add_state_node(graph, state) unless \
+#         graph.nodes.member?(node_name(state))
 #       graph.add_edge(
 #         direction,
 #         node_name(state),
@@ -206,7 +207,7 @@ def expand_next_layers(state, layers, max_exponent)
     next if move_state.win?(max_exponent)
     move_state.to_a.each.with_index do |value, i|
       next unless value.zero?
-      State::RANDOM_TILES.each do |new_value, _|
+      State::RANDOM_TILES.each_key do |new_value|
         new_state_array = move_state.to_a.dup
         new_state_array[i] = new_value
         new_state = State.new(new_state_array)

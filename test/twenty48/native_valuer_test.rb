@@ -54,8 +54,8 @@ class NativeResolverValueTest < Twenty48NativeTest
   #   valuer = make_resolver(2, 4, 4)
   #
   #   # See notes in test_moves_to_definite_win_2x2_to_16_resolve_3 about why
-  #   # this state is an interesting one. The optimal action is to go left, which
-  #   # results in a win in 4 moves with probability 0.9.
+  #   # this state is an interesting one. The optimal action is to go left,
+  #   # which results in a win in 4 moves with probability 0.9.
   #   assert_close 0.9 * DISCOUNT**4, valuer.value(make_state([
   #     0, 1,
   #     2, 3

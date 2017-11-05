@@ -38,6 +38,7 @@ Style/Documentation:
 Metrics/AbcSize:
   Max: 30
   Exclude:
+    - 'bin/*'
     - 'test/**/*'
 
 Metrics/CyclomaticComplexity:
@@ -56,6 +57,13 @@ Metrics/ParameterLists:
 Metrics/MethodLength:
   Max: 25
   Exclude:
+    - 'bin/*'
+    - 'test/**/*'
+
+Metrics/BlockLength:
+  Max: 30
+  Exclude:
+    - 'bin/*'
     - 'test/**/*'
 
 Metrics/ClassLength:

@@ -349,6 +349,7 @@ module Twenty48
 
     def read_array_model(model_params)
       pathname = array_model_pathname(model_params)
+      # rubocop:disable Security/MarshalLoad --- assuming trusted data here
       bunzip(pathname) { |input| Marshal.load(input) }
     end
 

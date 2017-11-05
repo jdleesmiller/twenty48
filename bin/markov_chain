@@ -186,7 +186,7 @@ def setup_topological_sort(transitions)
     include TSort
     alias_method :tsort_each_node, :each_key
     def tsort_each_child(node0)
-      fetch(node0, {}).keys.each do |node1|
+      fetch(node0, {}).each_key do |node1|
         yield node1
       end
     end
@@ -229,8 +229,8 @@ end
 
 def find_absorbing_states(transitions)
   result = Set.new
-  transitions.each do |_state0, successors|
-    successors.each do |state1, _pr|
+  transitions.each_value do |successors|
+    successors.each_key do |state1|
       result << state1 unless transitions.key?(state1)
     end
   end

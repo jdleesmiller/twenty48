@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
 
   s.rdoc_options = [
     '--main',    'README.md',
-    '--title',   '#{s.full_name} Documentation'
+    '--title',   "#{s.full_name} Documentation"
   ]
   s.extra_rdoc_files << 'README.md'
 end

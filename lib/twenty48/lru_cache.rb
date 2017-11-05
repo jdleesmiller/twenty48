@@ -27,7 +27,6 @@ module Twenty48
       @data.delete(key)
       @data[key] = value
       @data.delete(@data.first[0]) while @data.size > @max_size
-      value
     end
 
     def [](key)

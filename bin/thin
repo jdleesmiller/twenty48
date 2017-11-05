@@ -55,9 +55,9 @@ Dir.glob(Twenty48::Storage::MODELS_GLOB).sort.each do |input_file|
   # If an action results in a deterministic successor state, that's also
   # interesting, but I don't see a way of exploiting it (unless there's only
   # one action, but it is covered by that case).
-  hash.each do |_state, actions|
+  hash.each_value do |actions|
     num_single_action_states += 1 if actions.size == 1
-    actions.each do |_action, successors|
+    actions.each_value do |successors|
       num_single_successor_actions += 1 if successors.size == 1
     end
   end

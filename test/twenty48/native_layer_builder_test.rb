@@ -60,7 +60,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
 
   def check_layer_part_names_to_6(names)
     names = names.sort_by { |name| [name.sum, name.max_value] }
-    assert_equal 3, names.count { |name| name.sum <= 6 }
+    assert_equal(3, names.count { |name| name.sum <= 6 })
     assert_equal 4, names[0].sum
     assert_equal 6, names[1].sum
     assert_equal 1, names[1].max_value
@@ -71,7 +71,7 @@ class NativeLayerBuilderTest < Twenty48NativeTest
 
   def check_layer_part_names_to_8(names)
     names = check_layer_part_names_to_6(names)
-    assert_equal 6, names.count { |name| name.sum <= 8 }
+    assert_equal(6, names.count { |name| name.sum <= 8 })
     assert_equal 8, names[3].sum
     assert_equal 1, names[3].max_value
     assert_equal 8, names[4].sum

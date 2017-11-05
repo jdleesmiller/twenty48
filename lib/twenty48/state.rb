@@ -178,7 +178,7 @@ module Twenty48
       new_states = []
       state_array.each.with_index do |value, i|
         next unless value.zero?
-        RANDOM_TILES.each do |new_value, _|
+        RANDOM_TILES.each_key do |new_value|
           new_state_array = state_array.dup
           new_state_array[i] = new_value
           new_states << self.class.new(new_state_array)

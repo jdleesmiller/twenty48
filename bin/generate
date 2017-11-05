@@ -60,7 +60,7 @@ def generate_from(builder, start_state)
 end
 
 board_size = 2
-RESOLVER_STRATEGIES.keys.each do |resolver_strategy_name, _|
+RESOLVER_STRATEGIES.each_key do |resolver_strategy_name|
   (2..7).each do |max_exponent|
     (0..[max_exponent - 1, 3].min).each do |max_resolve_depth|
       generate(Builder.new(board_size, max_exponent), resolver_strategy_name,
@@ -70,7 +70,7 @@ RESOLVER_STRATEGIES.keys.each do |resolver_strategy_name, _|
 end
 
 board_size = 3
-RESOLVER_STRATEGIES.keys.each do |resolver_strategy_name, _|
+RESOLVER_STRATEGIES.each_key do |resolver_strategy_name|
   (2..6).each do |max_exponent|
     (0..[max_exponent - 1, 3].min).each do |max_resolve_depth|
       next if resolver_strategy_name == :exact && (
@@ -82,7 +82,7 @@ RESOLVER_STRATEGIES.keys.each do |resolver_strategy_name, _|
 end
 
 # board_size = 4
-# RESOLVER_STRATEGIES.keys.each do |resolver_strategy_name, _|
+# RESOLVER_STRATEGIES.each_key do |resolver_strategy_name|
 #   (2..3).each do |max_exponent|
 #     (0..[max_exponent - 1, 3].min).to_a.reverse.each do |max_resolve_depth|
 #       next if resolver_strategy_name == :exact &&
