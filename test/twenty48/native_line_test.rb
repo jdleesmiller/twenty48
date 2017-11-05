@@ -18,7 +18,7 @@ class NativeLineTest < Twenty48NativeTest
   end
 
   def move(line_array)
-    make_line(line_array).move().to_a
+    make_line(line_array).move.to_a
   end
 
   def adjacent_pair?(line_array, value)

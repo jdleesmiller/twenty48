@@ -31,4 +31,4 @@ Rake::ExtensionTask.new(NAME) do |ext|
   ext.source_pattern = '*.{c,cxx}'
 end
 
-task default: [:compile, :test]
+task default: %i[compile test]

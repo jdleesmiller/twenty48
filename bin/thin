@@ -6,12 +6,12 @@ require_relative '../lib/twenty48'
 include Twenty48
 include Twenty48::ActionDeduplication
 
-puts %w(
+puts %w[
   board_size max_exponent resolve_strategy_name max_resolve_depth
   total_actions total_deduplicated_actions
   num_single_action_states
   num_single_successor_actions
-).join(',')
+].join(',')
 
 Dir.glob(Twenty48::Storage::MODELS_GLOB).sort.each do |input_file|
   model_params = Twenty48::Storage.model_params_from_pathname(input_file)

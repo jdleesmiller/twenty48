@@ -17,11 +17,11 @@ def build(board_size:, max_exponent:, max_depth:, max_states:)
     max_depth: max_depth
   )
   puts states_path
-#  if Dir.exist?(states_path)
-#    puts 'exists; skipping'
-#    return
-#  end
-#  FileUtils.mkdir_p states_path
+  #  if Dir.exist?(states_path)
+  #    puts 'exists; skipping'
+  #    return
+  #  end
+  #  FileUtils.mkdir_p states_path
 
   valuer = NativeValuer.create(
     board_size: board_size,
@@ -33,8 +33,8 @@ def build(board_size:, max_exponent:, max_depth:, max_states:)
     verbose: true)
   raise "ulimit -n too low: #{layer_builder.max_files}" if
     layer_builder.max_files < 8000
-#  layer_builder.build_start_state_layers
-#  layer_builder.build
+  #  layer_builder.build_start_state_layers
+  #  layer_builder.build
   layer_builder.prepare_to_restart_from(340)
   layer_builder.build(start_layer_sum: 340)
 end
@@ -52,7 +52,7 @@ end
 #     )
 #   end
 # end
-# 
+#
 # #
 # # 3x3
 # #
@@ -66,7 +66,7 @@ end
 #     )
 #   end
 # end
-# 
+#
 # #
 # # 4x4
 # #
@@ -82,7 +82,7 @@ end
 #     )
 #   end
 # end
-# 
+#
 # [4].each do |max_exponent|
 #   [0, 1].each do |max_depth|
 #     build(
@@ -93,7 +93,7 @@ end
 #     )
 #   end
 # end
-# 
+#
 # [5].each do |max_exponent|
 #   [0, 1].each do |max_depth|
 #     build(

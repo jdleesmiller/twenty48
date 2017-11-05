@@ -42,11 +42,11 @@ def build_graph(builder, resolver, solver)
       node_properties[:color] = :blue if resolver.win_states.member?(state)
 
       label_values = state.to_a.map do |cell_value|
-        if cell_value.positive?
-          string_value = format("%#{board_digits}d", 2**cell_value)
-        else
-          string_value = ' ' * board_digits
-        end
+        string_value = if cell_value.positive?
+                         format("%#{board_digits}d", 2**cell_value)
+                       else
+                         ' ' * board_digits
+                       end
         string_value.gsub(' ', '&nbsp;')
       end
 

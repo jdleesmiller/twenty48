@@ -28,7 +28,7 @@ require_relative 'twenty48/layer_builder'
 require_relative 'twenty48/layer_solver'
 
 module Twenty48
-  DIRECTIONS = [:left, :right, :up, :down].freeze
+  DIRECTIONS = %i[left right up down].freeze
 
   RESOLVER_STRATEGIES = {
     exact: ExactResolver,

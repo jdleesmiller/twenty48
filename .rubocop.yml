@@ -1,22 +1,22 @@
 AllCops:
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.4
 
-Style/AlignParameters:
+Layout/AlignParameters:
   EnforcedStyle: with_fixed_indentation
 
-Style/MultilineOperationIndentation:
+Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
-Style/FirstParameterIndentation:
+Layout/FirstParameterIndentation:
   EnforcedStyle: consistent
 
-Style/IndentArray:
+Layout/IndentArray:
   EnforcedStyle: consistent
 
-Style/IndentHash:
+Layout/IndentHash:
   EnforcedStyle: consistent
 
-Style/MultilineMethodCallIndentation:
+Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
 Style/NumericPredicate:
@@ -24,7 +24,11 @@ Style/NumericPredicate:
   # EnforcedStyle: comparison
 
 # rubocop 0.43 does not accept foo_bar0 or foo_bar_0.
-Style/VariableNumber:
+Naming/VariableNumber:
+  Enabled: False
+
+# Sometimes we want to write non-warnings to stderr when piping.
+Style/StderrPuts:
   Enabled: False
 
 Style/Documentation:

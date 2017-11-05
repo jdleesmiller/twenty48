@@ -5,10 +5,10 @@ require_relative '../lib/twenty48'
 
 include Twenty48
 
-column_names = Storage::SOLVER_PARAMS + %w(
+column_names = Storage::SOLVER_PARAMS + %w[
   states mean_successor_states median_successor_states max_successor_states
   bz2_size mean_start_state_value
-)
+]
 puts column_names.join(',')
 
 def count_successor_states(array_model)

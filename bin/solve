@@ -51,7 +51,7 @@ Dir.glob(Twenty48::Storage::ARRAY_MODELS_GLOB).sort.each do |input_file|
 
   puts 'DONE'
   CSV.open(output_file, 'w') do |csv|
-    csv << %w(state action value)
+    csv << %w[state action value]
     policy = solver.policy
     value = solver.value
     policy.keys.sort.each do |state|

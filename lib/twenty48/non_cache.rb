@@ -6,8 +6,7 @@ module Twenty48
   # bother with caching.
   #
   class NonCache
-    def initialize(max_size: 0)
-    end
+    def initialize(max_size: 0); end
 
     def hit_rate
       0

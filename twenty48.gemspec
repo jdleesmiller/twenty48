@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 # frozen_string_literal: true
 
 lib = File.expand_path('../lib/', __FILE__)
@@ -21,13 +20,13 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'parallel', '~> 1.10.0'
 
   s.add_development_dependency 'gemma', '~> 5.0.0'
-  s.add_development_dependency 'ruby-prof', '~> 0.15.9'
-  s.add_development_dependency 'rubocop', '~> 0.42.0'
   s.add_development_dependency 'rake-compiler', '~> 1.0.1'
+  s.add_development_dependency 'rubocop', '~> 0.51.0'
+  s.add_development_dependency 'ruby-prof', '~> 0.15.9'
 
   s.files = Dir.glob('{lib,bin}/**/*.rb') +
     Dir.glob('ext/**/*.{i,hpp,cxx,rb}') +
-    %w(README.md)
+    %w[README.md]
   s.extensions = Dir.glob('ext/**/extconf.rb')
   s.test_files  = Dir.glob('test/twenty48/*_test.rb')
   s.executables = Dir.glob('bin/*').map { |f| File.basename(f) }

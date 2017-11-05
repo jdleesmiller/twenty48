@@ -10,7 +10,7 @@ include Twenty48
 STATES_FOLDER = 'data/states'
 FileUtils.mkdir_p STATES_FOLDER
 
-puts %w(board_size max_exponent max_lose_depth max_win_depth states).join(',')
+puts %w[board_size max_exponent max_lose_depth max_win_depth states].join(',')
 
 def run(board_size, max_exponent, max_lose_depth, max_win_depth, max_states:)
   GC.start
