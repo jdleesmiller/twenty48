@@ -120,6 +120,10 @@ module Twenty48
     # ```
     #
     def canonicalize
+      canonicalize_candidates.min
+    end
+
+    def canonicalize_candidates
       horizontal_reflection = reflect_horizontally
       vertical_reflection = reflect_vertically
       transposition = transpose
@@ -129,7 +133,7 @@ module Twenty48
       anti_transposition = rotated_90.reflect_vertically # transpose rotated 180
       [self, horizontal_reflection, vertical_reflection,
        transposition, anti_transposition,
-       rotated_90, rotated_180, rotated_270].min
+       rotated_90, rotated_180, rotated_270]
     end
 
     #
@@ -218,6 +222,10 @@ module Twenty48
 
     def to_s
       to_a.to_s
+    end
+
+    def alt
+      to_a.map { |value| value == 0 ? '-' : 2**value }.join(' ')
     end
 
     def ==(other)

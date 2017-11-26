@@ -89,6 +89,185 @@ end
 # => 350 (348 + the two special states)
 
 #
+# The basic state space enumeration algorithm with canonicalization.
+#
+
+def find_canonicalized_start_states(board_size)
+  find_start_states(board_size).map(&:canonicalize).uniq
+end
+
+def enumerate(board_size, max_exponent)
+  # Open all of the possible canonicalized start states.
+  opened = find_canonicalized_start_states(board_size)
+  closed = Set[]
+
+  while opened.any?
+    # Treat opened as a stack, so this is a depth-first traversal.
+    state = opened.pop
+
+    # If we've already processed the state, or if this is
+    # a win or lose state, there's nothing more to do for it.
+    next if closed.member?(state)
+    next if state.win?(max_exponent) || state.lose?
+
+    # Process the state: open all of its possible canonicalized successors.
+    DIRECTIONS.each do |direction|
+      state.move(direction).random_successors.each do |successor|
+        opened << successor.canonicalize
+      end
+    end
+
+    closed << state
+  end
+
+  closed
+end
+
+# states = enumerate(2, 5)
+# states.sort.each do |state|
+#   p state
+# end
+# p states.size
+
+def enumerate_with_graph(board_size, max_exponent, cluster)
+  opened = find_canonicalized_start_states(board_size)
+  parents = Hash.new { |h, k| h[k] = [] }
+  closed = Set[]
+
+  graph = Graph.new
+
+  while opened.any?
+    state = opened.pop
+    next if closed.member?(state)
+    next if state.win?(max_exponent) || state.lose?
+
+    cluster_name = "#{state.sum}_#{2**state.max_value}" if cluster
+    node_properties = graph.add_node(Dot.node_name(state), cluster_name)
+    node_properties[:shape] = :record
+    node_properties[:label] = "{#{Dot.node_label(state, board_size)}}"
+
+    DIRECTIONS.each do |direction|
+      successors = state.move(direction).random_successors
+      successors.map(&:canonicalize).uniq.each do |successor|
+        parents[successor] << state
+        opened << successor
+      end
+    end
+
+    closed << state
+  end
+
+  graph.clusters.each_key do |name|
+    graph.cluster_labels[name] = name.sub('_', ' / ')
+  end
+
+  parents.each do |child, child_parents|
+    next unless graph.node?(Dot.node_name(child))
+    child_parents.uniq.each do |parent|
+      next if child == parent
+      graph.add_edge(Dot.node_name(parent), Dot.node_name(child))
+    end
+  end
+
+  puts 'digraph {'
+  puts '  node [fontname="Courier"];'
+  puts '  rankdir=LR;'
+  puts '  ranksep=1;'
+  puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
+  puts '}'
+end
+# enumerate_with_graph(2, 5, true)
+
+# exit
+
+#
+# Show canonical states for an example state.
+# I used this as the basis of 2x2_canonical.svg, which was hand drawn.
+#
+def draw_canonical_states(base_state)
+  graph = Graph.new
+  candidates = base_state.canonicalize_candidates
+  candidates.each do |state|
+    node_properties = graph.add_node(Dot.node_name(state))
+    node_properties[:shape] = :record
+    node_properties[:label] = "{#{Dot.node_label(state, 2)}}"
+  end
+
+  rotate = '⤴'
+  rotate2 = "#{rotate}&sup2;"
+  rotate3 = "#{rotate}&sup3;"
+  reflect_hz = '↔'
+  [
+    [0, 5, rotate],
+    [5, 6, rotate],
+    [6, 7, rotate],
+    [7, 0, rotate],
+    [0, 1, reflect_hz],
+    [0, 2, "#{rotate2} #{reflect_hz}"],
+    [0, 3, "#{rotate3} #{reflect_hz}"],
+    [0, 4, "#{rotate} #{reflect_hz}"]
+  ].each do |(i, j, label)|
+    edge_properties = graph.add_edge(
+      Dot.node_name(candidates[i]), Dot.node_name(candidates[j])
+    )
+    edge_properties[:label] = label
+  end
+
+  puts 'digraph {'
+  puts '  node [fontname="Courier"];'
+  puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
+  puts '}'
+end
+# draw_canonical_states(State.new([2, 3, 1, 0]))
+# puts State.new([2, 1, 1, 0]).canonicalize_candidates.uniq.sort
+
+def write_canonical_state_diagrams(base_state)
+  candidates = base_state.canonicalize_candidates
+  folder = '../jdleesmiller.github.io/assets/2048'
+  svgs = []
+  candidates.each do |state|
+    name = Dot.node_name(state)
+    dot = File.join(folder, "2x2_#{name}.dot")
+    svgs << "2x2_#{name}.svg"
+    graph = Graph.new
+    node_properties = graph.add_node(name)
+    node_properties[:shape] = :record
+    node_properties[:label] = "{#{Dot.node_label(state, 2)}}"
+    File.open(dot, 'w') do |file|
+      file.puts 'digraph {'
+      file.puts '  node [fontname="Courier"];'
+      file.puts '  rankdir=LR;'
+      file.puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
+      file.puts '}'
+    end
+  end
+  puts svgs.join(' ')
+end
+# write_canonical_state_diagrams(State.new([2, 3, 1, 0]))
+
+def write_canonical_state_table(base_state)
+  puts '<table>'
+  puts '<thead><tr><th>State</th><th>Number</th></tr></thead>'
+  puts '<tbody>'
+  candidates = base_state.canonicalize_candidates
+  canonical_state = candidates.min
+  candidates.each do |state|
+    name = Dot.node_name(state)
+    img = "<img src=\"/assets/2048/2x2_#{name}.svg\"" \
+      " alt=\"#{state.alt}\" style=\"height: 2em;\">"
+    nybbles = NativeState.create(state.to_a).get_nybbles.to_i
+    hex = format('<code>0x%04x</code>', nybbles)
+    hex = "<strong>#{hex}</strong>" if state == canonical_state
+    puts "<tr><td>#{img}</td><td>#{hex}</td></tr>"
+  end
+  puts '</tbody>'
+  puts '</table>'
+end
+# write_canonical_state_table(State.new([2, 3, 1, 0]))
+
+exit
+
+#
 # Number of start states: 4*C(C-1)
 #
 # puts 'Number of start states by board size:'

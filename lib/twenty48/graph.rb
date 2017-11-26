@@ -9,16 +9,23 @@ module Twenty48
       @nodes = {}
       @edges = {}
       @clusters = Hash.new { |h, k| h[k] = [] }
+      @cluster_labels = {}
     end
 
     attr_reader :nodes
     attr_reader :edges
+    attr_reader :clusters
+    attr_reader :cluster_labels
 
     def add_node(name, cluster = nil, properties = {})
-      raise 'node already added' if @nodes.key?(name)
+      raise 'node already added' if node?(name)
       @nodes[name] = properties
       @clusters[cluster] << name if cluster
       properties
+    end
+
+    def node?(name)
+      @nodes.key?(name)
     end
 
     def add_edge(node0_name, node1_name, properties = {})
@@ -42,7 +49,7 @@ module Twenty48
       cluster_dot = cluster_names.map do |cluster_name|
         node_names = @clusters[cluster_name]
         body = [
-          %(label="#{cluster_name}"),
+          %(label="#{cluster_labels[cluster_name] || cluster_name}"),
           'style=filled', 'color=grey95',
           'margin=16',
           node_names.map { |name| "#{name};" }.join(' ')

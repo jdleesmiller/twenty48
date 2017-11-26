@@ -6,10 +6,7 @@ require_relative '../lib/twenty48'
 max_states = 1000
 
 include Twenty48
-
-def node_name(state)
-  "s#{state.to_a.join('_')}"
-end
+include Twenty48::Dot
 
 def build_graph(builder, resolver, solver)
   graph = Graph.new
@@ -40,18 +37,7 @@ def build_graph(builder, resolver, solver)
       node_properties[:color] = :red if resolver.lose_state == state
       node_properties[:color] = :blue if resolver.win_states.member?(state)
 
-      label_values = state.to_a.map do |cell_value|
-        string_value = if cell_value.positive?
-                         format("%#{board_digits}d", 2**cell_value)
-                       else
-                         ' ' * board_digits
-                       end
-        string_value.gsub(' ', '&nbsp;')
-      end
-
-      board = label_values.each_slice(builder.board_size)
-        .map { |values| values.join('|') }
-        .join('}|{')
+      board = node_label(state)
       node_properties[:label] =
         "{{#{board}}|{#{optimal_action}}|{#{formatted_value}}}"
     end
