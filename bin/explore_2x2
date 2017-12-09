@@ -241,6 +241,14 @@ def write_state_diagram(state, digits = 2)
   "#{stem}.svg"
 end
 
+# write_state_diagram(State.new([
+#   2, 3, 4, 5,
+#   4, 5, 4, 5,
+#   5, 4, 5, 4,
+#   4, 5, 4, 5
+# ]), 2)
+# exit
+
 def write_canonical_state_diagrams(base_state)
   candidates = base_state.canonicalize_candidates
   svgs = []
