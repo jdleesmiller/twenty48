@@ -113,11 +113,11 @@ def enumerate(board_size, max_exponent)
     # Process the state: open all of its possible canonicalized successors.
     DIRECTIONS.each do |direction|
       state.move(direction).random_successors.each do |successor|
-        opened << successor.canonicalize
+        opened.push(successor.canonicalize)
       end
     end
 
-    closed << state
+    closed.add(state)
   end
 
   closed
@@ -221,29 +221,55 @@ end
 # draw_canonical_states(State.new([2, 3, 1, 0]))
 # puts State.new([2, 1, 1, 0]).canonicalize_candidates.uniq.sort
 
+def write_state_diagram(state, digits = 2)
+  folder = '../jdleesmiller.github.io/assets/2048'
+  name = Dot.node_name(state)
+  board_size = state.board_size
+  stem = "#{board_size}x#{board_size}_#{name}"
+  dot = File.join(folder, "#{stem}.dot")
+  graph = Graph.new
+  node_properties = graph.add_node(name)
+  node_properties[:shape] = :record
+  node_properties[:label] = "{#{Dot.node_label(state, digits)}}"
+  File.open(dot, 'w') do |file|
+    file.puts 'digraph {'
+    file.puts '  node [fontname="Courier"];'
+    file.puts '  rankdir=LR;'
+    file.puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
+    file.puts '}'
+  end
+  "#{stem}.svg"
+end
+
 def write_canonical_state_diagrams(base_state)
   candidates = base_state.canonicalize_candidates
-  folder = '../jdleesmiller.github.io/assets/2048'
   svgs = []
   candidates.each do |state|
-    name = Dot.node_name(state)
-    dot = File.join(folder, "2x2_#{name}.dot")
-    svgs << "2x2_#{name}.svg"
-    graph = Graph.new
-    node_properties = graph.add_node(name)
-    node_properties[:shape] = :record
-    node_properties[:label] = "{#{Dot.node_label(state, 2)}}"
-    File.open(dot, 'w') do |file|
-      file.puts 'digraph {'
-      file.puts '  node [fontname="Courier"];'
-      file.puts '  rankdir=LR;'
-      file.puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
-      file.puts '}'
-    end
+    svgs << write_state_diagram(state)
   end
   puts svgs.join(' ')
 end
 # write_canonical_state_diagrams(State.new([2, 3, 1, 0]))
+
+# puts([
+#   [0, 0, 1, 1],
+#   [0, 1, 2, 0],
+#   [0, 0, 1, 2],
+#   [0, 1, 1, 1],
+#   [0, 1, 2, 1],
+#   [0, 2, 2, 0],
+#   [0, 0, 2, 2]
+# ].map { |state| write_state_diagram(State.new(state)) }.join(' '))
+
+# state = NativeState.create([
+#   0, 2, 2, 11,
+#   0, 1, 3, 0,
+#   2, 0, 1, 0,
+#   0, 0, 0, 0
+# ])
+# p state.get_nybbles.to_s(16)
+# puts State.new(state.to_a).alt
+# puts write_state_diagram(state, 4)
 
 def write_canonical_state_table(base_state)
   puts '<table>'
