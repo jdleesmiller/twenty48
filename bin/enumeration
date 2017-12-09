@@ -1,0 +1,133 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+# Make CSVs and summary tables for where I've got to with enumerating states.
+#
+
+require 'csv'
+require 'erb'
+require 'fileutils'
+
+require_relative '../lib/twenty48'
+include Twenty48
+
+BOARD_SIZES = (2..4).to_a
+MAX_EXPONENTS = (3..11).to_a
+
+def number_with_comma(number)
+  number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
+end
+
+def write_layer_parts
+  CSV.open('data/enumeration/layer_parts.csv', 'w') do |csv|
+    csv << %w[board_size max_exponent layer_sum max_value num_states]
+
+    Dir.glob(Storage::LAYER_STATES_GLOB).sort.each do |states_path|
+      params = Storage.layer_states_params_from_pathname(states_path)
+      next unless params[:max_depth] == 0
+      $stderr.puts [Time.now, params].inspect
+      LayerPartInfoName.glob(states_path).each do |layer_part_info|
+        info_string = File.read(File.join(states_path, layer_part_info.to_s))
+        info = JSON.parse(info_string)
+        csv << [
+          params[:board_size],
+          params[:max_exponent],
+          layer_part_info.sum,
+          layer_part_info.max_value,
+          info['num_states']
+        ]
+      end
+    end
+  end
+end
+# write_layer_parts
+
+#
+# Count layer check files and compute a states per second number for the
+# blog post.
+#
+def count_layer_check_files
+  %w[01 02 03].map do |number|
+    folder = File.join('data', 'layer_check', "build-#{number}")
+    puts "CHECK #{folder}"
+    num_states = 0
+    LayerPartInfoName.glob(folder).each do |layer_part_info|
+      info_string = File.read(File.join(folder, layer_part_info.to_s))
+      info = JSON.parse(info_string)
+      num_states += info['num_states'].to_i
+    end
+    puts number_with_comma(num_states)
+    puts num_states / (30.0 * 24 * 3600)
+    num_states
+  end
+end
+# count_layer_check_files
+
+#
+# Write state summary table for blog post.
+#
+def write_summary_table
+  targets = [
+    [2, 5],
+    [3, 10],
+    [4, 6],
+    [4, 11]
+  ]
+
+  layers_truncated_total = CSV.read(
+    'data/combinatorics/layers_truncated_total.csv',
+    headers: true,
+    converters: :integer
+  )
+  bounds = targets.map do |board_size, max_exponent|
+    target_row = layers_truncated_total.find do |row|
+      row['board_size'] == board_size && row['max_exponent'] == max_exponent
+    end
+    target_row['total_states']
+  end
+  p bounds
+
+  layer_parts = CSV.read(
+    'data/enumeration/layer_parts.csv',
+    headers: true,
+    converters: :integer
+  )
+  actuals = targets.map do |board_size, max_exponent|
+    num_states = 0
+    layer_parts.each do |row|
+      next unless row['board_size'] == board_size
+      next unless row['max_exponent'] == max_exponent
+      num_states += row['num_states']
+    end
+    num_states + 2 # one for win, one for lose
+  end
+
+  data = targets.zip(bounds, actuals)
+  data[3][2] = nil # clear partial count for 4x4 to 2048
+
+  table_erb = <<~HTML
+    <table>
+      <thead>
+        <tr>
+          <th>Board Size</th>
+          <th>Maximum Tile</th>
+          <th>Combinatorics Bound</th>
+          <th>Actual</th>
+        </tr>
+      </thead>
+      <tbody><% data.each do |(board_size, max_exponent), bound, actual| %>
+        <tr>
+          <th><%= [board_size, board_size].join('x') %></th>
+          <th><%= 2**max_exponent %></th>
+          <td align="right"><%= number_with_comma(bound) %></td>
+          <td align="right"><%= actual ? number_with_comma(actual) : 'Unknown' %></td>
+        </tr>
+      <% end %></tbody>
+    </table>
+  HTML
+  b = binding
+  b.local_variable_set(:data, data)
+  puts ERB.new(table_erb).result(b)
+end
+write_summary_table
