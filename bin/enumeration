@@ -41,7 +41,7 @@ def write_layer_parts
     end
   end
 end
-# write_layer_parts
+write_layer_parts
 
 #
 # Count layer check files and compute a states per second number for the
@@ -62,7 +62,7 @@ def count_layer_check_files
     num_states
   end
 end
-# count_layer_check_files
+p count_layer_check_files
 
 #
 # Write state summary table for blog post.
@@ -86,7 +86,6 @@ def write_summary_table
     end
     target_row['total_states']
   end
-  p bounds
 
   layer_parts = CSV.read(
     'data/enumeration/layer_parts.csv',
