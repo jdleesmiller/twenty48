@@ -26,6 +26,17 @@ Files:
 - `data/combinatorics/plot_layers.R` --- plot for the layer state counts
 - `data/combinatorics/plot_totals.R` --- plot for the total state counts
 
+### 3. Number of States by Exhaustive Enumeration
+
+Blog post: http://jdlm.info/articles/2017/12/10/counting-states-enumeration-2048.html
+
+Files:
+
+- `bin/enumeration` --- utilities
+- `data/enumeration/enumeration.Rmd` --- plots
+- `ext/twenty48/layer_builder.hpp` --- main enumeration class
+- `ext/twenty48/state.hpp` --- main state class for bit bashing
+
 ## LICENSE
 
 (The MIT License)
