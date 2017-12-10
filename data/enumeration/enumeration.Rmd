@@ -22,7 +22,7 @@ subset(
 ```
 
 ```{r}
-plotLayerPartsSummary <- function (layerParts, xBreaks) {
+plotLayerPartsSummary <- function (layerParts, xBreaks, title = NULL) {
   ggplot(
     transform(
       layerParts,
@@ -33,7 +33,7 @@ plotLayerPartsSummary <- function (layerParts, xBreaks) {
     scale_x_continuous(breaks = xBreaks) +
     scale_y_continuous(
       labels = function (n) format(n, scientific = FALSE, big.mark = ',')) +
-    ggtitle('Number of States per Sum Layer') +
+    ggtitle(paste('Number of States by Tile Sum and Max Tile Value', title)) +
     xlab('Sum of Tiles in State') +
     ylab('Number of States')
 }
@@ -43,7 +43,8 @@ plotLayerPartsSummary <- function (layerParts, xBreaks) {
 local({
   g <- plotLayerPartsSummary(
     subset(layerParts, board_size == 3 & max_exponent == 10 & num_states > 0),
-    256 * seq(1, 6)
+    256 * seq(1, 6),
+    title = '(3x3 to 1024)'
   )
   svg('enumeration_3x3_to_1024.svg', width = 8, height = 4)
   print(g)
@@ -77,7 +78,7 @@ summary(partialParts)
 
 ```{r}
 local({
-  g <- plotLayerPartsSummary(partialParts, 32 * seq(1, 12))
+  g <- plotLayerPartsSummary(partialParts, 32 * seq(1, 12), title = '(4x4 incomplete)')
   svg('enumeration_4x4_to_2048_partial.svg', width = 8, height = 4)
   print(g)
   dev.off()
@@ -86,7 +87,7 @@ local({
 ```
 
 ```{r}
-plotLayerPartsLog <- function (layerParts, xBreaks) {
+plotLayerPartsLog <- function (layerParts, xBreaks, title = NULL) {
   layerPartsTotal <- aggregate(num_states ~ layer_sum, layerParts, sum)
   print(summary(layerPartsTotal))
   ggplot(
@@ -101,7 +102,7 @@ plotLayerPartsLog <- function (layerParts, xBreaks) {
     scale_y_continuous(
       labels = function (n) format(n, scientific = FALSE, big.mark = ','),
       trans = 'log10') +
-    ggtitle('Number of States per Sum Layer and Max Tile Value') +
+    ggtitle(paste('Number of States by Tile Sum and Max Tile Value', title)) +
     xlab('Sum of Tiles in State') +
     ylab('Number of States (Log Scale)')
 }
@@ -112,7 +113,8 @@ plotLayerPartsLog <- function (layerParts, xBreaks) {
 local({
   g <- plotLayerPartsLog(
     subset(partialParts, num_states > 0),
-    32 * seq(1, 12)
+    32 * seq(1, 12),
+    title = '(4x4 incomplete)'
   )
   svg('enumeration_4x4_to_2048_partial_log.svg', width = 8, height = 4)
   print(g)
