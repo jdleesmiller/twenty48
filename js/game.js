@@ -109,8 +109,10 @@ export default function Game (boardSize, maxExponent) {
       ))
     }
 
-    static reflectX (state) {
-      return state.reflectX()
+    transpose () {
+      return new State(this.values.map((_, index) =>
+        this.values[Point.fromIndex(index).transpose().toIndex()]
+      ))
     }
 
     move (direction) {
@@ -126,6 +128,8 @@ export default function Game (boardSize, maxExponent) {
           return this.transpose().move(DIRECTIONS.LEFT).transpose()
         case DIRECTIONS.DOWN:
           return this.transpose().move(DIRECTIONS.RIGHT).transpose()
+        default:
+          throw new Error('bad direction ' + direction)
       }
     }
 
@@ -191,4 +195,5 @@ export default function Game (boardSize, maxExponent) {
 
   this.State = State
   this.PolicyPlayer = PolicyPlayer
+  this.DIRECTIONS = DIRECTIONS
 }

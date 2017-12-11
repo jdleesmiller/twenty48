@@ -147,5 +147,445 @@ describe('Game', () => {
         ])
       })
     })
+
+    describe('move', () => {
+      it('moves left (2x2)', () => {
+        function assertMove (origin, destination) {
+          let originState = new GAME_2_5.State(origin)
+          let destinationState = new GAME_2_5.State(destination)
+          assertSameState(
+            originState.move(GAME_2_5.DIRECTIONS.LEFT),
+            destinationState)
+        }
+
+        assertMove([
+          0, 0,
+          0, 0
+        ], [
+          0, 0,
+          0, 0
+        ])
+
+        assertMove([
+          0, 1,
+          0, 0
+        ], [
+          1, 0,
+          0, 0
+        ])
+
+        assertMove([
+          0, 0,
+          0, 1
+        ], [
+          0, 0,
+          1, 0
+        ])
+
+        assertMove([
+          0, 0,
+          1, 0
+        ], [
+          0, 0,
+          1, 0
+        ])
+
+        assertMove([
+          0, 0,
+          1, 1
+        ], [
+          0, 0,
+          2, 0
+        ])
+
+        assertMove([
+          0, 1,
+          0, 1
+        ], [
+          1, 0,
+          1, 0
+        ])
+
+        assertMove([
+          1, 1,
+          0, 1
+        ], [
+          2, 0,
+          1, 0
+        ])
+
+        assertMove([
+          1, 1,
+          1, 1
+        ], [
+          2, 0,
+          2, 0
+        ])
+      })
+
+      it('moves right (2x2)', () => {
+        function assertMove (origin, destination) {
+          let originState = new GAME_2_5.State(origin)
+          let destinationState = new GAME_2_5.State(destination)
+          assertSameState(
+            originState.move(GAME_2_5.DIRECTIONS.RIGHT),
+            destinationState)
+        }
+
+        assertMove([
+          0, 0,
+          0, 0
+        ], [
+          0, 0,
+          0, 0
+        ])
+
+        assertMove([
+          0, 1,
+          0, 0
+        ], [
+          0, 1,
+          0, 0
+        ])
+
+        assertMove([
+          0, 0,
+          0, 1
+        ], [
+          0, 0,
+          0, 1
+        ])
+
+        assertMove([
+          0, 0,
+          1, 0
+        ], [
+          0, 0,
+          0, 1
+        ])
+
+        assertMove([
+          0, 0,
+          1, 1
+        ], [
+          0, 0,
+          0, 2
+        ])
+
+        assertMove([
+          0, 1,
+          0, 1
+        ], [
+          0, 1,
+          0, 1
+        ])
+
+        assertMove([
+          1, 1,
+          0, 1
+        ], [
+          0, 2,
+          0, 1
+        ])
+
+        assertMove([
+          1, 1,
+          1, 1
+        ], [
+          0, 2,
+          0, 2
+        ])
+      })
+
+      it('moves up (2x2)', () => {
+        function assertMove (origin, destination) {
+          let originState = new GAME_2_5.State(origin)
+          let destinationState = new GAME_2_5.State(destination)
+          assertSameState(
+            originState.move(GAME_2_5.DIRECTIONS.UP),
+            destinationState)
+        }
+
+        assertMove([
+          0, 0,
+          0, 0
+        ], [
+          0, 0,
+          0, 0
+        ])
+
+        assertMove([
+          0, 1,
+          0, 0
+        ], [
+          0, 1,
+          0, 0
+        ])
+
+        assertMove([
+          0, 0,
+          0, 1
+        ], [
+          0, 1,
+          0, 0
+        ])
+
+        assertMove([
+          0, 0,
+          1, 0
+        ], [
+          1, 0,
+          0, 0
+        ])
+
+        assertMove([
+          0, 0,
+          1, 1
+        ], [
+          1, 1,
+          0, 0
+        ])
+
+        assertMove([
+          0, 1,
+          0, 1
+        ], [
+          0, 2,
+          0, 0
+        ])
+
+        assertMove([
+          1, 1,
+          0, 1
+        ], [
+          1, 2,
+          0, 0
+        ])
+
+        assertMove([
+          1, 1,
+          1, 1
+        ], [
+          2, 2,
+          0, 0
+        ])
+      })
+
+      it('moves down (2x2)', () => {
+        function assertMove (origin, destination) {
+          let originState = new GAME_2_5.State(origin)
+          let destinationState = new GAME_2_5.State(destination)
+          assertSameState(
+            originState.move(GAME_2_5.DIRECTIONS.DOWN),
+            destinationState)
+        }
+
+        assertMove([
+          0, 0,
+          0, 0
+        ], [
+          0, 0,
+          0, 0
+        ])
+
+        assertMove([
+          0, 1,
+          0, 0
+        ], [
+          0, 0,
+          0, 1
+        ])
+
+        assertMove([
+          0, 0,
+          0, 1
+        ], [
+          0, 0,
+          0, 1
+        ])
+
+        assertMove([
+          0, 0,
+          1, 0
+        ], [
+          0, 0,
+          1, 0
+        ])
+
+        assertMove([
+          0, 0,
+          1, 1
+        ], [
+          0, 0,
+          1, 1
+        ])
+
+        assertMove([
+          0, 1,
+          0, 1
+        ], [
+          0, 0,
+          0, 2
+        ])
+
+        assertMove([
+          1, 1,
+          0, 1
+        ], [
+          0, 0,
+          1, 2
+        ])
+
+        assertMove([
+          1, 1,
+          1, 1
+        ], [
+          0, 0,
+          2, 2
+        ])
+      })
+
+      it('moves lines (4x4)', () => {
+        // Based on line_with_known_tests.rb
+        function moveLine (origin, destination) {
+          let originState = new GAME_4_11.State([
+            ...origin,
+            ...origin,
+            ...origin,
+            ...origin
+          ])
+          let destinationState = new GAME_4_11.State([
+            ...destination,
+            ...destination,
+            ...destination,
+            ...destination
+          ])
+          assertSameState(
+            destinationState,
+            originState.move(GAME_4_11.DIRECTIONS.LEFT))
+          assertSameState(
+            destinationState.reflectX(),
+            originState.reflectX().move(GAME_4_11.DIRECTIONS.RIGHT))
+          assertSameState(
+            destinationState.rotate90(),
+            originState.rotate90().move(GAME_4_11.DIRECTIONS.UP))
+          assertSameState(
+            destinationState.rotate90().rotate90().rotate90(),
+            originState.rotate90().rotate90().rotate90().move(
+              GAME_4_11.DIRECTIONS.DOWN))
+        }
+
+        // Leading 0
+        moveLine([0, 0, 0, 0], [0, 0, 0, 0])
+        moveLine([0, 0, 0, 1], [1, 0, 0, 0])
+        moveLine([0, 0, 0, 2], [2, 0, 0, 0])
+
+        moveLine([0, 0, 1, 0], [1, 0, 0, 0])
+        moveLine([0, 0, 1, 1], [2, 0, 0, 0])
+        moveLine([0, 0, 1, 2], [1, 2, 0, 0])
+
+        moveLine([0, 0, 2, 0], [2, 0, 0, 0])
+        moveLine([0, 0, 2, 1], [2, 1, 0, 0])
+        moveLine([0, 0, 2, 2], [3, 0, 0, 0])
+
+        moveLine([0, 1, 0, 0], [1, 0, 0, 0])
+        moveLine([0, 1, 0, 1], [2, 0, 0, 0])
+        moveLine([0, 1, 0, 2], [1, 2, 0, 0])
+
+        moveLine([0, 1, 1, 0], [2, 0, 0, 0])
+        moveLine([0, 1, 1, 1], [2, 1, 0, 0])
+        moveLine([0, 1, 1, 2], [2, 2, 0, 0])
+
+        moveLine([0, 1, 2, 0], [1, 2, 0, 0])
+        moveLine([0, 1, 2, 1], [1, 2, 1, 0])
+        moveLine([0, 1, 2, 2], [1, 3, 0, 0])
+
+        moveLine([0, 2, 0, 0], [2, 0, 0, 0])
+        moveLine([0, 2, 0, 1], [2, 1, 0, 0])
+        moveLine([0, 2, 0, 2], [3, 0, 0, 0])
+
+        moveLine([0, 2, 1, 0], [2, 1, 0, 0])
+        moveLine([0, 2, 1, 1], [2, 2, 0, 0])
+        moveLine([0, 2, 1, 2], [2, 1, 2, 0])
+
+        moveLine([0, 2, 2, 0], [3, 0, 0, 0])
+        moveLine([0, 2, 2, 1], [3, 1, 0, 0])
+        moveLine([0, 2, 2, 2], [3, 2, 0, 0])
+
+        // # Leading 1
+        moveLine([1, 0, 0, 0], [1, 0, 0, 0])
+        moveLine([1, 0, 0, 1], [2, 0, 0, 0])
+        moveLine([1, 0, 0, 2], [1, 2, 0, 0])
+
+        moveLine([1, 0, 1, 0], [2, 0, 0, 0])
+        moveLine([1, 0, 1, 1], [2, 1, 0, 0])
+        moveLine([1, 0, 1, 2], [2, 2, 0, 0])
+
+        moveLine([1, 0, 2, 0], [1, 2, 0, 0])
+        moveLine([1, 0, 2, 1], [1, 2, 1, 0])
+        moveLine([1, 0, 2, 2], [1, 3, 0, 0])
+
+        moveLine([1, 1, 0, 0], [2, 0, 0, 0])
+        moveLine([1, 1, 0, 1], [2, 1, 0, 0])
+        moveLine([1, 1, 0, 2], [2, 2, 0, 0])
+
+        moveLine([1, 1, 1, 0], [2, 1, 0, 0])
+        moveLine([1, 1, 1, 1], [2, 2, 0, 0])
+        moveLine([1, 1, 1, 2], [2, 1, 2, 0])
+
+        moveLine([1, 1, 2, 0], [2, 2, 0, 0])
+        moveLine([1, 1, 2, 1], [2, 2, 1, 0])
+        moveLine([1, 1, 2, 2], [2, 3, 0, 0])
+
+        moveLine([1, 2, 0, 0], [1, 2, 0, 0])
+        moveLine([1, 2, 0, 1], [1, 2, 1, 0])
+        moveLine([1, 2, 0, 2], [1, 3, 0, 0])
+
+        moveLine([1, 2, 1, 0], [1, 2, 1, 0])
+        moveLine([1, 2, 1, 1], [1, 2, 2, 0])
+        moveLine([1, 2, 1, 2], [1, 2, 1, 2])
+
+        moveLine([1, 2, 2, 0], [1, 3, 0, 0])
+        moveLine([1, 2, 2, 1], [1, 3, 1, 0])
+        moveLine([1, 2, 2, 2], [1, 3, 2, 0])
+
+        // # Leading 2
+        moveLine([2, 0, 0, 0], [2, 0, 0, 0])
+        moveLine([2, 0, 0, 1], [2, 1, 0, 0])
+        moveLine([2, 0, 0, 2], [3, 0, 0, 0])
+
+        moveLine([2, 0, 1, 0], [2, 1, 0, 0])
+        moveLine([2, 0, 1, 1], [2, 2, 0, 0])
+        moveLine([2, 0, 1, 2], [2, 1, 2, 0])
+
+        moveLine([2, 0, 2, 0], [3, 0, 0, 0])
+        moveLine([2, 0, 2, 1], [3, 1, 0, 0])
+        moveLine([2, 0, 2, 2], [3, 2, 0, 0])
+
+        moveLine([2, 1, 0, 0], [2, 1, 0, 0])
+        moveLine([2, 1, 0, 1], [2, 2, 0, 0])
+        moveLine([2, 1, 0, 2], [2, 1, 2, 0])
+
+        moveLine([2, 1, 1, 0], [2, 2, 0, 0])
+        moveLine([2, 1, 1, 1], [2, 2, 1, 0])
+        moveLine([2, 1, 1, 2], [2, 2, 2, 0])
+
+        moveLine([2, 1, 2, 0], [2, 1, 2, 0])
+        moveLine([2, 1, 2, 1], [2, 1, 2, 1])
+        moveLine([2, 1, 2, 2], [2, 1, 3, 0])
+
+        moveLine([2, 2, 0, 0], [3, 0, 0, 0])
+        moveLine([2, 2, 0, 1], [3, 1, 0, 0])
+        moveLine([2, 2, 0, 2], [3, 2, 0, 0])
+
+        moveLine([2, 2, 1, 0], [3, 1, 0, 0])
+        moveLine([2, 2, 1, 1], [3, 2, 0, 0])
+        moveLine([2, 2, 1, 2], [3, 1, 2, 0])
+
+        moveLine([2, 2, 2, 0], [3, 2, 0, 0])
+        moveLine([2, 2, 2, 1], [3, 2, 1, 0])
+        moveLine([2, 2, 2, 2], [3, 3, 0, 0])
+      })
+    })
   })
 })
