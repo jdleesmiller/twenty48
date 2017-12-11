@@ -73,6 +73,19 @@ export default function Game (boardSize, maxExponent) {
     }
   }
 
+  // TODO: these will need to be invertible
+  const TRANSFORMS = (() => {
+    let rotations = [
+      (state) => state,
+      (state) => state.rotate90(),
+      (state) => state.rotate90().rotate90(),
+      (state) => state.rotate90().rotate90().rotate90()]
+    let reflections = rotations.map((rotation) => {
+      return (state) => rotation(state).reflectX()
+    })
+    return [...rotations, ...reflections]
+  })()
+
   /**
    * A board configuration.
    */
@@ -87,14 +100,12 @@ export default function Game (boardSize, maxExponent) {
       ))
     }
 
+    getCanonicalTransform () {
+      return _.minBy(TRANSFORMS, (transform) => transform(this).toString())
+    }
+
     canonicalize () {
-      let rotations = [this]
-      rotations.push(rotations[0].rotate90())
-      rotations.push(rotations[1].rotate90())
-      rotations.push(rotations[2].rotate90())
-      let reflections = rotations.map(State.reflectX)
-      let candidates = [...rotations, ...reflections]
-      return _.minBy(candidates, State.toString)
+      return this.getCanonicalTransform()(this)
     }
 
     rotate90 () {
