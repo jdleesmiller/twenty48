@@ -144,6 +144,40 @@ export default function Game (boardSize, maxExponent) {
       }
     }
 
+    getAvailableCellIndexes () {
+      return this.values.reduce((available, value, index) => {
+        if (value === 0) {
+          available.push(index)
+        }
+        return available
+      }, [])
+    }
+
+    placeRandomTile () {
+      let availableCellIndexes = this.getAvailableCellIndexes()
+      if (availableCellIndexes.length === 0) return this
+      let newValues = this.values.slice()
+      newValues[_.sample(availableCellIndexes)] = Math.random() < 0.1 ? 2 : 1
+      return new State(newValues)
+    }
+
+    countAvailableCells () {
+      return this.getAvailableCellIndexes().length
+    }
+
+    isWin () {
+      return this.values.some(value => value >= maxExponent)
+    }
+
+    isLose () {
+      return this.countAvailableCells() === boardSize * boardSize || (
+        !this.isWin() &&
+        _.isEqual(this.values, this.move(DIRECTIONS.LEFT).values) &&
+        _.isEqual(this.values, this.move(DIRECTIONS.RIGHT).values) &&
+        _.isEqual(this.values, this.move(DIRECTIONS.UP).values) &&
+        _.isEqual(this.values, this.move(DIRECTIONS.DOWN).values))
+    }
+
     toString () {
       return this.values.map(function (value) {
         return value.toString(16)

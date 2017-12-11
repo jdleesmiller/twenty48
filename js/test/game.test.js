@@ -1,6 +1,7 @@
 /* global describe, it */
 
 import assert from 'assert'
+import _ from 'lodash'
 import Game from '../game'
 
 function assertSameState (expected, observed) {
@@ -145,6 +146,73 @@ describe('Game', () => {
           3, 2,
           1, 0
         ])
+      })
+    })
+
+    describe('getAvailableCellIndexes / countAvailableCells', () => {
+      it('returns available cell indexes', () => {
+        function assertAvailable (values, indexes) {
+          let state = new GAME_2_5.State(values)
+          assert.deepEqual(state.getAvailableCellIndexes(), indexes)
+          assert.equal(state.countAvailableCells(), indexes.length)
+        }
+        assertAvailable([0, 0, 0, 0], [0, 1, 2, 3])
+        assertAvailable([1, 0, 0, 0], [1, 2, 3])
+        assertAvailable([0, 1, 0, 0], [0, 2, 3])
+        assertAvailable([0, 0, 1, 0], [0, 1, 3])
+        assertAvailable([0, 0, 0, 1], [0, 1, 2])
+        assertAvailable([1, 2, 0, 0], [2, 3])
+        assertAvailable([0, 1, 2, 0], [0, 3])
+        assertAvailable([0, 0, 1, 2], [0, 1])
+        assertAvailable([1, 2, 3, 0], [3])
+        assertAvailable([0, 1, 2, 3], [0])
+        assertAvailable([1, 2, 3, 4], [])
+      })
+    })
+
+    describe('isWin', () => {
+      it('detects wins', () => {
+        function assertWin (values, isWin) {
+          let state = new GAME_2_5.State(values)
+          assert.equal(state.isWin(), isWin)
+        }
+
+        assertWin([0, 0, 0, 5], true)
+        assertWin([1, 2, 3, 5], true)
+        assertWin([0, 0, 0, 4], false)
+      })
+    })
+
+    describe('isLose', () => {
+      it('detects losses', () => {
+        function assertLose (values, isLose) {
+          let state = new GAME_2_5.State(values)
+          assert.equal(state.isLose(), isLose)
+        }
+
+        assertLose([0, 0, 0, 0], true) // special 'lose' state
+        assertLose([0, 0, 0, 1], false)
+        assertLose([1, 1, 1, 1], false)
+        assertLose([1, 2, 3, 4], true)
+        assertLose([1, 2, 3, 5], false) // we've won
+      })
+    })
+
+    describe('placeRandomTile', () => {
+      it('places a at random in an available cell', () => {
+        function assertRandomTileIn (origin, destinations) {
+          let originState = new GAME_2_5.State(origin)
+          _.times(50, () => {
+            let resultValues = originState.placeRandomTile().values
+            assert(destinations.some(values => _.isEqual(values, resultValues)))
+          })
+        }
+
+        assertRandomTileIn([0, 1, 1, 1], [[1, 1, 1, 1], [2, 1, 1, 1]])
+        assertRandomTileIn([1, 1, 1, 0], [[1, 1, 1, 1], [1, 1, 1, 2]])
+        assertRandomTileIn([1, 0, 0, 1], [
+          [1, 0, 1, 1], [1, 0, 2, 1],
+          [1, 1, 0, 1], [1, 2, 0, 1]])
       })
     })
 
