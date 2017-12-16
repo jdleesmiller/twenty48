@@ -57,6 +57,10 @@ export default function makeState (boardSize, maxExponent) {
       this.tiles = tiles
     }
 
+    static newEmpty () {
+      return State.fromValues(new Array(boardSize * boardSize).fill(0))
+    }
+
     static fromValues (values) {
       let tiles = values.map((value) => value === 0 ? null : new Tile(value))
       return new State(_.chunk(tiles, boardSize))

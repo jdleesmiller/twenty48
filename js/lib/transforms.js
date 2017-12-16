@@ -1,3 +1,5 @@
+import DIRECTIONS from './directions'
+
 export default function makeTransforms (boardSize) {
   /**
    * Coordinates for a cell on the board.
@@ -21,15 +23,32 @@ export default function makeTransforms (boardSize) {
 
   class Transform {
     apply (point) { return point }
-    unapply (point) { return this.apply(point) }
+    invertAction (action) { return action }
   }
 
   class Transpose extends Transform {
     apply (point) { return new Point(point.j, point.i) }
+
+    invertAction (action) {
+      switch (action) {
+        case DIRECTIONS.LEFT: return DIRECTIONS.UP
+        case DIRECTIONS.RIGHT: return DIRECTIONS.DOWN
+        case DIRECTIONS.UP: return DIRECTIONS.LEFT
+        case DIRECTIONS.DOWN: return DIRECTIONS.RIGHT
+      }
+    }
   }
 
   class ReflectX extends Transform {
     apply (point) { return new Point(point.i, boardSize - 1 - point.j) }
+
+    invertAction (action) {
+      switch (action) {
+        case DIRECTIONS.LEFT: return DIRECTIONS.RIGHT
+        case DIRECTIONS.RIGHT: return DIRECTIONS.LEFT
+        default: return action
+      }
+    }
   }
 
   class Composition extends Transform {
@@ -43,10 +62,10 @@ export default function makeTransforms (boardSize) {
         (result, transform) => transform.apply(result), point)
     }
 
-    unapply (point) {
+    invertAction (action) {
       let reversedTransforms = this.transforms.slice().reverse()
       return reversedTransforms.reduce(
-        (result, transform) => transform.unapply(result), point)
+        (result, transform) => transform.invertAction(result), action)
     }
   }
 

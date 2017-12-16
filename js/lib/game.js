@@ -1,11 +1,11 @@
 import * as d3 from 'd3'
 import MersenneTwister from 'mersenne-twister'
 
-import DIRECTIONS from './directions'
 import makeState from './state'
 
 export default function Game (boardSize, maxExponent) {
-  const generator = new MersenneTwister(42)
+  // win: 47, lose quickly: 43
+  const generator = new MersenneTwister(47)
   const State = makeState(boardSize, maxExponent)
 
   class Policy {
@@ -13,18 +13,14 @@ export default function Game (boardSize, maxExponent) {
       this.actionValues = actionValues
     }
 
-    getAction (state) {
-      return this.getActionCanonicalized(state.canonicalize())
+    getAction (canonicalState) {
+      return this.actionValues[canonicalState.toString()].action
     }
 
-    getActionCanonicalized (state) {
-      return this.actionValues[state.toString()].action
-    }
-
-    static newFromCsv (data) {
+    static fromCsv (data) {
       let actionValues = {}
       data.forEach(function (row) {
-        let state = State.newFromValueArrayString(row.state).toString()
+        let state = State.fromValues(JSON.parse(row.state)).toString()
         actionValues[state] = { action: row.action, value: row.value }
       })
       return new Policy(actionValues)
@@ -71,14 +67,16 @@ export default function Game (boardSize, maxExponent) {
   }
 
   class PolicyPlayer {
-    constructor (container) {
+    constructor (container, policyData) {
       this.container = container
+      this.policy = Policy.fromCsv(policyData)
+
       this.svg = container.append('svg')
         .attr('width', BOARD_PX)
         .attr('height', BOARD_PX)
       this.drawBackground()
       this.board = this.svg.append('svg')
-      this.state = State.fromValues([0, 0, 2, 1])
+      this.state = State.newEmpty()
     }
 
     drawBackground () {
@@ -165,8 +163,6 @@ export default function Game (boardSize, maxExponent) {
     }
 
     update () {
-      console.log(this.getDisplayTiles())
-
       var t = d3.transition().duration(300)
       let tiles = this.board.selectAll('svg.tile')
         .data(this.getDisplayTiles(), DisplayTile.key)
@@ -174,59 +170,30 @@ export default function Game (boardSize, maxExponent) {
       return t
     }
 
-    run (data) {
-      let steps = [
-        () => { this.state.move(DIRECTIONS.UP) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.RIGHT) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.UP) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.RIGHT) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.DOWN) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.DOWN) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.RIGHT) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.UP) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.LEFT) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.UP) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.LEFT) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.LEFT) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.UP) },
-        () => { this.state.placeRandomTile(generator) },
-        () => { this.state.move(DIRECTIONS.LEFT) },
-        () => { this.state.placeRandomTile(generator) }
-      ]
+    run () {
+      this.state.placeRandomTile(generator)
+      this.state.placeRandomTile(generator)
 
-      let i = 0
       let step = () => {
         this.update().on('end', () => {
-          if (i >= steps.length) return
-          steps[i]()
-          i += 1
-          setTimeout(step, 0)
+          if (this.state.isWin() || this.state.isLose()) return
+
+          let canonicalTransform = this.state.getCanonicalTransform()
+          let canonicalState =
+            this.state.copy().applyTransform(canonicalTransform)
+          let canonicalAction = this.policy.getAction(canonicalState)
+          let action = canonicalTransform.invertAction(canonicalAction)
+          this.state.move(action)
+
+          this.update().on('end', () => {
+            this.state.placeRandomTile(generator)
+            setTimeout(step, 0)
+          })
         })
       }
       step()
-
-      // let policy = Policy.newFromCsv(data)
-      // console.log(policy)
-      // let state = new State([0, 0, 2, 1])
-      // console.log(state.toString())
-      // console.log(state.canonicalize().toString())
-      // console.log(policy.getAction(state))
-      // console.log(state.move('left').toString())
     }
   }
 
-  this.State = State
   this.PolicyPlayer = PolicyPlayer
 }
