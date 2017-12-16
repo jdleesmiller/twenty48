@@ -1,6 +1,9 @@
 /* global describe, it */
 
 import assert from 'assert'
+import _ from 'lodash'
+import MersenneTwister from 'mersenne-twister'
+
 import DIRECTIONS from '../lib/directions'
 import makeState from '../lib/state'
 
@@ -209,6 +212,26 @@ describe('State', () => {
       assertLose([1, 1, 1, 1], false)
       assertLose([1, 2, 3, 4], true)
       assertLose([1, 2, 3, 5], false) // we've won
+    })
+  })
+
+  describe('placeRandomTile', () => {
+    it('places a at random in an available cell', () => {
+      let generator = new MersenneTwister()
+      function assertRandomTileIn (origin, destinations) {
+        let originState = newState(origin)
+        _.times(50, () => {
+          let resultValues =
+            originState.copy().placeRandomTile(generator).getValues()
+          assert(destinations.some(values => _.isEqual(values, resultValues)))
+        })
+      }
+
+      assertRandomTileIn([0, 1, 1, 1], [[1, 1, 1, 1], [2, 1, 1, 1]])
+      assertRandomTileIn([1, 1, 1, 0], [[1, 1, 1, 1], [1, 1, 1, 2]])
+      assertRandomTileIn([1, 0, 0, 1], [
+        [1, 0, 1, 1], [1, 0, 2, 1],
+        [1, 1, 0, 1], [1, 2, 0, 1]])
     })
   })
 

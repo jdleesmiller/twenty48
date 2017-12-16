@@ -14,7 +14,7 @@ function moveLineLeft (line) {
     if (!tile) continue
 
     if (done > merged && line[done - 1].isSame(tile)) {
-      line[done - 1].merge()
+      line[done - 1] = tile.merge()
       line[i] = null
       merged = done
     } else {
@@ -34,21 +34,21 @@ export default function makeState (boardSize, maxExponent) {
   const INDEXES = _.times(boardSize) // [0, 1, ..., boardSize - 1]
   const POINTS = _.flatten(INDEXES.map(i => INDEXES.map(j => new Point(i, j))))
 
+  let tileId = 0
+
   class Tile {
     constructor (value) {
       this.value = value
+      this.id = ++tileId
     }
 
     isSame (other) {
       return other && this.value === other.value
     }
 
-    merge () {
+    merge (tile) {
       this.value += 1
-    }
-
-    getDisplayValue () {
-      return Math.pow(2, this.value)
+      return this
     }
   }
 
@@ -152,6 +152,17 @@ export default function makeState (boardSize, maxExponent) {
 
     countAvailableCells () {
       return this.getAvailableCellIndexes().length
+    }
+
+    placeRandomTile (generator) {
+      let availableCellIndexes = this.getAvailableCellIndexes()
+      if (availableCellIndexes.length > 0) {
+        let index = generator.random_int() % availableCellIndexes.length
+        let point = Point.fromIndex(availableCellIndexes[index])
+        let tile = new Tile(generator.random() < 0.1 ? 2 : 1)
+        this.setTile(point, tile)
+      }
+      return this
     }
 
     isEqual (other) {

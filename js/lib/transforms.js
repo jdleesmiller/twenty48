@@ -11,12 +11,12 @@ export default function makeTransforms (boardSize) {
     // toIndex () {
     //   return boardSize * this.i + this.j
     // }
-    //
-    // static fromIndex (index) {
-    //   let i = Math.floor(index / boardSize)
-    //   let j = index % boardSize
-    //   return new Point(i, j, boardSize)
-    // }
+
+    static fromIndex (index) {
+      let i = Math.floor(index / boardSize)
+      let j = index % boardSize
+      return new Point(i, j)
+    }
   }
 
   class Transform {
