@@ -208,13 +208,13 @@ module Twenty48
         vbyte_reader = VByteReader.new(input_pathname, offset, previous,
           batch_size)
         NativeLayerBuilder.create(
-          board_size, vbyte_reader, max_value,
+          board_size, max_value,
           layer_fragment_pathname(sum, max_value, 1, 0, index),
           layer_fragment_pathname(sum, max_value, 1, 1, index),
           layer_fragment_pathname(sum, max_value, 2, 0, index),
           layer_fragment_pathname(sum, max_value, 2, 1, index),
           valuer
-        )
+        ).expand_all(vbyte_reader)
         STDOUT.write('.') if @verbose
         GC.start
       end

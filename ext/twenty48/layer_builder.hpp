@@ -22,30 +22,35 @@ namespace twenty48 {
     typedef std::vector<state_t<size> > state_vector_t;
     typedef btree::btree_set<state_t<size> > state_set_t;
 
-    layer_builder_t(twenty48::vbyte_reader_t &vbyte_reader,
+    layer_builder_t(
       uint8_t input_max_value,
       const char *pathname_1_0, const char *pathname_1_1,
       const char *pathname_2_0, const char *pathname_2_1,
-      const valuer_t<size> &valuer)
-      : input_max_value(input_max_value), valuer(valuer)
-    {
+      const valuer_t<size> &valuer) :
+      input_max_value(input_max_value),
+      pathname_1_0(pathname_1_0), pathname_1_1(pathname_1_1),
+      pathname_2_0(pathname_2_0), pathname_2_1(pathname_2_1),
+      valuer(valuer) { }
+
+    void expand_all(twenty48::vbyte_reader_t &vbyte_reader) {
       for (;;) {
         uint64_t nybbles = vbyte_reader.read();
         if (nybbles == 0) break;
         expand(state_t<size>(nybbles));
       }
-      write_states(pathname_1_0, output_1_0);
-      output_1_0.clear();
-      write_states(pathname_1_1, output_1_1);
-      output_1_1.clear();
-      write_states(pathname_2_0, output_2_0);
-      output_2_0.clear();
-      write_states(pathname_2_1, output_2_1);
-      output_2_1.clear();
+      write_all_states();
+    }
+
+    void expand_with_policy(twenty48::vbyte_reader_t &vbyte_reader) {
+      // TODO
     }
 
   private:
     uint8_t input_max_value;
+    std::string pathname_1_0;
+    std::string pathname_1_1;
+    std::string pathname_2_0;
+    std::string pathname_2_1;
     valuer_t<size> valuer;
     state_set_t output_1_0;
     state_set_t output_1_1;
@@ -91,6 +96,17 @@ namespace twenty48 {
           output_2_1.insert(successor);
         }
       }
+    }
+
+    void write_all_states() {
+      write_states(pathname_1_0.c_str(), output_1_0);
+      output_1_0.clear();
+      write_states(pathname_1_1.c_str(), output_1_1);
+      output_1_1.clear();
+      write_states(pathname_2_0.c_str(), output_2_0);
+      output_2_0.clear();
+      write_states(pathname_2_1.c_str(), output_2_1);
+      output_2_1.clear();
     }
 
     void write_states(const char *pathname, const state_set_t &layer) const {
