@@ -14,48 +14,43 @@ module Twenty48
     def convert_layers_to_finite_mdp_model_with_policy(
       board_size, max_exponent, discount, states_folder, policy_folder
     )
-      layer_part_names = LayerPartName.glob(states_folder)
-      policy_part_names = LayerPartPolicyName.glob(policy_folder)
-
-      if layer_part_names.size != policy_part_names.size
-        raise 'state / policy size mismatch'
-      end
-
       lose_state = State.new([0] * board_size**2)
       win_state = State.new([0] * (board_size**2 - 1) + [max_exponent])
-      rows = [
-        [lose_state, :down, lose_state, 1.0, 0.0],
-        [win_state, :up, win_state, 1.0, 1.0 - discount]
-      ]
 
-      layer_part_names.zip(policy_part_names).each do |layer_name, policy_name|
-        states = layer_name.read_states(board_size, folder: states_folder)
-        policy = PolicyReader.read(policy_name.in(policy_folder), states.size)
-        states.zip(policy).each do |state, action|
-          move_state = state.move(action)
-          move_state.random_transitions.each do |successor, pr|
-            successor = State.new(successor.to_a)
+      model = Hash.new do |h1, state|
+        h1[state] = Hash.new do |h2, action|
+          h2[action] = Hash.new do |h3, successor|
+            h3[successor] = [0.0, 0.0]
+          end
+        end
+      end
+
+      model[lose_state][:down][lose_state] = [1.0, 0.0]
+      model[win_state][:down][win_state] = [1.0, 1.0 - discount]
+
+      LayerPartName.glob(states_folder).each do |part|
+        states = part.read_states(board_size, folder: states_folder)
+        policy = PolicyReader.read(LayerPartPolicyName.new(
+          sum: part.sum, max_value: part.max_value
+        ).in(policy_folder), states.size)
+        states.zip(policy).each do |native_state, action|
+          state = State.new(native_state.to_a)
+          move_state = native_state.move(action)
+          move_state.random_transitions.each do |native_successor, pr|
+            successor = State.new(native_successor.to_a)
             if successor.win?(max_exponent)
               successor = win_state
             elsif successor.lose?
               successor = lose_state
             end
-            rows << [
-              State.new(state.to_a), DIRECTIONS[action], successor, pr, 0.0
-            ]
+            model[state][DIRECTIONS[action]][successor][0] += pr
           end
         end
       end
 
-      # We can end up with multiple transitions to the same state; handle that
-      # here by merging together such rows.
-      rows = rows.group_by { |row| row[0...3] }.map do |sas, sas_rows|
-        total_pr = sas_rows.map { |_, _, _, pr, _| pr }.sum
-        max_reward = sas_rows.map { |_, _, _, _, reward| reward }.max
-        sas + [total_pr, max_reward]
-      end
-
-      FiniteMDP::TableModel.new(rows)
+      hash_model = FiniteMDP::HashModel.new(model)
+      hash_model.check_transition_probabilities_sum
+      hash_model
     end
   end
 end
