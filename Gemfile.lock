@@ -7,14 +7,14 @@ PATH
   remote: .
   specs:
     twenty48 (0.0.1)
-      finite_mdp (~> 0.3.0)
+      finite_mdp (~> 0.4.0)
       parallel (~> 1.10.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
     ast (2.3.0)
-    finite_mdp (0.3.0)
+    finite_mdp (0.4.0)
       narray (~> 0.6)
     gemma (5.0.0)
       highline (>= 1.6.21)
