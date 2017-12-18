@@ -227,4 +227,18 @@ module Twenty48
   class StateValueMap4
     include NativeStateValueMap
   end
+
+  #
+  # Read packed policy files.
+  #
+  class PolicyReader
+    #
+    # Read full policy into array.
+    #
+    def self.read(pathname, num_states, skip: 0)
+      reader = PolicyReader.new(pathname)
+      reader.skip skip
+      Array.new(num_states - skip) { reader.read }
+    end
+  end
 end

@@ -9,6 +9,8 @@
 #include "valuer.hpp"
 #include "vbyte_reader.hpp"
 #include "vbyte_writer.hpp"
+#include "policy_reader.hpp"
+#include "policy_writer.hpp"
 
 namespace twenty48 {
   /**
@@ -41,8 +43,22 @@ namespace twenty48 {
       write_all_states();
     }
 
-    void expand_with_policy(twenty48::vbyte_reader_t &vbyte_reader) {
-      // TODO
+    void expand_with_policy(
+      twenty48::vbyte_reader_t &vbyte_reader,
+      twenty48::policy_reader_t &policy_reader)
+    {
+      for (;;) {
+        uint64_t nybbles = vbyte_reader.read();
+        if (nybbles == 0) break;
+
+        direction_t direction = policy_reader.read();
+        if (!move(state_t<size>(nybbles), direction)) {
+          std::cerr << "no move from " << state_t<size>(nybbles)
+            << " in " << direction << std::endl;
+          throw std::runtime_error("layer_builder_t: no move from policy");
+        }
+      }
+      write_all_states();
     }
 
   private:
@@ -64,16 +80,17 @@ namespace twenty48 {
       move(state, DIRECTION_RIGHT);
     }
 
-    void move(const state_t<size> &state, direction_t direction)
+    bool move(const state_t<size> &state, direction_t direction)
     {
       state_t<size> moved_state = state.move(direction);
-      if (moved_state == state) return; // Cannot move in this direction.
+      if (moved_state == state) return false; // Cannot move in this direction.
 
       for (size_t i = 0; i < size * size; ++i) {
         if (moved_state[i] != 0) continue;
         add_successor(moved_state, i, 1);
         add_successor(moved_state, i, 2);
       }
+      return true;
     }
 
     void add_successor(const state_t<size> &moved_state, size_t i, int step)

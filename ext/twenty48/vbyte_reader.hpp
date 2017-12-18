@@ -1,7 +1,6 @@
 #ifndef TWENTY48_VBYTE_READER_HPP
 
 #include <fstream>
-#include <limits>
 
 namespace twenty48 {
 

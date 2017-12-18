@@ -14,14 +14,9 @@ class NativePolicyReaderWriterTest < Twenty48NativeTest
     writer.close
   end
 
-  def read_policy(pathname, count)
-    reader = PolicyReader.new(pathname)
-    Array.new(count) { reader.read }
-  end
-
   def round_trip(pathname, policy)
     write_policy(pathname, policy)
-    result = read_policy(pathname, policy.size)
+    result = PolicyReader.read(pathname, policy.size)
     assert_equal result, policy
   end
 
@@ -61,6 +56,23 @@ class NativePolicyReaderWriterTest < Twenty48NativeTest
         DIRECTION_UP, DIRECTION_LEFT
       ])
       assert_equal 2, File.size(file)
+    end
+  end
+
+  def test_policy_reader_skip
+    Dir.mktmpdir do |tmp|
+      pathname = File.join(tmp, 'test.policy')
+
+      policy = [
+        DIRECTION_DOWN, DIRECTION_UP, DIRECTION_LEFT, DIRECTION_RIGHT,
+        DIRECTION_UP, DIRECTION_DOWN
+      ]
+
+      write_policy(pathname, policy)
+      n = policy.size
+      (0..n).each do |i|
+        assert_equal policy[i...n], PolicyReader.read(pathname, n, skip: i)
+      end
     end
   end
 end

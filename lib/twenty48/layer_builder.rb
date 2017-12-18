@@ -28,6 +28,9 @@ module Twenty48
       @batch_size = batch_size
       @valuer = valuer
       @verbose = verbose
+
+      # Otherwise we cannot concatenate the policy files as binary files.
+      raise 'batch size must be multiple of 4' unless batch_size % 4 == 0
     end
 
     attr_reader :batch_size
@@ -160,10 +163,7 @@ module Twenty48
       end
 
       to_remove.each do |name|
-        FileUtils.rm name.in(layer_folder)
-        FileUtils.rm_f LayerPartInfoName.new(
-          sum: name.sum, max_value: name.max_value
-        ).in(layer_folder)
+        remove_layer_part(name)
       end
     end
 
@@ -204,21 +204,33 @@ module Twenty48
     def build_layer_part_batches(sum, max_value, batches)
       GC.start
       Parallel.each(batches) do |index, offset, previous, batch_size|
-        input_pathname = layer_part_pathname(sum, max_value)
-        vbyte_reader = VByteReader.new(input_pathname, offset, previous,
-          batch_size)
-        NativeLayerBuilder.create(
-          board_size, max_value,
-          layer_fragment_pathname(sum, max_value, 1, 0, index),
-          layer_fragment_pathname(sum, max_value, 1, 1, index),
-          layer_fragment_pathname(sum, max_value, 2, 0, index),
-          layer_fragment_pathname(sum, max_value, 2, 1, index),
-          valuer
-        ).expand_all(vbyte_reader)
+        run_native_layer_builder(
+          sum, max_value, index, offset, previous, batch_size
+        )
         STDOUT.write('.') if @verbose
         GC.start
       end
       puts if @verbose # put a line break after the dots from the parts
+    end
+
+    def create_native_layer_builder(sum, max_value, index, valuer)
+      NativeLayerBuilder.create(
+        board_size, max_value,
+        layer_fragment_pathname(sum, max_value, 1, 0, index),
+        layer_fragment_pathname(sum, max_value, 1, 1, index),
+        layer_fragment_pathname(sum, max_value, 2, 0, index),
+        layer_fragment_pathname(sum, max_value, 2, 1, index),
+        valuer
+      )
+    end
+
+    def run_native_layer_builder(sum, max_value, index, offset, previous,
+      batch_size)
+      input_pathname = layer_part_pathname(sum, max_value)
+      vbyte_reader = VByteReader.new(input_pathname, offset, previous,
+        batch_size)
+      builder = create_native_layer_builder(sum, max_value, index, valuer)
+      builder.expand_all(vbyte_reader)
     end
 
     def reduce_layer_parts(sum, max_value)
@@ -264,6 +276,13 @@ module Twenty48
       num_states = Twenty48.merge_states(StringVector.new(input_files),
         output_file, batch_size, vbyte_index)
       [num_states, vbyte_index]
+    end
+
+    def remove_layer_part(name)
+      FileUtils.rm name.in(layer_folder)
+      FileUtils.rm_f LayerPartInfoName.new(
+        sum: name.sum, max_value: name.max_value
+      ).in(layer_folder)
     end
 
     def log_build_layer(layer_sum, max_value, num_batches)

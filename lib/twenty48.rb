@@ -26,7 +26,9 @@ require_relative 'twenty48/native'
 require_relative 'twenty48/native_layer_builder'
 require_relative 'twenty48/layers'
 require_relative 'twenty48/layer_builder'
+require_relative 'twenty48/layer_compactor'
 require_relative 'twenty48/layer_solver'
+require_relative 'twenty48/layer_conversion'
 
 module Twenty48
   DIRECTIONS = %i[left right up down].freeze

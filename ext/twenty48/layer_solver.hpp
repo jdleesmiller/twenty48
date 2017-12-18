@@ -192,12 +192,19 @@ namespace twenty48 {
         action = DIRECTION_DOWN;
         value = action_value;
       }
+
+      if (value < 0) {
+        throw std::runtime_error("layer_solver_t: no feasible action");
+      }
     }
 
     double backup_state_action(const state_t<size> &state,
       int sum, uint8_t max_value, direction_t direction) {
       state_t<size> moved_state = state.move(direction);
-      if (moved_state == state) return 0; // Cannot move in this direction.
+      if (moved_state == state) {
+        // Cannot move in this direction.
+        return -std::numeric_limits<double>::infinity();
+      }
 
       double state_action_value = 0;
       transitions_t transitions = moved_state.random_transitions();

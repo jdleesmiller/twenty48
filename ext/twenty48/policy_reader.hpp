@@ -15,6 +15,7 @@ namespace twenty48 {
  */
 struct policy_reader_t {
   policy_reader_t(const char *pathname);
+  void skip(size_t num_states);
   direction_t read();
 private:
   std::ifstream is;

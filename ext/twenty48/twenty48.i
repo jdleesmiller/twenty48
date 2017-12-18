@@ -9,6 +9,7 @@
 #include "merge_states.hpp"
 #include "policy_reader.hpp"
 #include "policy_writer.hpp"
+#include "subset_policy.hpp"
 #include "start_states.hpp"
 %}
 
@@ -158,6 +159,8 @@
 
 %rename(PolicyWriter) twenty48::policy_writer_t;
 %include "policy_writer.hpp"
+
+%include "subset_policy.hpp"
 
 /******************************************************************************/
 /* Start States */

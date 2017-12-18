@@ -1,0 +1,60 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/twenty48'
+
+include Twenty48
+include Twenty48::Storage
+
+def compact(params, max_states)
+  states_path = Storage.layer_states_pathname(params)
+  values_path = Storage.layer_values_pathname(params)
+  compact_path = Storage.layer_compact_pathname(params)
+  FileUtils.mkdir_p compact_path
+
+  valuer = NativeValuer.create(
+    board_size: params[:board_size],
+    max_exponent: params[:max_exponent],
+    max_depth: params[:max_depth],
+    discount: params[:discount]
+  )
+
+  layer_compactor = LayerCompactor.new(
+    params[:board_size],
+    states_path,
+    max_states,
+    valuer,
+    values_path,
+    compact_path,
+    verbose: true
+  )
+  layer_compactor.build_start_state_layers
+  layer_compactor.build
+end
+
+Dir.glob(Twenty48::Storage::LAYER_VALUES_GLOB).sort.each do |values_path|
+  params = Storage.layer_values_params_from_pathname(values_path)
+  p params
+
+  compact_path = Storage.layer_compact_pathname(params)
+  if Dir.exist?(compact_path)
+    puts 'exists; skipping'
+    next
+  end
+
+  # If the game isn't winnable, the policy will be junk, and we can't
+  # guarantee that the moves will be valid.
+  if params[:board_size] == 2 && params[:max_exponent] > 5 ||
+      params[:board_size] == 3 && params[:max_exponent] > 10
+    puts 'game is not winnable; skipping'
+    next
+  end
+
+  max_states = case params[:board_size]
+               when 2 then 4
+               when 3 then 10_000
+               when 4 then 10_000_000
+               end
+
+  compact(params, max_states)
+end

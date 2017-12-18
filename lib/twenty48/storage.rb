@@ -46,6 +46,7 @@ module Twenty48
 
     LAYER_STATES_PATH = File.join(ROOT, 'layer_states')
     LAYER_VALUES_PATH = File.join(ROOT, 'layer_values')
+    LAYER_COMPACT_PATH = File.join(ROOT, 'layer_compact')
 
     MODELS_GLOB = File.join(MODELS_PATH, '*.json.bz2')
     ARRAY_MODELS_GLOB = File.join(ARRAY_MODELS_PATH, '*.bin.bz2')
@@ -247,6 +248,10 @@ module Twenty48
 
     def layer_values_pathname(params)
       File.join(LAYER_VALUES_PATH, layer_values_basename(params))
+    end
+
+    def layer_compact_pathname(params)
+      File.join(LAYER_COMPACT_PATH, layer_values_basename(params))
     end
 
     #

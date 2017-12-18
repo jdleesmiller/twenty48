@@ -1940,6 +1940,7 @@ static VALUE mTwenty48;
 #include "merge_states.hpp"
 #include "policy_reader.hpp"
 #include "policy_writer.hpp"
+#include "subset_policy.hpp"
 #include "start_states.hpp"
 
 
@@ -30301,13 +30302,16 @@ SWIGINTERN VALUE
 _wrap_LayerBuilder2_expand_with_policy(int argc, VALUE *argv, VALUE self) {
   twenty48::layer_builder_t< 2 > *arg1 = (twenty48::layer_builder_t< 2 > *) 0 ;
   twenty48::vbyte_reader_t *arg2 = 0 ;
+  twenty48::policy_reader_t *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
   
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_2_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
@@ -30322,7 +30326,15 @@ _wrap_LayerBuilder2_expand_with_policy(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","expand_with_policy", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp2);
-  (arg1)->expand_with_policy(*arg2);
+  res3 = SWIG_ConvertPtr(argv[1], &argp3, SWIGTYPE_p_twenty48__policy_reader_t,  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "twenty48::policy_reader_t &","expand_with_policy", 3, argv[1] )); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::policy_reader_t &","expand_with_policy", 3, argv[1])); 
+  }
+  arg3 = reinterpret_cast< twenty48::policy_reader_t * >(argp3);
+  (arg1)->expand_with_policy(*arg2,*arg3);
   return Qnil;
 fail:
   return Qnil;
@@ -30466,13 +30478,16 @@ SWIGINTERN VALUE
 _wrap_LayerBuilder3_expand_with_policy(int argc, VALUE *argv, VALUE self) {
   twenty48::layer_builder_t< 3 > *arg1 = (twenty48::layer_builder_t< 3 > *) 0 ;
   twenty48::vbyte_reader_t *arg2 = 0 ;
+  twenty48::policy_reader_t *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
   
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_3_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
@@ -30487,7 +30502,15 @@ _wrap_LayerBuilder3_expand_with_policy(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","expand_with_policy", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp2);
-  (arg1)->expand_with_policy(*arg2);
+  res3 = SWIG_ConvertPtr(argv[1], &argp3, SWIGTYPE_p_twenty48__policy_reader_t,  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "twenty48::policy_reader_t &","expand_with_policy", 3, argv[1] )); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::policy_reader_t &","expand_with_policy", 3, argv[1])); 
+  }
+  arg3 = reinterpret_cast< twenty48::policy_reader_t * >(argp3);
+  (arg1)->expand_with_policy(*arg2,*arg3);
   return Qnil;
 fail:
   return Qnil;
@@ -30631,13 +30654,16 @@ SWIGINTERN VALUE
 _wrap_LayerBuilder4_expand_with_policy(int argc, VALUE *argv, VALUE self) {
   twenty48::layer_builder_t< 4 > *arg1 = (twenty48::layer_builder_t< 4 > *) 0 ;
   twenty48::vbyte_reader_t *arg2 = 0 ;
+  twenty48::policy_reader_t *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
   
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_builder_tT_4_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
@@ -30652,7 +30678,15 @@ _wrap_LayerBuilder4_expand_with_policy(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","expand_with_policy", 2, argv[0])); 
   }
   arg2 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp2);
-  (arg1)->expand_with_policy(*arg2);
+  res3 = SWIG_ConvertPtr(argv[1], &argp3, SWIGTYPE_p_twenty48__policy_reader_t,  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "twenty48::policy_reader_t &","expand_with_policy", 3, argv[1] )); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::policy_reader_t &","expand_with_policy", 3, argv[1])); 
+  }
+  arg3 = reinterpret_cast< twenty48::policy_reader_t * >(argp3);
+  (arg1)->expand_with_policy(*arg2,*arg3);
   return Qnil;
 fail:
   return Qnil;
@@ -36665,6 +36699,35 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_PolicyReader_skip(int argc, VALUE *argv, VALUE self) {
+  twenty48::policy_reader_t *arg1 = (twenty48::policy_reader_t *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__policy_reader_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::policy_reader_t *","skip", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::policy_reader_t * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","skip", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  (arg1)->skip(arg2);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_PolicyReader_read(int argc, VALUE *argv, VALUE self) {
   twenty48::policy_reader_t *arg1 = (twenty48::policy_reader_t *) 0 ;
   void *argp1 = 0 ;
@@ -36815,6 +36878,63 @@ _wrap_PolicyWriter_close(int argc, VALUE *argv, VALUE self) {
   }
   arg1 = reinterpret_cast< twenty48::policy_writer_t * >(argp1);
   (arg1)->close();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_subset_policy(int argc, VALUE *argv, VALUE self) {
+  twenty48::vbyte_reader_t *arg1 = 0 ;
+  twenty48::policy_reader_t *arg2 = 0 ;
+  twenty48::vbyte_reader_t *arg3 = 0 ;
+  twenty48::policy_writer_t *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","twenty48::subset_policy", 1, argv[0] )); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","twenty48::subset_policy", 1, argv[0])); 
+  }
+  arg1 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_twenty48__policy_reader_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::policy_reader_t &","twenty48::subset_policy", 2, argv[1] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::policy_reader_t &","twenty48::subset_policy", 2, argv[1])); 
+  }
+  arg2 = reinterpret_cast< twenty48::policy_reader_t * >(argp2);
+  res3 = SWIG_ConvertPtr(argv[2], &argp3, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","twenty48::subset_policy", 3, argv[2] )); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","twenty48::subset_policy", 3, argv[2])); 
+  }
+  arg3 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp3);
+  res4 = SWIG_ConvertPtr(argv[3], &argp4, SWIGTYPE_p_twenty48__policy_writer_t,  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "twenty48::policy_writer_t &","twenty48::subset_policy", 4, argv[3] )); 
+  }
+  if (!argp4) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::policy_writer_t &","twenty48::subset_policy", 4, argv[3])); 
+  }
+  arg4 = reinterpret_cast< twenty48::policy_writer_t * >(argp4);
+  twenty48::subset_policy(*arg1,*arg2,*arg3,*arg4);
   return Qnil;
 fail:
   return Qnil;
@@ -38268,6 +38388,7 @@ SWIGEXPORT void Init_twenty48(void) {
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__policy_reader_t, (void *) &SwigClassPolicyReader);
   rb_define_alloc_func(SwigClassPolicyReader.klass, _wrap_PolicyReader_allocate);
   rb_define_method(SwigClassPolicyReader.klass, "initialize", VALUEFUNC(_wrap_new_PolicyReader), -1);
+  rb_define_method(SwigClassPolicyReader.klass, "skip", VALUEFUNC(_wrap_PolicyReader_skip), -1);
   rb_define_method(SwigClassPolicyReader.klass, "read", VALUEFUNC(_wrap_PolicyReader_read), -1);
   SwigClassPolicyReader.mark = 0;
   SwigClassPolicyReader.destroy = (void (*)(void *)) free_twenty48_policy_reader_t;
@@ -38283,6 +38404,7 @@ SWIGEXPORT void Init_twenty48(void) {
   SwigClassPolicyWriter.mark = 0;
   SwigClassPolicyWriter.destroy = (void (*)(void *)) free_twenty48_policy_writer_t;
   SwigClassPolicyWriter.trackObjects = 0;
+  rb_define_module_function(mTwenty48, "subset_policy", VALUEFUNC(_wrap_subset_policy), -1);
   rb_define_module_function(mTwenty48, "generate_start_states_2", VALUEFUNC(_wrap_generate_start_states_2), -1);
   rb_define_module_function(mTwenty48, "generate_start_states_3", VALUEFUNC(_wrap_generate_start_states_3), -1);
   rb_define_module_function(mTwenty48, "generate_start_states_4", VALUEFUNC(_wrap_generate_start_states_4), -1);
