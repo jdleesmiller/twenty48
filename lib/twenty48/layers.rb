@@ -25,6 +25,19 @@ module Twenty48
     n.extension :json
   end
 
+  #
+  # Layer Part Info: A JSON file with size and index data for a layer part.
+  #
+  class LayerPartInfoName
+    def read(folder:)
+      info = JSON.parse(File.read(self.in(folder)))
+      entries = info['index'].map { |entry| VByteIndexEntry.from_raw(entry) }
+      entries.unshift(VByteIndexEntry.new)
+      info['index'] = VByteIndex.new(entries)
+      info
+    end
+  end
+
   LayerPartValuesName = KeyValueName.new do |n|
     n.include_keys LayerPartName
     n.extension :values
@@ -112,11 +125,8 @@ module Twenty48
     end
 
     def read_layer_part_info(sum, max_value)
-      info = JSON.parse(File.read(layer_part_info_pathname(sum, max_value)))
-      entries = info['index'].map { |entry| VByteIndexEntry.from_raw(entry) }
-      entries.unshift(VByteIndexEntry.new)
-      info['index'] = VByteIndex.new(entries)
-      info
+      LayerPartInfoName.new(sum: sum, max_value: max_value)
+        .read(folder: layer_folder)
     end
 
     def file_size(pathname)
