@@ -23,19 +23,19 @@ GEM
       rdoc (>= 4.1.1)
       rubocop (>= 0.42.0)
       yard (>= 0.8.7)
-    highline (1.7.8)
-    minitest (5.10.1)
+    highline (1.7.10)
+    minitest (5.10.3)
     narray (0.6.1.2)
     parallel (1.10.0)
-    parser (2.4.0.0)
-      ast (~> 2.2)
+    parser (2.4.0.2)
+      ast (~> 2.3)
     powerpack (0.1.1)
     rainbow (2.2.2)
       rake
-    rake (12.2.1)
+    rake (12.3.0)
     rake-compiler (1.0.1)
       rake
-    rdoc (5.1.0)
+    rdoc (6.0.0)
     rubocop (0.51.0)
       parallel (~> 1.10)
       parser (>= 2.3.3.1, < 3.0)
@@ -46,7 +46,7 @@ GEM
     ruby-prof (0.15.9)
     ruby-progressbar (1.9.0)
     unicode-display_width (1.3.0)
-    yard (0.9.8)
+    yard (0.9.12)
 
 PLATFORMS
   ruby
