@@ -96,17 +96,26 @@ module Twenty48
   end
 
   #
-  # Read a list of states in compressed vbyte format.
+  # Yield each state in a list of states in compressed vbyte format.
   #
-  def self.read_states_vbyte(board_size, pathname)
+  def self.each_state_vbyte(board_size, pathname)
     vbyte_reader = VByteReader.new(pathname)
-    result = []
     loop do
       nybbles = vbyte_reader.read
       break if nybbles == 0
-      result << NativeState.create_from_nybbles(board_size, nybbles)
+      yield NativeState.create_from_nybbles(board_size, nybbles)
     end
     vbyte_reader.close
+  end
+
+  #
+  # Read a list of states in compressed vbyte format.
+  #
+  def self.read_states_vbyte(board_size, pathname)
+    result = []
+    each_state_vbyte(board_size, pathname) do |state|
+      result << state
+    end
     result
   end
 
