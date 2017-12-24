@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/twenty48'
+
+METRICS_THRESHOLDS = [3, 6, 9].freeze
+OUTPUT_THRESHOLD = 6
+
+module Twenty48
+  #
+  # Run the LayerTrancheBuilder.
+  #
+  class LayerTrancheBin
+    include Storage
+
+    def run
+      compact_paths = Dir.glob(Twenty48::Storage::LAYER_COMPACT_GLOB).sort
+      compact_paths.each do |compact_path|
+        params = layer_values_params_from_pathname(compact_path)
+        p params
+
+        tranche_builder = LayerTrancheBuilder.new(
+          compact_path,
+          params[:board_size],
+          METRICS_THRESHOLDS,
+          OUTPUT_THRESHOLD
+        )
+
+        if File.exist?(tranche_builder.metrics_pathname)
+          puts 'exists; skipping'
+          next
+        end
+
+        tranche_builder.build
+      end
+    end
+  end
+end
+
+Twenty48::LayerTrancheBin.new.run

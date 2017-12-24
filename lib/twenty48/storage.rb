@@ -53,6 +53,7 @@ module Twenty48
     SOLVERS_GLOB = File.join(SOLVERS_PATH, '*.csv.bz2')
     LAYER_STATES_GLOB = File.join(LAYER_STATES_PATH, '*') # folders
     LAYER_VALUES_GLOB = File.join(LAYER_VALUES_PATH, '*') # folders
+    LAYER_COMPACT_GLOB = File.join(LAYER_COMPACT_PATH, '*') # folders
 
     def build_basename(**args)
       args.map { |key, value| "#{key}-#{value}" }.join('.')

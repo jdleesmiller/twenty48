@@ -1,0 +1,120 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/twenty48'
+require_relative '../lib/twenty48/markov_chain_utilities'
+
+module Twenty48
+  #
+  # Materialize a small chain as a sparse transition hash and calculate
+  # absorbing Markov chain properties.
+  #
+  class MarkovChainFullBin
+    include Twenty48::MarkovChainUtilities
+
+    def initialize(params)
+      @params = params
+      @params[:max_depth] ||= 0
+
+      @transitions = make_transition_hash
+      build_transitions
+    end
+
+    attr_reader :params
+    attr_reader :transitions
+
+    def board_size
+      params[:board_size]
+    end
+
+    def max_exponent
+      params[:max_exponent]
+    end
+
+    def discount
+      params[:discount]
+    end
+
+    def path
+      Storage.layer_compact_pathname(params)
+    end
+
+    def check_transient_probabilities_from_q
+      transient_states, _, transient_q, = \
+        make_fundamental_matrices_for_transitions(transitions)
+
+      h = find_transient_probabilities_from_q(transient_states, transient_q)
+      transient_probabilities = h[nil, 0].to_a[0]
+      CSV(STDOUT) do |csv|
+        csv << %w[state sum max_value transient_pr]
+        transient_states.zip(transient_probabilities).each do |state, pr|
+          next if state.max_value == -1 # ignore start state
+          csv << [
+            state.to_a.map { |value| value.to_s(16) }.join(''),
+            state.sum,
+            state.max_value,
+            pr
+          ]
+        end
+      end
+    end
+
+    private
+
+    def build_transitions
+      model = LayerConversion.convert_layers_to_finite_mdp_model_with_policy(
+        board_size, max_exponent, discount, path, path
+      )
+      convert_compacted_mdp_model_to_markov_chain(model)
+      add_start_state_transitions
+      check_transitions
+
+      lose_state = transitions.keys.find(&:lose?)
+      win_state = transitions.keys.find { |state| state.win?(max_exponent) }
+      transitions.delete lose_state
+      transitions.delete win_state
+    end
+
+    def convert_compacted_mdp_model_to_markov_chain(model)
+      model.hash.each do |state, state_actions|
+        raise 'multiple actions' if state_actions.size > 1
+        state_actions.each_value do |successors|
+          successors.each do |successor, (pr, _reward)|
+            transitions[state][successor] = pr
+          end
+        end
+      end
+      transitions
+    end
+
+    def add_start_state_transitions
+      prestart_state = State.new([-1] * board_size**2)
+      empty_state = State.new([0] * board_size**2)
+      empty_state.random_successors_hash.each do |one_tile_state, pr0|
+        one_tile_state.random_successors_hash.each do |two_tile_state, pr1|
+          transitions[prestart_state][two_tile_state] += pr0 * pr1
+        end
+      end
+    end
+
+    def check_transitions(tolerance = 1e-6)
+      transitions.each do |state0, successors|
+        total_pr = 0
+        successors.each do |state1, pr|
+          total_pr += pr
+          raise "terminal state #{state1}" unless
+              transitions.key?(state1) || state1.max >= max_exponent
+        end
+        raise "pr does not sum to 1: #{state0} #{total_pr}" unless
+          (total_pr - 1).abs < tolerance
+      end
+    end
+  end
+end
+
+Twenty48::MarkovChainFullBin.new(
+  board_size: 2,
+  max_exponent: 5,
+  max_depth: 0,
+  discount: 0.95
+).check_transient_probabilities_from_q
