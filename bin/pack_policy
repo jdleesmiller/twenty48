@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'csv'
+
+#
+# We need something that we can easily load in a web browser that isn't too big.
+# Try a very cheesy form of variable width encoding with deltas: write deltas
+# as base-36 strings. Input is a `threshold-x.csv` file from bin/layer_tranche.
+#
+# Some tests on the 3x3 to 10 with threshold 1e-6 (sizes in bytes):
+# 2279591 test.csv      - delta encoding in base 36
+#  578692 test.csv.gz
+# 5026612 test2.csv     - base 36 without delta encoding
+# 1430601 test2.csv.gz
+# 6639571 test3.csv     - hexadecimal without delta encoding
+# 1508706 test3.csv.gz
+#
+
+raise 'need CSV file as argument' if ARGV.empty?
+
+policy = {}
+CSV.foreach(ARGV[0], headers: true) do |row|
+  nybbles = row['state'].to_i(16)
+  action = row['action'].to_i
+  policy[nybbles] = action
+end
+
+previous = 0
+packed_policy = policy.keys.sort.each_with_object([]) do |nybbles, result|
+  result.push([nybbles - previous, policy[nybbles]])
+  previous = nybbles
+end
+
+CSV(STDOUT) do |csv|
+  csv << %w[delta36 action]
+  packed_policy.each do |delta, action|
+    csv << [delta.to_s(36), action]
+  end
+end

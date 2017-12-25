@@ -2,8 +2,8 @@ import * as d3 from 'd3'
 import Game from './lib/game'
 
 document.addEventListener('DOMContentLoaded', function () {
-  d3.csv('/policy_2x2_32.csv', function (data) {
-    let game = new Game(2, 5)
-    new game.PolicyPlayer(d3.select('#policy-player-2x2'), data).run()
+  let game310 = new Game(3, 10)
+  game310.Policy.load('/policy_3x3_1024_packed.csv').then((policy) => {
+    new game310.PolicyPlayer(d3.select('#policy-player-3x3'), policy).run()
   })
 })

@@ -2,30 +2,14 @@ import * as d3 from 'd3'
 import MersenneTwister from 'mersenne-twister'
 
 import makeState from './state'
+import makePolicy from './policy'
 
 export default function Game (boardSize, maxExponent) {
-  // win: 47, lose quickly: 43
-  const generator = new MersenneTwister(47)
+  // 2x2: win: 47, lose quickly: 43
+  // 3x3: win: 56, lose: 42-55
+  const generator = new MersenneTwister(56)
   const State = makeState(boardSize, maxExponent)
-
-  class Policy {
-    constructor (actionValues) {
-      this.actionValues = actionValues
-    }
-
-    getAction (canonicalState) {
-      return this.actionValues[canonicalState.toString()].action
-    }
-
-    static fromCsv (data) {
-      let actionValues = {}
-      data.forEach(function (row) {
-        let state = State.fromValues(JSON.parse(row.state)).toString()
-        actionValues[state] = { action: row.action, value: row.value }
-      })
-      return new Policy(actionValues)
-    }
-  }
+  const Policy = makePolicy(boardSize)
 
   // seed
   // speed option
@@ -67,9 +51,9 @@ export default function Game (boardSize, maxExponent) {
   }
 
   class PolicyPlayer {
-    constructor (container, policyData) {
+    constructor (container, policy) {
       this.container = container
-      this.policy = Policy.fromCsv(policyData)
+      this.policy = policy
 
       this.svg = container.append('svg')
         .attr('width', BOARD_PX)
@@ -195,5 +179,6 @@ export default function Game (boardSize, maxExponent) {
     }
   }
 
+  this.Policy = Policy
   this.PolicyPlayer = PolicyPlayer
 }

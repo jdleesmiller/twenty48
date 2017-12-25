@@ -13,10 +13,12 @@ function assertValues (actual, expected) {
 
 describe('State', () => {
   const State25 = makeState(2, 5)
+  const State310 = makeState(3, 10)
   const State411 = makeState(4, 11)
 
   function newState (values) {
     if (values.length === 4) return State25.fromValues(values)
+    if (values.length === 9) return State310.fromValues(values)
     return State411.fromValues(values)
   }
 
@@ -80,7 +82,7 @@ describe('State', () => {
   })
 
   describe('canonicalize', () => {
-    it('finds the canonical state', () => {
+    it('finds the canonical state for 2x2', () => {
       let canonical
 
       function assertCanonical (values) {
@@ -162,6 +164,28 @@ describe('State', () => {
       assertCanonical([
         3, 2,
         1, 0
+      ])
+    })
+
+    it('finds the canonical state for 3x3', () => {
+      let canonical
+
+      function assertCanonical (values) {
+        assertValues(newState(values).canonicalize(), canonical)
+      }
+
+      canonical = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+      assertCanonical([0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+      canonical = [
+        0, 0, 0,
+        0, 0, 1,
+        1, 0, 0
+      ]
+      assertCanonical([
+        0, 1, 0,
+        0, 0, 0,
+        0, 0, 1
       ])
     })
   })
