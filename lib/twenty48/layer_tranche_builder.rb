@@ -9,18 +9,10 @@ module Twenty48
   TransientProbabilityMetrics = Struct.new(:count, :log_pr_sum)
 
   #
-  # Take a compacted policy and compute transient probabilities to generate:
+  # Accumulate state probabilities by sum and max value.
   #
-  # 1. Statistics on the transient probabilities in each sum layer, and
-  # 2. Optionally, a CSV policy for a given transient probability threshold.
-  #
-  class LayerTrancheBuilder
-    def initialize(path, board_size, metrics_thresholds, output_threshold)
-      @path = path
-      @board_size = board_size
-      @metrics_thresholds = metrics_thresholds
-      @output_threshold = output_threshold
-
+  class StateProbabilities
+    def initialize
       @probabilities = Hash.new do |h0, sum|
         h0[sum] = Hash.new do |h1, max_value|
           h1[max_value] = Hash.new do |h2, state|
@@ -28,19 +20,69 @@ module Twenty48
           end
         end
       end
+    end
+
+    def add(state, pr)
+      @probabilities[state.sum][state.max_value][state.get_nybbles] += pr
+    end
+
+    def find(state)
+      @probabilities[state.sum][state.max_value][state.get_nybbles]
+    end
+
+    def clear(sum, max_value)
+      @probabilities[sum].delete(max_value)
+    end
+
+    def each_state
+      @probabilities.keys.sort.each do |sum|
+        sum_hash = @probabilities[sum]
+        sum_hash.keys.sort.each do |max_value|
+          max_value_hash = sum_hash[max_value]
+          max_value_hash.keys.sort.each do |state_number|
+            yield state_number, max_value_hash[state_number]
+          end
+        end
+      end
+    end
+  end
+
+  #
+  # Take a compacted policy and compute transient probabilities to generate:
+  #
+  # 1. Statistics on the transient probabilities in each sum layer, and
+  # 2. Optionally, a CSV policy for a given transient probability threshold.
+  #
+  class LayerTrancheBuilder
+    def initialize(path, board_size, max_exponent,
+      metrics_thresholds, output_threshold)
+      @path = path
+      @board_size = board_size
+      @max_exponent = max_exponent
+      @metrics_thresholds = metrics_thresholds
+      @output_threshold = output_threshold
+
+      @transient_probabilities = StateProbabilities.new
+      @absorbing_probabilities = StateProbabilities.new
 
       @threshold_counts = make_zero_threshold_counts
     end
 
     attr_reader :path
     attr_reader :board_size
-    attr_reader :probabilities
+    attr_reader :max_exponent
+    attr_reader :transient_probabilities
+    attr_reader :absorbing_probabilities
     attr_reader :metrics_thresholds
     attr_reader :output_threshold
     attr_reader :threshold_counts
 
     def metrics_pathname
       File.join(path, 'tranche_metrics.csv')
+    end
+
+    def absorbing_states_pathname
+      File.join(path, 'absorbing_states.csv')
     end
 
     def output_pathname
@@ -54,7 +96,8 @@ module Twenty48
     def build
       add_start_states
       CSV.open(metrics_pathname, 'w') do |metrics_csv|
-        metrics_csv << %w[sum max_value] + metrics_threshold_names
+        metrics_csv << %w[sum max_value] + metrics_threshold_names +
+          %w[total_pr]
         CSV.open(output_pathname, 'w') do |output_csv|
           output_csv << %w[state action transient_pr]
           part_names = LayerPartName.glob(path).sort_by do |part|
@@ -65,6 +108,7 @@ module Twenty48
           end
         end
       end
+      write_absorbing_states
     end
 
     private
@@ -73,7 +117,7 @@ module Twenty48
       empty_state = NativeState.create([0] * board_size**2)
       empty_state.random_transitions.each do |one_tile_state, pr0|
         one_tile_state.random_transitions.each do |two_tile_state, pr1|
-          add_pr(two_tile_state, pr0 * pr1)
+          transient_probabilities.add(two_tile_state, pr0 * pr1)
         end
       end
     end
@@ -84,12 +128,18 @@ module Twenty48
     end
 
     def process_part(metrics_csv, output_csv, part_name)
+      total_pr = 0.0
       counts = make_zero_threshold_counts
       each_part_state_action(part_name) do |state, action|
-        state_pr = find_pr(state)
+        state_pr = transient_probabilities.find(state)
 
         state.move(action).random_transitions.each do |successor, pr|
-          add_pr(successor, state_pr * pr)
+          successor_pr = state_pr * pr
+          if successor.max_value >= max_exponent || successor.lose
+            absorbing_probabilities.add(successor, successor_pr)
+          else
+            transient_probabilities.add(successor, successor_pr)
+          end
         end
 
         if state_pr > output_threshold_pr
@@ -97,9 +147,10 @@ module Twenty48
         end
 
         update_counts(counts, state_pr)
+        total_pr += state_pr
       end
-      write_counts(part_name, metrics_csv, counts)
-      probabilities[part_name.sum].delete(part_name.max_value)
+      write_counts(part_name, metrics_csv, counts, total_pr)
+      transient_probabilities.clear(part_name.sum, part_name.max_value)
     end
 
     def each_part_state_action(part_name)
@@ -128,23 +179,24 @@ module Twenty48
       end
     end
 
-    def write_counts(part_name, metrics_csv, counts)
-      metrics_csv << [
-        part_name.sum,
-        part_name.max_value
-      ] + metrics_threshold_prs.map { |pr| counts[pr] } + [counts[0.0]]
+    def write_counts(part_name, metrics_csv, counts, total_pr)
+      row = [part_name.sum, part_name.max_value]
+      row += metrics_threshold_prs.map { |pr| counts[pr] }
+      row += [counts[0.0], total_pr]
+      metrics_csv << row
     end
 
     def state_name(state)
       state.get_nybbles.to_s(16)
     end
 
-    def add_pr(state, pr)
-      probabilities[state.sum][state.max_value][state.get_nybbles] += pr
-    end
-
-    def find_pr(state)
-      probabilities[state.sum][state.max_value][state.get_nybbles]
+    def write_absorbing_states
+      CSV.open(absorbing_states_pathname, 'w') do |absorbing_states_csv|
+        absorbing_states_csv << %w[state pr]
+        absorbing_probabilities.each_state do |state_number, pr|
+          absorbing_states_csv << [state_number.to_s(16), pr]
+        end
+      end
     end
   end
 end

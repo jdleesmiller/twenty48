@@ -22,6 +22,7 @@ module Twenty48
         tranche_builder = LayerTrancheBuilder.new(
           compact_path,
           params[:board_size],
+          params[:max_exponent],
           METRICS_THRESHOLDS,
           OUTPUT_THRESHOLD
         )

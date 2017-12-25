@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'narray'
 require 'tsort'
 
 module Twenty48
@@ -168,6 +169,14 @@ module Twenty48
       n = (identity - transient_q).inverse
       n_diag = NMatrix[NArray[n] * NArray[identity]][nil, nil, 0, 0]
       (n - identity) * n_diag.inverse
+    end
+
+    def find_absorbing_probabilities_from_q(transient_states, absorbing_states,
+      transient_q, absorbing_r)
+      transient_n = transient_states.size
+      identity = NMatrix.float(transient_n, transient_n).diagonal!(1)
+      pr = absorbing_r / (identity - transient_q)
+      Hash[absorbing_states.zip(pr[nil, 0].to_a.flatten)]
     end
   end
 end

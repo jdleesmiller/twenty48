@@ -209,10 +209,10 @@ end
 def find_absorbing_probabilities(max_exponent)
   transient_states, absorbing_states, transient_q, absorbing_r =
     make_fundamental_matrices(max_exponent)
-  transient_n = transient_states.size
-  identity = NMatrix.float(transient_n, transient_n).diagonal!(1)
-  pr = absorbing_r / (identity - transient_q)
-  Hash[absorbing_states.zip(pr[nil, 0].to_a.flatten)]
+  find_absorbing_probabilities_from_q(
+    transient_states, absorbing_states,
+    transient_q, absorbing_r
+  )
 end
 # p find_absorbing_probabilities(11)
 

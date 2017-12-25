@@ -59,6 +59,16 @@ module Twenty48
       end
     end
 
+    def check_absorbing_probabilities_from_q
+      transient_states, absorbing_states, transient_q, absorbing_r, = \
+        make_fundamental_matrices_for_transitions(transitions)
+      absorbing_probabilities = find_absorbing_probabilities_from_q(
+        transient_states, absorbing_states,
+        transient_q, absorbing_r
+      )
+      p absorbing_probabilities
+    end
+
     private
 
     def build_transitions
@@ -112,9 +122,11 @@ module Twenty48
   end
 end
 
-Twenty48::MarkovChainFullBin.new(
+bin = Twenty48::MarkovChainFullBin.new(
   board_size: 2,
   max_exponent: 5,
   max_depth: 0,
   discount: 0.95
-).check_transient_probabilities_from_q
+)
+# bin.check_transient_probabilities_from_q
+bin.check_absorbing_probabilities_from_q
