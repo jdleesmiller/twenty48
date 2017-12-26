@@ -1,0 +1,194 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+library(reshape2)
+```
+
+# 3x3 to 1024
+
+```{r}
+loadMetrics <- function (path) {
+  transient <- read.csv(file.path(path, 'tranche_metrics.csv'), header = TRUE)
+  absorbing <- read.csv(file.path(path, 'absorbing_metrics.csv'), header = TRUE)
+  
+  stateMetrics <- melt(
+    subset(transient, select = c(
+      sum, max_value, num_states, num_states_3, num_states_6, num_states_9)),
+    c('sum', 'max_value'),
+    variable.name = 'threshold',
+    value.name = 'num_states')
+  
+  findNumericalThreshold <- function (threshold) {
+    numericThreshold = rep_len(0.0, length(threshold))
+    numericRx <- 'num_states_(\\d+)'
+    isNumeric <- grepl(numericRx, threshold)
+    exponents <- -as.numeric(sub(numericRx, '\\1', threshold[isNumeric]))
+    numericThreshold[isNumeric] <- 10**exponents
+    numericThreshold
+  }
+  
+  stateMetrics <- subset(
+    transform(
+      stateMetrics,
+      kind = 'transient',
+      threshold = findNumericalThreshold(threshold)),
+    select = c(sum, max_value, kind, threshold, num_states))
+  
+  stateMetrics <- rbind(
+    stateMetrics,
+    subset(
+      transform(absorbing, kind = outcome, threshold = 0.0),
+      select = c(sum, max_value, kind, threshold, num_states)
+    )
+  )
+  
+  prMetrics <- rbind(
+    subset(
+      transform(transient, kind = 'transient'),
+      select = c(sum, max_value, kind, total_pr)),
+    subset(
+      transform(absorbing, kind = outcome),
+      select = c(sum, max_value, kind, total_pr))
+  )
+  
+  list(states = stateMetrics, prs = prMetrics)
+}
+metrics310 <- loadMetrics('../layer_compact/board_size-3.max_exponent-10.max_depth-0.discount-0.95/')
+summary(metrics310$states)
+```
+
+```{r}
+summary(metrics310$prs)
+```
+
+## States
+
+```{r}
+plotTransientTrancheStateCounts <- function (stateMetrics) {
+  metrics <- aggregate(
+    num_states ~ sum + threshold,
+    subset(stateMetrics, kind == 'transient'),
+    sum)
+  ggplot(metrics, aes(x = sum, y = num_states, color = factor(threshold))) +
+    geom_step()
+}
+plotTransientTrancheStateCounts(metrics310$states)
+```
+
+```{r}
+plotStateCountsByKind <- function (stateMetrics) {
+  metrics <- aggregate(
+    num_states ~ sum + kind,
+    subset(stateMetrics, threshold == 0),
+    sum)
+  ggplot(metrics, aes(x = sum, y = num_states, fill = kind)) +
+    scale_fill_brewer(type = 'div', palette = 'Spectral') +
+    geom_area()
+}
+plotStateCountsByKind(metrics310$states)
+```
+
+## Probabilities
+
+```{r}
+plotTotalPrByKind <- function (prMetrics) {
+  metrics <- aggregate(total_pr ~ sum + kind, prMetrics, sum)
+  
+  ggplot(metrics, aes(x = sum, y = total_pr, color = kind)) +
+    geom_step()
+}
+plotTotalPrByKind(metrics310$prs)
+```
+
+```{r}
+plotWinLoseCumulativePr <- function (prMetrics) {
+  metrics <- aggregate(total_pr ~ sum + kind, prMetrics, sum)
+  allSums <- sort(unique(metrics$sum))
+  
+  cumsumAbsorbing <- function (m) {
+    m <- m[order(m$sum),]
+    m$total_pr <- cumsum(m$total_pr)
+    
+    # Fill in missing cumulative sums.
+    missingSums <- setdiff(allSums, m$sum)
+    missingTotalPr <- approx(
+      m$sum, m$total_pr, missingSums,
+      method = 'constant', rule = 2, yleft = 0.0)$y
+    missing <- data.frame(
+      sum = missingSums, 
+      kind = m$kind[1],
+      total_pr = missingTotalPr)
+    
+    rbind(m, missing)
+  }
+  
+  metrics <- subset(metrics, kind != 'transient')
+  metrics <- do.call(rbind, by(metrics, metrics$kind, cumsumAbsorbing))
+  
+  metrics$kind <- factor(
+    metrics$kind,
+    levels = c('win', 'lose'),
+    ordered = TRUE)
+  
+  ggplot(metrics, aes(x = sum, y = total_pr, fill = kind)) +
+    geom_area()
+}
+plotWinLoseCumulativePr(metrics310$prs)
+```
+
+# 3x3 to 512
+
+```{r}
+metrics39 <- loadMetrics('../layer_compact/board_size-3.max_exponent-9.max_depth-0.discount-0.95')
+```
+
+## States
+
+```{r}
+plotTransientTrancheStateCounts(metrics39$states)
+```
+
+```{r}
+plotStateCountsByKind(metrics39$states)
+```
+
+## Probabilities
+
+```{r}
+plotTotalPrByKind(metrics39$prs)
+```
+
+```{r}
+plotWinLoseCumulativePr(metrics39$prs)
+```
+
+# 4x4 to 32
+
+```{r}
+metrics45 <- loadMetrics('../layer_compact/board_size-4.max_exponent-5.max_depth-0.discount-0.95')
+```
+
+## States
+
+```{r}
+plotTransientTrancheStateCounts(metrics45$states)
+```
+
+```{r}
+plotStateCountsByKind(metrics45$states)
+```
+
+## Probabilities
+
+```{r}
+plotTotalPrByKind(metrics45$prs)
+```
+
+```{r}
+plotWinLoseCumulativePr(metrics45$prs)
+```
+

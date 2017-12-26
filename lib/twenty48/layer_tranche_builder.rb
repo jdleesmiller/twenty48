@@ -34,14 +34,11 @@ module Twenty48
       @probabilities[sum].delete(max_value)
     end
 
-    def each_state
+    def each_sum_max_value
       @probabilities.keys.sort.each do |sum|
-        sum_hash = @probabilities[sum]
-        sum_hash.keys.sort.each do |max_value|
-          max_value_hash = sum_hash[max_value]
-          max_value_hash.keys.sort.each do |state_number|
-            yield state_number, max_value_hash[state_number]
-          end
+        sum_prs = @probabilities[sum]
+        sum_prs.keys.sort.each do |max_value|
+          yield sum, max_value, sum_prs[max_value]
         end
       end
     end
@@ -63,7 +60,8 @@ module Twenty48
       @output_threshold = output_threshold
 
       @transient_probabilities = StateProbabilities.new
-      @absorbing_probabilities = StateProbabilities.new
+      @wins = StateProbabilities.new
+      @losses = StateProbabilities.new
 
       @threshold_counts = make_zero_threshold_counts
     end
@@ -72,7 +70,8 @@ module Twenty48
     attr_reader :board_size
     attr_reader :max_exponent
     attr_reader :transient_probabilities
-    attr_reader :absorbing_probabilities
+    attr_reader :wins
+    attr_reader :losses
     attr_reader :metrics_thresholds
     attr_reader :output_threshold
     attr_reader :threshold_counts
@@ -81,8 +80,8 @@ module Twenty48
       File.join(path, 'tranche_metrics.csv')
     end
 
-    def absorbing_states_pathname
-      File.join(path, 'absorbing_states.csv')
+    def absorbing_pathname
+      File.join(path, 'absorbing_metrics.csv')
     end
 
     def output_pathname
@@ -98,17 +97,25 @@ module Twenty48
       CSV.open(metrics_pathname, 'w') do |metrics_csv|
         metrics_csv << %w[sum max_value] + metrics_threshold_names +
           %w[total_pr]
-        CSV.open(output_pathname, 'w') do |output_csv|
-          output_csv << %w[state action transient_pr]
-          part_names = LayerPartName.glob(path).sort_by do |part|
-            [part.sum, part.max_value]
-          end
-          part_names.each do |part_name|
-            process_part(metrics_csv, output_csv, part_name)
+        CSV.open(absorbing_pathname, 'w') do |absorbing_csv|
+          absorbing_csv << %w[sum max_value outcome num_states total_pr]
+          CSV.open(output_pathname, 'w') do |output_csv|
+            output_csv << %w[state action transient_pr]
+            part_names = LayerPartName.glob(path).sort_by do |part|
+              [part.sum, part.max_value]
+            end
+            part_names.each do |part_name|
+              write_absorbing_counts(
+                part_name.sum, part_name.max_value, absorbing_csv
+              )
+              process_part(metrics_csv, output_csv, part_name)
+            end
+            write_absorbing_counts(
+              Float::INFINITY, Float::INFINITY, absorbing_csv
+            )
           end
         end
       end
-      write_absorbing_states
     end
 
     private
@@ -135,8 +142,10 @@ module Twenty48
 
         state.move(action).random_transitions.each do |successor, pr|
           successor_pr = state_pr * pr
-          if successor.max_value >= max_exponent || successor.lose
-            absorbing_probabilities.add(successor, successor_pr)
+          if successor.max_value >= max_exponent
+            wins.add(successor, successor_pr)
+          elsif successor.lose
+            losses.add(successor, successor_pr)
           else
             transient_probabilities.add(successor, successor_pr)
           end
@@ -190,11 +199,19 @@ module Twenty48
       state.get_nybbles.to_s(16)
     end
 
-    def write_absorbing_states
-      CSV.open(absorbing_states_pathname, 'w') do |absorbing_states_csv|
-        absorbing_states_csv << %w[state pr]
-        absorbing_probabilities.each_state do |state_number, pr|
-          absorbing_states_csv << [state_number.to_s(16), pr]
+    def write_absorbing_counts(max_sum, max_max_value, absorbing_csv)
+      outcomes = %i[win lose]
+      [wins, losses].zip(outcomes).each do |prs, outcome|
+        prs.each_sum_max_value do |sum, max_value, state_prs|
+          break if ([sum, max_value] <=> [max_sum, max_max_value]) > 0
+          absorbing_csv << [
+            sum,
+            max_value,
+            outcome,
+            state_prs.size,
+            state_prs.values.sum
+          ]
+          prs.clear(sum, max_value)
         end
       end
     end

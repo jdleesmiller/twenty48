@@ -140,20 +140,36 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
         assert_close row[:total_pr], observed_row[:total_pr]
       end
 
+      csv_from_aggregation = <<~CSV
+        sum,max_value,outcome,num_states,total_pr
+        18,3,lose,1,3.748875e-02
+        26,4,lose,1,5.126375e-02
+        30,4,lose,2,8.283602e-01
+        38,5,win,2,6.042483e-02
+        40,5,win,3,2.014161e-02
+        42,5,win,3,2.237957e-03
+        44,5,win,2,8.288729e-05
+      CSV
+      expected_absorbing_metrics = {}
+      CSV.parse(csv_from_aggregation, csv_options) do |row|
+        expected_absorbing_metrics[metrics_key(row)] = row
+      end
+
       #
       # Check absorbing probabilities against the sums from the MDP model:
       # {[0, 0, 0, 0]=>0.917112710928446, [0, 0, 0, 5]=>0.08288728907155415}
       #
       lose_pr = 0.0
       win_pr = 0.0
-      absorbing_states_csv = tranche_builder.absorbing_states_pathname
-      CSV.foreach(absorbing_states_csv, csv_options) do |row|
-        nybbles = row[:state].to_s.to_i(16) # decimal to hexadecimal
-        state = NativeState.create_from_nybbles(board_size, nybbles)
-        if state.max_value >= max_exponent
-          win_pr += row[:pr]
+      CSV.foreach(tranche_builder.absorbing_pathname, csv_options) do |row|
+        expected_row = expected_absorbing_metrics[metrics_key(row)]
+        assert_equal expected_row[:outcome], row[:outcome]
+        assert_equal expected_row[:num_states], row[:num_states]
+        assert_close expected_row[:total_pr], row[:total_pr]
+        if row[:outcome] == 'win'
+          win_pr += row[:total_pr]
         else
-          lose_pr += row[:pr]
+          lose_pr += row[:total_pr]
         end
       end
       assert_close 0.917112710928446, lose_pr

@@ -30,5 +30,6 @@ data/array_models/*resolve_strategy-bounded*
 data/solvers/*resolve_strategy-bounded*
 
 .Rproj.user
+*.nb.html
 
 data/.Rhistory
