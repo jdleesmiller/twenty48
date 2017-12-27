@@ -1,4 +1,5 @@
 import * as d3 from 'd3'
+import MersenneTwister from 'mersenne-twister'
 
 const CELL_PX = 42
 const PAD = 8
@@ -37,12 +38,10 @@ class DisplayTile {
 }
 
 export default class Driver {
-  constructor (container, boardSize, policy, generator, emptyState) {
+  constructor (container, dispatch, boardSize) {
     this.container = container
+    this.dispatch = dispatch
     this.boardSize = boardSize
-    this.policy = policy
-    this.generator = generator
-    this.state = emptyState
 
     this.svg = container.append('svg')
       .attr('width', this.getBoardPx())
@@ -88,6 +87,13 @@ export default class Driver {
       }
     }
     return displayTiles
+  }
+
+  clear () {
+    this.board.selectAll('svg.tile')
+      .data(this.getDisplayTiles(), DisplayTile.key)
+      .exit()
+      .remove()
   }
 
   draw (t, tileSvgs) {
@@ -161,13 +167,22 @@ export default class Driver {
     return this.update(MERGE_DURATION)
   }
 
-  run () {
+  run (emptyState, policy, seed) {
+    this.state = emptyState
+    this.policy = policy
+    this.generator = new MersenneTwister(seed)
+
+    this.clear()
+
     this.state.placeRandomTile(this.generator)
     this.state.placeRandomTile(this.generator)
 
     let step = () => {
       this.update(PLACE_DURATION).on('end', () => {
-        if (this.state.isWin() || this.state.isLose()) return
+        if (this.state.isWin() || this.state.isLose()) {
+          this.dispatch.call('end', null, this.state.isWin())
+          return
+        }
 
         let canonicalTransform = this.state.getCanonicalTransform()
         let canonicalState =
@@ -175,6 +190,7 @@ export default class Driver {
         let canonicalAction = this.policy.getAction(canonicalState)
         let action = canonicalTransform.invertAction(canonicalAction)
         this.state.move(action)
+        this.dispatch.call('move', null, action)
 
         this.update(MOVE_DURATION).on('end', () => {
           this.cleanupMergedTiles().on('end', () => {
