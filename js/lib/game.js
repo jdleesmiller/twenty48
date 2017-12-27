@@ -13,8 +13,6 @@ function generateId () {
 
 export default function makeGame (
   container, boardSize, maxExponent, packedPolicyPath, initialSeed) {
-  // 2x2: win: 47, lose quickly: 43
-  // 3x3: win: 56, lose: 42-55
   const State = makeState(boardSize, maxExponent)
   const Policy = makePolicy(boardSize)
 
@@ -22,7 +20,7 @@ export default function makeGame (
     return Math.floor(Math.random() * 10000)
   }
 
-  if (initialSeed == null) initialSeed = rollSeed()
+  if (!initialSeed) initialSeed = rollSeed()
 
   const PAD = 10
 

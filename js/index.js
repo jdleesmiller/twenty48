@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
         parseInt(data.boardSize, 10),
         parseInt(data.maxExponent, 10),
         data.packedPolicyPath,
-        data.initialSeed
+        parseInt(data.initialSeed, 10)
       )
     })
 })
