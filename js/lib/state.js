@@ -14,7 +14,7 @@ function moveLineLeft (line) {
     if (!tile) continue
 
     if (done > merged && line[done - 1].isSame(tile)) {
-      line[done - 1] = tile.merge()
+      line[done - 1] = tile.merge(line[done - 1])
       line[i] = null
       merged = done
     } else {
@@ -40,6 +40,7 @@ export default function makeState (boardSize, maxExponent) {
     constructor (value) {
       this.value = value
       this.id = ++tileId
+      this.mergedWith = null
     }
 
     isSame (other) {
@@ -48,6 +49,7 @@ export default function makeState (boardSize, maxExponent) {
 
     merge (tile) {
       this.value += 1
+      this.mergedWith = tile
       return this
     }
   }

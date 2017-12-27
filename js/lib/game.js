@@ -22,6 +22,10 @@ export default function Game (boardSize, maxExponent) {
   const INFLATE = 1.5
   const BOARD_PX = boardSize * CELL_PX + (boardSize + 1) * PAD
 
+  const PLACE_DURATION = 200
+  const MERGE_DURATION = 200
+  const MOVE_DURATION = 200
+
   class DisplayTile {
     constructor (tile, i, j) {
       this.tile = tile
@@ -87,7 +91,12 @@ export default function Game (boardSize, maxExponent) {
       for (let i = 0; i < boardSize; ++i) {
         for (let j = 0; j < boardSize; ++j) {
           let tile = this.state.getTileAt(i, j)
-          if (tile) displayTiles.push(new DisplayTile(tile, i, j))
+          if (tile) {
+            displayTiles.push(new DisplayTile(tile, i, j))
+            if (tile.mergedWith) {
+              displayTiles.push(new DisplayTile(tile.mergedWith, i, j))
+            }
+          }
         }
       }
       return displayTiles
@@ -146,12 +155,22 @@ export default function Game (boardSize, maxExponent) {
         .attr('height', CELL_PX + 2 * INFLATE)
     }
 
-    update () {
-      var t = this.board.transition().duration(300)
+    update (duration) {
+      var t = this.board.transition().duration(duration)
       let tiles = this.board.selectAll('svg.tile')
         .data(this.getDisplayTiles(), DisplayTile.key)
       this.draw(t, tiles)
       return t
+    }
+
+    cleanupMergedTiles () {
+      for (let i = 0; i < boardSize; ++i) {
+        for (let j = 0; j < boardSize; ++j) {
+          let tile = this.state.getTileAt(i, j)
+          if (tile) tile.mergedWith = null
+        }
+      }
+      return this.update(MERGE_DURATION)
     }
 
     run () {
@@ -159,7 +178,7 @@ export default function Game (boardSize, maxExponent) {
       this.state.placeRandomTile(generator)
 
       let step = () => {
-        this.update().on('end', () => {
+        this.update(PLACE_DURATION).on('end', () => {
           if (this.state.isWin() || this.state.isLose()) return
 
           let canonicalTransform = this.state.getCanonicalTransform()
@@ -169,9 +188,11 @@ export default function Game (boardSize, maxExponent) {
           let action = canonicalTransform.invertAction(canonicalAction)
           this.state.move(action)
 
-          this.update().on('end', () => {
-            this.state.placeRandomTile(generator)
-            setTimeout(step, 0)
+          this.update(MOVE_DURATION).on('end', () => {
+            this.cleanupMergedTiles().on('end', () => {
+              this.state.placeRandomTile(generator)
+              setTimeout(step, 0)
+            })
           })
         })
       }
