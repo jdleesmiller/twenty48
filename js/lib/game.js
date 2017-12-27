@@ -147,7 +147,7 @@ export default function Game (boardSize, maxExponent) {
     }
 
     update () {
-      var t = d3.transition().duration(300)
+      var t = this.board.transition().duration(300)
       let tiles = this.board.selectAll('svg.tile')
         .data(this.getDisplayTiles(), DisplayTile.key)
       this.draw(t, tiles)
