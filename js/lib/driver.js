@@ -35,6 +35,29 @@ class DisplayTile {
   static displayValue (displayTile) {
     return Math.pow(2, displayTile.tile.value)
   }
+
+  // Colors from http://gabrielecirulli.github.io/2048
+  static textColor (displayTile) {
+    if (!displayTile.tile || displayTile.tile.value < 3) return '#776e65'
+    return '#f9f6f2'
+  }
+
+  // Colors from http://gabrielecirulli.github.io/2048
+  static fill (displayTile) {
+    if (!displayTile.tile) return ''
+    switch (displayTile.tile.value) {
+      case 1: return '#eee4da'
+      case 2: return '#ede0c8'
+      case 3: return '#f2b179'
+      case 4: return '#f59563'
+      case 5: return '#f67c5f'
+      case 6: return '#f65e3b'
+      case 7: return '#edcf72'
+      case 8: return '#edcc61'
+      case 9: return '#edc850'
+      default: return '#edc53f'
+    }
+  }
 }
 
 export default class Driver {
@@ -59,7 +82,7 @@ export default class Driver {
     background.append('rect')
       .attr('width', this.getBoardPx())
       .attr('height', this.getBoardPx())
-      .style('fill', '#bbb')
+      .style('fill', '#bbada0')
 
     for (let i = 0; i < this.boardSize; ++i) {
       for (let j = 0; j < this.boardSize; ++j) {
@@ -68,7 +91,7 @@ export default class Driver {
           .attr('y', DisplayTile.offset(j))
           .attr('width', CELL_PX)
           .attr('height', CELL_PX)
-          .style('fill', '#ddd')
+          .style('fill', 'rgba(238, 228, 218, 0.35)')
       }
     }
   }
@@ -108,14 +131,15 @@ export default class Driver {
     newTileSvgs.append('rect')
       .attr('width', CELL_PX)
       .attr('height', CELL_PX)
-      .style('fill', '#fff')
+      .style('fill', DisplayTile.fill)
 
     newTileSvgs.append('text')
       .attr('x', CELL_PX / 2)
       .attr('y', CELL_PX / 2)
       .attr('dominant-baseline', 'middle')
       .attr('text-anchor', 'middle')
-      .style('stroke', '#000')
+      .style('stroke', DisplayTile.textColor)
+      .style('fill', DisplayTile.textColor)
       .text(DisplayTile.displayValue)
 
     newTileSvgs
@@ -129,8 +153,14 @@ export default class Driver {
       .attr('y', DisplayTile.y)
 
     tileSvgs
+      .select('rect')
+      .style('fill', DisplayTile.fill)
+
+    tileSvgs
       .select('text')
       .transition(t)
+      .style('stroke', DisplayTile.textColor)
+      .style('fill', DisplayTile.textColor)
       .text(DisplayTile.displayValue)
 
     tileSvgs.exit()

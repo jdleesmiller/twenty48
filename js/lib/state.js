@@ -49,6 +49,7 @@ export default function makeState (boardSize, maxExponent) {
 
     merge (tile) {
       this.value += 1
+      tile.value += 1
       this.mergedWith = tile
       return this
     }
