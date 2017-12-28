@@ -59,13 +59,12 @@ class DisplayTile {
 
   // Colors from http://gabrielecirulli.github.io/2048
   static textColor (displayTile) {
-    if (!displayTile.tile || displayTile.tile.value < 3) return '#776e65'
+    if (displayTile.tile.value < 3) return '#776e65'
     return '#f9f6f2'
   }
 
   // Colors from http://gabrielecirulli.github.io/2048
   static fill (displayTile) {
-    if (!displayTile.tile) return ''
     switch (displayTile.tile.value) {
       case 1: return '#eee4da'
       case 2: return '#ede0c8'
