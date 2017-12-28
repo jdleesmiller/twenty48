@@ -14,7 +14,7 @@ function moveLineLeft (line) {
     if (!tile) continue
 
     if (done > merged && line[done - 1].isSame(tile)) {
-      line[done - 1] = tile.merge(line[done - 1])
+      line[done - 1].startMerge(tile)
       line[i] = null
       merged = done
     } else {
@@ -40,18 +40,19 @@ export default function makeState (boardSize, maxExponent) {
     constructor (value) {
       this.value = value
       this.id = ++tileId
-      this.mergedWith = null
+      this.mergingWith = null
     }
 
     isSame (other) {
       return other && this.value === other.value
     }
 
-    merge (tile) {
-      this.value += 1
-      tile.value += 1
-      this.mergedWith = tile
-      return this
+    startMerge (tile) {
+      this.mergingWith = tile
+    }
+
+    isMerging () {
+      return !!this.mergingWith
     }
   }
 
@@ -69,20 +70,35 @@ export default function makeState (boardSize, maxExponent) {
       return new State(_.chunk(tiles, boardSize))
     }
 
-    move (direction) {
+    startMove (direction) {
       switch (direction) {
         case DIRECTIONS.LEFT:
           this.tiles.forEach(moveLineLeft)
           return this
         case DIRECTIONS.RIGHT:
-          return this.reflectX().move(DIRECTIONS.LEFT).reflectX()
+          return this.reflectX().startMove(DIRECTIONS.LEFT).reflectX()
         case DIRECTIONS.UP:
-          return this.transpose().move(DIRECTIONS.LEFT).transpose()
+          return this.transpose().startMove(DIRECTIONS.LEFT).transpose()
         case DIRECTIONS.DOWN:
-          return this.transpose().move(DIRECTIONS.RIGHT).transpose()
+          return this.transpose().startMove(DIRECTIONS.RIGHT).transpose()
         default:
           throw new Error('bad direction ' + direction)
       }
+    }
+
+    finishMove () {
+      POINTS.forEach((point) => {
+        let tile = this.getTile(point)
+        if (tile && tile.isMerging()) {
+          this.setTile(point, new Tile(tile.value + 1))
+        }
+      })
+    }
+
+    move (direction) {
+      this.startMove(direction)
+      this.finishMove()
+      return this
     }
 
     rotate90 () {

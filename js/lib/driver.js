@@ -1,13 +1,18 @@
-import * as d3 from 'd3'
 import MersenneTwister from 'mersenne-twister'
 
 const CELL_PX = 42
 const PAD = 8
-const INFLATE = 1.5
+const INFLATE = 10
 
 const PLACE_DURATION = 200
-const MERGE_DURATION = 200
+const MERGE_DURATION = 150
 const MOVE_DURATION = 200
+
+// Need a function that goes up and then down over [0, 1].
+function entropy (x) {
+  if (x === 0.0) return 0.0
+  return -x * Math.log(x)
+}
 
 class DisplayTile {
   constructor (tile, i, j) {
@@ -30,6 +35,22 @@ class DisplayTile {
 
   static y (displayTile) {
     return DisplayTile.offset(displayTile.i)
+  }
+
+  static popRectX (displayTile) {
+    return (t) => DisplayTile.x(displayTile) - entropy(t) * INFLATE
+  }
+
+  static popRectY (displayTile) {
+    return (t) => DisplayTile.y(displayTile) - entropy(t) * INFLATE
+  }
+
+  static popTextTranslate (displayTile) {
+    return (t) => (CELL_PX + entropy(t) * 2 * INFLATE) / 2
+  }
+
+  static popScale () {
+    return (t) => CELL_PX + 2 * entropy(t) * INFLATE
   }
 
   static displayValue (displayTile) {
@@ -103,8 +124,8 @@ export default class Driver {
         let tile = this.state.getTileAt(i, j)
         if (tile) {
           displayTiles.push(new DisplayTile(tile, i, j))
-          if (tile.mergedWith) {
-            displayTiles.push(new DisplayTile(tile.mergedWith, i, j))
+          if (tile.mergingWith) {
+            displayTiles.push(new DisplayTile(tile.mergingWith, i, j))
           }
         }
       }
@@ -119,14 +140,12 @@ export default class Driver {
       .remove()
   }
 
-  draw (t, tileSvgs) {
+  drawNewTiles (tileSvgs) {
     let newTileSvgs = tileSvgs.enter()
       .append('svg')
       .attr('x', DisplayTile.x)
       .attr('y', DisplayTile.y)
       .attr('class', 'tile')
-      .style('fill-opacity', 1e-6)
-      .style('stroke-opacity', 1e-6)
 
     newTileSvgs.append('rect')
       .attr('width', CELL_PX)
@@ -142,59 +161,57 @@ export default class Driver {
       .style('fill', DisplayTile.textColor)
       .text(DisplayTile.displayValue)
 
+    return newTileSvgs
+  }
+
+  drawPlacedTiles (t, tileSvgs) {
+    let newTileSvgs = this.drawNewTiles(tileSvgs)
+
     newTileSvgs
+      .style('fill-opacity', 1e-6)
+      .style('stroke-opacity', 1e-6)
       .transition(t)
       .style('fill-opacity', 1)
       .style('stroke-opacity', 1)
+  }
 
+  drawMove (t, tileSvgs) {
     tileSvgs
       .transition(t)
       .attr('x', DisplayTile.x)
       .attr('y', DisplayTile.y)
+  }
 
-    tileSvgs
-      .select('rect')
-      .style('fill', DisplayTile.fill)
+  drawMergedTiles (t, tileSvgs) {
+    let newTileSvgs = this.drawNewTiles(tileSvgs)
 
-    tileSvgs
-      .select('text')
+    newTileSvgs
       .transition(t)
-      .style('stroke', DisplayTile.textColor)
-      .style('fill', DisplayTile.textColor)
-      .text(DisplayTile.displayValue)
+      .attrTween('x', DisplayTile.popRectX)
+      .attrTween('y', DisplayTile.popRectY)
 
-    tileSvgs.exit()
+    newTileSvgs.select('rect')
       .transition(t)
-      .ease(d3.easeExp)
-      .attr('x', (d) => DisplayTile.x(d) - INFLATE)
-      .attr('y', (d) => DisplayTile.y(d) - INFLATE)
-      .remove()
+      .attrTween('width', DisplayTile.popScale)
+      .attrTween('height', DisplayTile.popScale)
+
+    newTileSvgs.select('text')
+      .transition(t)
+      .attrTween('x', DisplayTile.popTextTranslate)
+      .attrTween('y', DisplayTile.popTextTranslate)
 
     tileSvgs.exit()
       .lower()
-      .select('rect')
       .transition(t)
-      .ease(d3.easeExp)
-      .attr('width', CELL_PX + 2 * INFLATE)
-      .attr('height', CELL_PX + 2 * INFLATE)
+      .remove()
   }
 
-  update (duration) {
+  update (duration, draw) {
     var t = this.board.transition().duration(duration)
     let tiles = this.board.selectAll('svg.tile')
       .data(this.getDisplayTiles(), DisplayTile.key)
-    this.draw(t, tiles)
+    draw.call(this, t, tiles)
     return t
-  }
-
-  cleanupMergedTiles () {
-    for (let i = 0; i < this.boardSize; ++i) {
-      for (let j = 0; j < this.boardSize; ++j) {
-        let tile = this.state.getTileAt(i, j)
-        if (tile) tile.mergedWith = null
-      }
-    }
-    return this.update(MERGE_DURATION)
   }
 
   run (emptyState, policy, seed) {
@@ -208,7 +225,7 @@ export default class Driver {
     this.state.placeRandomTile(this.generator)
 
     let step = () => {
-      this.update(PLACE_DURATION).on('end', () => {
+      this.update(PLACE_DURATION, this.drawPlacedTiles).on('end', () => {
         if (this.state.isWin() || this.state.isLose()) {
           this.dispatch.call('end', null, this.state.isWin())
           return
@@ -219,11 +236,12 @@ export default class Driver {
           this.state.copy().applyTransform(canonicalTransform)
         let canonicalAction = this.policy.getAction(canonicalState)
         let action = canonicalTransform.invertAction(canonicalAction)
-        this.state.move(action)
+        this.state.startMove(action)
         this.dispatch.call('move', null, action)
 
-        this.update(MOVE_DURATION).on('end', () => {
-          this.cleanupMergedTiles().on('end', () => {
+        this.update(MOVE_DURATION, this.drawMove).on('end', () => {
+          this.state.finishMove(action)
+          this.update(MERGE_DURATION, this.drawMergedTiles).on('end', () => {
             this.state.placeRandomTile(this.generator)
             setTimeout(step, 0)
           })
