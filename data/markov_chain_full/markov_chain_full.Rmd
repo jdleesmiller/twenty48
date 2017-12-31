@@ -8,7 +8,7 @@ library(ggplot2)
 library(reshape2)
 ```
 
-# 3x3 to 1024
+# 3x3 to 1024 discount 0.95
 
 ```{r}
 loadMetrics <- function (path) {
@@ -140,6 +140,41 @@ plotWinLoseCumulativePr <- function (prMetrics) {
 plotWinLoseCumulativePr(metrics310$prs)
 ```
 
+```{r}
+aggregate(total_pr ~ kind, metrics310$prs, sum)
+```
+
+# 3x3 to 1024 with no discount
+
+```{r}
+metrics3a1 <- loadMetrics('../layer_compact/board_size-3.max_exponent-10.max_depth-0.discount-1.0')
+```
+
+## States
+
+```{r}
+plotTransientTrancheStateCounts(metrics3a1$states)
+```
+
+```{r}
+plotStateCountsByKind(metrics3a1$states)
+```
+
+## Probabilities
+
+```{r}
+plotTotalPrByKind(metrics3a1$prs)
+```
+
+```{r}
+plotWinLoseCumulativePr(metrics3a1$prs)
+```
+
+```{r}
+aggregate(total_pr ~ kind, metrics3a1$prs, sum)
+```
+
+
 # 3x3 to 512
 
 ```{r}
@@ -164,6 +199,70 @@ plotTotalPrByKind(metrics39$prs)
 
 ```{r}
 plotWinLoseCumulativePr(metrics39$prs)
+```
+
+```{r}
+aggregate(total_pr ~ kind, metrics39$prs, sum)
+```
+
+# 2x2 to 32 with discount 0.95
+
+```{r}
+metrics25 <- loadMetrics('../layer_compact/board_size-2.max_exponent-5.max_depth-0.discount-0.95')
+```
+
+## States
+
+```{r}
+plotTransientTrancheStateCounts(metrics25$states)
+```
+
+```{r}
+plotStateCountsByKind(metrics25$states)
+```
+
+## Probabilities
+
+```{r}
+plotTotalPrByKind(metrics25$prs)
+```
+
+```{r}
+plotWinLoseCumulativePr(metrics25$prs)
+```
+
+```{r}
+aggregate(total_pr ~ kind, metrics25$prs, sum)
+```
+
+# 2x2 to 32 with no discount
+
+```{r}
+metrics251 <- loadMetrics('../layer_compact/board_size-2.max_exponent-5.max_depth-0.discount-1.0')
+```
+
+## States
+
+```{r}
+plotTransientTrancheStateCounts(metrics251$states)
+```
+
+```{r}
+plotStateCountsByKind(metrics251$states)
+```
+
+## Probabilities
+
+```{r}
+plotTotalPrByKind(metrics251$prs)
+```
+
+```{r}
+plotWinLoseCumulativePr(metrics251$prs)
+```
+
+```{r}
+aggregate(total_pr ~ kind, metrics251$prs, sum)
 ```
 
 # 4x4 to 32
