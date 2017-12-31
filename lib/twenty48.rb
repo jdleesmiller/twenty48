@@ -29,6 +29,8 @@ require_relative 'twenty48/layer_builder'
 require_relative 'twenty48/layer_compactor'
 require_relative 'twenty48/layer_conversion'
 require_relative 'twenty48/layer_solver'
+require_relative 'twenty48/layer_start_states'
+require_relative 'twenty48/layer_state_probabilities'
 require_relative 'twenty48/layer_tranche_builder'
 
 module Twenty48

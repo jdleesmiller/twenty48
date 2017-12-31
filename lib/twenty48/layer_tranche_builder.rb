@@ -9,48 +9,14 @@ module Twenty48
   TransientProbabilityMetrics = Struct.new(:count, :log_pr_sum)
 
   #
-  # Accumulate state probabilities by sum and max value.
-  #
-  class StateProbabilities
-    def initialize
-      @probabilities = Hash.new do |h0, sum|
-        h0[sum] = Hash.new do |h1, max_value|
-          h1[max_value] = Hash.new do |h2, state|
-            h2[state] = 0.0
-          end
-        end
-      end
-    end
-
-    def add(state, pr)
-      @probabilities[state.sum][state.max_value][state.get_nybbles] += pr
-    end
-
-    def find(state)
-      @probabilities[state.sum][state.max_value][state.get_nybbles]
-    end
-
-    def clear(sum, max_value)
-      @probabilities[sum].delete(max_value)
-    end
-
-    def each_sum_max_value
-      @probabilities.keys.sort.each do |sum|
-        sum_prs = @probabilities[sum]
-        sum_prs.keys.sort.each do |max_value|
-          yield sum, max_value, sum_prs[max_value]
-        end
-      end
-    end
-  end
-
-  #
   # Take a compacted policy and compute transient probabilities to generate:
   #
   # 1. Statistics on the transient probabilities in each sum layer, and
   # 2. Optionally, a CSV policy for a given transient probability threshold.
   #
   class LayerTrancheBuilder
+    include LayerStartStates
+
     def initialize(path, board_size, max_exponent,
       metrics_thresholds, output_threshold)
       @path = path
@@ -59,9 +25,9 @@ module Twenty48
       @metrics_thresholds = metrics_thresholds
       @output_threshold = output_threshold
 
-      @transient_probabilities = StateProbabilities.new
-      @wins = StateProbabilities.new
-      @losses = StateProbabilities.new
+      @transient_probabilities = LayerStateProbabilities.new
+      @wins = LayerStateProbabilities.new
+      @losses = LayerStateProbabilities.new
 
       @threshold_counts = make_zero_threshold_counts
     end
@@ -93,7 +59,7 @@ module Twenty48
     end
 
     def build
-      add_start_states
+      find_start_state_probabilities(board_size, transient_probabilities)
       CSV.open(metrics_pathname, 'w') do |metrics_csv|
         metrics_csv << %w[sum max_value] + metrics_threshold_names +
           %w[total_pr]
@@ -119,15 +85,6 @@ module Twenty48
     end
 
     private
-
-    def add_start_states
-      empty_state = NativeState.create([0] * board_size**2)
-      empty_state.random_transitions.each do |one_tile_state, pr0|
-        one_tile_state.random_transitions.each do |two_tile_state, pr1|
-          transient_probabilities.add(two_tile_state, pr0 * pr1)
-        end
-      end
-    end
 
     def metrics_threshold_names
       metrics_thresholds.map { |threshold| "num_states_#{threshold}" } +

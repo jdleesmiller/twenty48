@@ -47,6 +47,8 @@ class NativeLayerCompactorTest < Twenty48NativeTest
       values_4_file = LayerPartValuesName.glob(values_path)
         .find { |name| name.sum == 4 && name.max_value == 1 }
       assert_equal 32, File.size(values_4_file.in(values_path))
+      assert_close 0.03868113,
+        LayerStartStates.find_mean_start_state_value(board_size, values_path)
 
       # Run the compactor.
       layer_compactor = LayerCompactor.new(
