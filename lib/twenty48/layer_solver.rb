@@ -30,7 +30,8 @@ module Twenty48
       @solver = NativeLayerSolver.create(board_size, valuer)
       @verbose = verbose
 
-      raise "not enough layers: #{end_layer_sum}" if @end_layer_sum < 8
+      raise "not enough layers: #{end_layer_sum}" if
+        @end_layer_sum.nil? || @end_layer_sum < 8
     end
 
     attr_reader :layer_folder
@@ -132,7 +133,7 @@ module Twenty48
     end
 
     def find_layer_fragments(sum, max_value, klass)
-      files = klass.glob(values_folder) do |name|
+      files = klass.glob(values_folder).select do |name|
         name.sum == sum && name.max_value == max_value
       end
       files = files.sort_by { |name| [name.sum, name.max_value, name.batch] }
