@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'fileutils'
+
+require_relative '../lib/twenty48'
+
+module Twenty48
+  #
+  # Find the (weighted) mean start state value for a solved model. This is a
+  # useful sanity check when comparing models and also tells you (modulo the
+  # discount) the probability of winning.
+  #
+  class LayerValueBin
+    include LayerStartStates
+
+    def run(board_size, pathname)
+      puts find_mean_start_state_value(board_size, pathname)
+    end
+  end
+end
+
+Twenty48::LayerValueBin.new.run(ARGV[0].to_i, ARGV[1])

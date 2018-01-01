@@ -55,19 +55,23 @@ module Twenty48
     end
 
     # Find all actually extant parts and also their potentially reachable
-    # successor parts, including parts that contain win states.
+    # successor parts, including parts that would contain win states, in order.
     def find_all_parts
       parts = Hash.new { |h, k| h[k] = Set.new }
-      (4..end_layer_sum).step(2).each do |sum|
-        find_max_values(sum).each do |max_value|
-          [0, 2, 4].each do |delta_sum|
-            [0, 1].each do |delta_max_value|
-              parts[sum + delta_sum] << max_value + delta_max_value
-            end
+      find_actual_parts.each do |(sum, max_value)|
+        [0, 2, 4].each do |delta_sum|
+          [0, 1].each do |delta_max_value|
+            parts[sum + delta_sum] << max_value + delta_max_value
           end
         end
       end
       Hash[parts.keys.sort.reverse.map { |sum| [sum, parts[sum].to_a.sort] }]
+    end
+
+    def find_actual_parts
+      LayerPartName.glob(layer_folder).map do |name|
+        [name.sum, name.max_value]
+      end
     end
 
     def q_solve_part(sum, max_value)
@@ -101,8 +105,7 @@ module Twenty48
     def run_solve_q_jobs(native_solver, jobs)
       jobs.each(&:initialize_q)
       GC.start
-      # Parallel.each(jobs) do |job|
-      jobs.each do |job|
+      Parallel.each(jobs) do |job|
         job.solve(native_solver)
       end
     end
@@ -110,8 +113,7 @@ module Twenty48
     def convert_q_to_v(sum, max_value)
       jobs = make_finish_q_jobs_for_part(sum, max_value)
       GC.start
-      jobs.each(&:finish)
-      # Parallel.each(jobs, &:finish)
+      Parallel.each(jobs, &:finish)
     end
 
     def make_finish_q_jobs_for_part(sum, max_value)
@@ -147,8 +149,12 @@ module Twenty48
     ) do
       def initialize_q
         return if File.exist?(q_pathname)
-        command = "dd if=/dev/zero of=#{q_pathname} bs=32 count=#{batch_size}"
-        command += '>/dev/null 2>/dev/null'
+        byte_size = batch_size * 32
+        block_size = 1024**2
+        count = (byte_size.to_f / block_size).ceil
+        command = "dd if=/dev/zero of=#{q_pathname}" \
+          " bs=#{block_size} count=#{count}" \
+          ' >/dev/null 2>/dev/null'
         system command
       end
 
@@ -162,6 +168,7 @@ module Twenty48
           layer_fragment_values_pathname,
           layer_fragment_policy_pathname
         )
+        FileUtils.rm_f q_pathname
       end
 
       private
