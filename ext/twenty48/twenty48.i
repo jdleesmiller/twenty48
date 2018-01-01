@@ -5,6 +5,7 @@
 #include "line.hpp"
 #include "state.hpp"
 #include "layer_builder.hpp"
+#include "layer_q_solver.hpp"
 #include "layer_solver.hpp"
 #include "merge_states.hpp"
 #include "policy_reader.hpp"
@@ -137,6 +138,12 @@
 %template(LayerSolver2) twenty48::layer_solver_t<2>;
 %template(LayerSolver3) twenty48::layer_solver_t<3>;
 %template(LayerSolver4) twenty48::layer_solver_t<4>;
+
+%include "layer_q_solver.hpp"
+
+%template(LayerQSolver2) twenty48::layer_q_solver_t<2>;
+%template(LayerQSolver3) twenty48::layer_q_solver_t<3>;
+%template(LayerQSolver4) twenty48::layer_q_solver_t<4>;
 
 /******************************************************************************/
 /* Policy Reader/Writer */

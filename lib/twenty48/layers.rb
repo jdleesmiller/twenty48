@@ -122,6 +122,8 @@ module Twenty48
       Array.new(input_index.size) do |i|
         [i, input_index[i].byte_offset, input_index[i].previous, batch_size]
       end
+    rescue Errno::ENOENT
+      []
     end
 
     def read_layer_part_info(sum, max_value)
@@ -141,6 +143,8 @@ module Twenty48
 
     def count_states(sum, max_value)
       read_layer_part_info(sum, max_value)['num_states']
+    rescue Errno::ENOENT
+      0
     end
 
     def log(message)

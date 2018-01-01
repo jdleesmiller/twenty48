@@ -195,6 +195,24 @@ module Twenty48
   end
 
   #
+  # Common methods for the native LayerSolver class.
+  #
+  module NativeLayerQSolver
+    def self.klass(board_size)
+      case board_size
+      when 2 then LayerQSolver2
+      when 3 then LayerQSolver3
+      when 4 then LayerQSolver4
+      else raise "bad layer Q solver board_size: #{board_size}"
+      end
+    end
+
+    def self.create(board_size, *args)
+      klass(board_size).new(*args)
+    end
+  end
+
+  #
   # Common methods for the native StateValueMap classes.
   #
   module NativeStateValueMap

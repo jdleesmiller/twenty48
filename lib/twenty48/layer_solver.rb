@@ -24,8 +24,10 @@ module Twenty48
 
     def initialize(board_size, layer_folder, values_folder, valuer,
       end_layer_sum: nil, verbose: false)
+      @board_size = board_size
       @layer_folder = layer_folder
       @values_folder = values_folder
+      @valuer = valuer
       @end_layer_sum = end_layer_sum || find_max_layer_sum
       @solver = NativeLayerSolver.create(board_size, valuer)
       @verbose = verbose
@@ -34,8 +36,10 @@ module Twenty48
         @end_layer_sum.nil? || @end_layer_sum < 8
     end
 
+    attr_reader :board_size
     attr_reader :layer_folder
     attr_reader :values_folder
+    attr_reader :valuer
     attr_reader :end_layer_sum
 
     def solve

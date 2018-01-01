@@ -1882,31 +1882,34 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 #define SWIGTYPE_p_twenty48__layer_builder_tT_2_t swig_types[52]
 #define SWIGTYPE_p_twenty48__layer_builder_tT_3_t swig_types[53]
 #define SWIGTYPE_p_twenty48__layer_builder_tT_4_t swig_types[54]
-#define SWIGTYPE_p_twenty48__layer_solver_tT_2_t swig_types[55]
-#define SWIGTYPE_p_twenty48__layer_solver_tT_3_t swig_types[56]
-#define SWIGTYPE_p_twenty48__layer_solver_tT_4_t swig_types[57]
-#define SWIGTYPE_p_twenty48__line_tT_2_t swig_types[58]
-#define SWIGTYPE_p_twenty48__line_tT_3_t swig_types[59]
-#define SWIGTYPE_p_twenty48__line_tT_4_t swig_types[60]
-#define SWIGTYPE_p_twenty48__policy_reader_t swig_types[61]
-#define SWIGTYPE_p_twenty48__policy_writer_t swig_types[62]
-#define SWIGTYPE_p_twenty48__state_tT_2_t swig_types[63]
-#define SWIGTYPE_p_twenty48__state_tT_3_t swig_types[64]
-#define SWIGTYPE_p_twenty48__state_tT_4_t swig_types[65]
-#define SWIGTYPE_p_twenty48__valuer_tT_2_t swig_types[66]
-#define SWIGTYPE_p_twenty48__valuer_tT_3_t swig_types[67]
-#define SWIGTYPE_p_twenty48__valuer_tT_4_t swig_types[68]
-#define SWIGTYPE_p_twenty48__vbyte_index_entry_t swig_types[69]
-#define SWIGTYPE_p_twenty48__vbyte_reader_t swig_types[70]
-#define SWIGTYPE_p_twenty48__vbyte_writer_t swig_types[71]
-#define SWIGTYPE_p_unsigned_char swig_types[72]
-#define SWIGTYPE_p_unsigned_int swig_types[73]
-#define SWIGTYPE_p_unsigned_long_long swig_types[74]
-#define SWIGTYPE_p_unsigned_short swig_types[75]
-#define SWIGTYPE_p_value_type swig_types[76]
-#define SWIGTYPE_p_void swig_types[77]
-static swig_type_info *swig_types[79];
-static swig_module_info swig_module = {swig_types, 78, 0, 0, 0, 0};
+#define SWIGTYPE_p_twenty48__layer_q_solver_tT_2_t swig_types[55]
+#define SWIGTYPE_p_twenty48__layer_q_solver_tT_3_t swig_types[56]
+#define SWIGTYPE_p_twenty48__layer_q_solver_tT_4_t swig_types[57]
+#define SWIGTYPE_p_twenty48__layer_solver_tT_2_t swig_types[58]
+#define SWIGTYPE_p_twenty48__layer_solver_tT_3_t swig_types[59]
+#define SWIGTYPE_p_twenty48__layer_solver_tT_4_t swig_types[60]
+#define SWIGTYPE_p_twenty48__line_tT_2_t swig_types[61]
+#define SWIGTYPE_p_twenty48__line_tT_3_t swig_types[62]
+#define SWIGTYPE_p_twenty48__line_tT_4_t swig_types[63]
+#define SWIGTYPE_p_twenty48__policy_reader_t swig_types[64]
+#define SWIGTYPE_p_twenty48__policy_writer_t swig_types[65]
+#define SWIGTYPE_p_twenty48__state_tT_2_t swig_types[66]
+#define SWIGTYPE_p_twenty48__state_tT_3_t swig_types[67]
+#define SWIGTYPE_p_twenty48__state_tT_4_t swig_types[68]
+#define SWIGTYPE_p_twenty48__valuer_tT_2_t swig_types[69]
+#define SWIGTYPE_p_twenty48__valuer_tT_3_t swig_types[70]
+#define SWIGTYPE_p_twenty48__valuer_tT_4_t swig_types[71]
+#define SWIGTYPE_p_twenty48__vbyte_index_entry_t swig_types[72]
+#define SWIGTYPE_p_twenty48__vbyte_reader_t swig_types[73]
+#define SWIGTYPE_p_twenty48__vbyte_writer_t swig_types[74]
+#define SWIGTYPE_p_unsigned_char swig_types[75]
+#define SWIGTYPE_p_unsigned_int swig_types[76]
+#define SWIGTYPE_p_unsigned_long_long swig_types[77]
+#define SWIGTYPE_p_unsigned_short swig_types[78]
+#define SWIGTYPE_p_value_type swig_types[79]
+#define SWIGTYPE_p_void swig_types[80]
+static swig_type_info *swig_types[82];
+static swig_module_info swig_module = {swig_types, 81, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1936,6 +1939,7 @@ static VALUE mTwenty48;
 #include "line.hpp"
 #include "state.hpp"
 #include "layer_builder.hpp"
+#include "layer_q_solver.hpp"
 #include "layer_solver.hpp"
 #include "merge_states.hpp"
 #include "policy_reader.hpp"
@@ -36655,6 +36659,606 @@ free_twenty48_layer_solver_t_Sl_4_Sg_(void *self) {
     delete arg1;
 }
 
+static swig_class SwigClassLayerQSolver2;
+
+SWIGINTERN VALUE
+#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
+_wrap_LayerQSolver2_allocate(VALUE self)
+#else
+_wrap_LayerQSolver2_allocate(int argc, VALUE *argv, VALUE self)
+#endif
+{
+  VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_twenty48__layer_q_solver_tT_2_t);
+#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
+  rb_obj_call_init(vresult, argc, argv);
+#endif
+  return vresult;
+}
+
+
+SWIGINTERN VALUE
+_wrap_new_LayerQSolver2(int argc, VALUE *argv, VALUE self) {
+  twenty48::valuer_t< 2 > *arg1 = 0 ;
+  int arg2 ;
+  uint8_t arg3 ;
+  char *arg4 = (char *) 0 ;
+  void *argp1 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  unsigned char val3 ;
+  int ecode3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  twenty48::layer_q_solver_t< 2 > *result = 0 ;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_twenty48__valuer_tT_2_t,  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::valuer_t< 2 > const &","layer_q_solver_t<(2)>", 1, argv[0] )); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::valuer_t< 2 > const &","layer_q_solver_t<(2)>", 1, argv[0])); 
+  }
+  arg1 = reinterpret_cast< twenty48::valuer_t< 2 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","layer_q_solver_t<(2)>", 2, argv[1] ));
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","layer_q_solver_t<(2)>", 3, argv[2] ));
+  } 
+  arg3 = static_cast< uint8_t >(val3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","layer_q_solver_t<(2)>", 4, argv[3] ));
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  result = (twenty48::layer_q_solver_t< 2 > *)new twenty48::layer_q_solver_t< 2 >((twenty48::valuer_t< 2 > const &)*arg1,arg2,arg3,(char const *)arg4);
+  DATA_PTR(self) = result;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return self;
+fail:
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerQSolver2_get_discount(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_q_solver_t< 2 > *arg1 = (twenty48::layer_q_solver_t< 2 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_q_solver_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_q_solver_t< 2 > const *","get_discount", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_q_solver_t< 2 > * >(argp1);
+  result = (double)((twenty48::layer_q_solver_t< 2 > const *)arg1)->get_discount();
+  vresult = SWIG_From_double(static_cast< double >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerQSolver2_solve(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_q_solver_t< 2 > *arg1 = (twenty48::layer_q_solver_t< 2 > *) 0 ;
+  twenty48::vbyte_reader_t *arg2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_q_solver_tT_2_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_q_solver_t< 2 > *","solve", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_q_solver_t< 2 > * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","solve", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","solve", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp2);
+  res3 = SWIG_AsCharPtrAndSize(argv[1], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","solve", 3, argv[1] ));
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  (arg1)->solve(*arg2,(char const *)arg3);
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return Qnil;
+fail:
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerQSolver2_finish(int argc, VALUE *argv, VALUE self) {
+  twenty48::vbyte_reader_t *arg1 = 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","twenty48::layer_q_solver_t<(2)>::finish", 1, argv[0] )); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","twenty48::layer_q_solver_t<(2)>::finish", 1, argv[0])); 
+  }
+  arg1 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","twenty48::layer_q_solver_t<(2)>::finish", 2, argv[1] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","twenty48::layer_q_solver_t<(2)>::finish", 3, argv[2] ));
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","twenty48::layer_q_solver_t<(2)>::finish", 4, argv[3] ));
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  twenty48::layer_q_solver_t< 2 >::SWIGTEMPLATEDISAMBIGUATOR finish(*arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return Qnil;
+}
+
+
+SWIGINTERN void
+free_twenty48_layer_q_solver_t_Sl_2_Sg_(void *self) {
+    twenty48::layer_q_solver_t< 2 > *arg1 = (twenty48::layer_q_solver_t< 2 > *)self;
+    delete arg1;
+}
+
+static swig_class SwigClassLayerQSolver3;
+
+SWIGINTERN VALUE
+#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
+_wrap_LayerQSolver3_allocate(VALUE self)
+#else
+_wrap_LayerQSolver3_allocate(int argc, VALUE *argv, VALUE self)
+#endif
+{
+  VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_twenty48__layer_q_solver_tT_3_t);
+#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
+  rb_obj_call_init(vresult, argc, argv);
+#endif
+  return vresult;
+}
+
+
+SWIGINTERN VALUE
+_wrap_new_LayerQSolver3(int argc, VALUE *argv, VALUE self) {
+  twenty48::valuer_t< 3 > *arg1 = 0 ;
+  int arg2 ;
+  uint8_t arg3 ;
+  char *arg4 = (char *) 0 ;
+  void *argp1 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  unsigned char val3 ;
+  int ecode3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  twenty48::layer_q_solver_t< 3 > *result = 0 ;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_twenty48__valuer_tT_3_t,  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::valuer_t< 3 > const &","layer_q_solver_t<(3)>", 1, argv[0] )); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::valuer_t< 3 > const &","layer_q_solver_t<(3)>", 1, argv[0])); 
+  }
+  arg1 = reinterpret_cast< twenty48::valuer_t< 3 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","layer_q_solver_t<(3)>", 2, argv[1] ));
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","layer_q_solver_t<(3)>", 3, argv[2] ));
+  } 
+  arg3 = static_cast< uint8_t >(val3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","layer_q_solver_t<(3)>", 4, argv[3] ));
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  result = (twenty48::layer_q_solver_t< 3 > *)new twenty48::layer_q_solver_t< 3 >((twenty48::valuer_t< 3 > const &)*arg1,arg2,arg3,(char const *)arg4);
+  DATA_PTR(self) = result;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return self;
+fail:
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerQSolver3_get_discount(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_q_solver_t< 3 > *arg1 = (twenty48::layer_q_solver_t< 3 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_q_solver_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_q_solver_t< 3 > const *","get_discount", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_q_solver_t< 3 > * >(argp1);
+  result = (double)((twenty48::layer_q_solver_t< 3 > const *)arg1)->get_discount();
+  vresult = SWIG_From_double(static_cast< double >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerQSolver3_solve(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_q_solver_t< 3 > *arg1 = (twenty48::layer_q_solver_t< 3 > *) 0 ;
+  twenty48::vbyte_reader_t *arg2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_q_solver_tT_3_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_q_solver_t< 3 > *","solve", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_q_solver_t< 3 > * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","solve", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","solve", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp2);
+  res3 = SWIG_AsCharPtrAndSize(argv[1], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","solve", 3, argv[1] ));
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  (arg1)->solve(*arg2,(char const *)arg3);
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return Qnil;
+fail:
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerQSolver3_finish(int argc, VALUE *argv, VALUE self) {
+  twenty48::vbyte_reader_t *arg1 = 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","twenty48::layer_q_solver_t<(3)>::finish", 1, argv[0] )); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","twenty48::layer_q_solver_t<(3)>::finish", 1, argv[0])); 
+  }
+  arg1 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","twenty48::layer_q_solver_t<(3)>::finish", 2, argv[1] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","twenty48::layer_q_solver_t<(3)>::finish", 3, argv[2] ));
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","twenty48::layer_q_solver_t<(3)>::finish", 4, argv[3] ));
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  twenty48::layer_q_solver_t< 3 >::SWIGTEMPLATEDISAMBIGUATOR finish(*arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return Qnil;
+}
+
+
+SWIGINTERN void
+free_twenty48_layer_q_solver_t_Sl_3_Sg_(void *self) {
+    twenty48::layer_q_solver_t< 3 > *arg1 = (twenty48::layer_q_solver_t< 3 > *)self;
+    delete arg1;
+}
+
+static swig_class SwigClassLayerQSolver4;
+
+SWIGINTERN VALUE
+#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
+_wrap_LayerQSolver4_allocate(VALUE self)
+#else
+_wrap_LayerQSolver4_allocate(int argc, VALUE *argv, VALUE self)
+#endif
+{
+  VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_twenty48__layer_q_solver_tT_4_t);
+#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
+  rb_obj_call_init(vresult, argc, argv);
+#endif
+  return vresult;
+}
+
+
+SWIGINTERN VALUE
+_wrap_new_LayerQSolver4(int argc, VALUE *argv, VALUE self) {
+  twenty48::valuer_t< 4 > *arg1 = 0 ;
+  int arg2 ;
+  uint8_t arg3 ;
+  char *arg4 = (char *) 0 ;
+  void *argp1 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  unsigned char val3 ;
+  int ecode3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  twenty48::layer_q_solver_t< 4 > *result = 0 ;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_twenty48__valuer_tT_4_t,  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::valuer_t< 4 > const &","layer_q_solver_t<(4)>", 1, argv[0] )); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::valuer_t< 4 > const &","layer_q_solver_t<(4)>", 1, argv[0])); 
+  }
+  arg1 = reinterpret_cast< twenty48::valuer_t< 4 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","layer_q_solver_t<(4)>", 2, argv[1] ));
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","layer_q_solver_t<(4)>", 3, argv[2] ));
+  } 
+  arg3 = static_cast< uint8_t >(val3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","layer_q_solver_t<(4)>", 4, argv[3] ));
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  result = (twenty48::layer_q_solver_t< 4 > *)new twenty48::layer_q_solver_t< 4 >((twenty48::valuer_t< 4 > const &)*arg1,arg2,arg3,(char const *)arg4);
+  DATA_PTR(self) = result;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return self;
+fail:
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerQSolver4_get_discount(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_q_solver_t< 4 > *arg1 = (twenty48::layer_q_solver_t< 4 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_q_solver_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_q_solver_t< 4 > const *","get_discount", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_q_solver_t< 4 > * >(argp1);
+  result = (double)((twenty48::layer_q_solver_t< 4 > const *)arg1)->get_discount();
+  vresult = SWIG_From_double(static_cast< double >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerQSolver4_solve(int argc, VALUE *argv, VALUE self) {
+  twenty48::layer_q_solver_t< 4 > *arg1 = (twenty48::layer_q_solver_t< 4 > *) 0 ;
+  twenty48::vbyte_reader_t *arg2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_q_solver_tT_4_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_q_solver_t< 4 > *","solve", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::layer_q_solver_t< 4 > * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","solve", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","solve", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp2);
+  res3 = SWIG_AsCharPtrAndSize(argv[1], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","solve", 3, argv[1] ));
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  (arg1)->solve(*arg2,(char const *)arg3);
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return Qnil;
+fail:
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_LayerQSolver4_finish(int argc, VALUE *argv, VALUE self) {
+  twenty48::vbyte_reader_t *arg1 = 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","twenty48::layer_q_solver_t<(4)>::finish", 1, argv[0] )); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","twenty48::layer_q_solver_t<(4)>::finish", 1, argv[0])); 
+  }
+  arg1 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","twenty48::layer_q_solver_t<(4)>::finish", 2, argv[1] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","twenty48::layer_q_solver_t<(4)>::finish", 3, argv[2] ));
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","twenty48::layer_q_solver_t<(4)>::finish", 4, argv[3] ));
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  twenty48::layer_q_solver_t< 4 >::SWIGTEMPLATEDISAMBIGUATOR finish(*arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return Qnil;
+}
+
+
+SWIGINTERN void
+free_twenty48_layer_q_solver_t_Sl_4_Sg_(void *self) {
+    twenty48::layer_q_solver_t< 4 > *arg1 = (twenty48::layer_q_solver_t< 4 > *)self;
+    delete arg1;
+}
+
 static swig_class SwigClassPolicyReader;
 
 SWIGINTERN VALUE
@@ -37050,6 +37654,9 @@ static swig_type_info _swigt__p_twenty48__DIRECTION = {"_p_twenty48__DIRECTION",
 static swig_type_info _swigt__p_twenty48__layer_builder_tT_2_t = {"_p_twenty48__layer_builder_tT_2_t", "twenty48::layer_builder_t< 2 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__layer_builder_tT_3_t = {"_p_twenty48__layer_builder_tT_3_t", "twenty48::layer_builder_t< 3 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__layer_builder_tT_4_t = {"_p_twenty48__layer_builder_tT_4_t", "twenty48::layer_builder_t< 4 > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_twenty48__layer_q_solver_tT_2_t = {"_p_twenty48__layer_q_solver_tT_2_t", "twenty48::layer_q_solver_t< 2 > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_twenty48__layer_q_solver_tT_3_t = {"_p_twenty48__layer_q_solver_tT_3_t", "twenty48::layer_q_solver_t< 3 > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_twenty48__layer_q_solver_tT_4_t = {"_p_twenty48__layer_q_solver_tT_4_t", "twenty48::layer_q_solver_t< 4 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__layer_solver_tT_2_t = {"_p_twenty48__layer_solver_tT_2_t", "twenty48::layer_solver_t< 2 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__layer_solver_tT_3_t = {"_p_twenty48__layer_solver_tT_3_t", "twenty48::layer_solver_t< 3 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__layer_solver_tT_4_t = {"_p_twenty48__layer_solver_tT_4_t", "twenty48::layer_solver_t< 4 > *", 0, 0, (void*)0, 0};
@@ -37130,6 +37737,9 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_twenty48__layer_builder_tT_2_t,
   &_swigt__p_twenty48__layer_builder_tT_3_t,
   &_swigt__p_twenty48__layer_builder_tT_4_t,
+  &_swigt__p_twenty48__layer_q_solver_tT_2_t,
+  &_swigt__p_twenty48__layer_q_solver_tT_3_t,
+  &_swigt__p_twenty48__layer_q_solver_tT_4_t,
   &_swigt__p_twenty48__layer_solver_tT_2_t,
   &_swigt__p_twenty48__layer_solver_tT_3_t,
   &_swigt__p_twenty48__layer_solver_tT_4_t,
@@ -37210,6 +37820,9 @@ static swig_cast_info _swigc__p_twenty48__DIRECTION[] = {  {&_swigt__p_twenty48_
 static swig_cast_info _swigc__p_twenty48__layer_builder_tT_2_t[] = {  {&_swigt__p_twenty48__layer_builder_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__layer_builder_tT_3_t[] = {  {&_swigt__p_twenty48__layer_builder_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__layer_builder_tT_4_t[] = {  {&_swigt__p_twenty48__layer_builder_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_twenty48__layer_q_solver_tT_2_t[] = {  {&_swigt__p_twenty48__layer_q_solver_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_twenty48__layer_q_solver_tT_3_t[] = {  {&_swigt__p_twenty48__layer_q_solver_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_twenty48__layer_q_solver_tT_4_t[] = {  {&_swigt__p_twenty48__layer_q_solver_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__layer_solver_tT_2_t[] = {  {&_swigt__p_twenty48__layer_solver_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__layer_solver_tT_3_t[] = {  {&_swigt__p_twenty48__layer_solver_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__layer_solver_tT_4_t[] = {  {&_swigt__p_twenty48__layer_solver_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -37290,6 +37903,9 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_twenty48__layer_builder_tT_2_t,
   _swigc__p_twenty48__layer_builder_tT_3_t,
   _swigc__p_twenty48__layer_builder_tT_4_t,
+  _swigc__p_twenty48__layer_q_solver_tT_2_t,
+  _swigc__p_twenty48__layer_q_solver_tT_3_t,
+  _swigc__p_twenty48__layer_q_solver_tT_4_t,
   _swigc__p_twenty48__layer_solver_tT_2_t,
   _swigc__p_twenty48__layer_solver_tT_3_t,
   _swigc__p_twenty48__layer_solver_tT_4_t,
@@ -38383,6 +38999,39 @@ SWIGEXPORT void Init_twenty48(void) {
   SwigClassLayerSolver4.mark = 0;
   SwigClassLayerSolver4.destroy = (void (*)(void *)) free_twenty48_layer_solver_t_Sl_4_Sg_;
   SwigClassLayerSolver4.trackObjects = 0;
+  
+  SwigClassLayerQSolver2.klass = rb_define_class_under(mTwenty48, "LayerQSolver2", rb_cObject);
+  SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_q_solver_tT_2_t, (void *) &SwigClassLayerQSolver2);
+  rb_define_alloc_func(SwigClassLayerQSolver2.klass, _wrap_LayerQSolver2_allocate);
+  rb_define_method(SwigClassLayerQSolver2.klass, "initialize", VALUEFUNC(_wrap_new_LayerQSolver2), -1);
+  rb_define_method(SwigClassLayerQSolver2.klass, "get_discount", VALUEFUNC(_wrap_LayerQSolver2_get_discount), -1);
+  rb_define_method(SwigClassLayerQSolver2.klass, "solve", VALUEFUNC(_wrap_LayerQSolver2_solve), -1);
+  rb_define_singleton_method(SwigClassLayerQSolver2.klass, "finish", VALUEFUNC(_wrap_LayerQSolver2_finish), -1);
+  SwigClassLayerQSolver2.mark = 0;
+  SwigClassLayerQSolver2.destroy = (void (*)(void *)) free_twenty48_layer_q_solver_t_Sl_2_Sg_;
+  SwigClassLayerQSolver2.trackObjects = 0;
+  
+  SwigClassLayerQSolver3.klass = rb_define_class_under(mTwenty48, "LayerQSolver3", rb_cObject);
+  SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_q_solver_tT_3_t, (void *) &SwigClassLayerQSolver3);
+  rb_define_alloc_func(SwigClassLayerQSolver3.klass, _wrap_LayerQSolver3_allocate);
+  rb_define_method(SwigClassLayerQSolver3.klass, "initialize", VALUEFUNC(_wrap_new_LayerQSolver3), -1);
+  rb_define_method(SwigClassLayerQSolver3.klass, "get_discount", VALUEFUNC(_wrap_LayerQSolver3_get_discount), -1);
+  rb_define_method(SwigClassLayerQSolver3.klass, "solve", VALUEFUNC(_wrap_LayerQSolver3_solve), -1);
+  rb_define_singleton_method(SwigClassLayerQSolver3.klass, "finish", VALUEFUNC(_wrap_LayerQSolver3_finish), -1);
+  SwigClassLayerQSolver3.mark = 0;
+  SwigClassLayerQSolver3.destroy = (void (*)(void *)) free_twenty48_layer_q_solver_t_Sl_3_Sg_;
+  SwigClassLayerQSolver3.trackObjects = 0;
+  
+  SwigClassLayerQSolver4.klass = rb_define_class_under(mTwenty48, "LayerQSolver4", rb_cObject);
+  SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_q_solver_tT_4_t, (void *) &SwigClassLayerQSolver4);
+  rb_define_alloc_func(SwigClassLayerQSolver4.klass, _wrap_LayerQSolver4_allocate);
+  rb_define_method(SwigClassLayerQSolver4.klass, "initialize", VALUEFUNC(_wrap_new_LayerQSolver4), -1);
+  rb_define_method(SwigClassLayerQSolver4.klass, "get_discount", VALUEFUNC(_wrap_LayerQSolver4_get_discount), -1);
+  rb_define_method(SwigClassLayerQSolver4.klass, "solve", VALUEFUNC(_wrap_LayerQSolver4_solve), -1);
+  rb_define_singleton_method(SwigClassLayerQSolver4.klass, "finish", VALUEFUNC(_wrap_LayerQSolver4_finish), -1);
+  SwigClassLayerQSolver4.mark = 0;
+  SwigClassLayerQSolver4.destroy = (void (*)(void *)) free_twenty48_layer_q_solver_t_Sl_4_Sg_;
+  SwigClassLayerQSolver4.trackObjects = 0;
   
   SwigClassPolicyReader.klass = rb_define_class_under(mTwenty48, "PolicyReader", rb_cObject);
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__policy_reader_t, (void *) &SwigClassPolicyReader);
