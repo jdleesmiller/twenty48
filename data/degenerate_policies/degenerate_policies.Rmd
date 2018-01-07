@@ -1,0 +1,225 @@
+---
+title: "Degenerate Policy Investigation"
+output: html_document
+---
+
+Here 'degeneracy' means that all feasible actions have the same value.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+require(stringr)
+require(reshape2)
+require(ggplot2)
+```
+
+# 2x2 to 32
+
+```{r}
+readPartQ <- function (pathname) {
+  if (file.size(pathname) == 0) {
+    NULL
+  } else {
+    read.csv(
+      pathname,
+      header = FALSE,
+      colClasses = c('character', rep('numeric', times = 4)),
+      col.names = c('state', 'left', 'right', 'up', 'down'))
+  }
+}
+
+readFullQ <- function (boardSize, path) {
+  transform(
+    do.call(
+      rbind,
+      lapply(Sys.glob(file.path(path, '*.all.csv')), readPartQ)),
+    state = factor(str_pad(state, width = boardSize**2, pad = '0')))
+}
+
+q25 <- readFullQ(2, '../layer_values/board_size-2.max_exponent-5.max_depth-0.discount-0.95')
+summary(q25)
+```
+
+```{r}
+findQMetrics <- function (q, tolerance = 1e-9) {
+  feasibleActions <- with(q, (left >= 0) + (right >= 0) + (up >= 0) + (down >= 0))
+  maxValue <- with(q, pmax.int(left, right, up, down))
+  deltaLeft <- with(q, maxValue - left)
+  deltaRight <- with(q, maxValue - right)
+  deltaUp <- with(q, maxValue - up)
+  deltaDown <- with(q, maxValue - down)
+  degenerateActions <-
+    (deltaLeft < tolerance) + 
+    (deltaRight < tolerance) + 
+    (deltaUp < tolerance) + 
+    (deltaDown < tolerance)
+  # If there are states that differ in value, we need to decide whether it's numerical noise,
+  # in which case the tolerance should be set to avoid it, or actual but small differences in
+  # value.
+  gap <- with(q, pmin.int(
+    deltaLeft + (deltaLeft == 0),
+    deltaRight + (deltaRight == 0),
+    deltaUp + (deltaUp == 0),
+    deltaDown + (deltaDown == 0)
+  ))
+  data.frame(
+    state = q$state,
+    feasible_actions = feasibleActions,
+    degenerate_actions = degenerateActions,
+    gap = gap)
+}
+qMetrics25 <- findQMetrics(q25)
+summary(qMetrics25)
+```
+
+```{r}
+subset(qMetrics25, gap < 1e-9)
+```
+
+```{r}
+findStateInfo <- function (state) {
+  tileExponents <- lapply(str_split(state, ''), function (n) {
+    nInt <- strtoi(n, base = 16L)
+    nInt[nInt == 0] <- NA
+    nInt
+  })
+  tileSum <- sapply(tileExponents, function (n) {
+    sum(2**n, na.rm = TRUE)
+  })
+  maxExponent <- sapply(tileExponents, function (n) {
+    max(n, na.rm = TRUE)
+  })
+  
+  data.frame(
+    state = state,
+    sum = tileSum,
+    max_exponent = maxExponent
+  )
+}
+qInfo25 <- findStateInfo(q25$state)
+head(qInfo25)
+```
+
+```{r}
+findPartMetrics <- function (qMetrics, qInfo) {
+  melt(
+    aggregate(cbind(
+      degenerate = degenerate_actions != 1,
+      non_degenerate = degenerate_actions == 1) ~ sum + max_exponent,
+      merge(qMetrics, qInfo), sum),
+    id.vars = c('sum', 'max_exponent'),
+    variable.name = 'kind',
+    value.name = 'num_states')
+}
+partMetrics25 <- findPartMetrics(qMetrics25, qInfo25)
+head(partMetrics25)
+```
+
+
+```{r}
+ggplot(
+  partMetrics25,
+  aes(sum, num_states)) +
+  geom_bar(aes(fill = kind), stat = 'identity')
+```
+
+# 3x3 to 512 discount 0.95
+
+```{r}
+q39 <- readFullQ(3, '../layer_values/board_size-3.max_exponent-9.max_depth-0.discount-0.95')
+summary(q39)
+```
+
+```{r}
+ggplot(
+  subset(melt(q39, id.vars = 'state'), value > 0),
+  aes(log10(value), fill = variable)) +
+  geom_histogram(binwidth = 1)
+```
+
+  
+```{r}
+qMetrics39 <- findQMetrics(q39)
+summary(qMetrics39)
+```
+
+```{r}
+ggplot(
+  subset(qMetrics39, gap > 0),
+  aes(log(gap))) +
+  geom_histogram(binwidth = 1)
+```
+
+No clear cutoff. I wonder whether it will look different if there is no discount factor?
+
+```{r}
+qInfo39 <- findStateInfo(q39$state)
+summary(qInfo39)
+```
+
+```{r}
+partMetrics39 <- findPartMetrics(qMetrics39, qInfo39)
+head(partMetrics39)
+```
+
+```{r}
+ggplot(
+  partMetrics39,
+  aes(sum, num_states)) +
+  geom_bar(aes(fill = kind), stat = 'identity')
+```
+
+
+# 3x3 to 512 discount 1.0
+
+```{r}
+q391 <- readFullQ(3, '../layer_values/board_size-3.max_exponent-9.max_depth-0.discount-1.0')
+summary(q391)
+```
+
+```{r}
+ggplot(
+  subset(melt(q391, id.vars = 'state'), value > 0),
+  aes(log10(value), fill = variable)) +
+  geom_histogram(binwidth = 1)
+```
+
+```{r}
+qMetrics391 <- findQMetrics(q391)
+summary(qMetrics391)
+```
+
+```{r}
+ggplot(
+  subset(qMetrics391, gap > 0),
+  aes(log10(gap))) +
+  geom_histogram(binwidth = 1)
+```
+
+```{r}
+qInfo391 <- findStateInfo(q391$state)
+summary(qInfo391)
+```
+
+```{r}
+partMetrics391 <- findPartMetrics(qMetrics391, qInfo391)
+head(partMetrics391)
+```
+
+```{r}
+ggplot(
+  partMetrics391,
+  aes(sum, num_states)) +
+  geom_bar(aes(fill = kind), stat = 'identity')
+```
+
+So, at least in the 3x3 game, there is less degeneracy for discount 1 than with lower discounts.
+
+So, at least for the small games:
+
+- If we don't discount, it's a bit easier to pick a gap tolerance that we can use to identify degeneracy.
+- If we don't discount, the value function is easier to interpret and more useful to the reader --- it's a probability of winning.
+- The 'compactor' seems to be the best place to use this information. Rather than picking only one action, it should process all actions that are optimal within tolerance and also record the value for the state. If the player picks any one of the actions, it's at least guaranteed that it won't leave the state set. It could still output the (somewhat arbitrary) optimal policy as it does now, in addition to the degenerate actions, or the player could use the values of successors to recover it.
+- We'll have to see what the impact of this is on the effectiveness of compaction. If there a lot of degenerate actions, as I suspect there are at the start of the game, there will be less reduction in the state count. However, it should still be effective in eliminating states later in the game.

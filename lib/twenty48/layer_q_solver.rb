@@ -166,7 +166,8 @@ module Twenty48
         NativeLayerQSolver.klass(solver.board_size).finish(
           make_vbyte_reader, q_pathname,
           layer_fragment_values_pathname,
-          layer_fragment_policy_pathname
+          layer_fragment_policy_pathname,
+          nil # to dump Q(s, a): layer_fragment_values_pathname + '.all.csv'
         )
         FileUtils.rm_f q_pathname
       end

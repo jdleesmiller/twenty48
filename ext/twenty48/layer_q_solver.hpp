@@ -72,17 +72,28 @@ namespace twenty48 {
     static void finish(twenty48::vbyte_reader_t &vbyte_reader,
       const char *q_pathname,
       const char *output_values_pathname,
-      const char *output_policy_pathname)
+      const char *output_policy_pathname,
+      const char *all_values_pathname)
     {
       std::ifstream q_is(q_pathname, std::fstream::binary);
       std::ofstream values_os(output_values_pathname,
         std::ios::out | std::ios::binary);
       policy_writer_t policy_writer(output_policy_pathname);
+      std::ofstream all_values_os;
+
+      if (all_values_pathname) {
+        all_values_os.open(all_values_pathname);
+        all_values_os.precision(std::numeric_limits<double>::max_digits10);
+      }
 
       for (;;) {
         uint64_t nybbles = vbyte_reader.read();
         if (nybbles == 0) break;
         const state_t<size> state(nybbles);
+
+        if (all_values_pathname) {
+          all_values_os << std::hex << nybbles;
+        }
 
         q_values_t q;
         q_is.read(reinterpret_cast<char *>(&q), sizeof(q));
@@ -93,6 +104,10 @@ namespace twenty48 {
         double max_q_value = -std::numeric_limits<double>::infinity();
         direction_t best_action;
         for (size_t i = 0; i < 4; ++i) {
+          if (all_values_pathname) {
+            all_values_os << ',' << q.values[i];
+          }
+
           if (q.values[i] > max_q_value) {
             max_q_value = q.values[i];
             best_action = (direction_t)i;
@@ -100,6 +115,10 @@ namespace twenty48 {
         }
         if (max_q_value < 0) {
           throw std::runtime_error("layer_q_solver_t: no feasible action");
+        }
+
+        if (all_values_pathname) {
+          all_values_os << std::endl;
         }
 
         policy_writer.write(best_action);
