@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 require(stringr)
 require(reshape2)
 require(ggplot2)
+options(digits = 10)
 ```
 
 # 2x2 to 32
@@ -68,7 +69,8 @@ findQMetrics <- function (q, tolerance = 1e-9) {
     state = q$state,
     feasible_actions = feasibleActions,
     degenerate_actions = degenerateActions,
-    gap = gap)
+    gap = gap,
+    relative_gap = gap / maxValue)
 }
 qMetrics25 <- findQMetrics(q25)
 summary(qMetrics25)
@@ -195,6 +197,36 @@ summary(qMetrics391)
 ggplot(
   subset(qMetrics391, gap > 0),
   aes(log10(gap))) +
+  geom_histogram(binwidth = 1)
+```
+
+## Value Magnitude
+
+```{r}
+local({
+  values <- with(q391, pmax.int(left, right, up, down))
+  summary(log10(values[values > 0]))
+})
+```
+
+So, some states have very low values.
+
+## Relative Gaps
+
+```{r}
+summary(subset(qMetrics391, relative_gap > 0 & is.finite(relative_gap)))
+```
+
+```{r}
+merge(q391, subset(qMetrics391, relative_gap > 1e9 & is.finite(relative_gap)))
+```
+
+The gaps of ~1 are an artefact of how they're computed.
+
+```{r}
+ggplot(
+  subset(qMetrics391, 0 < relative_gap & relative_gap < 10),
+  aes(log10(relative_gap))) +
   geom_histogram(binwidth = 1)
 ```
 
