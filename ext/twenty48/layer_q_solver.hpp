@@ -7,6 +7,7 @@
 #include "twenty48.hpp"
 #include "mmap_value_reader.hpp"
 #include "policy_writer.hpp"
+#include "solution_writer.hpp"
 #include "state.hpp"
 #include "valuer.hpp"
 #include "vbyte_reader.hpp"
@@ -71,14 +72,10 @@ namespace twenty48 {
 
     static void finish(twenty48::vbyte_reader_t &vbyte_reader,
       const char *q_pathname,
-      const char *output_values_pathname,
-      const char *output_policy_pathname,
+      twenty48::solution_writer_t &solution_writer,
       const char *all_values_pathname)
     {
       std::ifstream q_is(q_pathname, std::fstream::binary);
-      std::ofstream values_os(output_values_pathname,
-        std::ios::out | std::ios::binary);
-      policy_writer_t policy_writer(output_policy_pathname);
       std::ofstream all_values_os;
 
       if (all_values_pathname) {
@@ -91,49 +88,24 @@ namespace twenty48 {
         if (nybbles == 0) break;
         const state_t<size> state(nybbles);
 
-        if (all_values_pathname) {
-          all_values_os << std::hex << nybbles;
-        }
-
         q_values_t q;
         q_is.read(reinterpret_cast<char *>(&q), sizeof(q));
         if (!q_is) {
           throw std::runtime_error("layer_q_solver_t: finish: q read failed");
         }
 
-        double max_q_value = -std::numeric_limits<double>::infinity();
-        direction_t best_action;
-        for (size_t i = 0; i < 4; ++i) {
-          if (all_values_pathname) {
+        if (all_values_pathname) {
+          all_values_os << std::hex << nybbles << std::dec;
+          for (size_t i = 0; i < 4; ++i) {
             all_values_os << ',' << q.values[i];
           }
-
-          if (q.values[i] > max_q_value) {
-            max_q_value = q.values[i];
-            best_action = (direction_t)i;
-          }
-        }
-        if (max_q_value < 0) {
-          throw std::runtime_error("layer_q_solver_t: no feasible action");
-        }
-
-        if (all_values_pathname) {
           all_values_os << std::endl;
         }
 
-        policy_writer.write(best_action);
-
-        state_value_t record;
-        record.state = nybbles;
-        record.value = max_q_value;
-        values_os.write(
-          reinterpret_cast<const char *>(&record), sizeof(record));
-        if (!values_os) {
-          throw std::runtime_error("layer_q_solver_t: value write failed");
-        }
+        solution_writer.choose(nybbles, q.values);
       }
 
-      policy_writer.flush();
+      solution_writer.flush();
     }
 
   private:

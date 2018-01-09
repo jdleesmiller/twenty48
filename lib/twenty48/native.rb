@@ -268,4 +268,21 @@ module Twenty48
       Array.new(num_states - skip) { reader.read }
     end
   end
+
+  #
+  # Read packed alternate action files.
+  #
+  class AlternateActionReader
+    #
+    # Read full policy into array.
+    #
+    def self.read(pathname, policy_reader, num_states, skip: 0)
+      alternate_action_reader = AlternateActionReader.new(pathname)
+      policy_reader.skip(skip)
+      alternate_action_reader.skip(skip)
+      Array.new(num_states - skip) do
+        alternate_action_reader.read(policy_reader.read)
+      end
+    end
+  end
 end

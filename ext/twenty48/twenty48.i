@@ -10,6 +10,9 @@
 #include "merge_states.hpp"
 #include "policy_reader.hpp"
 #include "policy_writer.hpp"
+#include "alternate_action_reader.hpp"
+#include "alternate_action_writer.hpp"
+#include "solution_writer.hpp"
 #include "subset_policy.hpp"
 #include "start_states.hpp"
 %}
@@ -168,6 +171,36 @@
 %include "policy_writer.hpp"
 
 %include "subset_policy.hpp"
+
+/******************************************************************************/
+/* Alternate Action Reader/Writer */
+/******************************************************************************/
+
+%rename(AlternateActionReader) twenty48::alternate_action_reader_t;
+%apply bool *OUTPUT { bool &left, bool &right, bool &up, bool &down }
+%extend twenty48::alternate_action_reader_t {
+  %exception read {
+    try {
+      $action
+    }
+    catch (const std::runtime_error& error) {
+      SWIG_exception(SWIG_RuntimeError, error.what());
+    }
+  }
+}
+%include "alternate_action_reader.hpp"
+
+%rename(AlternateActionWriter) twenty48::alternate_action_writer_t;
+
+%include "alternate_action_writer.hpp"
+
+/******************************************************************************/
+/* Solution Writer */
+/******************************************************************************/
+
+%rename(SolutionWriter) twenty48::solution_writer_t;
+
+%include "solution_writer.hpp"
 
 /******************************************************************************/
 /* Start States */

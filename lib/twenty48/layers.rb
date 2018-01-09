@@ -64,6 +64,11 @@ module Twenty48
     n.extension :policy
   end
 
+  LayerPartAlternateActionName = KeyValueName.new do |n|
+    n.include_keys LayerPartName
+    n.extension :alternate_action
+  end
+
   LayerFragmentName = KeyValueName.new do |n|
     n.key :input_sum, type: Numeric, format: '%04d'
     n.key :input_max_value, type: Numeric, format: '%x'
@@ -89,9 +94,13 @@ module Twenty48
   end
 
   LayerFragmentPolicyName = KeyValueName.new do |n|
-    n.include_keys LayerPartName
-    n.key :batch, type: Numeric, format: '%04d'
+    n.include_keys LayerFragmentValuesName
     n.extension :policy
+  end
+
+  LayerFragmentAlternateActionName = KeyValueName.new do |n|
+    n.include_keys LayerFragmentValuesName
+    n.extension :alternate_action
   end
 
   #

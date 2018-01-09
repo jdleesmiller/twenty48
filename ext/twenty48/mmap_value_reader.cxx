@@ -21,8 +21,4 @@ double mmap_value_reader_t::get_value(uint64_t state) const {
   return record->value;
 }
 
-bool state_value_t::operator <(uint64_t other_state) const {
-  return state < other_state;
-}
-
 }

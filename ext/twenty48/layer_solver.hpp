@@ -6,7 +6,7 @@
 
 #include "twenty48.hpp"
 #include "mmap_value_reader.hpp"
-#include "policy_writer.hpp"
+#include "solution_writer.hpp"
 #include "state.hpp"
 #include "valuer.hpp"
 #include "vbyte_reader.hpp"
@@ -125,32 +125,23 @@ namespace twenty48 {
 
     void solve(twenty48::vbyte_reader_t &vbyte_reader,
       int sum, uint8_t max_value,
-      const char *output_values_pathname, const char *output_policy_pathname)
+      twenty48::solution_writer_t &solution_writer)
     {
-      std::ofstream values_os(output_values_pathname,
-        std::ios::out | std::ios::binary);
-      policy_writer_t policy_writer(output_policy_pathname);
-
       for (;;) {
         uint64_t nybbles = vbyte_reader.read();
         if (nybbles == 0) break;
+        state_t<size> state(nybbles);
 
-        direction_t direction;
-        double value;
-        backup_state(state_t<size>(nybbles), sum, max_value, direction, value);
-
-        state_value_t record;
-        record.state = nybbles;
-        record.value = value;
-        values_os.write(
-          reinterpret_cast<const char *>(&record), sizeof(record));
-        if (!values_os) {
-          throw std::runtime_error("layer_solver_t: value write failed");
+        double action_value[4];
+        for (size_t i = 0; i < 4; ++i) {
+          action_value[i] = backup_state_action(
+            state, sum, max_value, (direction_t)i);
         }
-        policy_writer.write(direction);
+
+        solution_writer.choose(nybbles, action_value);
       }
 
-      policy_writer.flush();
+      solution_writer.flush();
     }
 
   private:
@@ -162,41 +153,6 @@ namespace twenty48 {
     uint8_t max_value;
 
     std::unique_ptr<mmap_value_reader_t> value_readers[2][2];
-
-    void backup_state(const state_t<size> &state, int sum, uint8_t max_value,
-      direction_t &action, double &value)
-    {
-      double action_value;
-      // std::cout << "backup " << state << std::endl;
-
-      action = DIRECTION_LEFT;
-      value = backup_state_action(state, sum, max_value, DIRECTION_LEFT);
-
-      action_value = backup_state_action(
-        state, sum, max_value, DIRECTION_RIGHT);
-      if (action_value > value) {
-        action = DIRECTION_RIGHT;
-        value = action_value;
-      }
-
-      action_value = backup_state_action(
-        state, sum, max_value, DIRECTION_UP);
-      if (action_value > value) {
-        action = DIRECTION_UP;
-        value = action_value;
-      }
-
-      action_value = backup_state_action(
-        state, sum, max_value, DIRECTION_DOWN);
-      if (action_value > value) {
-        action = DIRECTION_DOWN;
-        value = action_value;
-      }
-
-      if (value < 0) {
-        throw std::runtime_error("layer_solver_t: no feasible action");
-      }
-    }
 
     double backup_state_action(const state_t<size> &state,
       int sum, uint8_t max_value, direction_t direction) {

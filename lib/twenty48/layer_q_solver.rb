@@ -32,6 +32,8 @@ module Twenty48
   # then repeat with layer m-2
   #
   class LayerQSolver < LayerSolver
+    attr_accessor :save_all_values
+
     LayerFragmentQName = KeyValueName.new do |n|
       n.include_keys LayerPartName
       n.key :batch, type: Numeric, format: '%04d'
@@ -94,6 +96,7 @@ module Twenty48
       find_predecessor_parts(sum, max_value).each do |pred_sum, pred_max_value|
         batches = make_layer_part_batches(pred_sum, pred_max_value)
         batches.each do |index, offset, previous, batch_size|
+          check_batch_size(batch_size)
           jobs << QJob.new(
             self, pred_sum, pred_max_value, index, offset, previous, batch_size
           )
@@ -163,11 +166,14 @@ module Twenty48
       end
 
       def finish
-        NativeLayerQSolver.klass(solver.board_size).finish(
-          make_vbyte_reader, q_pathname,
-          layer_fragment_values_pathname,
+        solution_writer = SolutionWriter.new(
           layer_fragment_policy_pathname,
-          nil # to dump Q(s, a): layer_fragment_values_pathname + '.all.csv'
+          layer_fragment_values_pathname,
+          layer_fragment_alternate_action_pathname,
+          solver.alternate_action_tolerance || 0.0
+        )
+        NativeLayerQSolver.klass(solver.board_size).finish(
+          make_vbyte_reader, q_pathname, solution_writer, all_values_pathname
         )
         FileUtils.rm_f q_pathname
       end
@@ -200,6 +206,18 @@ module Twenty48
         LayerFragmentPolicyName.new(
           sum: sum, max_value: max_value, batch: index
         ).in(solver.values_folder)
+      end
+
+      def layer_fragment_alternate_action_pathname
+        return nil if solver.alternate_action_tolerance.nil?
+        LayerFragmentAlternateActionName.new(
+          sum: sum, max_value: max_value, batch: index
+        ).in(solver.values_folder)
+      end
+
+      def all_values_pathname
+        return nil unless solver.save_all_values
+        layer_fragment_values_pathname + '.all.csv'
       end
     end
   end

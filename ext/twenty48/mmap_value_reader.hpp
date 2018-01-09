@@ -1,15 +1,9 @@
 #ifndef TWENTY48_MMAP_VALUE_READER_HPP
 
 #include "layer_files.hpp"
+#include "state_value.hpp"
 
 namespace twenty48 {
-
-struct state_value_t {
-  bool operator <(uint64_t other_state) const;
-
-  uint64_t state;
-  double value;
-};
 
 /**
  * Get values from a file that is a list of (state, value) pairs, ordered
