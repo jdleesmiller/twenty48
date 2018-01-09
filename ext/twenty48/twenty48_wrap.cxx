@@ -4907,7 +4907,7 @@ SWIG_From_unsigned_SS_short  (unsigned short value)
 SWIGINTERN uint8_t twenty48_line_t_Sl_2_Sg____getitem__(twenty48::line_t< 2 > const *self,size_t i){
     return (*self)[i];
   }
-SWIGINTERN int twenty48_line_t_Sl_2_Sg____int__(twenty48::line_t< 2 > const *self){
+SWIGINTERN uint64_t twenty48_line_t_Sl_2_Sg____int__(twenty48::line_t< 2 > const *self){
     return self->get_nybbles();
   }
 SWIGINTERN char const *twenty48_line_t_Sl_2_Sg____str__(twenty48::line_t< 2 > *self){
@@ -4955,7 +4955,7 @@ SWIG_FromCharPtr(const char *cptr)
 SWIGINTERN uint8_t twenty48_line_t_Sl_3_Sg____getitem__(twenty48::line_t< 3 > const *self,size_t i){
     return (*self)[i];
   }
-SWIGINTERN int twenty48_line_t_Sl_3_Sg____int__(twenty48::line_t< 3 > const *self){
+SWIGINTERN uint64_t twenty48_line_t_Sl_3_Sg____int__(twenty48::line_t< 3 > const *self){
     return self->get_nybbles();
   }
 SWIGINTERN char const *twenty48_line_t_Sl_3_Sg____str__(twenty48::line_t< 3 > *self){
@@ -4966,7 +4966,7 @@ SWIGINTERN char const *twenty48_line_t_Sl_3_Sg____str__(twenty48::line_t< 3 > *s
 SWIGINTERN uint8_t twenty48_line_t_Sl_4_Sg____getitem__(twenty48::line_t< 4 > const *self,size_t i){
     return (*self)[i];
   }
-SWIGINTERN int twenty48_line_t_Sl_4_Sg____int__(twenty48::line_t< 4 > const *self){
+SWIGINTERN uint64_t twenty48_line_t_Sl_4_Sg____int__(twenty48::line_t< 4 > const *self){
     return self->get_nybbles();
   }
 SWIGINTERN char const *twenty48_line_t_Sl_4_Sg____str__(twenty48::line_t< 4 > *self){
@@ -5330,7 +5330,7 @@ SWIGINTERN void std_vector_Sl_uint8_t_Sg__insert__SWIG_2(std::vector< uint8_t > 
 SWIGINTERN uint8_t twenty48_state_t_Sl_2_Sg____getitem__(twenty48::state_t< 2 > const *self,size_t i){
     return (*self)[i];
   }
-SWIGINTERN int twenty48_state_t_Sl_2_Sg____int__(twenty48::state_t< 2 > const *self){
+SWIGINTERN uint64_t twenty48_state_t_Sl_2_Sg____int__(twenty48::state_t< 2 > const *self){
     return self->get_nybbles();
   }
 SWIGINTERN char const *twenty48_state_t_Sl_2_Sg____str__(twenty48::state_t< 2 > *self){
@@ -5341,7 +5341,7 @@ SWIGINTERN char const *twenty48_state_t_Sl_2_Sg____str__(twenty48::state_t< 2 > 
 SWIGINTERN uint8_t twenty48_state_t_Sl_3_Sg____getitem__(twenty48::state_t< 3 > const *self,size_t i){
     return (*self)[i];
   }
-SWIGINTERN int twenty48_state_t_Sl_3_Sg____int__(twenty48::state_t< 3 > const *self){
+SWIGINTERN uint64_t twenty48_state_t_Sl_3_Sg____int__(twenty48::state_t< 3 > const *self){
     return self->get_nybbles();
   }
 SWIGINTERN char const *twenty48_state_t_Sl_3_Sg____str__(twenty48::state_t< 3 > *self){
@@ -5352,7 +5352,7 @@ SWIGINTERN char const *twenty48_state_t_Sl_3_Sg____str__(twenty48::state_t< 3 > 
 SWIGINTERN uint8_t twenty48_state_t_Sl_4_Sg____getitem__(twenty48::state_t< 4 > const *self,size_t i){
     return (*self)[i];
   }
-SWIGINTERN int twenty48_state_t_Sl_4_Sg____int__(twenty48::state_t< 4 > const *self){
+SWIGINTERN uint64_t twenty48_state_t_Sl_4_Sg____int__(twenty48::state_t< 4 > const *self){
     return self->get_nybbles();
   }
 SWIGINTERN char const *twenty48_state_t_Sl_4_Sg____str__(twenty48::state_t< 4 > *self){
@@ -13196,7 +13196,7 @@ _wrap_Line2___int__(int argc, VALUE *argv, VALUE self) {
   twenty48::line_t< 2 > *arg1 = (twenty48::line_t< 2 > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int result;
+  uint64_t result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
@@ -13207,8 +13207,8 @@ _wrap_Line2___int__(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 2 > const *","__int__", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::line_t< 2 > * >(argp1);
-  result = (int)twenty48_line_t_Sl_2_Sg____int__((twenty48::line_t< 2 > const *)arg1);
-  vresult = SWIG_From_int(static_cast< int >(result));
+  result = (uint64_t)twenty48_line_t_Sl_2_Sg____int__((twenty48::line_t< 2 > const *)arg1);
+  vresult = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
   return vresult;
 fail:
   return Qnil;
@@ -13693,7 +13693,7 @@ _wrap_Line3___int__(int argc, VALUE *argv, VALUE self) {
   twenty48::line_t< 3 > *arg1 = (twenty48::line_t< 3 > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int result;
+  uint64_t result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
@@ -13704,8 +13704,8 @@ _wrap_Line3___int__(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 3 > const *","__int__", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::line_t< 3 > * >(argp1);
-  result = (int)twenty48_line_t_Sl_3_Sg____int__((twenty48::line_t< 3 > const *)arg1);
-  vresult = SWIG_From_int(static_cast< int >(result));
+  result = (uint64_t)twenty48_line_t_Sl_3_Sg____int__((twenty48::line_t< 3 > const *)arg1);
+  vresult = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
   return vresult;
 fail:
   return Qnil;
@@ -14190,7 +14190,7 @@ _wrap_Line4___int__(int argc, VALUE *argv, VALUE self) {
   twenty48::line_t< 4 > *arg1 = (twenty48::line_t< 4 > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int result;
+  uint64_t result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
@@ -14201,8 +14201,8 @@ _wrap_Line4___int__(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::line_t< 4 > const *","__int__", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::line_t< 4 > * >(argp1);
-  result = (int)twenty48_line_t_Sl_4_Sg____int__((twenty48::line_t< 4 > const *)arg1);
-  vresult = SWIG_From_int(static_cast< int >(result));
+  result = (uint64_t)twenty48_line_t_Sl_4_Sg____int__((twenty48::line_t< 4 > const *)arg1);
+  vresult = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
   return vresult;
 fail:
   return Qnil;
@@ -17184,7 +17184,7 @@ _wrap_State2___int__(int argc, VALUE *argv, VALUE self) {
   twenty48::state_t< 2 > *arg1 = (twenty48::state_t< 2 > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int result;
+  uint64_t result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
@@ -17195,8 +17195,8 @@ _wrap_State2___int__(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 2 > const *","__int__", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::state_t< 2 > * >(argp1);
-  result = (int)twenty48_state_t_Sl_2_Sg____int__((twenty48::state_t< 2 > const *)arg1);
-  vresult = SWIG_From_int(static_cast< int >(result));
+  result = (uint64_t)twenty48_state_t_Sl_2_Sg____int__((twenty48::state_t< 2 > const *)arg1);
+  vresult = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
   return vresult;
 fail:
   return Qnil;
@@ -18007,7 +18007,7 @@ _wrap_State3___int__(int argc, VALUE *argv, VALUE self) {
   twenty48::state_t< 3 > *arg1 = (twenty48::state_t< 3 > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int result;
+  uint64_t result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
@@ -18018,8 +18018,8 @@ _wrap_State3___int__(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 3 > const *","__int__", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::state_t< 3 > * >(argp1);
-  result = (int)twenty48_state_t_Sl_3_Sg____int__((twenty48::state_t< 3 > const *)arg1);
-  vresult = SWIG_From_int(static_cast< int >(result));
+  result = (uint64_t)twenty48_state_t_Sl_3_Sg____int__((twenty48::state_t< 3 > const *)arg1);
+  vresult = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
   return vresult;
 fail:
   return Qnil;
@@ -18830,7 +18830,7 @@ _wrap_State4___int__(int argc, VALUE *argv, VALUE self) {
   twenty48::state_t< 4 > *arg1 = (twenty48::state_t< 4 > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int result;
+  uint64_t result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
@@ -18841,8 +18841,8 @@ _wrap_State4___int__(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::state_t< 4 > const *","__int__", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::state_t< 4 > * >(argp1);
-  result = (int)twenty48_state_t_Sl_4_Sg____int__((twenty48::state_t< 4 > const *)arg1);
-  vresult = SWIG_From_int(static_cast< int >(result));
+  result = (uint64_t)twenty48_state_t_Sl_4_Sg____int__((twenty48::state_t< 4 > const *)arg1);
+  vresult = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
   return vresult;
 fail:
   return Qnil;

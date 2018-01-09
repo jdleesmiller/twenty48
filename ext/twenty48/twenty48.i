@@ -35,7 +35,7 @@
     return (*self)[i];
   }
 
-  int __int__() const {
+  uint64_t __int__() const {
     return self->get_nybbles();
   }
 
@@ -65,7 +65,7 @@
     return (*self)[i];
   }
 
-  int __int__() const {
+  uint64_t __int__() const {
     return self->get_nybbles();
   }
 
