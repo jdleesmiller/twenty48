@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'fileutils'
+
+require_relative '../lib/twenty48'
+
+#
+# Compress and upload all unneeded files from an in-progress solve to an
+# openstack container to save space. Delete the values files, because they
+# are the largest. Keep compressed copies of other files.
+#
+class OffloadSolveBin
+  include Twenty48
+
+  def check_for_zstd
+    _output = `zstd --version`
+    raise 'zstd not available' unless $CHILD_STATUS.exitstatus == 0
+  end
+
+  def check_for_openstack
+    _output = `openstack container list`
+    raise 'openstack not available' unless $CHILD_STATUS.exitstatus == 0
+  end
+
+  def find_file_names(path)
+    klasses = [
+      LayerPartValuesName, LayerPartPolicyName, LayerPartAlternateActionName
+    ]
+    klasses.map { |klass| klass.glob(path) }.flatten
+  end
+
+  def run(path, container)
+    raise 'need solve path' unless path
+    raise 'need container' unless container
+    raise 'solve path does not exist' unless File.exist?(path)
+    check_for_zstd
+    check_for_openstack
+
+    file_names = find_file_names(path)
+    min_sum = file_names.map(&:sum).min
+    file_names.reject! { |file_name| file_name.sum <= min_sum + 4 }
+
+    file_names.sort_by(&:sum).reverse.each do |file_name|
+      pathname = file_name.in(path)
+      puts pathname
+
+      system "zstd #{pathname}"
+      raise 'zstd failed' unless $CHILD_STATUS.exitstatus == 0
+
+      zstd_pathname = "#{pathname}.zst"
+      raise 'zst missing' unless File.exist?(zstd_pathname)
+
+      system "openstack object create #{container} #{zstd_pathname}"
+      raise 'upload failed' unless $CHILD_STATUS.exitstatus == 0
+
+      FileUtils.rm pathname
+      FileUtils.rm zstd_pathname if File.extname(pathname) == '.values'
+    end
+  end
+end
+
+OffloadSolveBin.new.run(ARGV[0], ARGV[1])
