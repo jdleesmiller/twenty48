@@ -122,4 +122,53 @@ class NativeLayerCompactorTest < Twenty48NativeTest
       end
     end
   end
+
+  def test_build_2x2_with_alternate_actions
+    Dir.mktmpdir do |tmp|
+      states_path = File.join(tmp, 'states')
+      values_path = File.join(tmp, 'values')
+      compacted_path = File.join(tmp, 'compacted')
+
+      [states_path, values_path, compacted_path].each do |path|
+        FileUtils.mkdir_p path
+      end
+
+      batch_size = 16
+      max_exponent = 5
+      board_size = 2
+      valuer = NativeValuer.create(
+        board_size: board_size,
+        max_exponent: max_exponent,
+        max_depth: 0,
+        discount: DISCOUNT
+      )
+      layer_builder = LayerBuilder.new(
+        board_size, states_path, batch_size, valuer
+      )
+      layer_builder.build_start_state_layers
+      layer_builder.build
+
+      part_names = LayerPartName.glob(states_path)
+      assert_equal 18, part_names.map(&:sum).uniq.size
+
+      layer_solver = LayerSolver.new(
+        board_size,
+        states_path,
+        values_path,
+        valuer,
+        alternate_action_tolerance: 1e-6
+      )
+      layer_solver.solve
+
+      # Run the compactor.
+      layer_compactor = LayerCompactor.new(
+        board_size, states_path, batch_size, valuer,
+        values_path, compacted_path
+      )
+      layer_compactor.build_start_state_layers
+      layer_compactor.build
+
+      assert_equal 25, LayerPartAlternateActionName.glob(compacted_path).size
+    end
+  end
 end

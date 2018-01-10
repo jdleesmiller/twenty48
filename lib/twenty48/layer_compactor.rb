@@ -32,6 +32,10 @@ module Twenty48
         sum: layer_sum,
         max_value: max_value
       )
+      alternate_action_name = LayerPartAlternateActionName.new(
+        sum: layer_sum,
+        max_value: max_value
+      )
 
       original_input_pathname = layer_part_name.in(original_layer_folder)
       original_vbyte_reader = VByteReader.new(original_input_pathname)
@@ -43,12 +47,33 @@ module Twenty48
       subset_policy_pathname = policy_name.in(layer_folder)
       subset_policy_writer = PolicyWriter.new(subset_policy_pathname)
 
-      Twenty48.subset_policy(
-        original_vbyte_reader,
-        original_policy_reader,
-        subset_vbyte_reader,
-        subset_policy_writer
-      )
+      original_alternate_action_pathname =
+        alternate_action_name.in(original_policy_folder)
+      if File.exist?(original_alternate_action_pathname)
+        original_alternate_action_reader = AlternateActionReader.new(
+          original_alternate_action_pathname
+        )
+        subset_alternate_action_pathname =
+          alternate_action_name.in(layer_folder)
+        subset_alternate_action_writer = AlternateActionWriter.new(
+          subset_alternate_action_pathname, 0.0 # tolerance ignored
+        )
+        Twenty48.subset_policy_with_alternate_actions(
+          original_vbyte_reader,
+          original_policy_reader,
+          original_alternate_action_reader,
+          subset_vbyte_reader,
+          subset_policy_writer,
+          subset_alternate_action_writer
+        )
+      else
+        Twenty48.subset_policy(
+          original_vbyte_reader,
+          original_policy_reader,
+          subset_vbyte_reader,
+          subset_policy_writer
+        )
+      end
     end
 
     #
@@ -72,7 +97,23 @@ module Twenty48
       policy_reader.skip(index * batch_size)
 
       builder = create_native_layer_builder(sum, max_value, index, valuer)
-      builder.expand_with_policy(vbyte_reader, policy_reader)
+
+      alternate_action_name = LayerPartAlternateActionName.new(
+        sum: sum,
+        max_value: max_value
+      )
+      alternate_action_pathname = alternate_action_name.in(layer_folder)
+      if File.exist?(alternate_action_pathname)
+        alternate_action_reader = AlternateActionReader.new(
+          alternate_action_pathname
+        )
+        alternate_action_reader.skip(index * batch_size)
+        builder.expand_with_policy_and_alternate_actions(
+          vbyte_reader, policy_reader, alternate_action_reader
+        )
+      else
+        builder.expand_with_policy(vbyte_reader, policy_reader)
+      end
     end
 
     #

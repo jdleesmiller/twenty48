@@ -10,7 +10,7 @@
 #include "vbyte_reader.hpp"
 #include "vbyte_writer.hpp"
 #include "policy_reader.hpp"
-#include "policy_writer.hpp"
+#include "alternate_action_reader.hpp"
 
 namespace twenty48 {
   /**
@@ -56,6 +56,33 @@ namespace twenty48 {
           std::cerr << "no move from " << state_t<size>(nybbles)
             << " in " << direction << std::endl;
           throw std::runtime_error("layer_builder_t: no move from policy");
+        }
+      }
+      write_all_states();
+    }
+
+    void expand_with_policy_and_alternate_actions(
+      twenty48::vbyte_reader_t &vbyte_reader,
+      twenty48::policy_reader_t &policy_reader,
+      twenty48::alternate_action_reader_t &alternate_action_reader)
+    {
+      for (;;) {
+        uint64_t nybbles = vbyte_reader.read();
+        if (nybbles == 0) break;
+
+        direction_t action = policy_reader.read();
+        bool alternate_actions[4];
+        alternate_action_reader.read(action, alternate_actions);
+
+        for (size_t i = 0; i < 4; ++i) {
+          if (alternate_actions[i]) {
+            direction_t action = (direction_t)i;
+            if (!move(state_t<size>(nybbles), action)) {
+              std::cerr << "no move from " << state_t<size>(nybbles)
+                << " in " << action << std::endl;
+              throw std::runtime_error("layer_builder_t: no move from policy");
+            }
+          }
         }
       }
       write_all_states();

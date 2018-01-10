@@ -14,6 +14,7 @@ struct alternate_action_writer_t {
   alternate_action_writer_t(const char *pathname, double tolerance);
   ~alternate_action_writer_t();
   void write(direction_t action, double value, double action_value[4]);
+  void write_actions(direction_t action, bool alternate_actions[4]);
   void flush();
   void close();
 

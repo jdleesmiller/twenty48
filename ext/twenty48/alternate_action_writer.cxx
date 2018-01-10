@@ -21,15 +21,19 @@ alternate_action_writer_t::~alternate_action_writer_t() {
 void alternate_action_writer_t::write(
   direction_t action, double value, double action_value[4])
 {
+  bool alternate_actions[4];
+  for (size_t i = 0; i < 4; ++i) {
+    alternate_actions[i] = i == action || action_value[i] > value - tolerance;
+  }
+  write_actions(action, alternate_actions);
+}
+
+void alternate_action_writer_t::write_actions(
+  direction_t action, bool alternate_actions[4])
+{
   for (size_t i = 0; i < 4; ++i) {
     if (i == action) continue;
-    // std::cout << "i=" << i << " av=" << action_value[i]
-    //   << " v-t=" << (value - tolerance)
-    //   << " offset=" << offset
-    //   << " data=" << std::hex << data << std::dec;
-    if (action_value[i] > value - tolerance) data |= 0x1ULL << offset;
-    // std::cout << " -> data=" << std::hex << data << std::dec << std::endl;
-
+    if (alternate_actions[i]) data |= 0x1ULL << offset;
     offset += 1;
     if (offset % BLOCK_BITS == 0) flush();
   }
