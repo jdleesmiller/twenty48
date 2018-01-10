@@ -1,4 +1,4 @@
-#include <iostream>
+#include <string.h>
 #include <sstream>
 
 #include "alternate_action_writer.hpp"

@@ -1,6 +1,7 @@
 #ifndef TWENTY48_SOLUTION_WRITER_HPP
 
 #include <fstream>
+#include <memory>
 
 #include "twenty48.hpp"
 #include "alternate_action_writer.hpp"
