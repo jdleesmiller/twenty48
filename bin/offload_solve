@@ -30,6 +30,14 @@ class OffloadSolveBin
     klasses.map { |klass| klass.glob(path) }.flatten
   end
 
+  def upload(pathname, container, tries = 1)
+    system "openstack object create #{container} #{pathname}"
+    raise 'upload failed' unless $CHILD_STATUS.exitstatus == 0
+  rescue
+    raise if tries >= 3
+    upload(pathname, container, tries + 1)
+  end
+
   def run(path, container)
     raise 'need solve path' unless path
     raise 'need container' unless container
@@ -51,8 +59,7 @@ class OffloadSolveBin
       zstd_pathname = "#{pathname}.zst"
       raise 'zst missing' unless File.exist?(zstd_pathname)
 
-      system "openstack object create #{container} #{zstd_pathname}"
-      raise 'upload failed' unless $CHILD_STATUS.exitstatus == 0
+      upload(zstd_pathname, container)
 
       FileUtils.rm pathname
       FileUtils.rm zstd_pathname if File.extname(pathname) == '.values'
