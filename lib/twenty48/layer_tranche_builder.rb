@@ -94,17 +94,19 @@ module Twenty48
     def process_part(metrics_csv, output_csv, part_name)
       total_pr = 0.0
       counts = make_zero_threshold_counts
-      each_part_state_action(part_name) do |state, action|
+      each_part_state_action(part_name) do |state, action, actions, action_pr|
         state_pr = transient_probabilities.find(state)
 
-        state.move(action).random_transitions.each do |successor, pr|
-          successor_pr = state_pr * pr
-          if successor.max_value >= max_exponent
-            wins.add(successor, successor_pr)
-          elsif successor.lose
-            losses.add(successor, successor_pr)
-          else
-            transient_probabilities.add(successor, successor_pr)
+        actions.each do |action_i|
+          state.move(action_i).random_transitions.each do |successor, pr|
+            successor_pr = state_pr * action_pr * pr
+            if successor.max_value >= max_exponent
+              wins.add(successor, successor_pr)
+            elsif successor.lose
+              losses.add(successor, successor_pr)
+            else
+              transient_probabilities.add(successor, successor_pr)
+            end
           end
         end
 
@@ -125,9 +127,27 @@ module Twenty48
         max_value: part_name.max_value
       )
       policy_reader = PolicyReader.new(policy_name.in(path))
-      Twenty48.each_state_vbyte(board_size, part_name.in(path)) do |state|
-        action = policy_reader.read
-        yield state, action
+
+      alternate_action_name = LayerPartAlternateActionName.new(
+        sum: part_name.sum,
+        max_value: part_name.max_value
+      )
+      alternate_action_pathname = alternate_action_name.in(path)
+      if File.exist?(alternate_action_pathname)
+        alternate_action_reader = AlternateActionReader.new(
+          alternate_action_pathname
+        )
+        Twenty48.each_state_vbyte(board_size, part_name.in(path)) do |state|
+          action = policy_reader.read
+          alternate_actions = alternate_action_reader.read(action)
+          all_actions = (0..4).select { |i| alternate_actions[i] }
+          yield state, action, all_actions, 1.0 / all_actions.size
+        end
+      else
+        Twenty48.each_state_vbyte(board_size, part_name.in(path)) do |state|
+          action = policy_reader.read
+          yield state, action, [action], 1.0
+        end
       end
     end
 

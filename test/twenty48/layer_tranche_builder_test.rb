@@ -195,4 +195,71 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
       end
     end
   end
+
+  def test_build_2x2_with_alternate_actions
+    Dir.mktmpdir do |tmp|
+      states_path = File.join(tmp, 'states')
+      values_path = File.join(tmp, 'values')
+      compacted_path = File.join(tmp, 'compacted')
+
+      [states_path, values_path, compacted_path].each do |path|
+        FileUtils.mkdir_p path
+      end
+
+      batch_size = 16
+      max_exponent = 5
+      board_size = 2
+      params = {
+        board_size: board_size,
+        max_exponent: max_exponent,
+        max_depth: 0,
+        discount: DISCOUNT
+      }
+      valuer = NativeValuer.create(params)
+      layer_builder = LayerBuilder.new(2, states_path, batch_size, valuer)
+      layer_builder.build_start_state_layers
+      layer_builder.build
+
+      part_names = LayerPartName.glob(states_path)
+      assert_equal 18, part_names.map(&:sum).uniq.size
+
+      layer_solver = LayerSolver.new(
+        2,
+        states_path,
+        values_path,
+        valuer,
+        alternate_action_tolerance: 1e-9
+      )
+      layer_solver.solve
+
+      # Run the compactor.
+      layer_compactor = LayerCompactor.new(
+        2, states_path, batch_size, valuer,
+        values_path, compacted_path
+      )
+      layer_compactor.build_start_state_layers
+      layer_compactor.build
+
+      # Now run the tranche builder.
+      tranche_builder = LayerTrancheBuilder.new(
+        compacted_path, board_size, max_exponent, [3, 6], 2
+      )
+      tranche_builder.build
+
+      output_paths = LayerTrancheName.glob(compacted_path)
+      assert_equal 1, output_paths.size
+
+      csv_options = {
+        headers: true,
+        converters: :numeric,
+        header_converters: :symbol
+      }
+      count = 0
+      CSV.foreach(output_paths[0].in(compacted_path), csv_options) do |row|
+        count += 1
+        assert row[:transient_pr] > 1e-2
+      end
+      assert_equal 47, count
+    end
+  end
 end
