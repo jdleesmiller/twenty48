@@ -1841,80 +1841,82 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 #define SWIGTYPE_p_p_void swig_types[11]
 #define SWIGTYPE_p_short swig_types[12]
 #define SWIGTYPE_p_signed_char swig_types[13]
-#define SWIGTYPE_p_size_type swig_types[14]
-#define SWIGTYPE_p_state_set_t swig_types[15]
-#define SWIGTYPE_p_state_vector_t swig_types[16]
-#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t swig_types[17]
-#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t swig_types[18]
-#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t swig_types[19]
-#define SWIGTYPE_p_std__allocatorT_std__string_t swig_types[20]
-#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_2_t_t swig_types[21]
-#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_3_t_t swig_types[22]
-#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_4_t_t swig_types[23]
-#define SWIGTYPE_p_std__allocatorT_twenty48__vbyte_index_entry_t_t swig_types[24]
-#define SWIGTYPE_p_std__allocatorT_unsigned_char_t swig_types[25]
-#define SWIGTYPE_p_std__arrayT_unsigned_char_2_t swig_types[26]
-#define SWIGTYPE_p_std__arrayT_unsigned_char_3_t swig_types[27]
-#define SWIGTYPE_p_std__arrayT_unsigned_char_4_t swig_types[28]
-#define SWIGTYPE_p_std__istream swig_types[29]
-#define SWIGTYPE_p_std__lessT_twenty48__state_tT_2_t_t swig_types[30]
-#define SWIGTYPE_p_std__lessT_twenty48__state_tT_3_t_t swig_types[31]
-#define SWIGTYPE_p_std__lessT_twenty48__state_tT_4_t_t swig_types[32]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t swig_types[33]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t__iterator swig_types[34]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t__reverse_iterator swig_types[35]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t swig_types[36]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t__iterator swig_types[37]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t__reverse_iterator swig_types[38]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t swig_types[39]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__iterator swig_types[40]
-#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__reverse_iterator swig_types[41]
-#define SWIGTYPE_p_std__ostream swig_types[42]
-#define SWIGTYPE_p_std__vectorT_std__string_std__allocatorT_std__string_t_t swig_types[43]
-#define SWIGTYPE_p_std__vectorT_twenty48__state_tT_2_t_std__allocatorT_twenty48__state_tT_2_t_t_t swig_types[44]
-#define SWIGTYPE_p_std__vectorT_twenty48__state_tT_3_t_std__allocatorT_twenty48__state_tT_3_t_t_t swig_types[45]
-#define SWIGTYPE_p_std__vectorT_twenty48__state_tT_4_t_std__allocatorT_twenty48__state_tT_4_t_t_t swig_types[46]
-#define SWIGTYPE_p_std__vectorT_twenty48__vbyte_index_entry_t_std__allocatorT_twenty48__vbyte_index_entry_t_t_t swig_types[47]
-#define SWIGTYPE_p_std__vectorT_unsigned_char_std__allocatorT_unsigned_char_t_t swig_types[48]
-#define SWIGTYPE_p_swig__ConstIterator swig_types[49]
-#define SWIGTYPE_p_swig__GC_VALUE swig_types[50]
-#define SWIGTYPE_p_swig__Iterator swig_types[51]
-#define SWIGTYPE_p_transitions_t swig_types[52]
-#define SWIGTYPE_p_twenty48__DIRECTION swig_types[53]
-#define SWIGTYPE_p_twenty48__alternate_action_reader_t swig_types[54]
-#define SWIGTYPE_p_twenty48__alternate_action_writer_t swig_types[55]
-#define SWIGTYPE_p_twenty48__layer_builder_tT_2_t swig_types[56]
-#define SWIGTYPE_p_twenty48__layer_builder_tT_3_t swig_types[57]
-#define SWIGTYPE_p_twenty48__layer_builder_tT_4_t swig_types[58]
-#define SWIGTYPE_p_twenty48__layer_q_solver_tT_2_t swig_types[59]
-#define SWIGTYPE_p_twenty48__layer_q_solver_tT_3_t swig_types[60]
-#define SWIGTYPE_p_twenty48__layer_q_solver_tT_4_t swig_types[61]
-#define SWIGTYPE_p_twenty48__layer_solver_tT_2_t swig_types[62]
-#define SWIGTYPE_p_twenty48__layer_solver_tT_3_t swig_types[63]
-#define SWIGTYPE_p_twenty48__layer_solver_tT_4_t swig_types[64]
-#define SWIGTYPE_p_twenty48__line_tT_2_t swig_types[65]
-#define SWIGTYPE_p_twenty48__line_tT_3_t swig_types[66]
-#define SWIGTYPE_p_twenty48__line_tT_4_t swig_types[67]
-#define SWIGTYPE_p_twenty48__policy_reader_t swig_types[68]
-#define SWIGTYPE_p_twenty48__policy_writer_t swig_types[69]
-#define SWIGTYPE_p_twenty48__solution_writer_t swig_types[70]
-#define SWIGTYPE_p_twenty48__state_tT_2_t swig_types[71]
-#define SWIGTYPE_p_twenty48__state_tT_3_t swig_types[72]
-#define SWIGTYPE_p_twenty48__state_tT_4_t swig_types[73]
-#define SWIGTYPE_p_twenty48__valuer_tT_2_t swig_types[74]
-#define SWIGTYPE_p_twenty48__valuer_tT_3_t swig_types[75]
-#define SWIGTYPE_p_twenty48__valuer_tT_4_t swig_types[76]
-#define SWIGTYPE_p_twenty48__vbyte_index_entry_t swig_types[77]
-#define SWIGTYPE_p_twenty48__vbyte_reader_t swig_types[78]
-#define SWIGTYPE_p_twenty48__vbyte_writer_t swig_types[79]
-#define SWIGTYPE_p_unsigned_char swig_types[80]
-#define SWIGTYPE_p_unsigned_int swig_types[81]
-#define SWIGTYPE_p_unsigned_long_long swig_types[82]
-#define SWIGTYPE_p_unsigned_short swig_types[83]
-#define SWIGTYPE_p_value_type swig_types[84]
-#define SWIGTYPE_p_void swig_types[85]
-static swig_type_info *swig_types[87];
-static swig_module_info swig_module = {swig_types, 86, 0, 0, 0, 0};
+#define SWIGTYPE_p_size_t swig_types[14]
+#define SWIGTYPE_p_size_type swig_types[15]
+#define SWIGTYPE_p_state_set_t swig_types[16]
+#define SWIGTYPE_p_state_vector_t swig_types[17]
+#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t swig_types[18]
+#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t swig_types[19]
+#define SWIGTYPE_p_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t swig_types[20]
+#define SWIGTYPE_p_std__allocatorT_std__string_t swig_types[21]
+#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_2_t_t swig_types[22]
+#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_3_t_t swig_types[23]
+#define SWIGTYPE_p_std__allocatorT_twenty48__state_tT_4_t_t swig_types[24]
+#define SWIGTYPE_p_std__allocatorT_twenty48__vbyte_index_entry_t_t swig_types[25]
+#define SWIGTYPE_p_std__allocatorT_unsigned_char_t swig_types[26]
+#define SWIGTYPE_p_std__arrayT_unsigned_char_2_t swig_types[27]
+#define SWIGTYPE_p_std__arrayT_unsigned_char_3_t swig_types[28]
+#define SWIGTYPE_p_std__arrayT_unsigned_char_4_t swig_types[29]
+#define SWIGTYPE_p_std__istream swig_types[30]
+#define SWIGTYPE_p_std__lessT_twenty48__state_tT_2_t_t swig_types[31]
+#define SWIGTYPE_p_std__lessT_twenty48__state_tT_3_t_t swig_types[32]
+#define SWIGTYPE_p_std__lessT_twenty48__state_tT_4_t_t swig_types[33]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t swig_types[34]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t__iterator swig_types[35]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_2_t_double_std__lessT_twenty48__state_tT_2_t_t_std__allocatorT_std__pairT_twenty48__state_tT_2_t_const_double_t_t_t__reverse_iterator swig_types[36]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t swig_types[37]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t__iterator swig_types[38]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_3_t_double_std__lessT_twenty48__state_tT_3_t_t_std__allocatorT_std__pairT_twenty48__state_tT_3_t_const_double_t_t_t__reverse_iterator swig_types[39]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t swig_types[40]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__iterator swig_types[41]
+#define SWIGTYPE_p_std__mapT_twenty48__state_tT_4_t_double_std__lessT_twenty48__state_tT_4_t_t_std__allocatorT_std__pairT_twenty48__state_tT_4_t_const_double_t_t_t__reverse_iterator swig_types[42]
+#define SWIGTYPE_p_std__ostream swig_types[43]
+#define SWIGTYPE_p_std__vectorT_std__string_std__allocatorT_std__string_t_t swig_types[44]
+#define SWIGTYPE_p_std__vectorT_twenty48__state_tT_2_t_std__allocatorT_twenty48__state_tT_2_t_t_t swig_types[45]
+#define SWIGTYPE_p_std__vectorT_twenty48__state_tT_3_t_std__allocatorT_twenty48__state_tT_3_t_t_t swig_types[46]
+#define SWIGTYPE_p_std__vectorT_twenty48__state_tT_4_t_std__allocatorT_twenty48__state_tT_4_t_t_t swig_types[47]
+#define SWIGTYPE_p_std__vectorT_twenty48__vbyte_index_entry_t_std__allocatorT_twenty48__vbyte_index_entry_t_t_t swig_types[48]
+#define SWIGTYPE_p_std__vectorT_unsigned_char_std__allocatorT_unsigned_char_t_t swig_types[49]
+#define SWIGTYPE_p_swig__ConstIterator swig_types[50]
+#define SWIGTYPE_p_swig__GC_VALUE swig_types[51]
+#define SWIGTYPE_p_swig__Iterator swig_types[52]
+#define SWIGTYPE_p_transitions_t swig_types[53]
+#define SWIGTYPE_p_twenty48__DIRECTION swig_types[54]
+#define SWIGTYPE_p_twenty48__alternate_action_reader_t swig_types[55]
+#define SWIGTYPE_p_twenty48__alternate_action_writer_t swig_types[56]
+#define SWIGTYPE_p_twenty48__layer_builder_tT_2_t swig_types[57]
+#define SWIGTYPE_p_twenty48__layer_builder_tT_3_t swig_types[58]
+#define SWIGTYPE_p_twenty48__layer_builder_tT_4_t swig_types[59]
+#define SWIGTYPE_p_twenty48__layer_q_solver_tT_2_t swig_types[60]
+#define SWIGTYPE_p_twenty48__layer_q_solver_tT_3_t swig_types[61]
+#define SWIGTYPE_p_twenty48__layer_q_solver_tT_4_t swig_types[62]
+#define SWIGTYPE_p_twenty48__layer_solver_tT_2_t swig_types[63]
+#define SWIGTYPE_p_twenty48__layer_solver_tT_3_t swig_types[64]
+#define SWIGTYPE_p_twenty48__layer_solver_tT_4_t swig_types[65]
+#define SWIGTYPE_p_twenty48__line_tT_2_t swig_types[66]
+#define SWIGTYPE_p_twenty48__line_tT_3_t swig_types[67]
+#define SWIGTYPE_p_twenty48__line_tT_4_t swig_types[68]
+#define SWIGTYPE_p_twenty48__mmap_value_reader_t swig_types[69]
+#define SWIGTYPE_p_twenty48__policy_reader_t swig_types[70]
+#define SWIGTYPE_p_twenty48__policy_writer_t swig_types[71]
+#define SWIGTYPE_p_twenty48__solution_writer_t swig_types[72]
+#define SWIGTYPE_p_twenty48__state_tT_2_t swig_types[73]
+#define SWIGTYPE_p_twenty48__state_tT_3_t swig_types[74]
+#define SWIGTYPE_p_twenty48__state_tT_4_t swig_types[75]
+#define SWIGTYPE_p_twenty48__valuer_tT_2_t swig_types[76]
+#define SWIGTYPE_p_twenty48__valuer_tT_3_t swig_types[77]
+#define SWIGTYPE_p_twenty48__valuer_tT_4_t swig_types[78]
+#define SWIGTYPE_p_twenty48__vbyte_index_entry_t swig_types[79]
+#define SWIGTYPE_p_twenty48__vbyte_reader_t swig_types[80]
+#define SWIGTYPE_p_twenty48__vbyte_writer_t swig_types[81]
+#define SWIGTYPE_p_unsigned_char swig_types[82]
+#define SWIGTYPE_p_unsigned_int swig_types[83]
+#define SWIGTYPE_p_unsigned_long_long swig_types[84]
+#define SWIGTYPE_p_unsigned_short swig_types[85]
+#define SWIGTYPE_p_value_type swig_types[86]
+#define SWIGTYPE_p_void swig_types[87]
+static swig_type_info *swig_types[89];
+static swig_module_info swig_module = {swig_types, 88, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -37396,6 +37398,138 @@ free_twenty48_layer_q_solver_t_Sl_4_Sg_(void *self) {
     delete arg1;
 }
 
+static swig_class SwigClassMmapValueReader;
+
+SWIGINTERN VALUE
+#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
+_wrap_MmapValueReader_allocate(VALUE self)
+#else
+_wrap_MmapValueReader_allocate(int argc, VALUE *argv, VALUE self)
+#endif
+{
+  VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_twenty48__mmap_value_reader_t);
+#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
+  rb_obj_call_init(vresult, argc, argv);
+#endif
+  return vresult;
+}
+
+
+SWIGINTERN VALUE
+_wrap_new_MmapValueReader(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  twenty48::mmap_value_reader_t *result = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","mmap_value_reader_t", 1, argv[0] ));
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = (twenty48::mmap_value_reader_t *)new twenty48::mmap_value_reader_t((char const *)arg1);
+  DATA_PTR(self) = result;
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return self;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_MmapValueReader_get_value(int argc, VALUE *argv, VALUE self) {
+  twenty48::mmap_value_reader_t *arg1 = (twenty48::mmap_value_reader_t *) 0 ;
+  uint64_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned long long val2 ;
+  int ecode2 = 0 ;
+  double result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__mmap_value_reader_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::mmap_value_reader_t const *","get_value", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::mmap_value_reader_t * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint64_t","get_value", 2, argv[0] ));
+  } 
+  arg2 = static_cast< uint64_t >(val2);
+  result = (double)((twenty48::mmap_value_reader_t const *)arg1)->get_value(arg2);
+  vresult = SWIG_From_double(static_cast< double >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_MmapValueReader_get_value_and_offset(int argc, VALUE *argv, VALUE self) {
+  twenty48::mmap_value_reader_t *arg1 = (twenty48::mmap_value_reader_t *) 0 ;
+  uint64_t arg2 ;
+  double *arg3 = 0 ;
+  size_t *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned long long val2 ;
+  int ecode2 = 0 ;
+  double temp3 ;
+  int res3 = SWIG_TMPOBJ ;
+  size_t temp4 ;
+  int res4 = SWIG_TMPOBJ ;
+  VALUE vresult = Qnil;
+  
+  arg3 = &temp3;
+  arg4 = &temp4;
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__mmap_value_reader_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::mmap_value_reader_t const *","get_value_and_offset", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::mmap_value_reader_t * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint64_t","get_value_and_offset", 2, argv[0] ));
+  } 
+  arg2 = static_cast< uint64_t >(val2);
+  ((twenty48::mmap_value_reader_t const *)arg1)->get_value_and_offset(arg2,*arg3,*arg4);
+  vresult = rb_ary_new();
+  if (SWIG_IsTmpObj(res3)) {
+    vresult = SWIG_Ruby_AppendOutput(vresult, SWIG_From_double((*arg3)));
+  } else {
+    int new_flags = SWIG_IsNewObj(res3) ? (SWIG_POINTER_OWN |  0 ) :  0 ;
+    vresult = SWIG_Ruby_AppendOutput(vresult, SWIG_NewPointerObj((void*)(arg3), SWIGTYPE_p_double, new_flags));
+  }
+  if (SWIG_IsTmpObj(res4)) {
+    vresult = SWIG_Ruby_AppendOutput(vresult, SWIG_From_size_t((*arg4)));
+  } else {
+    int new_flags = SWIG_IsNewObj(res4) ? (SWIG_POINTER_OWN |  0 ) :  0 ;
+    vresult = SWIG_Ruby_AppendOutput(vresult, SWIG_NewPointerObj((void*)(arg4), SWIGTYPE_p_size_t, new_flags));
+  }
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN void
+free_twenty48_mmap_value_reader_t(void *self) {
+    twenty48::mmap_value_reader_t *arg1 = (twenty48::mmap_value_reader_t *)self;
+    delete arg1;
+}
+
 static swig_class SwigClassPolicyReader;
 
 SWIGINTERN VALUE
@@ -38585,6 +38719,7 @@ static swig_type_info _swigt__p_nybbles_t = {"_p_nybbles_t", "nybbles_t *", 0, 0
 static swig_type_info _swigt__p_p_void = {"_p_p_void", "void **|VALUE *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_short = {"_p_short", "short *|int_least16_t *|int16_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_signed_char = {"_p_signed_char", "signed char *|int_least8_t *|int_fast8_t *|int8_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_size_t = {"_p_size_t", "size_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_size_type = {"_p_size_type", "size_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_state_set_t = {"_p_state_set_t", "state_set_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_state_vector_t = {"_p_state_vector_t", "state_vector_t *", 0, 0, (void*)0, 0};
@@ -38639,6 +38774,7 @@ static swig_type_info _swigt__p_twenty48__layer_solver_tT_4_t = {"_p_twenty48__l
 static swig_type_info _swigt__p_twenty48__line_tT_2_t = {"_p_twenty48__line_tT_2_t", "twenty48::line_t< 2 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__line_tT_3_t = {"_p_twenty48__line_tT_3_t", "twenty48::line_t< 3 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__line_tT_4_t = {"_p_twenty48__line_tT_4_t", "twenty48::line_t< 4 > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_twenty48__mmap_value_reader_t = {"_p_twenty48__mmap_value_reader_t", "twenty48::mmap_value_reader_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__policy_reader_t = {"_p_twenty48__policy_reader_t", "twenty48::policy_reader_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__policy_writer_t = {"_p_twenty48__policy_writer_t", "twenty48::policy_writer_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__solution_writer_t = {"_p_twenty48__solution_writer_t", "twenty48::solution_writer_t *", 0, 0, (void*)0, 0};
@@ -38673,6 +38809,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_p_void,
   &_swigt__p_short,
   &_swigt__p_signed_char,
+  &_swigt__p_size_t,
   &_swigt__p_size_type,
   &_swigt__p_state_set_t,
   &_swigt__p_state_vector_t,
@@ -38727,6 +38864,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_twenty48__line_tT_2_t,
   &_swigt__p_twenty48__line_tT_3_t,
   &_swigt__p_twenty48__line_tT_4_t,
+  &_swigt__p_twenty48__mmap_value_reader_t,
   &_swigt__p_twenty48__policy_reader_t,
   &_swigt__p_twenty48__policy_writer_t,
   &_swigt__p_twenty48__solution_writer_t,
@@ -38761,6 +38899,7 @@ static swig_cast_info _swigc__p_nybbles_t[] = {  {&_swigt__p_nybbles_t, 0, 0, 0}
 static swig_cast_info _swigc__p_p_void[] = {  {&_swigt__p_p_void, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_short[] = {  {&_swigt__p_short, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_signed_char[] = {  {&_swigt__p_signed_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_size_t[] = {  {&_swigt__p_size_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_size_type[] = {  {&_swigt__p_size_type, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_state_set_t[] = {  {&_swigt__p_state_set_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_state_vector_t[] = {  {&_swigt__p_state_vector_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -38815,6 +38954,7 @@ static swig_cast_info _swigc__p_twenty48__layer_solver_tT_4_t[] = {  {&_swigt__p
 static swig_cast_info _swigc__p_twenty48__line_tT_2_t[] = {  {&_swigt__p_twenty48__line_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__line_tT_3_t[] = {  {&_swigt__p_twenty48__line_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__line_tT_4_t[] = {  {&_swigt__p_twenty48__line_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_twenty48__mmap_value_reader_t[] = {  {&_swigt__p_twenty48__mmap_value_reader_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__policy_reader_t[] = {  {&_swigt__p_twenty48__policy_reader_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__policy_writer_t[] = {  {&_swigt__p_twenty48__policy_writer_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__solution_writer_t[] = {  {&_swigt__p_twenty48__solution_writer_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -38849,6 +38989,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_p_void,
   _swigc__p_short,
   _swigc__p_signed_char,
+  _swigc__p_size_t,
   _swigc__p_size_type,
   _swigc__p_state_set_t,
   _swigc__p_state_vector_t,
@@ -38903,6 +39044,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_twenty48__line_tT_2_t,
   _swigc__p_twenty48__line_tT_3_t,
   _swigc__p_twenty48__line_tT_4_t,
+  _swigc__p_twenty48__mmap_value_reader_t,
   _swigc__p_twenty48__policy_reader_t,
   _swigc__p_twenty48__policy_writer_t,
   _swigc__p_twenty48__solution_writer_t,
@@ -40027,6 +40169,16 @@ SWIGEXPORT void Init_twenty48(void) {
   SwigClassLayerQSolver4.mark = 0;
   SwigClassLayerQSolver4.destroy = (void (*)(void *)) free_twenty48_layer_q_solver_t_Sl_4_Sg_;
   SwigClassLayerQSolver4.trackObjects = 0;
+  
+  SwigClassMmapValueReader.klass = rb_define_class_under(mTwenty48, "MmapValueReader", rb_cObject);
+  SWIG_TypeClientData(SWIGTYPE_p_twenty48__mmap_value_reader_t, (void *) &SwigClassMmapValueReader);
+  rb_define_alloc_func(SwigClassMmapValueReader.klass, _wrap_MmapValueReader_allocate);
+  rb_define_method(SwigClassMmapValueReader.klass, "initialize", VALUEFUNC(_wrap_new_MmapValueReader), -1);
+  rb_define_method(SwigClassMmapValueReader.klass, "get_value", VALUEFUNC(_wrap_MmapValueReader_get_value), -1);
+  rb_define_method(SwigClassMmapValueReader.klass, "get_value_and_offset", VALUEFUNC(_wrap_MmapValueReader_get_value_and_offset), -1);
+  SwigClassMmapValueReader.mark = 0;
+  SwigClassMmapValueReader.destroy = (void (*)(void *)) free_twenty48_mmap_value_reader_t;
+  SwigClassMmapValueReader.trackObjects = 0;
   
   SwigClassPolicyReader.klass = rb_define_class_under(mTwenty48, "PolicyReader", rb_cObject);
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__policy_reader_t, (void *) &SwigClassPolicyReader);

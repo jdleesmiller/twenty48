@@ -148,6 +148,13 @@
 %template(LayerQSolver3) twenty48::layer_q_solver_t<3>;
 %template(LayerQSolver4) twenty48::layer_q_solver_t<4>;
 
+%rename(MmapValueReader) twenty48::mmap_value_reader_t;
+%apply double *OUTPUT { double &value };
+%apply size_t *OUTPUT { size_t &offset };
+%include "mmap_value_reader.hpp"
+%clear double &value;
+%clear size_t &offset;
+
 /******************************************************************************/
 /* Policy Reader/Writer */
 /******************************************************************************/

@@ -14,10 +14,15 @@ struct mmap_value_reader_t {
 
   double get_value(uint64_t state) const;
 
+  void get_value_and_offset(
+    uint64_t state, double &value, size_t &offset) const;
+
 private:
   mmapped_layer_file_t input;
   state_value_t *input_data;
   state_value_t *input_end;
+
+  state_value_t *find(uint64_t state) const;
 };
 
 }

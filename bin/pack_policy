@@ -3,6 +3,8 @@
 
 require 'csv'
 
+require_relative '../lib/twenty48'
+
 #
 # We need something that we can easily load in a web browser that isn't too big.
 # Try a very cheesy form of variable width encoding with deltas: write deltas
@@ -17,24 +19,138 @@ require 'csv'
 # 1508706 test3.csv.gz
 #
 
-raise 'need CSV file as argument' if ARGV.empty?
+raise 'need CSV file and solve folder as arguments' if ARGV.size != 2
 
-policy = {}
-CSV.foreach(ARGV[0], headers: true) do |row|
-  nybbles = row['state'].to_i(16)
-  action = row['action'].to_i
-  policy[nybbles] = action
-end
+#
+# Pack data for browser.
+#
+class PackPolicyBin
+  #
+  # Efficiently read from a reader in part order.
+  #
+  class SolveDataReader
+    include Twenty48
 
-previous = 0
-packed_policy = policy.keys.sort.each_with_object([]) do |nybbles, result|
-  result.push([nybbles - previous, policy[nybbles]])
-  previous = nybbles
-end
+    def initialize(board_size, solve_folder)
+      @board_size = board_size
+      @solve_folder = solve_folder
+      @value_reader = nil
+      @alternate_action_reader = nil
+      @sum = nil
+      @max_value = nil
+      @previous_offset = nil
+    end
 
-CSV(STDOUT) do |csv|
-  csv << %w[delta36 action]
-  packed_policy.each do |delta, action|
-    csv << [delta.to_s(36), action]
+    attr_reader :board_size
+    attr_reader :solve_folder
+
+    def read(state_nybbles, action)
+      state = NativeState.create_from_nybbles(board_size, state_nybbles)
+      load_next_if_needed(state.sum, state.max_value)
+      value, offset = @value_reader.get_value_and_offset(state_nybbles)
+      skip = offset - @previous_offset
+      @previous_offset = offset
+      @alternate_action_reader.skip(skip) if skip > 0
+      alternate_actions = @alternate_action_reader.read(action)
+      [alternate_actions, value]
+    end
+
+    private
+
+    def load_next_if_needed(state_sum, state_max_value)
+      return if state_sum == @sum && state_max_value == @max_value
+      check_not_going_backward(state_sum, state_max_value)
+      values_pathname = LayerPartValuesName.new(
+        sum: state_sum, max_value: state_max_value
+      ).in(solve_folder)
+      @value_reader = MmapValueReader.new(values_pathname)
+
+      alternate_action_pathname = LayerPartAlternateActionName.new(
+        sum: state_sum, max_value: state_max_value
+      ).in(solve_folder)
+      @alternate_action_reader = AlternateActionReader.new(
+        alternate_action_pathname
+      )
+      @previous_offset = 0
+    end
+
+    def check_not_going_backward(state_sum, state_max_value)
+      return if @sum.nil? || @max_value.nil?
+      raise "sum decreased: #{state_sum} < #{@sum}" if state_sum < @sum
+      return if state_sum > @sum
+      raise "max_value decreased: #{state_max_value} < #{@max_value}" if
+        state_max_value < @max_value
+    end
+  end
+
+  PolicyData = Struct.new(
+    :action, :alternate_actions, :value
+  ) do
+    def packed_actions
+      alternate_action_mask = 0
+      offset = 0
+      (0...4).each do |i|
+        next if i == action
+        alternate_action_mask |= 1 << offset if alternate_actions[i]
+        offset += 1
+      end
+      action << 3 | alternate_action_mask
+    end
+
+    def rounded_value
+      value
+    end
+  end
+
+  def initialize(tranche_threshold_csv_pathname, solve_folder)
+    @tranche_threshold_csv_pathname = tranche_threshold_csv_pathname
+    @solve_folder = solve_folder
+  end
+
+  attr_reader :tranche_threshold_csv_pathname
+  attr_reader :solve_folder
+
+  def run
+    policy_data = read_policy_data
+    packed_policy_data = pack_policy_data(policy_data)
+    write_packed_policy(packed_policy_data)
+  end
+
+  def board_size
+    raise 'bad solve folder name' unless solve_folder =~ /board_size-(\d+)/
+    Regexp.last_match(1).to_i
+  end
+
+  def read_policy_data
+    solve_reader = SolveDataReader.new(board_size, solve_folder)
+    policy_data = {}
+    CSV.foreach(ARGV[0], headers: true) do |row|
+      nybbles = row['state'].to_i(16)
+      action = row['action'].to_i
+      alternate_actions, value = solve_reader.read(nybbles, action)
+      policy_data[nybbles] = PolicyData.new(action, alternate_actions, value)
+    end
+    policy_data
+  end
+
+  def pack_policy_data(policy_data)
+    previous = 0
+    policy_data.keys.sort.each_with_object([]) do |nybbles, result|
+      result.push([nybbles - previous, policy_data[nybbles]])
+      previous = nybbles
+    end
+  end
+
+  def write_packed_policy(packed_policy_data)
+    CSV(STDOUT) do |csv|
+      csv << %w[delta36 actions36 value]
+      packed_policy_data.each do |delta, data|
+        csv << [
+          delta.to_s(36), data.packed_actions.to_s(36), data.rounded_value
+        ]
+      end
+    end
   end
 end
+
+PackPolicyBin.new(ARGV[0], ARGV[1]).run
