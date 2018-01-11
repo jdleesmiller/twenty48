@@ -6,7 +6,7 @@ require 'fileutils'
 require_relative '../lib/twenty48'
 include Twenty48
 
-DISCOUNT = 0.95
+DISCOUNT = 1.0
 
 Dir.glob(Twenty48::Storage::LAYER_STATES_GLOB).sort.each do |states_path|
   params = Storage.layer_states_params_from_pathname(states_path)
@@ -32,7 +32,8 @@ Dir.glob(Twenty48::Storage::LAYER_STATES_GLOB).sort.each do |states_path|
     states_path,
     values_path,
     valuer,
-    verbose: true
+    verbose: true,
+    alternate_action_tolerance: 1e-9
   )
 
   solver.solve
