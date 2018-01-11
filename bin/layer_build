@@ -17,11 +17,11 @@ def build(board_size:, max_exponent:, max_depth:, max_states:)
     max_depth: max_depth
   )
   puts states_path
-  #  if Dir.exist?(states_path)
-  #    puts 'exists; skipping'
-  #    return
-  #  end
-  #  FileUtils.mkdir_p states_path
+  if Dir.exist?(states_path)
+    puts 'exists; skipping'
+    return
+  end
+  FileUtils.mkdir_p states_path
 
   valuer = NativeValuer.create(
     board_size: board_size,
@@ -31,27 +31,28 @@ def build(board_size:, max_exponent:, max_depth:, max_states:)
   )
   layer_builder = LayerBuilder.new(board_size, states_path, max_states, valuer,
     verbose: true)
-  raise "ulimit -n too low: #{layer_builder.max_files}" if
-    layer_builder.max_files < 8000
-  #  layer_builder.build_start_state_layers
-  #  layer_builder.build
-  layer_builder.prepare_to_restart_from(340)
-  layer_builder.build(start_layer_sum: 340)
+  # raise "ulimit -n too low: #{layer_builder.max_files}" if
+  #   layer_builder.max_files < 8000
+  layer_builder.build_start_state_layers
+  layer_builder.build
+  # layer_builder.prepare_to_restart_from(340)
+  # layer_builder.build(start_layer_sum: 340)
 end
 
-# #
-# # 2x2
-# #
-# (3..7).each do |max_exponent|
-#   (0..[1, max_exponent - 1].min).each do |max_depth|
-#     build(
-#       board_size: 2,
-#       max_exponent: max_exponent,
-#       max_depth: max_depth,
-#       max_states: 2
-#     )
-#   end
-# end
+#
+# 2x2
+#
+(3..6).each do |max_exponent|
+  (0..[1, max_exponent - 1].min).each do |max_depth|
+    build(
+      board_size: 2,
+      max_exponent: max_exponent,
+      max_depth: max_depth,
+      max_states: 16
+    )
+  end
+end
+
 #
 # #
 # # 3x3
@@ -112,9 +113,9 @@ end
 #   0.25 * LayerBuilder.find_max_successor_states(WORKING_MEMORY)).ceil
 # => 53,687,091
 
-build(
-  board_size: 4,
-  max_exponent: 11,
-  max_depth: 1,
-  max_states: 30_000_000
-)
+# build(
+#   board_size: 4,
+#   max_exponent: 11,
+#   max_depth: 1,
+#   max_states: 30_000_000
+# )
