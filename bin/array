@@ -3,35 +3,46 @@
 
 require_relative '../lib/twenty48'
 
-include Twenty48
+#
+# Convert hash models to more efficient array models.
+#
+class ArrayBin
+  include Twenty48
+  include ArrayModelBuilder
 
-Dir.glob(Storage::MODELS_GLOB).sort.each do |input_file|
-  model_params = Storage.model_params_from_pathname(input_file)
-  p model_params
+  def build(model)
+    array_model = build_array_model(model.hash_json_bz2)
+    puts 'built'
+    array_model.check_transition_probabilities_sum
+    puts 'checked'
 
-  output_file = Twenty48::Storage.array_model_pathname(model_params, '.bin')
-  if File.exist?("#{output_file}.bz2")
-    puts 'exists'
-    next
+    if array_model.num_states < 50_000
+      puts 'checking'
+      # Sanity check: load the model in the usual, more memory-intensive way.
+      full_model = model.hash_json_bz2.read
+      full_array_model = FiniteMDP::ArrayModel.from_model(full_model)
+      raise 'array mismatch' unless array_model.array == full_array_model.array
+      raise 'map mismatch' unless array_model.state_action_map.map ==
+          full_array_model.state_action_map.map
+    end
+
+    model.array_bin.write(array_model)
+    system "bzip2 --force #{model.array_bin}"
   end
 
-  array_model = Storage.build_array_model(model_params)
-  puts 'built'
-  array_model.check_transition_probabilities_sum
-  puts 'checked'
-
-  if array_model.num_states < 50_000
-    puts 'checking'
-    # Sanity check: load the model in the usual, more memory-intensive way.
-    full_model = Storage.read_model(model_params)
-    full_array_model = FiniteMDP::ArrayModel.from_model(full_model)
-    raise 'array mismatch' unless array_model.array == full_array_model.array
-    raise 'map mismatch' unless
-      array_model.state_action_map.map == full_array_model.state_action_map.map
+  def run
+    data = Data.new(root: Data::ROOT)
+    data.game.each do |game|
+      game.model.each do |model|
+        next unless model.hash_json_bz2.exist?
+        if model.array_bin_bz2.exist?
+          puts 'exists'
+          next
+        end
+        build(model)
+      end
+    end
   end
-
-  File.open(output_file, 'wb') do |file|
-    Marshal.dump array_model, file
-  end
-  system "bzip2 --force #{output_file}"
 end
+
+ArrayBin.new.run

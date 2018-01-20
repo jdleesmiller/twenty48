@@ -3,94 +3,127 @@
 
 require_relative '../lib/twenty48'
 
-include Twenty48
+#
+# Generate FiniteMDP hash models.
+#
+class GenerateBin
+  include Twenty48
 
-def generate(builder, resolver_strategy_name, max_resolve_depth)
-  resolver = Resolver.new_from_strategy_name(
-    resolver_strategy_name, builder, max_resolve_depth
+  def generate_2x2
+    board_size = 2
+    RESOLVER_STRATEGIES.each_key do |resolver_strategy_name|
+      (2..6).each do |max_exponent|
+        (0..[max_exponent - 1, 3].min).each do |max_resolve_depth|
+          generate(
+            board_size, max_exponent,
+            resolver_strategy_name, max_resolve_depth
+          )
+        end
+      end
+    end
+  end
+
+  def generate_3x3
+    board_size = 3
+    RESOLVER_STRATEGIES.each_key do |resolver_strategy_name|
+      (2..6).each do |max_exponent|
+        (0..[max_exponent - 1, 3].min).each do |max_resolve_depth|
+          next if resolver_strategy_name == :exact && (
+            max_resolve_depth > 2 || max_exponent > 6) # Too slow.
+          generate(
+            board_size, max_exponent,
+            resolver_strategy_name, max_resolve_depth
+          )
+        end
+      end
+    end
+  end
+
+  def generate_4x4
+    board_size = 4
+    RESOLVER_STRATEGIES.each_key do |resolver_strategy_name|
+      (2..3).each do |max_exponent|
+        (0..[max_exponent - 1, 3].min).to_a.reverse.each do |max_resolve_depth|
+          next if resolver_strategy_name == :exact &&
+              max_exponent > 3 && max_resolve_depth > 2
+          generate(
+            board_size, max_exponent,
+            resolver_strategy_name, max_resolve_depth
+          )
+        end
+      end
+    end
+  end
+
+  def generate(
+    board_size, max_exponent, resolver_strategy_name, max_resolve_depth
   )
-  model_params = Storage.model_params_from_builder(builder, resolver)
-  p model_params
-  file_name = Storage.model_pathname(model_params, '.json')
-  File.open(file_name, 'w') do |file|
-    file.puts '{'
-    state_count = 0
-    builder.build(resolver) do |state, state_hash|
-      state_count += 1
-      file.puts ',' if state_count > 1
-      file.write %("#{state}": #{JSON.dump(state_hash)})
+    data = Data.new(root: Data::ROOT)
+    model = data.game.new(
+      board_size: board_size,
+      max_exponent: max_exponent
+    ).model.new(
+      resolver_strategy: resolver_strategy_name,
+      max_resolve_depth: max_resolve_depth
+    ).mkdir!
+    puts model.to_s
 
-      puts status_line(state_count, builder) if (state_count % 100).zero?
+    builder = Builder.new(board_size, max_exponent)
+    resolver = Resolver.new_from_strategy_name(
+      resolver_strategy_name, builder, max_resolve_depth
+    )
+
+    file_name = model.hash_json.to_s
+    File.open(file_name, 'w') do |file|
+      file.puts '{'
+      state_count = 0
+      builder.build(resolver) do |state, state_hash|
+        state_count += 1
+        file.puts ',' if state_count > 1
+        file.write %("#{state}": #{JSON.dump(state_hash)})
+
+        puts status_line(state_count, builder) if (state_count % 100).zero?
+      end
+      file.puts "\n}"
+      puts status_line(state_count, builder)
     end
-    file.puts "\n}"
-    puts status_line(state_count, builder)
+    system "bzip2 --force #{file_name}"
   end
-  system "bzip2 --force #{file_name}"
-end
 
-def status_line(state_count, builder)
-  format('%s: state_count=%d, ' \
-    'open_size=%d, ' \
-    'closed_fill_factor=%.2f%%, ' \
-    'resolve_cache_size=%d, ' \
-    'resolve_cache_hit_rate=%.2f%%, ' \
-    'expand_cache_size=%d, ' \
-    'expand_cache_hit_rate=%.4f%%',
-    Time.now.to_s,
-    state_count,
-    builder.open.size,
-    100 * builder.closed.fill_factor,
-    builder.resolve_cache.size,
-    100 * builder.resolve_cache.hit_rate,
-    builder.expand_cache.size,
-    100 * builder.expand_cache.hit_rate)
-end
-
-def generate_from(builder, start_state)
-  puts '{'
-  state_count = 0
-  builder.build([start_state]) do |state, state_hash|
-    state_count += 1
-    puts ',' if state_count > 1
-    STDOUT.write %("#{state}": #{JSON.dump(state_hash)})
-    $stderr.puts status_line(state_count, builder) if (state_count % 100).zero?
-  end
-  $stderr.puts status_line(state_count, builder)
-  puts "\n}"
-end
-
-board_size = 2
-RESOLVER_STRATEGIES.each_key do |resolver_strategy_name|
-  (2..7).each do |max_exponent|
-    (0..[max_exponent - 1, 3].min).each do |max_resolve_depth|
-      generate(Builder.new(board_size, max_exponent), resolver_strategy_name,
-        max_resolve_depth)
-    end
+  def status_line(state_count, builder)
+    format('%s: state_count=%d, ' \
+      'open_size=%d, ' \
+      'closed_fill_factor=%.2f%%, ' \
+      'resolve_cache_size=%d, ' \
+      'resolve_cache_hit_rate=%.2f%%, ' \
+      'expand_cache_size=%d, ' \
+      'expand_cache_hit_rate=%.4f%%',
+      Time.now.to_s,
+      state_count,
+      builder.open.size,
+      100 * builder.closed.fill_factor,
+      builder.resolve_cache.size,
+      100 * builder.resolve_cache.hit_rate,
+      builder.expand_cache.size,
+      100 * builder.expand_cache.hit_rate)
   end
 end
 
-board_size = 3
-RESOLVER_STRATEGIES.each_key do |resolver_strategy_name|
-  (2..6).each do |max_exponent|
-    (0..[max_exponent - 1, 3].min).each do |max_resolve_depth|
-      next if resolver_strategy_name == :exact && (
-        max_resolve_depth > 2 || max_exponent > 6) # Too slow.
-      builder = Builder.new(board_size, max_exponent, max_states: 60_000_000)
-      generate(builder, resolver_strategy_name, max_resolve_depth)
-    end
-  end
-end
+GenerateBin.new.generate_2x2
+# GenerateBin.new.generate_3x3
+# GenerateBin.new.generate_4x4
 
-# board_size = 4
-# RESOLVER_STRATEGIES.each_key do |resolver_strategy_name|
-#   (2..3).each do |max_exponent|
-#     (0..[max_exponent - 1, 3].min).to_a.reverse.each do |max_resolve_depth|
-#       next if resolver_strategy_name == :exact &&
-#           max_exponent > 3 && max_resolve_depth > 2
-#       generate(Builder.new(board_size, max_exponent), resolver_strategy_name,
-#         max_resolve_depth)
-#     end
+# def generate_from(builder, start_state)
+#   puts '{'
+#   state_count = 0
+#   builder.build([start_state]) do |state, state_hash|
+#     state_count += 1
+#     puts ',' if state_count > 1
+#     STDOUT.write %("#{state}": #{JSON.dump(state_hash)})
+#     STDERR.puts status_line(state_count, builder) if (state_count % 100).zero?
 #   end
+#   STDERR.puts status_line(state_count, builder)
+#   puts "\n}"
 # end
 
 # For a single start state:

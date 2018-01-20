@@ -1,125 +1,121 @@
 # frozen_string_literal: true
 
 require 'parallel'
-require 'key_value_name'
 
 module Twenty48
-  LayerPartName = KeyValueName.new do |n|
-    n.key :sum, type: Numeric, format: '%04d'
-    n.key :max_value, type: Numeric, format: '%x'
-    n.extension :vbyte
-  end
+  class Data
+    class Game
+      #
+      # Model with states organized into layers (and parts).
+      #
+      class LayerModel
+        #
+        # A set of states with the same tile sum and max value.
+        #
+        class Part
+          #
+          # Read and write states in vbyte format.
+          #
+          module VByteStateUtilities
+            def board_size
+              parent.parent.parent.board_size
+            end
 
-  #
-  # Layer Part: A 'layer' has the same sum, and a 'layer part' has the same
-  # sum and `max_value`.
-  #
-  class LayerPartName
-    def read_states(board_size, folder:)
-      Twenty48.read_states_vbyte(board_size, self.in(folder))
-    end
-  end
+            def read_states
+              Twenty48.read_states_vbyte(board_size, to_s)
+            end
 
-  LayerPartInfoName = KeyValueName.new do |n|
-    n.include_keys LayerPartName
-    n.extension :json
-  end
+            def write_states(states)
+              parent.mkdir!
+              Twenty48.write_states_vbyte(states, to_s)
+            end
+          end
 
-  #
-  # Layer Part Info: A JSON file with size and index data for a layer part.
-  #
-  class LayerPartInfoName
-    def read(folder:)
-      info = JSON.parse(File.read(self.in(folder)))
-      entries = info['index'].map { |entry| VByteIndexEntry.from_raw(entry) }
-      entries.unshift(VByteIndexEntry.new)
-      info['index'] = VByteIndex.new(entries)
-      info
-    end
-  end
+          #
+          # States in order, vbyte-encoded.
+          #
+          class StatesVByte
+            include VByteStateUtilities
+          end
 
-  LayerPartValuesName = KeyValueName.new do |n|
-    n.include_keys LayerPartName
-    n.extension :values
-  end
+          #
+          # A fragment of a part that is still being built.
+          #
+          class FragmentVByte
+            include VByteStateUtilities
+          end
 
-  #
-  # A value function with fixed-size state / value pairs.
-  #
-  class LayerPartValuesName
-    def read(board_size, folder:)
-      pairs = []
-      File.open(self.in(folder), 'rb') do |f|
-        until f.eof?
-          nybbles, value = f.read(16).unpack('QD')
-          pairs << [NativeState.create_from_nybbles(board_size, nybbles), value]
+          #
+          # JSON file with size and index data for a layer part.
+          #
+          class InfoJson
+            def read
+              info = JSON.parse(File.read(to_s))
+              entries = info['index'].map do |entry|
+                VByteIndexEntry.from_raw(entry)
+              end
+              entries.unshift(VByteIndexEntry.new)
+              info['index'] = VByteIndex.new(entries)
+              info
+            end
+          end
+
+          class Solution
+            #
+            # Value function
+            #
+            class Values
+              def board_size
+                parent.parent.parent.parent.board_size
+              end
+
+              def read_state_values
+                pairs = []
+                File.open(to_s, 'rb') do |f|
+                  until f.eof?
+                    nybbles, value = f.read(16).unpack('QD')
+                    pairs << [
+                      NativeState.create_from_nybbles(board_size, nybbles),
+                      value
+                    ]
+                  end
+                end
+                pairs
+              end
+            end
+          end
+        end
+
+        def board_size
+          parent.board_size
+        end
+
+        def max_exponent
+          parent.max_exponent
+        end
+
+        def create_native_valuer(discount: 1.0)
+          NativeValuer.create(
+            board_size: board_size,
+            max_exponent: max_exponent,
+            max_depth: max_depth,
+            discount: discount # discount does not matter for build step
+          )
         end
       end
-      pairs
     end
-  end
-
-  LayerPartPolicyName = KeyValueName.new do |n|
-    n.include_keys LayerPartName
-    n.extension :policy
-  end
-
-  LayerPartAlternateActionName = KeyValueName.new do |n|
-    n.include_keys LayerPartName
-    n.extension :alternate_action
-  end
-
-  LayerFragmentName = KeyValueName.new do |n|
-    n.key :input_sum, type: Numeric, format: '%04d'
-    n.key :input_max_value, type: Numeric, format: '%x'
-    n.key :output_sum, type: Numeric, format: '%04d'
-    n.key :output_max_value, type: Numeric, format: '%x'
-    n.key :batch, type: Numeric, format: '%04d'
-    n.extension :vbyte
-  end
-
-  #
-  # A fragment of a layer that is still being built.
-  #
-  class LayerFragmentName
-    def read_states(board_size, folder:)
-      Twenty48.read_states_vbyte(board_size, self.in(folder))
-    end
-  end
-
-  LayerFragmentValuesName = KeyValueName.new do |n|
-    n.include_keys LayerPartName
-    n.key :batch, type: Numeric, format: '%04d'
-    n.extension :values
-  end
-
-  LayerFragmentPolicyName = KeyValueName.new do |n|
-    n.include_keys LayerFragmentValuesName
-    n.extension :policy
-  end
-
-  LayerFragmentAlternateActionName = KeyValueName.new do |n|
-    n.include_keys LayerFragmentValuesName
-    n.extension :alternate_action
   end
 
   #
   # Handling for layer files.
   #
   module Layers
-    def layer_part_pathname(sum, max_value, folder: layer_folder)
-      LayerPartName.new(sum: sum, max_value: max_value).in(folder)
+    def new_part(sum, max_value)
+      layer_model.part.new(sum: sum, max_value: max_value)
     end
 
-    def layer_part_info_pathname(sum, max_value, folder: layer_folder)
-      LayerPartInfoName.new(sum: sum, max_value: max_value).in(folder)
-    end
-
-    def find_max_values(layer_sum, folder: layer_folder)
-      LayerPartName.glob(folder)
-        .map { |name| name.max_value if name.sum == layer_sum }
-        .compact
-        .sort
+    def find_max_values(layer_sum)
+      layer_model.part.where(sum: layer_sum).map(&:max_value)
     end
 
     def make_layer_part_batches(sum, max_value)
@@ -135,9 +131,12 @@ module Twenty48
       []
     end
 
+    def layer_part_states_pathname(sum, max_value)
+      new_part(sum, max_value).states_vbyte.to_s
+    end
+
     def read_layer_part_info(sum, max_value)
-      LayerPartInfoName.new(sum: sum, max_value: max_value)
-        .read(folder: layer_folder)
+      new_part(sum, max_value).info_json.read
     end
 
     def file_size(pathname)

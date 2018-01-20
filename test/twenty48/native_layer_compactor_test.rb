@@ -7,6 +7,8 @@ require_relative 'helper'
 class NativeLayerCompactorTest < Twenty48NativeTest
   include Twenty48
 
+# TODO: going to rework this
+=begin
   DISCOUNT = 0.95
 
   def test_build_2x2
@@ -171,4 +173,5 @@ class NativeLayerCompactorTest < Twenty48NativeTest
       assert_equal 25, LayerPartAlternateActionName.glob(compacted_path).size
     end
   end
+=end
 end

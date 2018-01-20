@@ -34,12 +34,6 @@ module Twenty48
   class LayerQSolver < LayerSolver
     attr_accessor :save_all_values
 
-    LayerFragmentQName = KeyValueName.new do |n|
-      n.include_keys LayerPartName
-      n.key :batch, type: Numeric, format: '%04d'
-      n.extension :q
-    end
-
     def solve
       all_parts = find_all_parts
       # Solve layer m and then reduce (convert Q to V and pi) layer m - 2.
@@ -60,26 +54,20 @@ module Twenty48
     # successor parts, including parts that would contain win states, in order.
     def find_all_parts
       parts = Hash.new { |h, k| h[k] = Set.new }
-      find_actual_parts.each do |(sum, max_value)|
+      layer_model.part.all.each do |part|
         [0, 2, 4].each do |delta_sum|
           [0, 1].each do |delta_max_value|
-            parts[sum + delta_sum] << max_value + delta_max_value
+            parts[part.sum + delta_sum] << part.max_value + delta_max_value
           end
         end
       end
       Hash[parts.keys.sort.reverse.map { |sum| [sum, parts[sum].to_a.sort] }]
     end
 
-    def find_actual_parts
-      LayerPartName.glob(layer_folder).map do |name|
-        [name.sum, name.max_value]
-      end
-    end
-
     def q_solve_part(sum, max_value)
       values_pathname = find_values_part_pathname(sum, max_value)
       native_solver = NativeLayerQSolver.create(
-        board_size, valuer, sum, max_value, values_pathname
+        layer_model.board_size, valuer, sum, max_value, values_pathname
       )
       jobs = make_solve_q_jobs_for_part(sum, max_value)
       log_solve_layer(sum, max_value, jobs.size)
@@ -129,8 +117,7 @@ module Twenty48
     end
 
     def find_values_part_pathname(sum, max_value)
-      values_pathname = LayerPartValuesName.new(sum: sum, max_value: max_value)
-        .in(values_folder)
+      values_pathname = new_solution(sum, max_value).values.to_s
       return nil if file_size_if_exists(values_pathname) == 0
       values_pathname
     end
@@ -152,6 +139,7 @@ module Twenty48
     ) do
       def initialize_q
         return if File.exist?(q_pathname)
+        fragment.mkdir!
         byte_size = batch_size * 32
         block_size = 1024**2
         count = (byte_size.to_f / block_size).ceil
@@ -167,10 +155,10 @@ module Twenty48
 
       def finish
         solution_writer = SolutionWriter.new(
-          layer_fragment_policy_pathname,
-          layer_fragment_values_pathname,
+          fragment.policy.to_s,
+          fragment.values.to_s,
           layer_fragment_alternate_action_pathname,
-          solver.alternate_action_tolerance || 0.0
+          solver.alternate_action_tolerance
         )
         NativeLayerQSolver.klass(solver.board_size).finish(
           make_vbyte_reader, q_pathname, solution_writer, all_values_pathname
@@ -181,43 +169,31 @@ module Twenty48
       private
 
       def make_vbyte_reader
-        VByteReader.new(states_pathname, byte_offset, previous, batch_size)
-      end
-
-      def states_pathname
-        LayerPartName.new(
-          sum: sum, max_value: max_value
-        ).in(solver.layer_folder)
+        VByteReader.new(
+          part.states_vbyte.to_s, byte_offset, previous, batch_size
+        )
       end
 
       def q_pathname
-        LayerFragmentQName.new(
-          sum: sum, max_value: max_value, batch: index
-        ).in(solver.values_folder)
+        fragment.q.to_s
       end
 
-      def layer_fragment_values_pathname
-        LayerFragmentValuesName.new(
-          sum: sum, max_value: max_value, batch: index
-        ).in(solver.values_folder)
+      def part
+        solver.new_part(sum, max_value)
       end
 
-      def layer_fragment_policy_pathname
-        LayerFragmentPolicyName.new(
-          sum: sum, max_value: max_value, batch: index
-        ).in(solver.values_folder)
+      def fragment
+        solver.new_fragment(sum, max_value, index)
       end
 
       def layer_fragment_alternate_action_pathname
-        return nil if solver.alternate_action_tolerance.nil?
-        LayerFragmentAlternateActionName.new(
-          sum: sum, max_value: max_value, batch: index
-        ).in(solver.values_folder)
+        return nil if solver.alternate_action_tolerance < 0
+        fragment.alternate_actions.to_s
       end
 
       def all_values_pathname
         return nil unless solver.save_all_values
-        layer_fragment_values_pathname + '.all.csv'
+        fragment.values_csv.to_s
       end
     end
   end

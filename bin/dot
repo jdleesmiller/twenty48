@@ -3,85 +3,109 @@
 
 require_relative '../lib/twenty48'
 
-max_states = 1000
+MAX_STATES = 1000
+BOARD_DIGITS = 2
 
-include Twenty48
-include Twenty48::Dot
+#
+# Make dot graph from solved model.
+#
+class DotBin
+  include Twenty48
+  include Twenty48::Dot
 
-def build_graph(builder, resolver, solver)
-  graph = Graph.new
+  def build_graph(builder, resolver, solver)
+    graph = Graph.new
 
-  start_states = builder.start_states
-  model = solver.model
-  policy = solver.policy
-  value = solver.value
+    start_states = builder.start_states
+    model = solver.model
+    policy = solver.policy
+    value = solver.value
 
-  policy.keys.sort.each do |state|
-    optimal_action = policy[state]
-    formatted_value = format('%.2f', value[state])
+    policy.keys.sort.each do |state|
+      optimal_action = policy[state]
+      formatted_value = format('%.2f', value[state])
 
-    cluster_name = format('%04d', state.sum) unless
-      state.lose? || state.win?(builder.max_exponent)
-    node_properties = graph.add_node(node_name(state), cluster_name)
-    node_properties[:shape] = :record
+      cluster_name = format('%04d', state.sum) unless
+        state.lose? || state.win?(builder.max_exponent)
+      node_properties = graph.add_node(node_name(state), cluster_name)
+      node_properties[:shape] = :record
 
-    if state.win?(builder.max_exponent)
-      node_properties[:color] = :blue
-      node_properties[:label] = "{{win!}|{#{formatted_value}}}"
-    elsif state.lose?
-      node_properties[:color] = :red
-      node_properties[:label] = "{{lose}|{#{formatted_value}}}"
-    else
-      node_properties[:color] = :green if start_states.member?(state)
-      node_properties[:color] = :red if resolver.lose_state == state
-      node_properties[:color] = :blue if resolver.win_states.member?(state)
+      if state.win?(builder.max_exponent)
+        node_properties[:color] = :blue
+        node_properties[:label] = "{{win!}|{#{formatted_value}}}"
+      elsif state.lose?
+        node_properties[:color] = :red
+        node_properties[:label] = "{{lose}|{#{formatted_value}}}"
+      else
+        node_properties[:color] = :green if start_states.member?(state)
+        node_properties[:color] = :red if resolver.lose_state == state
+        node_properties[:color] = :blue if resolver.win_states.member?(state)
 
-      board = node_label(state)
-      node_properties[:label] =
-        "{{#{board}}|{#{optimal_action}}|{#{formatted_value}}}"
+        board = node_label(state, BOARD_DIGITS)
+        node_properties[:label] =
+          "{{#{board}}|{#{optimal_action}}|{#{formatted_value}}}"
+      end
+
+      model.next_states(state, optimal_action).each do |next_state|
+        probability = model.transition_probability(
+          state, optimal_action, next_state
+        )
+
+        edge_properties = graph.add_edge(
+          node_name(state),
+          node_name(next_state)
+        )
+
+        edge_properties[:taillabel] = format(' %.2f ', probability)
+        edge_properties[:weight] = (100 * probability).round
+        edge_properties[:color] = :grey
+      end
     end
+    graph
+  end
 
-    model.next_states(state, optimal_action).each do |next_state|
-      probability = model.transition_probability(
-        state, optimal_action, next_state
-      )
+  def run
+    data = Data.new(root: Data::ROOT)
+    data.game.each do |game|
+      builder = Builder.new(game.board_size, game.max_exponent)
+      game.model.each do |model|
+        array_bin_bz2 = model.array_bin_bz2
+        next unless array_bin_bz2.exist?
+        array_model = array_bin_bz2.read
 
-      edge_properties = graph.add_edge(node_name(state), node_name(next_state))
+        resolver = Resolver.new_from_strategy_name(
+          model.resolver_strategy, builder, model.max_resolve_depth
+        )
+        model.solution.each do |solution|
+          p solution.to_s
+          solution_csv_bz2 = solution.solution_csv_bz2
+          next unless solution_csv_bz2.exist?
 
-      edge_properties[:taillabel] = format(' %.2f ', probability)
-      edge_properties[:weight] = (100 * probability).round
-      edge_properties[:color] = :grey
+          next if solution_csv_bz2.estimate_state_count > MAX_STATES
+
+          puts 'bu'
+          policy, value = solution_csv_bz2.read_policy_and_value
+          solver = FiniteMDP::Solver.new(
+            array_model, solution.discount,
+            policy: policy, value: value
+          )
+
+          graph = build_graph(builder, resolver, solver)
+
+          File.open(solution.graph_dot.to_s, 'w') do |dot|
+            dot.puts 'digraph {'
+            dot.puts '  splines=spline;'
+            dot.puts '  nodesep=1;' # horizontal spacing
+            dot.puts '  ranksep=2;' # vertical spacing
+            dot.puts '  node [fontname="Courier"];'
+            dot.puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
+            dot.puts '}'
+          end
+          system "bzip2 --force #{solution.graph_dot}"
+        end
+      end
     end
   end
-  graph
 end
 
-# # For a single file:
-# input_stem = 'data/...'
-# solver_params = { board_size: 4, max_exponent: 4, max_resolve_depth: 3 }
-# model = Storage.read_model_file("#{input_stem}.json.bz2")
-# solver = Storage.read_solver_file(model, "#{input_stem}.csv.bz2",
-#   0.05)
-
-Dir.glob(Storage::SOLVERS_GLOB).sort.each do |solver_pathname|
-  solver_params = Storage.solver_params_from_pathname(solver_pathname)
-  p solver_params
-  next if Storage.estimate_solver_state_count(solver_params) > max_states
-
-  builder, resolver = Storage.new_builder_from_model_params(solver_params)
-  solver = Storage.read_solver(solver_params)
-
-  graph = build_graph(builder, resolver, solver)
-
-  output_pathname = Storage.graph_pathname(solver_params, '.dot')
-  File.open(output_pathname, 'w') do |dot|
-    dot.puts 'digraph {'
-    dot.puts '  splines=spline;'
-    dot.puts '  nodesep=1;' # horizontal spacing
-    dot.puts '  ranksep=2;' # vertical spacing
-    dot.puts '  node [fontname="Courier"];'
-    dot.puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
-    dot.puts '}'
-  end
-  system "bzip2 --force #{output_pathname}"
-end
+DotBin.new.run

@@ -3,105 +3,14 @@
 require 'csv'
 require 'json'
 
+require 'key_value_name'
+
 module Twenty48
   #
   # Utilities for reading and writing things from and to disk.
   #
   module Storage
     module_function
-
-    #
-    # TODO: See if we can convert these to KVN form to save some code.
-    #
-    # LayerPartName.new(sum: 123, max_value: 3).to_s
-    #
-    # LayerPartName.glob(folder: folder).each do |layer_part|
-    #   layer_part.sum
-    #   layer_part.max_value
-    # end
-    #
-    # GameName = KeyValueName.define do
-    #   key :board_size, type: Integer
-    #   key :max_exponent, type: Integer
-    # end
-    #
-    # ModelName = KeyValueName.define do
-    #   include_keys GameName
-    #   key :resolve_strategy, type: Symbol
-    #   key :max_resolve_depth, type: Integer
-    # end
-    #
-    # SolverName = KeyValueName.define do
-    #   include_keys ModelName
-    #   key :solve_strategy, type: Symbol
-    #   key :discount, type: Float
-    #   key :tolerance, type: Float
-    # end
-
-    ROOT = File.join('.', 'data')
-    MODELS_PATH = File.join(ROOT, 'models')
-    ARRAY_MODELS_PATH = File.join(ROOT, 'array_models')
-    SOLVERS_PATH = File.join(ROOT, 'solvers')
-    GRAPHS_PATH = File.join(ROOT, 'graphs')
-
-    LAYER_STATES_PATH = File.join(ROOT, 'layer_states')
-    LAYER_VALUES_PATH = File.join(ROOT, 'layer_values')
-    LAYER_COMPACT_PATH = File.join(ROOT, 'layer_compact')
-
-    MODELS_GLOB = File.join(MODELS_PATH, '*.json.bz2')
-    ARRAY_MODELS_GLOB = File.join(ARRAY_MODELS_PATH, '*.bin.bz2')
-    SOLVERS_GLOB = File.join(SOLVERS_PATH, '*.csv.bz2')
-    LAYER_STATES_GLOB = File.join(LAYER_STATES_PATH, '*') # folders
-    LAYER_VALUES_GLOB = File.join(LAYER_VALUES_PATH, '*') # folders
-    LAYER_COMPACT_GLOB = File.join(LAYER_COMPACT_PATH, '*') # folders
-
-    def build_basename(**args)
-      args.map { |key, value| "#{key}-#{value}" }.join('.')
-    end
-
-    def build_pathname_rx(*components)
-      Regexp.new(components.map(&:to_s).join('[.]'))
-    end
-
-    def rx_captures_to_hash(match_data)
-      match_data.names.map(&:to_sym).zip(match_data.captures).to_h
-    end
-
-    BASIC_NAME_RX = build_pathname_rx(
-      /board_size-(?<board_size>\d+)/,
-      /max_exponent-(?<max_exponent>\d+)/
-    )
-
-    MODEL_NAME_RX = build_pathname_rx(
-      BASIC_NAME_RX,
-      /resolve_strategy-(?<resolve_strategy>\w+)/,
-      /max_resolve_depth-(?<max_resolve_depth>\d+)/
-    )
-
-    MODEL_PARAMS = MODEL_NAME_RX.names.map(&:to_sym)
-
-    SOLVER_NAME_RX = build_pathname_rx(
-      MODEL_NAME_RX,
-      /solve_strategy-(?<solve_strategy>\w+)/,
-      /discount-(?<discount>[0-9.e+-]+)/,
-      /tolerance-(?<tolerance>[0-9.e+-]+)/
-    )
-
-    SOLVER_PARAMS = SOLVER_NAME_RX.names.map(&:to_sym)
-
-    LAYER_STATES_NAME_RX = build_pathname_rx(
-      BASIC_NAME_RX,
-      /max_depth-(?<max_depth>\d+)/
-    )
-
-    LAYER_STATES_PARAMS = LAYER_STATES_NAME_RX.names.map(&:to_sym)
-
-    LAYER_VALUES_NAME_RX = build_pathname_rx(
-      LAYER_STATES_NAME_RX,
-      /discount-(?<discount>[0-9.e+-]+)/
-    )
-
-    LAYER_VALUES_PARAMS = LAYER_VALUES_NAME_RX.names.map(&:to_sym)
 
     def bunzip(pathname)
       IO.popen("bunzip2 < #{pathname}") { |input| yield(input) }
@@ -115,305 +24,211 @@ module Twenty48
       bunzip(pathname) { |input| yield(CSV(input, options)) }
     end
 
-    #
-    # Model path handling
-    #
-
-    def model_params_from_builder(builder, resolver)
-      {
-        board_size: builder.board_size,
-        max_exponent: builder.max_exponent,
-        max_resolve_depth: resolver.max_resolve_depth,
-        resolve_strategy: resolver.strategy_name
-      }
-    end
-
-    def model_params_from_pathname(pathname)
-      basename = File.basename(pathname)
-      raise "no model in #{pathname}" unless basename =~ MODEL_NAME_RX
-      cast_model_params(rx_captures_to_hash(Regexp.last_match))
-    end
-
-    def cast_basic_params(params)
-      params[:board_size] = params[:board_size].to_i
-      params[:max_exponent] = params[:max_exponent].to_i
-    end
-
-    def cast_model_params(params)
-      cast_basic_params(params)
-      params[:resolve_strategy] = params[:resolve_strategy].to_sym
-      params[:max_resolve_depth] = params[:max_resolve_depth].to_i
-      params
-    end
-
-    def model_basename(model_params)
-      build_basename(
-        board_size: model_params[:board_size],
-        max_exponent: model_params[:max_exponent],
-        resolve_strategy: model_params[:resolve_strategy],
-        max_resolve_depth: model_params[:max_resolve_depth]
-      )
-    end
-
-    def model_pathname(model_params, extension = '.json.bz2')
-      File.join(MODELS_PATH, "#{model_basename(model_params)}#{extension}")
-    end
-
-    #
-    # Solver path handling
-    #
-
-    # The strategy and tolerance are not stored on the solver.
-    def solver_params(model_params, solve_strategy, discount, tolerance)
-      model_params.merge(
-        solve_strategy: solve_strategy,
-        discount: discount,
-        tolerance: tolerance
-      )
-    end
-
-    def solver_params_from_pathname(pathname)
-      basename = File.basename(pathname)
-      raise "no solver in #{pathname}" unless basename =~ SOLVER_NAME_RX
-      cast_solver_params(rx_captures_to_hash(Regexp.last_match))
-    end
-
-    def cast_solver_params(params)
-      cast_model_params(params)
-      params[:solve_strategy] = params[:solve_strategy].to_sym
-      params[:discount] = params[:discount].to_f
-      params[:tolerance] = params[:tolerance].to_f
-      params
-    end
-
-    def solver_basename(solver_params)
-      build_basename(solver_params)
-    end
-
-    def solver_pathname(solver_params, extension = '.csv.bz2')
-      File.join(SOLVERS_PATH, "#{solver_basename(solver_params)}#{extension}")
-    end
-
-    def estimate_solver_state_count(solver_params)
-      `bunzip2 < #{solver_pathname(solver_params)} | wc -l`.to_i - 2
-    end
-
-    #
-    # Layer builder / solver path handling
-    #
-
-    def cast_layer_states_params(params)
-      cast_basic_params(params)
-      params[:max_depth] = params[:max_depth].to_i
-      params
-    end
-
-    def layer_states_params_from_pathname(pathname)
-      basename = File.basename(pathname)
-      raise "no layers in #{pathname}" unless basename =~ LAYER_STATES_NAME_RX
-      cast_layer_states_params(rx_captures_to_hash(Regexp.last_match))
-    end
-
-    def layer_states_basename(params)
-      build_basename(
-        board_size: params[:board_size],
-        max_exponent: params[:max_exponent],
-        max_depth: params[:max_depth]
-      )
-    end
-
-    def layer_states_pathname(params)
-      File.join(LAYER_STATES_PATH, layer_states_basename(params))
-    end
-
-    def cast_layer_values_params(params)
-      cast_layer_states_params(params)
-      params[:discount] = params[:discount].to_f
-      params
-    end
-
-    def layer_values_params_from_pathname(pathname)
-      basename = File.basename(pathname)
-      raise "no layers in #{pathname}" unless basename =~ LAYER_VALUES_NAME_RX
-      cast_layer_values_params(rx_captures_to_hash(Regexp.last_match))
-    end
-
-    def layer_values_basename(params)
-      build_basename(
-        board_size: params[:board_size],
-        max_exponent: params[:max_exponent],
-        max_depth: params[:max_depth],
-        discount: params[:discount]
-      )
-    end
-
-    def layer_values_pathname(params)
-      File.join(LAYER_VALUES_PATH, layer_values_basename(params))
-    end
-
-    def layer_compact_pathname(params)
-      File.join(LAYER_COMPACT_PATH, layer_values_basename(params))
-    end
-
-    #
-    # Dot graph path handling
-    #
-
-    def graph_pathname(solver_params, extension = '.dot.bz2')
-      File.join(GRAPHS_PATH, "#{solver_basename(solver_params)}#{extension}")
-    end
-
-    #
-    # Read model builder
-    #
-
-    def new_builder_from_model_params(model_params)
-      builder = Builder.new(
-        model_params[:board_size],
-        model_params[:max_exponent]
-      )
-      resolver = Resolver.new_from_strategy_name(
-        model_params[:resolve_strategy],
-        builder,
-        model_params[:max_resolve_depth]
-      )
-      [builder, resolver]
-    end
-
-    #
-    # Read MDP model
-    #
-
-    def string_to_state(string)
+    def json_string_to_state(string)
       Twenty48::State.new(JSON.parse(string))
     end
+  end
 
-    def read_model(model_params)
-      pathname = model_pathname(model_params)
-      read_model_file(pathname)
-    end
+  Data = KeyValueName.schema do
+    folder :game do
+      key :board_size, type: Integer
+      key :max_exponent, type: Integer, format: '%x'
 
-    def read_model_file(pathname)
-      hash = read_bzipped_json(pathname)
-      hash = hash.map do |state0, actions|
-        [string_to_state(state0), read_transition_hash(actions)]
-      end.to_h
-      FiniteMDP::HashModel.new(hash)
-    end
+      folder :model do
+        key :resolver_strategy, type: Symbol
+        key :max_resolve_depth, type: Integer, format: '%d'
 
-    def read_transition_hash(actions_hash)
-      actions_hash.map do |action, successors|
-        new_successors = successors.map do |state1, data|
-          [string_to_state(state1), data]
-        end.to_h
-        [action.to_sym, new_successors]
-      end.to_h
-    end
+        # Hash model
+        file :hash, :json
+        file :hash, :json, :bz2
 
-    #
-    # Read MDP model states
-    #
+        # Array model
+        file :array, :bin
+        file :array, :bin, :bz2
 
-    def read_model_states(model_params)
-      pathname = model_pathname(model_params)
-      states = []
-      each_model_state_actions_line(pathname) do |state_string, _actions_string|
-        states << string_to_state(state_string)
+        # Solution (policy and values)
+        folder :solution do
+          key :discount, type: Float
+          key :tolerance, type: Float
+          key :solve_strategy, type: Symbol
+
+          file :solution, :csv
+          file :solution, :csv, :bz2
+
+          file :graph, :dot
+          file :graph, :dot, :bz2
+        end
       end
-      states
-    end
 
-    def each_model_state_actions(model_params)
-      pathname = model_pathname(model_params)
-      each_model_state_actions_line(pathname) do |state_string, actions_string|
-        state = string_to_state(state_string)
-        actions = read_transition_hash(JSON.parse(actions_string))
-        yield state, actions
-      end
-    end
+      folder :layer_model do
+        key :max_depth, type: Integer
 
-    def each_model_state_actions_line(pathname)
-      bunzip(pathname) do |input|
-        input.each_line do |line|
-          next if line.start_with?('{')
-          break if line.start_with?('}')
-          raise "bad line: #{line}" unless
-            line =~ /^\s*"(\[(?:\d+, )+\d\])": (\{.+}),?$/
-          yield Regexp.last_match(1), Regexp.last_match(2)
+        folder :part do
+          key :sum, type: Integer, format: '%04d'
+          key :max_value, type: Integer, format: '%x'
+
+          file :fragment, :vbyte, class_name: :FragmentVByte do
+            key :input_sum, type: Integer, format: '%04d'
+            key :input_max_value, type: Integer, format: '%x'
+            key :batch, type: Integer, format: '%04d'
+          end
+
+          file :info, :json
+          file :states, :vbyte, class_name: :StatesVByte
+
+          folder :solution do
+            key :discount, type: Float
+            key :alternate_action_tolerance, type: Float
+
+            folder :fragment do
+              key :batch, type: Integer, format: '%04d'
+
+              file :values
+              file :policy
+              file :alternate_actions
+
+              # Intermediates for LayerQSolver
+              file :q
+              file :values, :csv
+            end
+
+            file :values
+            file :policy
+            file :alternate_actions
+          end
         end
       end
     end
+  end
 
-    #
-    # Build array models
-    #
+  class Data
+    ROOT = File.join('.', 'data')
 
-    def array_model_pathname(model_params, extension = '.bin.bz2')
-      File.join(ARRAY_MODELS_PATH,
-        "#{model_basename(model_params)}#{extension}")
-    end
+    class Game
+      class Model
+        #
+        # Hash model as compressed, line-oriented JSON.
+        #
+        class HashJsonBz2
+          include Storage
 
-    def read_array_model(model_params)
-      pathname = array_model_pathname(model_params)
-      # rubocop:disable Security/MarshalLoad --- assuming trusted data here
-      bunzip(pathname) { |input| Marshal.load(input) }
-    end
+          def each_model_state_actions_line
+            bunzip(to_s) do |input|
+              input.each_line do |line|
+                next if line.start_with?('{')
+                break if line.start_with?('}')
+                raise "bad line: #{line}" unless
+                line =~ /^\s*"(\[(?:\d+, )+\d\])": (\{.+}),?$/
+                yield Regexp.last_match(1), Regexp.last_match(2)
+              end
+            end
+          end
 
-    def find_state_index(states, state)
-      (0...states.size).bsearch { |i| states[i] >= state }
-    end
+          def each_model_state_actions
+            each_model_state_actions_line do |state_string, actions_string|
+              state = json_string_to_state(state_string)
+              actions = read_transition_hash(JSON.parse(actions_string))
+              yield state, actions
+            end
+          end
 
-    def build_array_model(model_params)
-      # Read in all states and sort them so we know their state numbers.
-      states = read_model_states(model_params).sort
+          def read_transition_hash(actions_hash)
+            actions_hash.map do |action, successors|
+              new_successors = successors.map do |state1, data|
+                [json_string_to_state(state1), data]
+              end.to_h
+              [action.to_sym, new_successors]
+            end.to_h
+          end
 
-      # Then read them in again, one at a time to keep memory under control.
-      array = Array.new(states.size)
-      state_action_map = Array.new(states.size)
-      each_model_state_actions(model_params) do |state, actions|
-        state_array = actions.map do |_action, successors|
-          successors.map do |successor, (probability, reward)|
-            [find_state_index(states, successor), probability, reward]
+          def read_states
+            states = []
+            each_model_state_actions_line do |state_string, _actions_string|
+              states << json_string_to_state(state_string)
+            end
+            states
+          end
+
+          def read
+            hash = read_bzipped_json(to_s)
+            hash = hash.map do |state0, actions|
+              [json_string_to_state(state0), read_transition_hash(actions)]
+            end.to_h
+            FiniteMDP::HashModel.new(hash)
           end
         end
 
-        state_index = find_state_index(states, state)
-        state_action_map[state_index] = [state, actions.keys]
-        array[state_index] = state_array
+        #
+        # Array model as uncompressed, Marshaled data.
+        #
+        class ArrayBin
+          def write(array_model)
+            File.open(to_s, 'wb') do |file|
+              Marshal.dump array_model, file
+            end
+          end
+        end
+
+        #
+        # Array model as compressed, Marshaled data.
+        #
+        class ArrayBinBz2
+          include Storage
+
+          def read
+            # rubocop:disable Security/MarshalLoad --- assuming trusted data
+            bunzip(to_s) { |input| Marshal.load(input) }
+            # rubocop:enable Security/MarshalLoad
+          end
+        end
+
+        class Solution
+          #
+          # Compressed solution CSV
+          #
+          class SolutionCsvBz2
+            include Storage
+
+            def estimate_state_count
+              `bunzip2 < #{self} | wc -l`.to_i - 2
+            end
+
+            def read_policy_and_value_from_csv(csv)
+              policy = {}
+              value = Hash.new { 0 }
+              csv.each do |row|
+                state = json_string_to_state(row[0])
+                policy[state] = row[1].to_sym
+                value[state] = row[2].to_f
+              end
+              [policy, value]
+            end
+
+            def read_policy_and_value
+              read_bzipped_csv(to_s) do |csv|
+                read_policy_and_value_from_csv(csv)
+              end
+            end
+          end
+        end
       end
 
-      FiniteMDP::ArrayModel.new(
-        array,
-        FiniteMDP::ArrayModel::OrderedStateActionMap.new(state_action_map)
-      )
-    end
-
-    #
-    # Read solver
-    #
-
-    def read_policy_and_value_from_csv(csv)
-      policy = {}
-      value = Hash.new { 0 }
-      csv.each do |row|
-        state = string_to_state(row[0])
-        policy[state] = row[1].to_sym
-        value[state] = row[2].to_f
+      class LayerModel
+        class Part
+          class Solution
+            #
+            # Fragment of a part generated during a solve.
+            #
+            class Fragment
+              def remove_if_empty
+                Dir.rmdir(to_s)
+              rescue SystemCallError
+                nil # Ignore --- directory not empty.
+              end
+            end
+          end
+        end
       end
-      [policy, value]
-    end
-
-    def read_solver(solver_params)
-      model = read_array_model(solver_params)
-      pathname = solver_pathname(solver_params)
-      read_solver_file(model, pathname, solver_params[:discount])
-    end
-
-    def read_solver_file(model, pathname, discount)
-      policy, value = read_bzipped_csv(pathname) do |csv|
-        read_policy_and_value_from_csv(csv)
-      end
-      FiniteMDP::Solver.new(model, discount, policy: policy, value: value)
     end
   end
 end

@@ -5,38 +5,36 @@ require 'fileutils'
 
 require_relative '../lib/twenty48'
 
-include Twenty48
+#
+# Build a layer model using LayerBuilder.
+#
+class LayerBuildBin
+  include Twenty48
 
-def build(board_size:, max_exponent:, max_depth:, max_states:)
-  # Note: exact discount value doesn't matter for build step.
-  discount = 0.95
+  def build(board_size:, max_exponent:, max_depth:, max_states:)
+    data = Data.new(root: Data::ROOT)
+    layer_model = data.game.new(
+      board_size: board_size,
+      max_exponent: max_exponent
+    ).layer_model.new(
+      max_depth: max_depth
+    )
 
-  states_path = Storage.layer_states_pathname(
-    board_size: board_size,
-    max_exponent: max_exponent,
-    max_depth: max_depth
-  )
-  puts states_path
-  if Dir.exist?(states_path)
-    puts 'exists; skipping'
-    return
+    puts layer_model
+    if layer_model.exist?
+      puts 'exists; skipping'
+      return
+    end
+    layer_model.mkdir!
+
+    layer_builder = LayerBuilder.new(layer_model, max_states, verbose: true)
+    # raise "ulimit -n too low: #{layer_builder.max_files}" if
+    #   layer_builder.max_files < 8000
+    layer_builder.build_start_state_layers
+    layer_builder.build
+    # layer_builder.prepare_to_restart_from(340)
+    # layer_builder.build(start_layer_sum: 340)
   end
-  FileUtils.mkdir_p states_path
-
-  valuer = NativeValuer.create(
-    board_size: board_size,
-    max_exponent: max_exponent,
-    max_depth: max_depth,
-    discount: discount
-  )
-  layer_builder = LayerBuilder.new(board_size, states_path, max_states, valuer,
-    verbose: true)
-  # raise "ulimit -n too low: #{layer_builder.max_files}" if
-  #   layer_builder.max_files < 8000
-  layer_builder.build_start_state_layers
-  layer_builder.build
-  # layer_builder.prepare_to_restart_from(340)
-  # layer_builder.build(start_layer_sum: 340)
 end
 
 #
@@ -44,7 +42,7 @@ end
 #
 (3..6).each do |max_exponent|
   (0..[1, max_exponent - 1].min).each do |max_depth|
-    build(
+    LayerBuildBin.new.build(
       board_size: 2,
       max_exponent: max_exponent,
       max_depth: max_depth,

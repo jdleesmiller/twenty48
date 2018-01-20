@@ -5,6 +5,12 @@ require 'minitest/autorun'
 require_relative '../../lib/twenty48'
 
 module CommonTestHelpers
+  def with_tmp_data
+    Dir.mktmpdir do |tmp|
+      yield Twenty48::Data.new(root: tmp)
+    end
+  end
+
   def assert_close(x, y)
     assert_in_delta x, y, 1e-6
   end

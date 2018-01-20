@@ -3,60 +3,74 @@
 
 require_relative '../lib/twenty48'
 
-discount = 0.95
-tolerance = 1e-6
-solve_strategy = :policy_iteration # :value_iteration or :policy_iteration
+DISCOUNT = 0.95
+TOLERANCE = 1e-6
+SOLVE_STRATEGY = :policy_iteration # :value_iteration or :policy_iteration
 
-# For a single file:
-# input_stem = 'data/...'
-# input_file = "#{input_stem}.json.bz2"
-# model_params = { board_size: 4, max_exponent: 4, max_resolve_depth: 3 }
-# model = Twenty48::Storage.read_model_file(input_file)
+SOLUTION_PARAMS = {
+  discount: DISCOUNT,
+  tolerance: TOLERANCE,
+  solve_strategy: SOLVE_STRATEGY
+}.freeze
 
-Dir.glob(Twenty48::Storage::ARRAY_MODELS_GLOB).sort.each do |input_file|
-  model_params = Twenty48::Storage.model_params_from_pathname(input_file)
-  p model_params
-  solver_params = Twenty48::Storage.solver_params(
-    model_params, solve_strategy, discount, tolerance
-  )
-  output_file = Twenty48::Storage.solver_pathname(solver_params, '.csv')
-  if File.exist?("#{output_file}.bz2")
-    puts 'exists'
-    next
-  end
-  if model_params[:board_size] == 3 && model_params[:max_exponent] > 7
-    puts 'skipped'
-    next
-  end
+#
+# Solve an array model.
+#
+class SolveBin
+  include Twenty48
 
-  puts 'reading'
-  model = Twenty48::Storage.read_array_model(model_params)
-  puts 'read'
+  def solve(model)
+    puts 'reading'
+    array_model = model.array_bin_bz2.read
+    puts 'read'
 
-  solver = FiniteMDP::Solver.new(model, discount)
-  case solve_strategy
-  when :policy_iteration then
-    solver.policy_iteration(value_tolerance: tolerance) \
-    do |num_policy_iters, num_actions_changed, num_value_iters, delta|
-      next unless (num_policy_iters + num_value_iters) % 5 == 0
-      p [Time.now,
-         num_policy_iters, num_actions_changed, num_value_iters, delta]
+    solution = model.solution.new(SOLUTION_PARAMS).mkdir!
+
+    solver = FiniteMDP::Solver.new(array_model, DISCOUNT)
+    case SOLVE_STRATEGY
+    when :policy_iteration then
+      solver.policy_iteration(value_tolerance: TOLERANCE) \
+      do |num_policy_iters, num_actions_changed, num_value_iters, delta|
+        next unless (num_policy_iters + num_value_iters) % 5 == 0
+        p [Time.now,
+           num_policy_iters, num_actions_changed, num_value_iters, delta]
+      end
+    when :value_iteration then
+      solver.value_iteration(tolerance: TOLERANCE) do |num_iters, delta|
+        next unless num_iters % 5 == 0
+        p [Time.now, num_iters, delta]
+      end
     end
-  when :value_iteration then
-    solver.value_iteration(tolerance: tolerance) do |num_iters, delta|
-      next unless num_iters % 5 == 0
-      p [Time.now, num_iters, delta]
+
+    puts 'DONE'
+    CSV.open(solution.solution_csv.to_s, 'w') do |csv|
+      csv << %w[state action value]
+      policy = solver.policy
+      value = solver.value
+      policy.keys.sort.each do |state|
+        csv << [state, policy[state], value[state]]
+      end
     end
+    system "bzip2 --force #{solution.solution_csv}"
   end
 
-  puts 'DONE'
-  CSV.open(output_file, 'w') do |csv|
-    csv << %w[state action value]
-    policy = solver.policy
-    value = solver.value
-    policy.keys.sort.each do |state|
-      csv << [state, policy[state], value[state]]
+  def run
+    data = Data.new(root: Data::ROOT)
+    data.game.each do |game|
+      if game.board_size == 3 && game.max_exponent > 7
+        puts 'skipped'
+        next
+      end
+      game.model.each do |model|
+        next unless model.array_bin_bz2.exist?
+        if model.solution.find_by(SOLUTION_PARAMS)
+          puts 'exists'
+          next
+        end
+        solve(model)
+      end
     end
   end
-  system "bzip2 --force #{output_file}"
 end
+
+SolveBin.new.run

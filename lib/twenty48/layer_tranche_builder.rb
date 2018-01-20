@@ -2,7 +2,7 @@
 
 module Twenty48
   LayerTrancheName = KeyValueName.new do |n|
-    n.key :threshold, type: Numeric
+    n.key :threshold, type: Float
     n.extension :csv
   end
 

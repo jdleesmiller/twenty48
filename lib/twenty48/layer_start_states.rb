@@ -22,14 +22,18 @@ module Twenty48
       end
     end
 
-    def find_mean_start_state_value(board_size, folder)
+    def find_mean_start_state_value(layer_model, solution_attributes)
       start_state_weights = LayerStateProbabilities.new
-      find_start_state_probabilities(board_size, start_state_weights)
+      find_start_state_probabilities(
+        layer_model.board_size,
+        start_state_weights
+      )
 
       mean_value = 0.0
       start_state_weights.each_sum_max_value do |sum, max_value, weights|
-        name = LayerPartValuesName.new(sum: sum, max_value: max_value)
-        name.read(board_size, folder: folder).each do |state, value|
+        part = layer_model.part.find_by(sum: sum, max_value: max_value)
+        part_solution = part.solution.find_by(solution_attributes)
+        part_solution.values.read_state_values.each do |state, value|
           next unless weights.key?(state.get_nybbles)
           mean_value += weights[state.get_nybbles] * value
         end

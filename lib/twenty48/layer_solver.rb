@@ -22,27 +22,39 @@ module Twenty48
   class LayerSolver
     include Layers
 
-    def initialize(board_size, layer_folder, values_folder, valuer,
-      alternate_action_tolerance: nil, end_layer_sum: nil, verbose: false)
-      @board_size = board_size
-      @layer_folder = layer_folder
-      @values_folder = values_folder
-      @valuer = valuer
+    def initialize(layer_model,
+      discount: nil,
+      alternate_action_tolerance: -1,
+      end_layer_sum: nil,
+      verbose: false)
+      @layer_model = layer_model
+      @discount = discount
+      @valuer = layer_model.create_native_valuer(discount: discount)
       @alternate_action_tolerance = alternate_action_tolerance
       @end_layer_sum = end_layer_sum || find_max_layer_sum
-      @solver = NativeLayerSolver.create(board_size, valuer)
+      @solver = NativeLayerSolver.create(layer_model.board_size, valuer)
       @verbose = verbose
 
       raise "not enough layers: #{end_layer_sum}" if
         @end_layer_sum.nil? || @end_layer_sum < 8
     end
 
-    attr_reader :board_size
-    attr_reader :layer_folder
-    attr_reader :values_folder
+    attr_reader :layer_model
+    attr_reader :discount
     attr_reader :valuer
     attr_reader :alternate_action_tolerance
     attr_reader :end_layer_sum
+
+    def board_size
+      layer_model.board_size
+    end
+
+    def solution_attributes
+      {
+        discount: discount,
+        alternate_action_tolerance: alternate_action_tolerance
+      }
+    end
 
     def solve
       layer_sum = end_layer_sum
@@ -70,7 +82,7 @@ module Twenty48
           @solver.generate_values_for_check(
             vbyte_reader,
             fake_value,
-            layer_part_values_pathname(end_layer_sum, max_value)
+            new_solution(end_layer_sum, max_value).values.to_s
           )
         end
         @end_layer_sum -= 2
@@ -85,6 +97,14 @@ module Twenty48
       end
     end
 
+    def new_solution(sum, max_value)
+      new_part(sum, max_value).solution.new(solution_attributes)
+    end
+
+    def new_fragment(sum, max_value, batch)
+      new_solution(sum, max_value).fragment.new(batch: batch)
+    end
+
     private
 
     def load_values(sum, max_value)
@@ -96,11 +116,11 @@ module Twenty48
     def next_value_pathnames(next_sum, max_value)
       next_max_values = find_max_values(next_sum)
       if next_max_values.member?(max_value)
-        pathname_0 = layer_part_values_pathname(next_sum, max_value)
+        pathname_0 = new_solution(next_sum, max_value).values.to_s
         pathname_0 = nil if file_size_if_exists(pathname_0) == 0
       end
       if next_max_values.member?(max_value + 1)
-        pathname_1 = layer_part_values_pathname(next_sum, max_value + 1)
+        pathname_1 = new_solution(next_sum, max_value + 1).values.to_s
         pathname_1 = nil if file_size_if_exists(pathname_1) == 0
       end
       [pathname_0, pathname_1]
@@ -112,19 +132,17 @@ module Twenty48
       GC.start
       Parallel.each(batches) do |index, offset, previous, batch_size|
         check_batch_size(batch_size)
-        states_pathname = layer_part_pathname(sum, max_value)
-        policy_pathname = layer_fragment_policy_pathname(sum, max_value, index)
-        values_pathname = layer_fragment_values_pathname(sum, max_value, index)
-        alternate_action_pathname = layer_fragment_alternate_action_pathname(
-          sum, max_value, index
-        )
+        states_pathname = layer_part_states_pathname(sum, max_value)
         vbyte_reader = VByteReader.new(states_pathname, offset, previous,
           batch_size)
+        fragment = new_fragment(sum, max_value, index).mkdir!
+        alternate_action_pathname = fragment.alternate_actions.to_s if
+          alternate_action_tolerance >= 0
         solution_writer = SolutionWriter.new(
-          policy_pathname,
-          values_pathname,
+          fragment.policy.to_s,
+          fragment.values.to_s,
           alternate_action_pathname,
-          alternate_action_tolerance || 0.0
+          alternate_action_tolerance
         )
         @solver.solve(vbyte_reader, sum, max_value, solution_writer)
         STDOUT.write('.') if @verbose
@@ -136,28 +154,24 @@ module Twenty48
     def reduce_layer_part(sum, max_value)
       log_reduce_layer(sum, max_value)
 
+      fragments = new_solution(sum, max_value).fragment.all
       concatenate(
-        find_layer_fragments(sum, max_value, LayerFragmentValuesName),
-        layer_part_values_pathname(sum, max_value)
+        fragments.map(&:values).map(&:to_s),
+        new_solution(sum, max_value).values.to_s
       )
       concatenate(
-        find_layer_fragments(sum, max_value, LayerFragmentPolicyName),
-        layer_part_policy_pathname(sum, max_value)
+        fragments.map(&:policy).map(&:to_s),
+        new_solution(sum, max_value).policy.to_s
       )
 
-      return if alternate_action_tolerance.nil?
-      concatenate(
-        find_layer_fragments(sum, max_value, LayerFragmentAlternateActionName),
-        layer_part_alternate_action(sum, max_value)
-      )
-    end
-
-    def find_layer_fragments(sum, max_value, klass)
-      files = klass.glob(values_folder).select do |name|
-        name.sum == sum && name.max_value == max_value
+      if alternate_action_tolerance >= 0
+        concatenate(
+          fragments.map(&:alternate_actions).map(&:to_s),
+          new_solution(sum, max_value).alternate_actions.to_s
+        )
       end
-      files = files.sort_by { |name| [name.sum, name.max_value, name.batch] }
-      files.map { |name| name.in(values_folder) }
+
+      fragments.each(&:remove_if_empty)
     end
 
     def concatenate(input_pathnames, output_pathname)
@@ -172,49 +186,12 @@ module Twenty48
       end
     end
 
-    def layer_fragment_values_pathname(sum, max_value, batch)
-      LayerFragmentValuesName.new(
-        sum: sum, max_value: max_value, batch: batch
-      ).in(values_folder)
-    end
-
-    def layer_fragment_alternate_action_pathname(sum, max_value, batch)
-      return nil if alternate_action_tolerance.nil?
-      LayerFragmentAlternateActionName.new(
-        sum: sum, max_value: max_value, batch: batch
-      ).in(values_folder)
-    end
-
-    def layer_fragment_policy_pathname(sum, max_value, batch)
-      LayerFragmentPolicyName.new(
-        sum: sum, max_value: max_value, batch: batch
-      ).in(values_folder)
-    end
-
-    def layer_part_values_pathname(sum, max_value)
-      LayerPartValuesName.new(
-        sum: sum, max_value: max_value
-      ).in(values_folder)
-    end
-
-    def layer_part_policy_pathname(sum, max_value)
-      LayerPartPolicyName.new(
-        sum: sum, max_value: max_value
-      ).in(values_folder)
-    end
-
-    def layer_part_alternate_action(sum, max_value)
-      LayerPartAlternateActionName.new(
-        sum: sum, max_value: max_value
-      ).in(values_folder)
-    end
-
     def find_max_layer_sum
-      LayerPartName.glob(layer_folder).map(&:sum).max
+      layer_model.part.map(&:sum).max
     end
 
     def check_batch_size(batch_size)
-      return if alternate_action_tolerance.nil?
+      return if alternate_action_tolerance < 0
       # Otherwise we cannot concatenate the alternate actions as binary files.
       raise 'batch size must be multiple of 16' unless batch_size % 16 == 0
     end
