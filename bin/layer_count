@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'fileutils'
+
+require_relative '../lib/twenty48'
+
+#
+# Compute basic stats for layer models.
+#
+class CountStatesBin
+  include Twenty48
+
+  def run
+    data = Data.new(root: Data::ROOT)
+    data.game.each do |game|
+      game.layer_model.each do |layer_model|
+        puts layer_model
+        num_states = 0
+        max_layer_sum = 0
+        solution_attributes = Set.new
+        layer_model.part.each do |part|
+          part.solution.each do |solution|
+            solution_attributes << solution.to_h
+          end
+          num_states += part.info_json.read['num_states']
+          max_layer_sum = part.sum if part.sum > max_layer_sum
+        end
+        puts "num_states: #{num_states}"
+        puts "max_layer_sum: #{max_layer_sum}"
+
+        solution_attributes.each do |solution_hash|
+          value = LayerStartStates.find_mean_start_state_value(
+            layer_model, solution_hash
+          )
+          puts "mean start state value #{solution_hash}: #{value}"
+        end
+        puts
+      end
+    end
+  end
+end
+
+CountStatesBin.new.run
