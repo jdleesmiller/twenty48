@@ -34,6 +34,12 @@ module Twenty48
   class LayerQSolver < LayerSolver
     attr_accessor :save_all_values
 
+    def solution_attributes
+      attributes = super
+      attributes[:method] = :q
+      attributes
+    end
+
     def solve
       all_parts = find_all_parts
       # Solve layer m and then reduce (convert Q to V and pi) layer m - 2.

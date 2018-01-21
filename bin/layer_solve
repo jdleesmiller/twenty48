@@ -5,8 +5,10 @@ require 'fileutils'
 
 require_relative '../lib/twenty48'
 
-DISCOUNT = 1.0
+DISCOUNT = 0.95
 ALTERNATE_ACTION_TOLERANCE = -1.0
+SOLVER_METHOD = :v # or :q
+SOLVER_CLASS = Twenty48::LayerSolver # or LayerQSolver
 
 #
 # Solve layer models from layer_build.
@@ -15,7 +17,7 @@ class LayerSolveBin
   include Twenty48
 
   def solve(layer_model)
-    solver = LayerSolver.new(layer_model,
+    solver = SOLVER_CLASS.new(layer_model,
       discount: DISCOUNT,
       alternate_action_tolerance: ALTERNATE_ACTION_TOLERANCE,
       verbose: true)
@@ -28,8 +30,10 @@ class LayerSolveBin
       game.layer_model.each do |layer_model|
         solution = layer_model.part.first&.solution&.find_by(
           discount: DISCOUNT,
+          method: SOLVER_METHOD,
           alternate_action_tolerance: ALTERNATE_ACTION_TOLERANCE
         )
+        puts layer_model
         if solution
           puts 'exists'
           next

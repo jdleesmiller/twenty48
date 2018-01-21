@@ -52,6 +52,7 @@ module Twenty48
     def solution_attributes
       {
         discount: discount,
+        method: :v,
         alternate_action_tolerance: alternate_action_tolerance
       }
     end

@@ -78,6 +78,7 @@ module Twenty48
 
           folder :solution do
             key :discount, type: Float
+            key :method, type: Symbol
             key :alternate_action_tolerance, type: Float
 
             folder :fragment do
