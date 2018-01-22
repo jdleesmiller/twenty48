@@ -74,7 +74,7 @@ end
       board_size: 4,
       max_exponent: max_exponent,
       max_depth: max_depth,
-      max_states: 1000
+      max_states: 1600
     )
   end
 end
