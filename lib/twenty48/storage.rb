@@ -96,6 +96,16 @@ module Twenty48
             file :values
             file :policy
             file :alternate_actions
+
+            folder :tranche do
+              key :threshold, type: Float
+
+              file :bit_set
+              file :transient_pr
+              file :wins # will only exist in parts w/ max_value = max_exponent
+              file :losses
+              file :metrics, :csv
+            end
           end
         end
       end
@@ -208,23 +218,6 @@ module Twenty48
             def read_policy_and_value
               read_bzipped_csv(to_s) do |csv|
                 read_policy_and_value_from_csv(csv)
-              end
-            end
-          end
-        end
-      end
-
-      class LayerModel
-        class Part
-          class Solution
-            #
-            # Fragment of a part generated during a solve.
-            #
-            class Fragment
-              def remove_if_empty
-                Dir.rmdir(to_s)
-              rescue SystemCallError
-                nil # Ignore --- directory not empty.
               end
             end
           end

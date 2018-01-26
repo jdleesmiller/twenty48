@@ -7,83 +7,46 @@ require_relative 'helper'
 class LayerTrancheBuilderTest < Twenty48NativeTest
   include Twenty48
 
-  # TODO: going to rework this
-=begin
   DISCOUNT = 0.95
 
-  def metrics_key(row)
-    { sum: row[:sum], max_value: row[:max_value] }
+  def find_summary_record(summary, row)
+    summary.find do |record|
+      record.sum == row[:sum] && record.max_value == row[:max_value]
+    end
   end
 
   def test_build_2x2
-    Dir.mktmpdir do |tmp|
-      states_path = File.join(tmp, 'states')
-      values_path = File.join(tmp, 'values')
-      compacted_path = File.join(tmp, 'compacted')
+    with_tmp_data do |data|
+      max_states = 16
+      model = data.game.new(board_size: 2, max_exponent: 5)
+        .layer_model.new(max_depth: 0).mkdir!
 
-      [states_path, values_path, compacted_path].each do |path|
-        FileUtils.mkdir_p path
-      end
-
-      max_states = 4
-      max_exponent = 5
-      board_size = 2
-      params = {
-        board_size: board_size,
-        max_exponent: max_exponent,
-        max_depth: 0,
-        discount: DISCOUNT
-      }
-      valuer = NativeValuer.create(params)
-      layer_builder = LayerBuilder.new(2, states_path, max_states, valuer)
+      layer_builder = LayerBuilder.new(model, max_states)
       layer_builder.build_start_state_layers
       layer_builder.build
 
-      part_names = LayerPartName.glob(states_path)
-      assert_equal 18, part_names.map(&:sum).uniq.size
-
-      layer_solver = LayerSolver.new(
-        2,
-        states_path,
-        values_path,
-        valuer
-      )
+      layer_solver = LayerSolver.new(model, discount: DISCOUNT)
       layer_solver.solve
 
-      # 2 states at 16B / state
-      values_4_file = LayerPartValuesName.glob(values_path)
-        .find { |name| name.sum == 4 && name.max_value == 1 }
-      assert_equal 32, File.size(values_4_file.in(values_path))
-
-      # Run the compactor.
-      layer_compactor = LayerCompactor.new(
-        2, states_path, max_states, valuer,
-        values_path, compacted_path
+      tranche_builder_2 = LayerTrancheBuilder.new(
+        model, layer_solver.solution_attributes, 1e-2
       )
-      layer_compactor.build_start_state_layers
-      layer_compactor.build
+      tranche_builder_2.build
 
-      # Now run the tranche builder.
-      tranche_builder = LayerTrancheBuilder.new(
-        compacted_path, board_size, max_exponent, [3, 6], 2
+      summary_2 = model.summarize_tranche_transient_pr(
+        layer_solver.solution_attributes,
+        tranche_builder_2.tranche_attributes
       )
-      tranche_builder.build
 
-      output_paths = LayerTrancheName.glob(compacted_path)
-      assert_equal 1, output_paths.size
+      tranche_builder_0 = LayerTrancheBuilder.new(
+        model, layer_solver.solution_attributes, 0
+      )
+      tranche_builder_0.build
 
-      csv_options = {
-        headers: true,
-        converters: :numeric,
-        header_converters: :symbol
-      }
-      tranche_policy = {}
-      CSV.foreach(output_paths[0].in(compacted_path), csv_options) do |row|
-        nybbles = row[:state].to_s.to_i(16) # decimal to hexadecimal
-        state = NativeState.create_from_nybbles(board_size, nybbles)
-        tranche_policy[state] = row[:action]
-        assert row[:transient_pr] > 1e-2
-      end
+      summary_0 = model.summarize_tranche_transient_pr(
+        layer_solver.solution_attributes,
+        tranche_builder_0.tranche_attributes
+      )
 
       #
       # Check against the results obtained from the fundamental matrix via
@@ -101,11 +64,6 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
       # result <- result[order(result$sum, result$max_value),]
       # write.csv(file='check_metrics.csv', result, row.names=FALSE)
       #
-      tranche_metrics = {}
-      CSV.foreach(tranche_builder.metrics_pathname, csv_options) do |row|
-        tranche_metrics[metrics_key(row)] = row
-      end
-
       csv_from_fundamental_matrix = <<~CSV
         "sum","max_value","num_states_3","num_states_6","num_states","total_pr"
         4,1,2,2,2,0.81
@@ -134,14 +92,37 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
         40,4,0,1,1,0.000828872890715542
       CSV
 
+      csv_options = {
+        headers: true,
+        converters: :numeric,
+        header_converters: :symbol
+      }
       CSV.parse(csv_from_fundamental_matrix, csv_options) do |row|
-        observed_row = tranche_metrics[metrics_key(row)]
-        %i[num_states_3 num_states_6 num_states].each do |column|
-          assert_equal row[column], observed_row[column]
-        end
-        assert_close row[:total_pr], observed_row[:total_pr]
+        observed_0 = find_summary_record(summary_0, row)
+        assert_equal row[:num_states], observed_0[:num_states]
+        assert_close row[:total_pr], observed_0[:total_pr]
+
+        observed_2 = find_summary_record(summary_2, row)
+        assert observed_2.nil? || observed_2[:total_pr] >= 1e-2
       end
 
+      assert_equal 53, summary_0.map(&:num_states).sum
+      assert_equal 44, summary_2.map(&:num_states).sum
+
+      win_summary_0 = model.summarize_tranche_wins(
+        layer_solver.solution_attributes,
+        tranche_builder_0.tranche_attributes
+      )
+
+      loss_summary_0 = model.summarize_tranche_losses(
+        layer_solver.solution_attributes,
+        tranche_builder_0.tranche_attributes
+      )
+
+      #
+      # Check absorbing probabilities against the sums from the MDP model:
+      # {[0, 0, 0, 0]=>0.917112710928446, [0, 0, 0, 5]=>0.08288728907155415}
+      #
       csv_from_aggregation = <<~CSV
         sum,max_value,outcome,num_states,total_pr
         18,3,lose,1,3.748875e-02
@@ -152,52 +133,26 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
         42,5,win,3,2.237957e-03
         44,5,win,2,8.288729e-05
       CSV
-      expected_absorbing_metrics = {}
-      CSV.parse(csv_from_aggregation, csv_options) do |row|
-        expected_absorbing_metrics[metrics_key(row)] = row
-      end
 
-      #
-      # Check absorbing probabilities against the sums from the MDP model:
-      # {[0, 0, 0, 0]=>0.917112710928446, [0, 0, 0, 5]=>0.08288728907155415}
-      #
       lose_pr = 0.0
       win_pr = 0.0
-      CSV.foreach(tranche_builder.absorbing_pathname, csv_options) do |row|
-        expected_row = expected_absorbing_metrics[metrics_key(row)]
-        assert_equal expected_row[:outcome], row[:outcome]
-        assert_equal expected_row[:num_states], row[:num_states]
-        assert_close expected_row[:total_pr], row[:total_pr]
+      CSV.parse(csv_from_aggregation, csv_options) do |row|
         if row[:outcome] == 'win'
-          win_pr += row[:total_pr]
+          observed_0 = find_summary_record(win_summary_0, row)
+          win_pr += observed_0.total_pr
         else
-          lose_pr += row[:total_pr]
+          observed_0 = find_summary_record(loss_summary_0, row)
+          lose_pr += observed_0.total_pr
         end
+        assert_close row[:num_states], observed_0.num_states
+        assert_close row[:total_pr], observed_0.total_pr
       end
       assert_close 0.917112710928446, lose_pr
       assert_close 0.08288728907155415, win_pr
-
-      LayerPartName.glob(states_path).each do |name|
-        key = { sum: name.sum, max_value: name.max_value }
-        policy = LayerPartPolicyName.new(key)
-        compacted_states = name.read_states(board_size, folder: compacted_path)
-        compacted_policy = PolicyReader.read(
-          policy.in(compacted_path), compacted_states.size
-        )
-
-        compacted_states.zip(compacted_policy).each do |state, action|
-          next unless tranche_policy.key?(state)
-          assert_equal tranche_policy[state], action
-        end
-
-        if tranche_metrics.key?(key)
-          num_tranche_states = tranche_metrics[key][:num_states].to_i
-          assert_equal num_tranche_states, compacted_states.size
-        end
-      end
     end
   end
 
+=begin
   def test_build_2x2_with_alternate_actions
     Dir.mktmpdir do |tmp|
       states_path = File.join(tmp, 'states')

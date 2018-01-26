@@ -12,8 +12,12 @@ module Twenty48
     # Convert a layer model into a ruby FiniteMDP::Model.
     #
     def convert_layers_to_finite_mdp_model_with_policy(
-      board_size, max_exponent, discount, states_folder, policy_folder
+      layer_model, solution_attributes
     )
+      board_size = layer_model.board_size
+      max_exponent = layer_model.max_exponent
+      discount = solution_attributes[:discount]
+
       lose_state = State.new([0] * board_size**2)
       win_state = State.new([0] * (board_size**2 - 1) + [max_exponent])
 
@@ -28,11 +32,10 @@ module Twenty48
       model[lose_state][:down][lose_state] = [1.0, 0.0]
       model[win_state][:down][win_state] = [1.0, 1.0 - discount]
 
-      LayerPartName.glob(states_folder).each do |part|
-        states = part.read_states(board_size, folder: states_folder)
-        policy = PolicyReader.read(LayerPartPolicyName.new(
-          sum: part.sum, max_value: part.max_value
-        ).in(policy_folder), states.size)
+      layer_model.part.each do |part|
+        states = part.states_vbyte.read_states
+        solution = part.solution.find_by(solution_attributes)
+        policy = PolicyReader.read(solution.policy.to_s, states.size)
         states.zip(policy).each do |native_state, action|
           state = State.new(native_state.to_a)
           move_state = native_state.move(action)

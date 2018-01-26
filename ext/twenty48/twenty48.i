@@ -7,11 +7,13 @@
 #include "layer_builder.hpp"
 #include "layer_q_solver.hpp"
 #include "layer_solver.hpp"
+#include "layer_tranche_builder.hpp"
 #include "merge_states.hpp"
 #include "policy_reader.hpp"
 #include "policy_writer.hpp"
 #include "alternate_action_reader.hpp"
 #include "alternate_action_writer.hpp"
+#include "bit_set_reader.hpp"
 #include "solution_writer.hpp"
 #include "subset_policy.hpp"
 #include "start_states.hpp"
@@ -202,6 +204,13 @@
 %include "alternate_action_writer.hpp"
 
 /******************************************************************************/
+/* BitSetReader */
+/******************************************************************************/
+
+%rename(BitSetReader) twenty48::bit_set_reader_t;
+%include "bit_set_reader.hpp"
+
+/******************************************************************************/
 /* Solution Writer */
 /******************************************************************************/
 
@@ -218,3 +227,13 @@
 %template(generate_start_states_2) twenty48::generate_start_states<2>;
 %template(generate_start_states_3) twenty48::generate_start_states<3>;
 %template(generate_start_states_4) twenty48::generate_start_states<4>;
+
+/******************************************************************************/
+/* LayerTrancheBuilder */
+/******************************************************************************/
+
+%include "layer_tranche_builder.hpp"
+
+%template(LayerTrancheBuilder2) twenty48::layer_tranche_builder_t<2>;
+%template(LayerTrancheBuilder3) twenty48::layer_tranche_builder_t<3>;
+%template(LayerTrancheBuilder4) twenty48::layer_tranche_builder_t<4>;

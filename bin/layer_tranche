@@ -3,39 +3,38 @@
 
 require_relative '../lib/twenty48'
 
-METRICS_THRESHOLDS = [3, 6, 9].freeze
-OUTPUT_THRESHOLD = 6
+THRESHOLDS = [0.0, 1e-3, 1e-6].freeze
 
-module Twenty48
-  #
-  # Run the LayerTrancheBuilder.
-  #
-  class LayerTrancheBin
-    include Storage
+#
+# Run the LayerTrancheBuilder.
+#
+class LayerTrancheBin
+  include Twenty48
 
-    def run
-      compact_paths = Dir.glob(Twenty48::Storage::LAYER_COMPACT_GLOB).sort
-      compact_paths.each do |compact_path|
-        params = layer_values_params_from_pathname(compact_path)
-        p params
-
-        tranche_builder = LayerTrancheBuilder.new(
-          compact_path,
-          params[:board_size],
-          params[:max_exponent],
-          METRICS_THRESHOLDS,
-          OUTPUT_THRESHOLD
-        )
-
-        if File.exist?(tranche_builder.metrics_pathname)
-          puts 'exists; skipping'
-          next
+  def run
+    data = Data.new(root: Data::ROOT)
+    data.game.each do |game|
+      game.layer_model.each do |layer_model|
+        puts layer_model
+        solutions = layer_model.part.first&.solution&.all || []
+        solutions.each do |solution|
+          solution_attributes = solution.to_h
+          p solution_attributes
+          THRESHOLDS.each do |threshold|
+            tranche = solution.tranche.find_by(threshold: threshold)
+            if tranche
+              puts 'exists'
+              next
+            end
+            tranche_builder = LayerTrancheBuilder.new(
+              layer_model, solution_attributes, threshold
+            )
+            tranche_builder.build
+          end
         end
-
-        tranche_builder.build
       end
     end
   end
 end
 
-Twenty48::LayerTrancheBin.new.run
+LayerTrancheBin.new.run

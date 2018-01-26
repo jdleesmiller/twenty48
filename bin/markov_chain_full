@@ -12,31 +12,31 @@ module Twenty48
   class MarkovChainFullBin
     include Twenty48::MarkovChainUtilities
 
-    def initialize(params)
-      @params = params
-      @params[:max_depth] ||= 0
+    def initialize(
+      board_size:, max_exponent:, solution_attributes:, max_depth: 0
+    )
+      data = Data.new(root: Data::ROOT)
+      @layer_model = data.game.find_by(
+        board_size: board_size, max_exponent: max_exponent
+      ).layer_model.find_by(
+        max_depth: max_depth
+      )
+      @solution_attributes = solution_attributes
 
       @transitions = make_transition_hash
       build_transitions
     end
 
-    attr_reader :params
+    attr_reader :layer_model
+    attr_reader :solution_attributes
     attr_reader :transitions
 
     def board_size
-      params[:board_size]
+      layer_model.board_size
     end
 
     def max_exponent
-      params[:max_exponent]
-    end
-
-    def discount
-      params[:discount]
-    end
-
-    def path
-      Storage.layer_compact_pathname(params)
+      layer_model.max_exponent
     end
 
     def check_transient_probabilities_from_q
@@ -73,7 +73,7 @@ module Twenty48
 
     def build_transitions
       model = LayerConversion.convert_layers_to_finite_mdp_model_with_policy(
-        board_size, max_exponent, discount, path, path
+        layer_model, solution_attributes
       )
       convert_compacted_mdp_model_to_markov_chain(model)
       add_start_state_transitions
@@ -125,8 +125,11 @@ end
 bin = Twenty48::MarkovChainFullBin.new(
   board_size: 2,
   max_exponent: 5,
-  max_depth: 0,
-  discount: 0.95
+  solution_attributes: {
+    discount: 0.95,
+    method: :v,
+    alternate_action_tolerance: -1.0
+  }
 )
 # bin.check_transient_probabilities_from_q
 bin.check_absorbing_probabilities_from_q

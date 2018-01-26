@@ -83,6 +83,110 @@ module Twenty48
                 pairs
               end
             end
+
+            #
+            # Fragment of a part generated during a solve.
+            #
+            class Fragment
+              def remove_if_empty
+                Dir.rmdir(to_s)
+              rescue SystemCallError
+                nil # Ignore --- directory not empty.
+              end
+            end
+
+            #
+            # Select a subset of states with at least a given probability.
+            #
+            class Tranche
+              def part
+                parent.parent
+              end
+
+              def board_size
+                part.parent.board_size
+              end
+
+              #
+              # Transient probabilities over a certain threshold.
+              #
+              class TransientPr
+                def part
+                  parent.part
+                end
+
+                def board_size
+                  parent.board_size
+                end
+
+                def each_state_vbyte_unfiltered(&block)
+                  states_pathname = part.states_vbyte.to_s
+                  Twenty48.each_state_vbyte(board_size, states_pathname, &block)
+                end
+
+                def each_state_vbyte
+                  bit_set_reader = BitSetReader.new(parent.bit_set.to_s)
+                  each_state_vbyte_unfiltered do |state|
+                    yield state if bit_set_reader.read
+                  end
+                end
+
+                def each_state_vbyte_with_pr
+                  return unless exist?
+                  File.open(to_s, 'rb') do |file|
+                    each_state_vbyte do |state|
+                      yield(state, file.read(8).unpack('D')[0])
+                    end
+                  end
+                end
+              end
+
+              #
+              # Unpack a binary state-probability map.
+              #
+              module ReadStateProbabilityMap
+                def read
+                  return [] unless exist?
+                  results = []
+                  File.open(to_s, 'rb') do |file|
+                    until file.eof?
+                      nybbles, pr = file.read(16).unpack('QD')
+                      state = NativeState.create_from_nybbles(
+                        parent.board_size, nybbles
+                      )
+                      results << [state, pr]
+                    end
+                  end
+                  results
+                end
+              end
+
+              #
+              # Win states and their absorbing probabilities.
+              #
+              class Wins
+                include ReadStateProbabilityMap
+              end
+
+              #
+              # Lose states and their absorbing probabilities.
+              #
+              class Losses
+                include ReadStateProbabilityMap
+              end
+            end
+          end
+
+          def tranche(solution_attributes, tranche_attributes)
+            target_solution = solution.find_by(solution_attributes)
+            target_solution.tranche.find_by(tranche_attributes)
+          end
+
+          def each_tranche_transient_pr(*args)
+            target_tranche = tranche(*args)
+            target_tranche.transient_pr.each_state_vbyte_with_pr do |state, pr|
+              yield state, pr
+            end
           end
         end
 
@@ -101,6 +205,47 @@ module Twenty48
             max_depth: max_depth,
             discount: discount # discount does not matter for build step
           )
+        end
+
+        TrancheSummary = Struct.new(:sum, :max_value, :num_states, :total_pr)
+
+        def summarize_tranche_transient_pr(*args)
+          part.map do |part|
+            summary = TrancheSummary.new(part.sum, part.max_value, 0, 0.0)
+            part.each_tranche_transient_pr(*args) do |_state, pr|
+              summary.num_states += 1
+              summary.total_pr += pr
+            end
+            summary if summary.num_states > 0
+          end.compact
+        end
+
+        def summarize_tranche_wins(*args)
+          part.map do |part|
+            summary = TrancheSummary.new(part.sum, part.max_value, 0, 0.0)
+            tranche = part.tranche(*args)
+            # rubocop:disable Performance/HashEachMethods (spurious)
+            tranche.wins.read.each do |_state, pr|
+              summary.num_states += 1
+              summary.total_pr += pr
+            end
+            # rubocop:enable Performance/HashEachMethods
+            summary if summary.num_states > 0
+          end.compact
+        end
+
+        def summarize_tranche_losses(*args)
+          part.map do |part|
+            summary = TrancheSummary.new(part.sum, part.max_value, 0, 0.0)
+            tranche = part.tranche(*args)
+            # rubocop:disable Performance/HashEachMethods (spurious)
+            tranche.losses.read.each do |_state, pr|
+              summary.num_states += 1
+              summary.total_pr += pr
+            end
+            # rubocop:enable Performance/HashEachMethods
+            summary if summary.num_states > 0
+          end.compact
         end
       end
     end

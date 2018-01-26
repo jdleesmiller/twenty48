@@ -195,7 +195,7 @@ module Twenty48
   end
 
   #
-  # Common methods for the native LayerSolver class.
+  # Common methods for the native LayerQSolver class.
   #
   module NativeLayerQSolver
     def self.klass(board_size)
@@ -209,6 +209,21 @@ module Twenty48
 
     def self.create(board_size, *args)
       klass(board_size).new(*args)
+    end
+  end
+
+  #
+  # Common methods for the native LayerTrancheBuilder class.
+  #
+  module NativeLayerTrancheBuilder
+    def self.create(board_size, *args)
+      klass = case board_size
+              when 2 then LayerTrancheBuilder2
+              when 3 then LayerTrancheBuilder3
+              when 4 then LayerTrancheBuilder4
+              else raise "bad layer solver board_size: #{board_size}"
+              end
+      klass.new(*args)
     end
   end
 
