@@ -16,8 +16,8 @@ typedef binary_writer_t<state_value_t> state_value_writer_t;
 // read. We need to remember the state so we can put it into the appropriate
 // place in the priority queue.
 //
-struct head_t {
-  head_t(const char *input_pathname) : reader(input_pathname) {
+struct state_pr_head_t {
+  state_pr_head_t(const char *input_pathname) : reader(input_pathname) {
     head.state = 0;
     head.value = 0.0;
   }
@@ -39,16 +39,17 @@ private:
   state_value_t head;
 };
 
-typedef head_t *head_ptr;
+typedef state_pr_head_t *state_pr_head_ptr;
 
-struct head_compare_t {
-  bool operator()(const head_ptr &lhs, const head_ptr &rhs) const {
+struct state_pr_head_compare_t {
+  bool operator()(const state_pr_head_ptr &lhs, const state_pr_head_ptr &rhs) const {
     return lhs->peek().state > rhs->peek().state;
   }
 };
 
 typedef std::priority_queue<
-  head_ptr, std::vector<head_ptr>, head_compare_t> head_queue_t;
+  state_pr_head_ptr, std::vector<state_pr_head_ptr>, state_pr_head_compare_t>
+  state_pr_head_queue_t;
 
 size_t merge_state_probabilities(
   const std::vector<std::string> &input_pathnames,
@@ -65,10 +66,10 @@ size_t merge_state_probabilities(
   // Invariant: the inputs queue contains only heads for which the state is
   // non-zero; a zero state indicates end of file, so this means that we are
   // removing heads that reach end of file.
-  head_queue_t inputs;
+  state_pr_head_queue_t inputs;
   for (typename std::vector<std::string>::const_iterator it =
     input_pathnames.begin(); it != input_pathnames.end(); ++it) {
-    head_ptr head = new head_t(it->c_str());
+    state_pr_head_ptr head = new state_pr_head_t(it->c_str());
     if (head->done()) {
       delete head;
     } else {
@@ -78,7 +79,7 @@ size_t merge_state_probabilities(
   }
 
   while (inputs.size() > 0) {
-    head_ptr top = inputs.top();
+    state_pr_head_ptr top = inputs.top();
     inputs.pop();
 
     if (top->peek().state == state_value.state) {
