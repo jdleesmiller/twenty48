@@ -9,17 +9,18 @@ module Twenty48
     include Layers
     include LayerStartStates
 
-    def initialize(layer_model, solution_attributes, threshold, verbose: false)
+    def initialize(layer_model, solution_attributes, tranche_attributes,
+      verbose: false)
       @layer_model = layer_model
       @solution_attributes = solution_attributes
-      @threshold = threshold
+      @tranche_attributes = tranche_attributes
       @verbose = verbose
     end
 
     attr_reader :builder
     attr_reader :layer_model
     attr_reader :solution_attributes
-    attr_reader :threshold
+    attr_reader :tranche_attributes
 
     def build
       write_start_states
@@ -34,8 +35,8 @@ module Twenty48
       end
     end
 
-    def tranche_attributes
-      { threshold: threshold }
+    def threshold
+      tranche_attributes[:threshold]
     end
 
     def alternate_action_tolerance

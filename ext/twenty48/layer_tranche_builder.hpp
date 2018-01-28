@@ -33,6 +33,7 @@ namespace twenty48 {
     void build(
       twenty48::vbyte_reader_t &vbyte_reader,
       twenty48::policy_reader_t &policy_reader,
+      twenty48::alternate_action_reader_t *alternate_action_reader,
       const char *bitset_pathname, const char *transient_pr_pathname
     ) {
       bit_set_writer_t bit_set_writer(bitset_pathname);
@@ -44,6 +45,10 @@ namespace twenty48 {
 
         state_t<size> state(nybbles);
         direction_t direction = policy_reader.read();
+        bool alternate_actions[4];
+        if (alternate_action_reader) {
+          alternate_action_reader->read(direction, alternate_actions);
+        }
 
         // If we have never seen this state, it's not reachable.
         state_value_t *transient_state_pr = transient.maybe_find(nybbles);
@@ -61,12 +66,29 @@ namespace twenty48 {
           bit_set_writer.write(false);
         }
 
-        state_t<size> move_state = state.move(direction);
-        transitions_t transitions = move_state.random_transitions();
-        for (typename transitions_t::const_iterator it = transitions.begin();
-          it != transitions.end(); ++it)
-        {
-          add_pr(it->first, state_pr * it->second);
+        if (alternate_action_reader) {
+          double num_actions = 0.0;
+          for (size_t i = 0; i < 4; ++i) {
+            num_actions += alternate_actions[i];
+          }
+          for (size_t i = 0; i < 4; ++i) {
+            if (!alternate_actions[i]) continue;
+            state_t<size> move_state = state.move((direction_t)i);
+            transitions_t transitions = move_state.random_transitions();
+            for (typename transitions_t::const_iterator it =
+              transitions.begin(); it != transitions.end(); ++it)
+            {
+              add_pr(it->first, state_pr * it->second / num_actions);
+            }
+          }
+        } else {
+          state_t<size> move_state = state.move(direction);
+          transitions_t transitions = move_state.random_transitions();
+          for (typename transitions_t::const_iterator it = transitions.begin();
+            it != transitions.end(); ++it)
+          {
+            add_pr(it->first, state_pr * it->second);
+          }
         }
       }
     }

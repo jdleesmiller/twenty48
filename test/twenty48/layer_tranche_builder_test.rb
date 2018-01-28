@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tmpdir'
-
 require_relative 'helper'
 
 class LayerTrancheBuilderTest < Twenty48NativeTest
@@ -29,7 +27,11 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
       layer_solver.solve
 
       tranche_builder_2 = LayerTrancheBuilder.new(
-        model, layer_solver.solution_attributes, 1e-2
+        model, layer_solver.solution_attributes, {
+          threshold: 1e-2,
+          alternate_actions: false
+        },
+        verbose: false
       )
       tranche_builder_2.build
 
@@ -39,7 +41,11 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
       )
 
       tranche_builder_0 = LayerTrancheBuilder.new(
-        model, layer_solver.solution_attributes, 0
+        model, layer_solver.solution_attributes, {
+          threshold: 0,
+          alternate_actions: false
+        },
+        verbose: false
       )
       tranche_builder_0.build
 
@@ -152,72 +158,65 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
     end
   end
 
-=begin
   def test_build_2x2_with_alternate_actions
-    Dir.mktmpdir do |tmp|
-      states_path = File.join(tmp, 'states')
-      values_path = File.join(tmp, 'values')
-      compacted_path = File.join(tmp, 'compacted')
+    with_tmp_data do |data|
+      max_states = 16
+      model = data.game.new(board_size: 2, max_exponent: 5)
+        .layer_model.new(max_depth: 0).mkdir!
 
-      [states_path, values_path, compacted_path].each do |path|
-        FileUtils.mkdir_p path
-      end
-
-      batch_size = 16
-      max_exponent = 5
-      board_size = 2
-      params = {
-        board_size: board_size,
-        max_exponent: max_exponent,
-        max_depth: 0,
-        discount: DISCOUNT
-      }
-      valuer = NativeValuer.create(params)
-      layer_builder = LayerBuilder.new(2, states_path, batch_size, valuer)
+      layer_builder = LayerBuilder.new(model, max_states)
       layer_builder.build_start_state_layers
       layer_builder.build
 
-      part_names = LayerPartName.glob(states_path)
-      assert_equal 18, part_names.map(&:sum).uniq.size
-
-      layer_solver = LayerSolver.new(
-        2,
-        states_path,
-        values_path,
-        valuer,
-        alternate_action_tolerance: 1e-9
-      )
+      layer_solver = LayerSolver.new(model,
+        discount: DISCOUNT,
+        alternate_action_tolerance: 1e-9)
       layer_solver.solve
 
-      # Run the compactor.
-      layer_compactor = LayerCompactor.new(
-        2, states_path, batch_size, valuer,
-        values_path, compacted_path
+      tranche_builder_2 = LayerTrancheBuilder.new(
+        model, layer_solver.solution_attributes, {
+          threshold: 1e-2,
+          alternate_actions: true
+        },
+        verbose: false
       )
-      layer_compactor.build_start_state_layers
-      layer_compactor.build
+      tranche_builder_2.build
 
-      # Now run the tranche builder.
-      tranche_builder = LayerTrancheBuilder.new(
-        compacted_path, board_size, max_exponent, [3, 6], 2
+      summary_2 = model.summarize_tranche_transient_pr(
+        layer_solver.solution_attributes,
+        tranche_builder_2.tranche_attributes
       )
-      tranche_builder.build
 
-      output_paths = LayerTrancheName.glob(compacted_path)
-      assert_equal 1, output_paths.size
+      tranche_builder_0 = LayerTrancheBuilder.new(
+        model, layer_solver.solution_attributes, {
+          threshold: 0,
+          alternate_actions: true
+        },
+        verbose: false
+      )
+      tranche_builder_0.build
 
-      csv_options = {
-        headers: true,
-        converters: :numeric,
-        header_converters: :symbol
-      }
-      count = 0
-      CSV.foreach(output_paths[0].in(compacted_path), csv_options) do |row|
-        count += 1
-        assert row[:transient_pr] > 1e-2
-      end
-      assert_equal 47, count
+      summary_0 = model.summarize_tranche_transient_pr(
+        layer_solver.solution_attributes,
+        tranche_builder_0.tranche_attributes
+      )
+
+      assert_equal 47, summary_2.map(&:num_states).sum
+      assert_equal 57, summary_0.map(&:num_states).sum # all of them
+
+      win_summary_0 = model.summarize_tranche_wins(
+        layer_solver.solution_attributes,
+        tranche_builder_0.tranche_attributes
+      )
+      win_pr = win_summary_0.map(&:total_pr).sum
+      assert_close 0.08288728907155415, win_pr
+
+      loss_summary_0 = model.summarize_tranche_losses(
+        layer_solver.solution_attributes,
+        tranche_builder_0.tranche_attributes
+      )
+      lose_pr = loss_summary_0.map(&:total_pr).sum
+      assert_close 0.917112710928446, lose_pr
     end
   end
-=end
 end

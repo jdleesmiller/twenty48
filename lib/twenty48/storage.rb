@@ -99,6 +99,7 @@ module Twenty48
 
             folder :tranche do
               key :threshold, type: Float
+              key :alternate_actions, type: :boolean
 
               folder :output_fragment do
                 key :input_sum, type: Integer, format: '%04d'
@@ -131,6 +132,7 @@ module Twenty48
           key :method, type: Symbol
           key :alternate_action_tolerance, type: Float
           key :threshold, type: Float
+          key :alternate_actions, type: :boolean
         end
       end
     end

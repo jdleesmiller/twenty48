@@ -23,6 +23,7 @@ class CountStatesBin
           part.solution.each do |solution|
             solution_attributes << solution.to_h
           end
+          next unless part.info_json.exist?
           num_states += part.info_json.read['num_states']
           max_layer_sum = part.sum if part.sum > max_layer_sum
         end

@@ -26,11 +26,11 @@ class LayerTrancheCsvBin
       layer_model.part.each do |part|
         solution = part.solution.find_by(solution.to_h)
         next unless solution
-        tranche = solution.tranche.find_by(tranche.to_h)
-        next unless tranche
-        write_states(csv, :transient, tranche.transient_pr)
-        write_states(csv, :win, tranche.wins)
-        write_states(csv, :loss, tranche.losses)
+        part_tranche = solution.tranche.find_by(tranche.to_h)
+        next unless part_tranche
+        write_states(csv, :transient, part_tranche.transient_pr)
+        write_states(csv, :win, part_tranche.wins)
+        write_states(csv, :loss, part_tranche.losses)
       end
     end
   end

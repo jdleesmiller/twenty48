@@ -3,7 +3,12 @@
 
 require_relative '../lib/twenty48'
 
-THRESHOLDS = [0.0, 1e-3, 1e-6].freeze
+TRANCHE_ATTRIBUTES = [
+  { threshold: 0.0, alternate_actions: false },
+  { threshold: 1e-6, alternate_actions: false },
+  { threshold: 0.0, alternate_actions: true },
+  { threshold: 1e-6, alternate_actions: true }
+].freeze
 
 #
 # Run the LayerTrancheBuilder.
@@ -20,14 +25,14 @@ class LayerTrancheBin
         solutions.each do |solution|
           solution_attributes = solution.to_h
           p solution_attributes
-          THRESHOLDS.each do |threshold|
-            tranche = solution.tranche.find_by(threshold: threshold)
+          TRANCHE_ATTRIBUTES.each do |attributes|
+            tranche = solution.tranche.find_by(attributes)
             if tranche
               puts 'exists'
               next
             end
             tranche_builder = LayerTrancheBuilder.new(
-              layer_model, solution_attributes, threshold, verbose: true
+              layer_model, solution_attributes, attributes, verbose: true
             )
             tranche_builder.build
           end
