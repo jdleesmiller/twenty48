@@ -131,7 +131,7 @@ module Twenty48
                   end
                 end
 
-                def each_state_vbyte_with_pr
+                def each_state_with_pr
                   return unless exist?
                   File.open(to_s, 'rb') do |file|
                     each_state_vbyte do |state|
@@ -145,17 +145,23 @@ module Twenty48
               # Unpack a binary state-probability map.
               #
               module ReadStateProbabilityMap
-                def read
-                  return [] unless exist?
-                  results = []
+                def each_state_with_pr
+                  return unless exist?
                   File.open(to_s, 'rb') do |file|
                     until file.eof?
                       nybbles, pr = file.read(16).unpack('QD')
                       state = NativeState.create_from_nybbles(
                         parent.board_size, nybbles
                       )
-                      results << [state, pr]
+                      yield state, pr
                     end
+                  end
+                end
+
+                def read
+                  results = []
+                  each_state_with_pr do |state, pr|
+                    results << [state, pr]
                   end
                   results
                 end
@@ -213,7 +219,7 @@ module Twenty48
           def each_tranche_transient_pr(*args)
             target_tranche = tranche(*args)
             return if target_tranche.nil?
-            target_tranche.transient_pr.each_state_vbyte_with_pr do |state, pr|
+            target_tranche.transient_pr.each_state_with_pr do |state, pr|
               yield state, pr
             end
           end

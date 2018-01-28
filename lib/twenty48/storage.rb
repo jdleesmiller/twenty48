@@ -125,6 +125,13 @@ module Twenty48
             end
           end
         end
+
+        file :tranche, :csv do
+          key :discount, type: Float
+          key :method, type: Symbol
+          key :alternate_action_tolerance, type: Float
+          key :threshold, type: Float
+        end
       end
     end
   end

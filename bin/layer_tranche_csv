@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'csv'
+
+require_relative '../lib/twenty48'
+
+#
+# Make a (potentially very large) CSV with all of the transient and absorbing
+# probabilities.
+#
+class LayerTrancheCsvBin
+  include Twenty48
+
+  def write_states(csv, kind, file)
+    file.each_state_with_pr do |state, pr|
+      csv << [kind, state.get_nybbles.to_s(16), pr]
+    end
+  end
+
+  def build(layer_model, solution, tranche, tranche_csv)
+    puts tranche_csv
+    return if tranche_csv.exist?
+    CSV.open(tranche_csv.to_s, 'w') do |csv|
+      csv << %w[state kind pr]
+      layer_model.part.each do |part|
+        solution = part.solution.find_by(solution.to_h)
+        next unless solution
+        tranche = solution.tranche.find_by(tranche.to_h)
+        next unless tranche
+        write_states(csv, :transient, tranche.transient_pr)
+        write_states(csv, :win, tranche.wins)
+        write_states(csv, :loss, tranche.losses)
+      end
+    end
+  end
+
+  def run
+    data = Data.new(root: Data::ROOT)
+    data.game.each do |game|
+      game.layer_model.each do |layer_model|
+        solutions = layer_model.part.first&.solution&.all || []
+        solutions.each do |solution|
+          solution.tranche.each do |tranche|
+            tranche_csv = layer_model.tranche_csv.new(
+              solution.to_h.merge(tranche.to_h)
+            )
+            build(layer_model, solution, tranche, tranche_csv)
+          end
+        end
+      end
+    end
+  end
+end
+
+LayerTrancheCsvBin.new.run(*ARGV)
