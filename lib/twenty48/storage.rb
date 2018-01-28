@@ -134,6 +134,20 @@ module Twenty48
           key :threshold, type: Float
           key :alternate_actions, type: :boolean
         end
+
+        folder :simulation do
+          key :discount, type: Float
+          key :method, type: Symbol
+          key :alternate_action_tolerance, type: Float
+          key :n, type: Integer
+          key :seed, type: Integer
+
+          file :transient, :csv
+          file :wins, :csv
+          file :losses, :csv
+          file :moves_to_win, :csv
+          file :moves_to_lose, :csv
+        end
       end
     end
   end

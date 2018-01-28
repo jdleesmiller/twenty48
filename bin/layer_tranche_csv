@@ -22,7 +22,7 @@ class LayerTrancheCsvBin
     puts tranche_csv
     return if tranche_csv.exist?
     CSV.open(tranche_csv.to_s, 'w') do |csv|
-      csv << %w[state kind pr]
+      csv << %w[kind state pr]
       layer_model.part.each do |part|
         solution = part.solution.find_by(solution.to_h)
         next unless solution

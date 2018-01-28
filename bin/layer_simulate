@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/twenty48'
+
+#
+# Run the Simulator.
+#
+class LayerSimulateBin
+  include Twenty48
+
+  def run(
+    game_attributes, model_attributes, solution_attributes,
+    simulation_attributes
+  )
+    data = Data.new(root: Data::ROOT)
+    game = data.game.find_by(game_attributes)
+    model = game.layer_model.find_by(model_attributes)
+
+    simulator = Simulator.new(
+      model, solution_attributes,
+      simulation_attributes[:n],
+      Random.new(simulation_attributes[:seed])
+    )
+    simulator.run
+
+    simulation = model.simulation.new(
+      solution_attributes.merge(simulation_attributes)
+    ).mkdir!
+    write_state_results(simulator.transient_pr, simulation.transient_csv)
+    write_state_results(simulator.win_pr, simulation.wins_csv)
+    write_state_results(simulator.loss_pr, simulation.losses_csv)
+    write_move_results(simulator.moves_to_win_pr, simulation.moves_to_win_csv)
+    write_move_results(simulator.moves_to_lose_pr, simulation.moves_to_lose_csv)
+  end
+
+  def write_state_results(distribution, file)
+    CSV.open(file.to_s, 'w') do |csv|
+      csv << %w[state pr]
+      distribution.each do |state_hex, pr|
+        csv << [state_hex, pr]
+      end
+    end
+  end
+
+  def write_move_results(distribution, file)
+    CSV.open(file.to_s, 'w') do |csv|
+      csv << %w[moves pr]
+      distribution.each do |moves, pr|
+        csv << [moves, pr]
+      end
+    end
+  end
+end
+
+LayerSimulateBin.new.run(
+  # { board_size: 2, max_exponent: 5 },
+  # { board_size: 3, max_exponent: 9 },
+  # { board_size: 3, max_exponent: 10 },
+  { board_size: 4, max_exponent: 4 },
+  { max_depth: 0 },
+  { discount: 1.0, method: :v, alternate_action_tolerance: 1e-9 },
+  n: 1_000_000, seed: 42
+)

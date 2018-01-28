@@ -35,5 +35,13 @@ module Twenty48
         end
       end
     end
+
+    def flatten
+      results = {}
+      each_sum_max_value do |_sum, _max_value, states|
+        results.merge!(states)
+      end
+      results
+    end
   end
 end

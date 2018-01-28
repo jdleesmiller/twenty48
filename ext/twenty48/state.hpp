@@ -248,6 +248,16 @@ template <int size> struct state_t {
     return state_t(set_nybble(nybbles, i, value));
   }
 
+  state_t place(size_t available_index, uint8_t value) const {
+    size_t num_available = 0;
+    for (size_t i = 0; i < size * size; ++i) {
+      if ((*this)[i] == 0) num_available += 1;
+      if (available_index < num_available) {
+        return new_state_with_tile(i, value).canonicalize();
+      }
+    }
+    throw std::runtime_error("no available cell to place tile");
+  }
 
   //
   // Does the state contain a pair of cells, both with value `value`, separated

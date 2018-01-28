@@ -34,6 +34,7 @@ require_relative 'twenty48/layer_q_solver'
 require_relative 'twenty48/layer_start_states'
 require_relative 'twenty48/layer_state_probabilities'
 require_relative 'twenty48/layer_tranche_builder'
+require_relative 'twenty48/simulator'
 
 module Twenty48
   DIRECTIONS = %i[left right up down].freeze
