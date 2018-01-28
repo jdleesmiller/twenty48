@@ -9,6 +9,7 @@
 #include "layer_solver.hpp"
 #include "layer_tranche_builder.hpp"
 #include "merge_states.hpp"
+#include "merge_state_probabilities.hpp"
 #include "policy_reader.hpp"
 #include "policy_writer.hpp"
 #include "alternate_action_reader.hpp"
@@ -133,6 +134,8 @@
 %include "vbyte_writer.hpp"
 
 %include "merge_states.hpp"
+
+%include "merge_state_probabilities.hpp"
 
 /******************************************************************************/
 /* LayerSolver */

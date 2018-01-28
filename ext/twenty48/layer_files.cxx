@@ -35,6 +35,10 @@ size_t layer_file_t::get_size() const {
 mmapped_layer_file_t::mmapped_layer_file_t(const char *pathname)
   : file(pathname), byte_size(file.get_size())
 {
+  if (byte_size == 0) {
+    data = NULL; // cannot mmap an empty file
+    return;
+  }
   data = mmap(NULL, byte_size, PROT_READ, MAP_PRIVATE, file.fd, 0);
   if (data == MAP_FAILED) {
     std::ostringstream os;
@@ -46,6 +50,7 @@ mmapped_layer_file_t::mmapped_layer_file_t(const char *pathname)
 }
 
 mmapped_layer_file_t::~mmapped_layer_file_t() {
+  if (data == NULL) return;
   int rc = munmap(data, file.get_size());
   if (rc != 0) {
     std::cerr << "mmapped_layer_file_t: munmap failed" << std::endl;

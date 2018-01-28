@@ -12,6 +12,8 @@ namespace twenty48 {
 struct mmap_value_reader_t {
   explicit mmap_value_reader_t(const char *pathname);
 
+  twenty48::state_value_t *maybe_find(uint64_t state) const;
+
   double get_value(uint64_t state) const;
 
   void get_value_and_offset(

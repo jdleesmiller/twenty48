@@ -1907,20 +1907,21 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 #define SWIGTYPE_p_twenty48__state_tT_2_t swig_types[77]
 #define SWIGTYPE_p_twenty48__state_tT_3_t swig_types[78]
 #define SWIGTYPE_p_twenty48__state_tT_4_t swig_types[79]
-#define SWIGTYPE_p_twenty48__valuer_tT_2_t swig_types[80]
-#define SWIGTYPE_p_twenty48__valuer_tT_3_t swig_types[81]
-#define SWIGTYPE_p_twenty48__valuer_tT_4_t swig_types[82]
-#define SWIGTYPE_p_twenty48__vbyte_index_entry_t swig_types[83]
-#define SWIGTYPE_p_twenty48__vbyte_reader_t swig_types[84]
-#define SWIGTYPE_p_twenty48__vbyte_writer_t swig_types[85]
-#define SWIGTYPE_p_unsigned_char swig_types[86]
-#define SWIGTYPE_p_unsigned_int swig_types[87]
-#define SWIGTYPE_p_unsigned_long_long swig_types[88]
-#define SWIGTYPE_p_unsigned_short swig_types[89]
-#define SWIGTYPE_p_value_type swig_types[90]
-#define SWIGTYPE_p_void swig_types[91]
-static swig_type_info *swig_types[93];
-static swig_module_info swig_module = {swig_types, 92, 0, 0, 0, 0};
+#define SWIGTYPE_p_twenty48__state_value_t swig_types[80]
+#define SWIGTYPE_p_twenty48__valuer_tT_2_t swig_types[81]
+#define SWIGTYPE_p_twenty48__valuer_tT_3_t swig_types[82]
+#define SWIGTYPE_p_twenty48__valuer_tT_4_t swig_types[83]
+#define SWIGTYPE_p_twenty48__vbyte_index_entry_t swig_types[84]
+#define SWIGTYPE_p_twenty48__vbyte_reader_t swig_types[85]
+#define SWIGTYPE_p_twenty48__vbyte_writer_t swig_types[86]
+#define SWIGTYPE_p_unsigned_char swig_types[87]
+#define SWIGTYPE_p_unsigned_int swig_types[88]
+#define SWIGTYPE_p_unsigned_long_long swig_types[89]
+#define SWIGTYPE_p_unsigned_short swig_types[90]
+#define SWIGTYPE_p_value_type swig_types[91]
+#define SWIGTYPE_p_void swig_types[92]
+static swig_type_info *swig_types[94];
+static swig_module_info swig_module = {swig_types, 93, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1954,6 +1955,7 @@ static VALUE mTwenty48;
 #include "layer_solver.hpp"
 #include "layer_tranche_builder.hpp"
 #include "merge_states.hpp"
+#include "merge_state_probabilities.hpp"
 #include "policy_reader.hpp"
 #include "policy_writer.hpp"
 #include "alternate_action_reader.hpp"
@@ -36060,6 +36062,48 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_merge_state_probabilities(int argc, VALUE *argv, VALUE self) {
+  std::vector< std::string,std::allocator< std::string > > *arg1 = 0 ;
+  char *arg2 = (char *) 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  {
+    std::vector< std::string,std::allocator< std::string > > *ptr = (std::vector< std::string,std::allocator< std::string > > *)0;
+    res1 = swig::asptr(argv[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "std::vector< std::string,std::allocator< std::string > > const &","twenty48::merge_state_probabilities", 1, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::vector< std::string,std::allocator< std::string > > const &","twenty48::merge_state_probabilities", 1, argv[0])); 
+    }
+    arg1 = ptr;
+  }
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","twenty48::merge_state_probabilities", 2, argv[1] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  result = twenty48::merge_state_probabilities((std::vector< std::string,std::allocator< std::string > > const &)*arg1,(char const *)arg2);
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return vresult;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return Qnil;
+}
+
+
 static swig_class SwigClassLayerSolver2;
 
 SWIGINTERN VALUE
@@ -37448,6 +37492,38 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_MmapValueReader_maybe_find(int argc, VALUE *argv, VALUE self) {
+  twenty48::mmap_value_reader_t *arg1 = (twenty48::mmap_value_reader_t *) 0 ;
+  uint64_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned long long val2 ;
+  int ecode2 = 0 ;
+  twenty48::state_value_t *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__mmap_value_reader_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::mmap_value_reader_t const *","maybe_find", 1, self )); 
+  }
+  arg1 = reinterpret_cast< twenty48::mmap_value_reader_t * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "uint64_t","maybe_find", 2, argv[0] ));
+  } 
+  arg2 = static_cast< uint64_t >(val2);
+  result = (twenty48::state_value_t *)((twenty48::mmap_value_reader_t const *)arg1)->maybe_find(arg2);
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_twenty48__state_value_t, 0 |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_MmapValueReader_get_value(int argc, VALUE *argv, VALUE self) {
   twenty48::mmap_value_reader_t *arg1 = (twenty48::mmap_value_reader_t *) 0 ;
   uint64_t arg2 ;
@@ -38828,14 +38904,24 @@ SWIGINTERN VALUE
 _wrap_new_LayerTrancheBuilder2(int argc, VALUE *argv, VALUE self) {
   uint8_t arg1 ;
   double arg2 ;
+  int arg3 ;
+  uint8_t arg4 ;
+  char *arg5 = (char *) 0 ;
   unsigned char val1 ;
   int ecode1 = 0 ;
   double val2 ;
   int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  unsigned char val4 ;
+  int ecode4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
   twenty48::layer_tranche_builder_t< 2 > *result = 0 ;
   
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  if ((argc < 5) || (argc > 5)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
   }
   ecode1 = SWIG_AsVal_unsigned_SS_char(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
@@ -38847,50 +38933,117 @@ _wrap_new_LayerTrancheBuilder2(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "double","layer_tranche_builder_t<(2)>", 2, argv[1] ));
   } 
   arg2 = static_cast< double >(val2);
-  result = (twenty48::layer_tranche_builder_t< 2 > *)new twenty48::layer_tranche_builder_t< 2 >(arg1,arg2);
+  ecode3 = SWIG_AsVal_int(argv[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","layer_tranche_builder_t<(2)>", 3, argv[2] ));
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_unsigned_SS_char(argv[3], &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), Ruby_Format_TypeError( "", "uint8_t","layer_tranche_builder_t<(2)>", 4, argv[3] ));
+  } 
+  arg4 = static_cast< uint8_t >(val4);
+  res5 = SWIG_AsCharPtrAndSize(argv[4], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","layer_tranche_builder_t<(2)>", 5, argv[4] ));
+  }
+  arg5 = reinterpret_cast< char * >(buf5);
+  result = (twenty48::layer_tranche_builder_t< 2 > *)new twenty48::layer_tranche_builder_t< 2 >(arg1,arg2,arg3,arg4,(char const *)arg5);
   DATA_PTR(self) = result;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return self;
 fail:
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return Qnil;
 }
 
 
 SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder2_add_start_state_probabilities(int argc, VALUE *argv, VALUE self) {
+_wrap_LayerTrancheBuilder2_build(int argc, VALUE *argv, VALUE self) {
   twenty48::layer_tranche_builder_t< 2 > *arg1 = (twenty48::layer_tranche_builder_t< 2 > *) 0 ;
+  twenty48::vbyte_reader_t *arg2 = 0 ;
+  twenty48::policy_reader_t *arg3 = 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
   
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
   }
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_2_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 2 > *","add_start_state_probabilities", 1, self )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 2 > *","build", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 2 > * >(argp1);
-  (arg1)->add_start_state_probabilities();
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","build", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","build", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp2);
+  res3 = SWIG_ConvertPtr(argv[1], &argp3, SWIGTYPE_p_twenty48__policy_reader_t,  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "twenty48::policy_reader_t &","build", 3, argv[1] )); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::policy_reader_t &","build", 3, argv[1])); 
+  }
+  arg3 = reinterpret_cast< twenty48::policy_reader_t * >(argp3);
+  res4 = SWIG_AsCharPtrAndSize(argv[2], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","build", 4, argv[2] ));
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  res5 = SWIG_AsCharPtrAndSize(argv[3], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","build", 5, argv[3] ));
+  }
+  arg5 = reinterpret_cast< char * >(buf5);
+  (arg1)->build(*arg2,*arg3,(char const *)arg4,(char const *)arg5);
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return Qnil;
 fail:
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return Qnil;
 }
 
 
 SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder2_run(int argc, VALUE *argv, VALUE self) {
+_wrap_LayerTrancheBuilder2_write(int argc, VALUE *argv, VALUE self) {
   twenty48::layer_tranche_builder_t< 2 > *arg1 = (twenty48::layer_tranche_builder_t< 2 > *) 0 ;
-  int arg2 ;
-  uint8_t arg3 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
   char *arg5 = (char *) 0 ;
   char *arg6 = (char *) 0 ;
   char *arg7 = (char *) 0 ;
+  char *arg8 = (char *) 0 ;
+  char *arg9 = (char *) 0 ;
+  char *arg10 = (char *) 0 ;
+  char *arg11 = (char *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  unsigned char val3 ;
-  int ecode3 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
   int res4 ;
   char *buf4 = 0 ;
   int alloc4 = 0 ;
@@ -38903,216 +39056,100 @@ _wrap_LayerTrancheBuilder2_run(int argc, VALUE *argv, VALUE self) {
   int res7 ;
   char *buf7 = 0 ;
   int alloc7 = 0 ;
+  int res8 ;
+  char *buf8 = 0 ;
+  int alloc8 = 0 ;
+  int res9 ;
+  char *buf9 = 0 ;
+  int alloc9 = 0 ;
+  int res10 ;
+  char *buf10 = 0 ;
+  int alloc10 = 0 ;
+  int res11 ;
+  char *buf11 = 0 ;
+  int alloc11 = 0 ;
   
-  if ((argc < 6) || (argc > 6)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 6)",argc); SWIG_fail;
+  if ((argc < 10) || (argc > 10)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 10)",argc); SWIG_fail;
   }
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_2_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 2 > *","run", 1, self )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 2 > *","write", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 2 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","run", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","run", 3, argv[1] ));
-  } 
-  arg3 = static_cast< uint8_t >(val3);
+  res2 = SWIG_AsCharPtrAndSize(argv[0], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","write", 2, argv[0] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[1], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","write", 3, argv[1] ));
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
   res4 = SWIG_AsCharPtrAndSize(argv[2], &buf4, NULL, &alloc4);
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","run", 4, argv[2] ));
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","write", 4, argv[2] ));
   }
   arg4 = reinterpret_cast< char * >(buf4);
   res5 = SWIG_AsCharPtrAndSize(argv[3], &buf5, NULL, &alloc5);
   if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","run", 5, argv[3] ));
+    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","write", 5, argv[3] ));
   }
   arg5 = reinterpret_cast< char * >(buf5);
   res6 = SWIG_AsCharPtrAndSize(argv[4], &buf6, NULL, &alloc6);
   if (!SWIG_IsOK(res6)) {
-    SWIG_exception_fail(SWIG_ArgError(res6), Ruby_Format_TypeError( "", "char const *","run", 6, argv[4] ));
+    SWIG_exception_fail(SWIG_ArgError(res6), Ruby_Format_TypeError( "", "char const *","write", 6, argv[4] ));
   }
   arg6 = reinterpret_cast< char * >(buf6);
   res7 = SWIG_AsCharPtrAndSize(argv[5], &buf7, NULL, &alloc7);
   if (!SWIG_IsOK(res7)) {
-    SWIG_exception_fail(SWIG_ArgError(res7), Ruby_Format_TypeError( "", "char const *","run", 7, argv[5] ));
+    SWIG_exception_fail(SWIG_ArgError(res7), Ruby_Format_TypeError( "", "char const *","write", 7, argv[5] ));
   }
   arg7 = reinterpret_cast< char * >(buf7);
-  (arg1)->run(arg2,arg3,(char const *)arg4,(char const *)arg5,(char const *)arg6,(char const *)arg7);
+  res8 = SWIG_AsCharPtrAndSize(argv[6], &buf8, NULL, &alloc8);
+  if (!SWIG_IsOK(res8)) {
+    SWIG_exception_fail(SWIG_ArgError(res8), Ruby_Format_TypeError( "", "char const *","write", 8, argv[6] ));
+  }
+  arg8 = reinterpret_cast< char * >(buf8);
+  res9 = SWIG_AsCharPtrAndSize(argv[7], &buf9, NULL, &alloc9);
+  if (!SWIG_IsOK(res9)) {
+    SWIG_exception_fail(SWIG_ArgError(res9), Ruby_Format_TypeError( "", "char const *","write", 9, argv[7] ));
+  }
+  arg9 = reinterpret_cast< char * >(buf9);
+  res10 = SWIG_AsCharPtrAndSize(argv[8], &buf10, NULL, &alloc10);
+  if (!SWIG_IsOK(res10)) {
+    SWIG_exception_fail(SWIG_ArgError(res10), Ruby_Format_TypeError( "", "char const *","write", 10, argv[8] ));
+  }
+  arg10 = reinterpret_cast< char * >(buf10);
+  res11 = SWIG_AsCharPtrAndSize(argv[9], &buf11, NULL, &alloc11);
+  if (!SWIG_IsOK(res11)) {
+    SWIG_exception_fail(SWIG_ArgError(res11), Ruby_Format_TypeError( "", "char const *","write", 11, argv[9] ));
+  }
+  arg11 = reinterpret_cast< char * >(buf11);
+  (arg1)->write((char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,(char const *)arg6,(char const *)arg7,(char const *)arg8,(char const *)arg9,(char const *)arg10,(char const *)arg11);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
   if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   if (alloc6 == SWIG_NEWOBJ) delete[] buf6;
   if (alloc7 == SWIG_NEWOBJ) delete[] buf7;
+  if (alloc8 == SWIG_NEWOBJ) delete[] buf8;
+  if (alloc9 == SWIG_NEWOBJ) delete[] buf9;
+  if (alloc10 == SWIG_NEWOBJ) delete[] buf10;
+  if (alloc11 == SWIG_NEWOBJ) delete[] buf11;
   return Qnil;
 fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
   if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   if (alloc6 == SWIG_NEWOBJ) delete[] buf6;
   if (alloc7 == SWIG_NEWOBJ) delete[] buf7;
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder2_have_losses(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 2 > *arg1 = (twenty48::layer_tranche_builder_t< 2 > *) 0 ;
-  int arg2 ;
-  uint8_t arg3 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  unsigned char val3 ;
-  int ecode3 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_2_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 2 > const *","have_losses", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 2 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","have_losses", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","have_losses", 3, argv[1] ));
-  } 
-  arg3 = static_cast< uint8_t >(val3);
-  result = (bool)((twenty48::layer_tranche_builder_t< 2 > const *)arg1)->have_losses(arg2,arg3);
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder2_finish_losses(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 2 > *arg1 = (twenty48::layer_tranche_builder_t< 2 > *) 0 ;
-  int arg2 ;
-  uint8_t arg3 ;
-  char *arg4 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  unsigned char val3 ;
-  int ecode3 = 0 ;
-  int res4 ;
-  char *buf4 = 0 ;
-  int alloc4 = 0 ;
-  
-  if ((argc < 3) || (argc > 3)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_2_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 2 > *","finish_losses", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 2 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","finish_losses", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","finish_losses", 3, argv[1] ));
-  } 
-  arg3 = static_cast< uint8_t >(val3);
-  res4 = SWIG_AsCharPtrAndSize(argv[2], &buf4, NULL, &alloc4);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","finish_losses", 4, argv[2] ));
-  }
-  arg4 = reinterpret_cast< char * >(buf4);
-  (arg1)->finish_losses(arg2,arg3,(char const *)arg4);
-  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
-  return Qnil;
-fail:
-  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder2_have_wins(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 2 > *arg1 = (twenty48::layer_tranche_builder_t< 2 > *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_2_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 2 > const *","have_wins", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 2 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","have_wins", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  result = (bool)((twenty48::layer_tranche_builder_t< 2 > const *)arg1)->have_wins(arg2);
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder2_finish_wins(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 2 > *arg1 = (twenty48::layer_tranche_builder_t< 2 > *) 0 ;
-  int arg2 ;
-  char *arg3 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
-  
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_2_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 2 > *","finish_wins", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 2 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","finish_wins", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  res3 = SWIG_AsCharPtrAndSize(argv[1], &buf3, NULL, &alloc3);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","finish_wins", 3, argv[1] ));
-  }
-  arg3 = reinterpret_cast< char * >(buf3);
-  (arg1)->finish_wins(arg2,(char const *)arg3);
-  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
-  return Qnil;
-fail:
-  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc8 == SWIG_NEWOBJ) delete[] buf8;
+  if (alloc9 == SWIG_NEWOBJ) delete[] buf9;
+  if (alloc10 == SWIG_NEWOBJ) delete[] buf10;
+  if (alloc11 == SWIG_NEWOBJ) delete[] buf11;
   return Qnil;
 }
 
@@ -39144,14 +39181,24 @@ SWIGINTERN VALUE
 _wrap_new_LayerTrancheBuilder3(int argc, VALUE *argv, VALUE self) {
   uint8_t arg1 ;
   double arg2 ;
+  int arg3 ;
+  uint8_t arg4 ;
+  char *arg5 = (char *) 0 ;
   unsigned char val1 ;
   int ecode1 = 0 ;
   double val2 ;
   int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  unsigned char val4 ;
+  int ecode4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
   twenty48::layer_tranche_builder_t< 3 > *result = 0 ;
   
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  if ((argc < 5) || (argc > 5)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
   }
   ecode1 = SWIG_AsVal_unsigned_SS_char(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
@@ -39163,50 +39210,117 @@ _wrap_new_LayerTrancheBuilder3(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "double","layer_tranche_builder_t<(3)>", 2, argv[1] ));
   } 
   arg2 = static_cast< double >(val2);
-  result = (twenty48::layer_tranche_builder_t< 3 > *)new twenty48::layer_tranche_builder_t< 3 >(arg1,arg2);
+  ecode3 = SWIG_AsVal_int(argv[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","layer_tranche_builder_t<(3)>", 3, argv[2] ));
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_unsigned_SS_char(argv[3], &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), Ruby_Format_TypeError( "", "uint8_t","layer_tranche_builder_t<(3)>", 4, argv[3] ));
+  } 
+  arg4 = static_cast< uint8_t >(val4);
+  res5 = SWIG_AsCharPtrAndSize(argv[4], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","layer_tranche_builder_t<(3)>", 5, argv[4] ));
+  }
+  arg5 = reinterpret_cast< char * >(buf5);
+  result = (twenty48::layer_tranche_builder_t< 3 > *)new twenty48::layer_tranche_builder_t< 3 >(arg1,arg2,arg3,arg4,(char const *)arg5);
   DATA_PTR(self) = result;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return self;
 fail:
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return Qnil;
 }
 
 
 SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder3_add_start_state_probabilities(int argc, VALUE *argv, VALUE self) {
+_wrap_LayerTrancheBuilder3_build(int argc, VALUE *argv, VALUE self) {
   twenty48::layer_tranche_builder_t< 3 > *arg1 = (twenty48::layer_tranche_builder_t< 3 > *) 0 ;
+  twenty48::vbyte_reader_t *arg2 = 0 ;
+  twenty48::policy_reader_t *arg3 = 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
   
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
   }
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_3_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 3 > *","add_start_state_probabilities", 1, self )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 3 > *","build", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 3 > * >(argp1);
-  (arg1)->add_start_state_probabilities();
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","build", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","build", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp2);
+  res3 = SWIG_ConvertPtr(argv[1], &argp3, SWIGTYPE_p_twenty48__policy_reader_t,  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "twenty48::policy_reader_t &","build", 3, argv[1] )); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::policy_reader_t &","build", 3, argv[1])); 
+  }
+  arg3 = reinterpret_cast< twenty48::policy_reader_t * >(argp3);
+  res4 = SWIG_AsCharPtrAndSize(argv[2], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","build", 4, argv[2] ));
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  res5 = SWIG_AsCharPtrAndSize(argv[3], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","build", 5, argv[3] ));
+  }
+  arg5 = reinterpret_cast< char * >(buf5);
+  (arg1)->build(*arg2,*arg3,(char const *)arg4,(char const *)arg5);
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return Qnil;
 fail:
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return Qnil;
 }
 
 
 SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder3_run(int argc, VALUE *argv, VALUE self) {
+_wrap_LayerTrancheBuilder3_write(int argc, VALUE *argv, VALUE self) {
   twenty48::layer_tranche_builder_t< 3 > *arg1 = (twenty48::layer_tranche_builder_t< 3 > *) 0 ;
-  int arg2 ;
-  uint8_t arg3 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
   char *arg5 = (char *) 0 ;
   char *arg6 = (char *) 0 ;
   char *arg7 = (char *) 0 ;
+  char *arg8 = (char *) 0 ;
+  char *arg9 = (char *) 0 ;
+  char *arg10 = (char *) 0 ;
+  char *arg11 = (char *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  unsigned char val3 ;
-  int ecode3 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
   int res4 ;
   char *buf4 = 0 ;
   int alloc4 = 0 ;
@@ -39219,216 +39333,100 @@ _wrap_LayerTrancheBuilder3_run(int argc, VALUE *argv, VALUE self) {
   int res7 ;
   char *buf7 = 0 ;
   int alloc7 = 0 ;
+  int res8 ;
+  char *buf8 = 0 ;
+  int alloc8 = 0 ;
+  int res9 ;
+  char *buf9 = 0 ;
+  int alloc9 = 0 ;
+  int res10 ;
+  char *buf10 = 0 ;
+  int alloc10 = 0 ;
+  int res11 ;
+  char *buf11 = 0 ;
+  int alloc11 = 0 ;
   
-  if ((argc < 6) || (argc > 6)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 6)",argc); SWIG_fail;
+  if ((argc < 10) || (argc > 10)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 10)",argc); SWIG_fail;
   }
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_3_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 3 > *","run", 1, self )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 3 > *","write", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 3 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","run", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","run", 3, argv[1] ));
-  } 
-  arg3 = static_cast< uint8_t >(val3);
+  res2 = SWIG_AsCharPtrAndSize(argv[0], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","write", 2, argv[0] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[1], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","write", 3, argv[1] ));
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
   res4 = SWIG_AsCharPtrAndSize(argv[2], &buf4, NULL, &alloc4);
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","run", 4, argv[2] ));
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","write", 4, argv[2] ));
   }
   arg4 = reinterpret_cast< char * >(buf4);
   res5 = SWIG_AsCharPtrAndSize(argv[3], &buf5, NULL, &alloc5);
   if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","run", 5, argv[3] ));
+    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","write", 5, argv[3] ));
   }
   arg5 = reinterpret_cast< char * >(buf5);
   res6 = SWIG_AsCharPtrAndSize(argv[4], &buf6, NULL, &alloc6);
   if (!SWIG_IsOK(res6)) {
-    SWIG_exception_fail(SWIG_ArgError(res6), Ruby_Format_TypeError( "", "char const *","run", 6, argv[4] ));
+    SWIG_exception_fail(SWIG_ArgError(res6), Ruby_Format_TypeError( "", "char const *","write", 6, argv[4] ));
   }
   arg6 = reinterpret_cast< char * >(buf6);
   res7 = SWIG_AsCharPtrAndSize(argv[5], &buf7, NULL, &alloc7);
   if (!SWIG_IsOK(res7)) {
-    SWIG_exception_fail(SWIG_ArgError(res7), Ruby_Format_TypeError( "", "char const *","run", 7, argv[5] ));
+    SWIG_exception_fail(SWIG_ArgError(res7), Ruby_Format_TypeError( "", "char const *","write", 7, argv[5] ));
   }
   arg7 = reinterpret_cast< char * >(buf7);
-  (arg1)->run(arg2,arg3,(char const *)arg4,(char const *)arg5,(char const *)arg6,(char const *)arg7);
+  res8 = SWIG_AsCharPtrAndSize(argv[6], &buf8, NULL, &alloc8);
+  if (!SWIG_IsOK(res8)) {
+    SWIG_exception_fail(SWIG_ArgError(res8), Ruby_Format_TypeError( "", "char const *","write", 8, argv[6] ));
+  }
+  arg8 = reinterpret_cast< char * >(buf8);
+  res9 = SWIG_AsCharPtrAndSize(argv[7], &buf9, NULL, &alloc9);
+  if (!SWIG_IsOK(res9)) {
+    SWIG_exception_fail(SWIG_ArgError(res9), Ruby_Format_TypeError( "", "char const *","write", 9, argv[7] ));
+  }
+  arg9 = reinterpret_cast< char * >(buf9);
+  res10 = SWIG_AsCharPtrAndSize(argv[8], &buf10, NULL, &alloc10);
+  if (!SWIG_IsOK(res10)) {
+    SWIG_exception_fail(SWIG_ArgError(res10), Ruby_Format_TypeError( "", "char const *","write", 10, argv[8] ));
+  }
+  arg10 = reinterpret_cast< char * >(buf10);
+  res11 = SWIG_AsCharPtrAndSize(argv[9], &buf11, NULL, &alloc11);
+  if (!SWIG_IsOK(res11)) {
+    SWIG_exception_fail(SWIG_ArgError(res11), Ruby_Format_TypeError( "", "char const *","write", 11, argv[9] ));
+  }
+  arg11 = reinterpret_cast< char * >(buf11);
+  (arg1)->write((char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,(char const *)arg6,(char const *)arg7,(char const *)arg8,(char const *)arg9,(char const *)arg10,(char const *)arg11);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
   if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   if (alloc6 == SWIG_NEWOBJ) delete[] buf6;
   if (alloc7 == SWIG_NEWOBJ) delete[] buf7;
+  if (alloc8 == SWIG_NEWOBJ) delete[] buf8;
+  if (alloc9 == SWIG_NEWOBJ) delete[] buf9;
+  if (alloc10 == SWIG_NEWOBJ) delete[] buf10;
+  if (alloc11 == SWIG_NEWOBJ) delete[] buf11;
   return Qnil;
 fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
   if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   if (alloc6 == SWIG_NEWOBJ) delete[] buf6;
   if (alloc7 == SWIG_NEWOBJ) delete[] buf7;
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder3_have_losses(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 3 > *arg1 = (twenty48::layer_tranche_builder_t< 3 > *) 0 ;
-  int arg2 ;
-  uint8_t arg3 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  unsigned char val3 ;
-  int ecode3 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_3_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 3 > const *","have_losses", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 3 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","have_losses", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","have_losses", 3, argv[1] ));
-  } 
-  arg3 = static_cast< uint8_t >(val3);
-  result = (bool)((twenty48::layer_tranche_builder_t< 3 > const *)arg1)->have_losses(arg2,arg3);
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder3_finish_losses(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 3 > *arg1 = (twenty48::layer_tranche_builder_t< 3 > *) 0 ;
-  int arg2 ;
-  uint8_t arg3 ;
-  char *arg4 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  unsigned char val3 ;
-  int ecode3 = 0 ;
-  int res4 ;
-  char *buf4 = 0 ;
-  int alloc4 = 0 ;
-  
-  if ((argc < 3) || (argc > 3)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_3_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 3 > *","finish_losses", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 3 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","finish_losses", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","finish_losses", 3, argv[1] ));
-  } 
-  arg3 = static_cast< uint8_t >(val3);
-  res4 = SWIG_AsCharPtrAndSize(argv[2], &buf4, NULL, &alloc4);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","finish_losses", 4, argv[2] ));
-  }
-  arg4 = reinterpret_cast< char * >(buf4);
-  (arg1)->finish_losses(arg2,arg3,(char const *)arg4);
-  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
-  return Qnil;
-fail:
-  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder3_have_wins(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 3 > *arg1 = (twenty48::layer_tranche_builder_t< 3 > *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_3_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 3 > const *","have_wins", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 3 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","have_wins", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  result = (bool)((twenty48::layer_tranche_builder_t< 3 > const *)arg1)->have_wins(arg2);
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder3_finish_wins(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 3 > *arg1 = (twenty48::layer_tranche_builder_t< 3 > *) 0 ;
-  int arg2 ;
-  char *arg3 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
-  
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_3_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 3 > *","finish_wins", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 3 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","finish_wins", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  res3 = SWIG_AsCharPtrAndSize(argv[1], &buf3, NULL, &alloc3);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","finish_wins", 3, argv[1] ));
-  }
-  arg3 = reinterpret_cast< char * >(buf3);
-  (arg1)->finish_wins(arg2,(char const *)arg3);
-  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
-  return Qnil;
-fail:
-  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc8 == SWIG_NEWOBJ) delete[] buf8;
+  if (alloc9 == SWIG_NEWOBJ) delete[] buf9;
+  if (alloc10 == SWIG_NEWOBJ) delete[] buf10;
+  if (alloc11 == SWIG_NEWOBJ) delete[] buf11;
   return Qnil;
 }
 
@@ -39460,14 +39458,24 @@ SWIGINTERN VALUE
 _wrap_new_LayerTrancheBuilder4(int argc, VALUE *argv, VALUE self) {
   uint8_t arg1 ;
   double arg2 ;
+  int arg3 ;
+  uint8_t arg4 ;
+  char *arg5 = (char *) 0 ;
   unsigned char val1 ;
   int ecode1 = 0 ;
   double val2 ;
   int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  unsigned char val4 ;
+  int ecode4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
   twenty48::layer_tranche_builder_t< 4 > *result = 0 ;
   
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  if ((argc < 5) || (argc > 5)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
   }
   ecode1 = SWIG_AsVal_unsigned_SS_char(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
@@ -39479,50 +39487,117 @@ _wrap_new_LayerTrancheBuilder4(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "double","layer_tranche_builder_t<(4)>", 2, argv[1] ));
   } 
   arg2 = static_cast< double >(val2);
-  result = (twenty48::layer_tranche_builder_t< 4 > *)new twenty48::layer_tranche_builder_t< 4 >(arg1,arg2);
+  ecode3 = SWIG_AsVal_int(argv[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","layer_tranche_builder_t<(4)>", 3, argv[2] ));
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_unsigned_SS_char(argv[3], &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), Ruby_Format_TypeError( "", "uint8_t","layer_tranche_builder_t<(4)>", 4, argv[3] ));
+  } 
+  arg4 = static_cast< uint8_t >(val4);
+  res5 = SWIG_AsCharPtrAndSize(argv[4], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","layer_tranche_builder_t<(4)>", 5, argv[4] ));
+  }
+  arg5 = reinterpret_cast< char * >(buf5);
+  result = (twenty48::layer_tranche_builder_t< 4 > *)new twenty48::layer_tranche_builder_t< 4 >(arg1,arg2,arg3,arg4,(char const *)arg5);
   DATA_PTR(self) = result;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return self;
 fail:
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return Qnil;
 }
 
 
 SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder4_add_start_state_probabilities(int argc, VALUE *argv, VALUE self) {
+_wrap_LayerTrancheBuilder4_build(int argc, VALUE *argv, VALUE self) {
   twenty48::layer_tranche_builder_t< 4 > *arg1 = (twenty48::layer_tranche_builder_t< 4 > *) 0 ;
+  twenty48::vbyte_reader_t *arg2 = 0 ;
+  twenty48::policy_reader_t *arg3 = 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
   
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
   }
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_4_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 4 > *","add_start_state_probabilities", 1, self )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 4 > *","build", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 4 > * >(argp1);
-  (arg1)->add_start_state_probabilities();
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_twenty48__vbyte_reader_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "twenty48::vbyte_reader_t &","build", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::vbyte_reader_t &","build", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< twenty48::vbyte_reader_t * >(argp2);
+  res3 = SWIG_ConvertPtr(argv[1], &argp3, SWIGTYPE_p_twenty48__policy_reader_t,  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "twenty48::policy_reader_t &","build", 3, argv[1] )); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "twenty48::policy_reader_t &","build", 3, argv[1])); 
+  }
+  arg3 = reinterpret_cast< twenty48::policy_reader_t * >(argp3);
+  res4 = SWIG_AsCharPtrAndSize(argv[2], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","build", 4, argv[2] ));
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  res5 = SWIG_AsCharPtrAndSize(argv[3], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","build", 5, argv[3] ));
+  }
+  arg5 = reinterpret_cast< char * >(buf5);
+  (arg1)->build(*arg2,*arg3,(char const *)arg4,(char const *)arg5);
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return Qnil;
 fail:
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   return Qnil;
 }
 
 
 SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder4_run(int argc, VALUE *argv, VALUE self) {
+_wrap_LayerTrancheBuilder4_write(int argc, VALUE *argv, VALUE self) {
   twenty48::layer_tranche_builder_t< 4 > *arg1 = (twenty48::layer_tranche_builder_t< 4 > *) 0 ;
-  int arg2 ;
-  uint8_t arg3 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
   char *arg5 = (char *) 0 ;
   char *arg6 = (char *) 0 ;
   char *arg7 = (char *) 0 ;
+  char *arg8 = (char *) 0 ;
+  char *arg9 = (char *) 0 ;
+  char *arg10 = (char *) 0 ;
+  char *arg11 = (char *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  unsigned char val3 ;
-  int ecode3 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
   int res4 ;
   char *buf4 = 0 ;
   int alloc4 = 0 ;
@@ -39535,216 +39610,100 @@ _wrap_LayerTrancheBuilder4_run(int argc, VALUE *argv, VALUE self) {
   int res7 ;
   char *buf7 = 0 ;
   int alloc7 = 0 ;
+  int res8 ;
+  char *buf8 = 0 ;
+  int alloc8 = 0 ;
+  int res9 ;
+  char *buf9 = 0 ;
+  int alloc9 = 0 ;
+  int res10 ;
+  char *buf10 = 0 ;
+  int alloc10 = 0 ;
+  int res11 ;
+  char *buf11 = 0 ;
+  int alloc11 = 0 ;
   
-  if ((argc < 6) || (argc > 6)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 6)",argc); SWIG_fail;
+  if ((argc < 10) || (argc > 10)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 10)",argc); SWIG_fail;
   }
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_4_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 4 > *","run", 1, self )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 4 > *","write", 1, self )); 
   }
   arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 4 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","run", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","run", 3, argv[1] ));
-  } 
-  arg3 = static_cast< uint8_t >(val3);
+  res2 = SWIG_AsCharPtrAndSize(argv[0], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","write", 2, argv[0] ));
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[1], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","write", 3, argv[1] ));
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
   res4 = SWIG_AsCharPtrAndSize(argv[2], &buf4, NULL, &alloc4);
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","run", 4, argv[2] ));
+    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","write", 4, argv[2] ));
   }
   arg4 = reinterpret_cast< char * >(buf4);
   res5 = SWIG_AsCharPtrAndSize(argv[3], &buf5, NULL, &alloc5);
   if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","run", 5, argv[3] ));
+    SWIG_exception_fail(SWIG_ArgError(res5), Ruby_Format_TypeError( "", "char const *","write", 5, argv[3] ));
   }
   arg5 = reinterpret_cast< char * >(buf5);
   res6 = SWIG_AsCharPtrAndSize(argv[4], &buf6, NULL, &alloc6);
   if (!SWIG_IsOK(res6)) {
-    SWIG_exception_fail(SWIG_ArgError(res6), Ruby_Format_TypeError( "", "char const *","run", 6, argv[4] ));
+    SWIG_exception_fail(SWIG_ArgError(res6), Ruby_Format_TypeError( "", "char const *","write", 6, argv[4] ));
   }
   arg6 = reinterpret_cast< char * >(buf6);
   res7 = SWIG_AsCharPtrAndSize(argv[5], &buf7, NULL, &alloc7);
   if (!SWIG_IsOK(res7)) {
-    SWIG_exception_fail(SWIG_ArgError(res7), Ruby_Format_TypeError( "", "char const *","run", 7, argv[5] ));
+    SWIG_exception_fail(SWIG_ArgError(res7), Ruby_Format_TypeError( "", "char const *","write", 7, argv[5] ));
   }
   arg7 = reinterpret_cast< char * >(buf7);
-  (arg1)->run(arg2,arg3,(char const *)arg4,(char const *)arg5,(char const *)arg6,(char const *)arg7);
+  res8 = SWIG_AsCharPtrAndSize(argv[6], &buf8, NULL, &alloc8);
+  if (!SWIG_IsOK(res8)) {
+    SWIG_exception_fail(SWIG_ArgError(res8), Ruby_Format_TypeError( "", "char const *","write", 8, argv[6] ));
+  }
+  arg8 = reinterpret_cast< char * >(buf8);
+  res9 = SWIG_AsCharPtrAndSize(argv[7], &buf9, NULL, &alloc9);
+  if (!SWIG_IsOK(res9)) {
+    SWIG_exception_fail(SWIG_ArgError(res9), Ruby_Format_TypeError( "", "char const *","write", 9, argv[7] ));
+  }
+  arg9 = reinterpret_cast< char * >(buf9);
+  res10 = SWIG_AsCharPtrAndSize(argv[8], &buf10, NULL, &alloc10);
+  if (!SWIG_IsOK(res10)) {
+    SWIG_exception_fail(SWIG_ArgError(res10), Ruby_Format_TypeError( "", "char const *","write", 10, argv[8] ));
+  }
+  arg10 = reinterpret_cast< char * >(buf10);
+  res11 = SWIG_AsCharPtrAndSize(argv[9], &buf11, NULL, &alloc11);
+  if (!SWIG_IsOK(res11)) {
+    SWIG_exception_fail(SWIG_ArgError(res11), Ruby_Format_TypeError( "", "char const *","write", 11, argv[9] ));
+  }
+  arg11 = reinterpret_cast< char * >(buf11);
+  (arg1)->write((char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,(char const *)arg6,(char const *)arg7,(char const *)arg8,(char const *)arg9,(char const *)arg10,(char const *)arg11);
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
   if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   if (alloc6 == SWIG_NEWOBJ) delete[] buf6;
   if (alloc7 == SWIG_NEWOBJ) delete[] buf7;
+  if (alloc8 == SWIG_NEWOBJ) delete[] buf8;
+  if (alloc9 == SWIG_NEWOBJ) delete[] buf9;
+  if (alloc10 == SWIG_NEWOBJ) delete[] buf10;
+  if (alloc11 == SWIG_NEWOBJ) delete[] buf11;
   return Qnil;
 fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
   if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
   if (alloc6 == SWIG_NEWOBJ) delete[] buf6;
   if (alloc7 == SWIG_NEWOBJ) delete[] buf7;
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder4_have_losses(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 4 > *arg1 = (twenty48::layer_tranche_builder_t< 4 > *) 0 ;
-  int arg2 ;
-  uint8_t arg3 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  unsigned char val3 ;
-  int ecode3 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_4_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 4 > const *","have_losses", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 4 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","have_losses", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","have_losses", 3, argv[1] ));
-  } 
-  arg3 = static_cast< uint8_t >(val3);
-  result = (bool)((twenty48::layer_tranche_builder_t< 4 > const *)arg1)->have_losses(arg2,arg3);
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder4_finish_losses(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 4 > *arg1 = (twenty48::layer_tranche_builder_t< 4 > *) 0 ;
-  int arg2 ;
-  uint8_t arg3 ;
-  char *arg4 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  unsigned char val3 ;
-  int ecode3 = 0 ;
-  int res4 ;
-  char *buf4 = 0 ;
-  int alloc4 = 0 ;
-  
-  if ((argc < 3) || (argc > 3)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_4_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 4 > *","finish_losses", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 4 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","finish_losses", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[1], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "uint8_t","finish_losses", 3, argv[1] ));
-  } 
-  arg3 = static_cast< uint8_t >(val3);
-  res4 = SWIG_AsCharPtrAndSize(argv[2], &buf4, NULL, &alloc4);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), Ruby_Format_TypeError( "", "char const *","finish_losses", 4, argv[2] ));
-  }
-  arg4 = reinterpret_cast< char * >(buf4);
-  (arg1)->finish_losses(arg2,arg3,(char const *)arg4);
-  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
-  return Qnil;
-fail:
-  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder4_have_wins(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 4 > *arg1 = (twenty48::layer_tranche_builder_t< 4 > *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_4_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 4 > const *","have_wins", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 4 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","have_wins", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  result = (bool)((twenty48::layer_tranche_builder_t< 4 > const *)arg1)->have_wins(arg2);
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_LayerTrancheBuilder4_finish_wins(int argc, VALUE *argv, VALUE self) {
-  twenty48::layer_tranche_builder_t< 4 > *arg1 = (twenty48::layer_tranche_builder_t< 4 > *) 0 ;
-  int arg2 ;
-  char *arg3 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
-  
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_twenty48__layer_tranche_builder_tT_4_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "twenty48::layer_tranche_builder_t< 4 > *","finish_wins", 1, self )); 
-  }
-  arg1 = reinterpret_cast< twenty48::layer_tranche_builder_t< 4 > * >(argp1);
-  ecode2 = SWIG_AsVal_int(argv[0], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","finish_wins", 2, argv[0] ));
-  } 
-  arg2 = static_cast< int >(val2);
-  res3 = SWIG_AsCharPtrAndSize(argv[1], &buf3, NULL, &alloc3);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","finish_wins", 3, argv[1] ));
-  }
-  arg3 = reinterpret_cast< char * >(buf3);
-  (arg1)->finish_wins(arg2,(char const *)arg3);
-  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
-  return Qnil;
-fail:
-  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc8 == SWIG_NEWOBJ) delete[] buf8;
+  if (alloc9 == SWIG_NEWOBJ) delete[] buf9;
+  if (alloc10 == SWIG_NEWOBJ) delete[] buf10;
+  if (alloc11 == SWIG_NEWOBJ) delete[] buf11;
   return Qnil;
 }
 
@@ -39841,6 +39800,7 @@ static swig_type_info _swigt__p_twenty48__solution_writer_t = {"_p_twenty48__sol
 static swig_type_info _swigt__p_twenty48__state_tT_2_t = {"_p_twenty48__state_tT_2_t", "twenty48::state_t< 2 > *|std::map< twenty48::state_t< 2 >,double >::key_type *|std::vector< twenty48::state_t< 2 > >::value_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__state_tT_3_t = {"_p_twenty48__state_tT_3_t", "std::map< twenty48::state_t< 3 >,double >::key_type *|std::vector< twenty48::state_t< 3 > >::value_type *|twenty48::state_t< 3 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__state_tT_4_t = {"_p_twenty48__state_tT_4_t", "twenty48::state_t< 4 > *|std::map< twenty48::state_t< 4 >,double >::key_type *|std::vector< twenty48::state_t< 4 > >::value_type *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_twenty48__state_value_t = {"_p_twenty48__state_value_t", "twenty48::state_value_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__valuer_tT_2_t = {"_p_twenty48__valuer_tT_2_t", "twenty48::valuer_t< 2 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__valuer_tT_3_t = {"_p_twenty48__valuer_tT_3_t", "twenty48::valuer_t< 3 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_twenty48__valuer_tT_4_t = {"_p_twenty48__valuer_tT_4_t", "twenty48::valuer_t< 4 > *", 0, 0, (void*)0, 0};
@@ -39935,6 +39895,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_twenty48__state_tT_2_t,
   &_swigt__p_twenty48__state_tT_3_t,
   &_swigt__p_twenty48__state_tT_4_t,
+  &_swigt__p_twenty48__state_value_t,
   &_swigt__p_twenty48__valuer_tT_2_t,
   &_swigt__p_twenty48__valuer_tT_3_t,
   &_swigt__p_twenty48__valuer_tT_4_t,
@@ -40029,6 +39990,7 @@ static swig_cast_info _swigc__p_twenty48__solution_writer_t[] = {  {&_swigt__p_t
 static swig_cast_info _swigc__p_twenty48__state_tT_2_t[] = {  {&_swigt__p_twenty48__state_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__state_tT_3_t[] = {  {&_swigt__p_twenty48__state_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__state_tT_4_t[] = {  {&_swigt__p_twenty48__state_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_twenty48__state_value_t[] = {  {&_swigt__p_twenty48__state_value_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__valuer_tT_2_t[] = {  {&_swigt__p_twenty48__valuer_tT_2_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__valuer_tT_3_t[] = {  {&_swigt__p_twenty48__valuer_tT_3_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_twenty48__valuer_tT_4_t[] = {  {&_swigt__p_twenty48__valuer_tT_4_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -40123,6 +40085,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_twenty48__state_tT_2_t,
   _swigc__p_twenty48__state_tT_3_t,
   _swigc__p_twenty48__state_tT_4_t,
+  _swigc__p_twenty48__state_value_t,
   _swigc__p_twenty48__valuer_tT_2_t,
   _swigc__p_twenty48__valuer_tT_3_t,
   _swigc__p_twenty48__valuer_tT_4_t,
@@ -41172,6 +41135,7 @@ SWIGEXPORT void Init_twenty48(void) {
   SwigClassVByteWriter.destroy = (void (*)(void *)) free_twenty48_vbyte_writer_t;
   SwigClassVByteWriter.trackObjects = 0;
   rb_define_module_function(mTwenty48, "merge_states", VALUEFUNC(_wrap_merge_states), -1);
+  rb_define_module_function(mTwenty48, "merge_state_probabilities", VALUEFUNC(_wrap_merge_state_probabilities), -1);
   
   SwigClassLayerSolver2.klass = rb_define_class_under(mTwenty48, "LayerSolver2", rb_cObject);
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_solver_tT_2_t, (void *) &SwigClassLayerSolver2);
@@ -41246,6 +41210,7 @@ SWIGEXPORT void Init_twenty48(void) {
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__mmap_value_reader_t, (void *) &SwigClassMmapValueReader);
   rb_define_alloc_func(SwigClassMmapValueReader.klass, _wrap_MmapValueReader_allocate);
   rb_define_method(SwigClassMmapValueReader.klass, "initialize", VALUEFUNC(_wrap_new_MmapValueReader), -1);
+  rb_define_method(SwigClassMmapValueReader.klass, "maybe_find", VALUEFUNC(_wrap_MmapValueReader_maybe_find), -1);
   rb_define_method(SwigClassMmapValueReader.klass, "get_value", VALUEFUNC(_wrap_MmapValueReader_get_value), -1);
   rb_define_method(SwigClassMmapValueReader.klass, "get_value_and_offset", VALUEFUNC(_wrap_MmapValueReader_get_value_and_offset), -1);
   SwigClassMmapValueReader.mark = 0;
@@ -41325,12 +41290,8 @@ SWIGEXPORT void Init_twenty48(void) {
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_tranche_builder_tT_2_t, (void *) &SwigClassLayerTrancheBuilder2);
   rb_define_alloc_func(SwigClassLayerTrancheBuilder2.klass, _wrap_LayerTrancheBuilder2_allocate);
   rb_define_method(SwigClassLayerTrancheBuilder2.klass, "initialize", VALUEFUNC(_wrap_new_LayerTrancheBuilder2), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder2.klass, "add_start_state_probabilities", VALUEFUNC(_wrap_LayerTrancheBuilder2_add_start_state_probabilities), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder2.klass, "run", VALUEFUNC(_wrap_LayerTrancheBuilder2_run), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder2.klass, "have_losses", VALUEFUNC(_wrap_LayerTrancheBuilder2_have_losses), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder2.klass, "finish_losses", VALUEFUNC(_wrap_LayerTrancheBuilder2_finish_losses), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder2.klass, "have_wins", VALUEFUNC(_wrap_LayerTrancheBuilder2_have_wins), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder2.klass, "finish_wins", VALUEFUNC(_wrap_LayerTrancheBuilder2_finish_wins), -1);
+  rb_define_method(SwigClassLayerTrancheBuilder2.klass, "build", VALUEFUNC(_wrap_LayerTrancheBuilder2_build), -1);
+  rb_define_method(SwigClassLayerTrancheBuilder2.klass, "write", VALUEFUNC(_wrap_LayerTrancheBuilder2_write), -1);
   SwigClassLayerTrancheBuilder2.mark = 0;
   SwigClassLayerTrancheBuilder2.destroy = (void (*)(void *)) free_twenty48_layer_tranche_builder_t_Sl_2_Sg_;
   SwigClassLayerTrancheBuilder2.trackObjects = 0;
@@ -41339,12 +41300,8 @@ SWIGEXPORT void Init_twenty48(void) {
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_tranche_builder_tT_3_t, (void *) &SwigClassLayerTrancheBuilder3);
   rb_define_alloc_func(SwigClassLayerTrancheBuilder3.klass, _wrap_LayerTrancheBuilder3_allocate);
   rb_define_method(SwigClassLayerTrancheBuilder3.klass, "initialize", VALUEFUNC(_wrap_new_LayerTrancheBuilder3), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder3.klass, "add_start_state_probabilities", VALUEFUNC(_wrap_LayerTrancheBuilder3_add_start_state_probabilities), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder3.klass, "run", VALUEFUNC(_wrap_LayerTrancheBuilder3_run), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder3.klass, "have_losses", VALUEFUNC(_wrap_LayerTrancheBuilder3_have_losses), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder3.klass, "finish_losses", VALUEFUNC(_wrap_LayerTrancheBuilder3_finish_losses), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder3.klass, "have_wins", VALUEFUNC(_wrap_LayerTrancheBuilder3_have_wins), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder3.klass, "finish_wins", VALUEFUNC(_wrap_LayerTrancheBuilder3_finish_wins), -1);
+  rb_define_method(SwigClassLayerTrancheBuilder3.klass, "build", VALUEFUNC(_wrap_LayerTrancheBuilder3_build), -1);
+  rb_define_method(SwigClassLayerTrancheBuilder3.klass, "write", VALUEFUNC(_wrap_LayerTrancheBuilder3_write), -1);
   SwigClassLayerTrancheBuilder3.mark = 0;
   SwigClassLayerTrancheBuilder3.destroy = (void (*)(void *)) free_twenty48_layer_tranche_builder_t_Sl_3_Sg_;
   SwigClassLayerTrancheBuilder3.trackObjects = 0;
@@ -41353,12 +41310,8 @@ SWIGEXPORT void Init_twenty48(void) {
   SWIG_TypeClientData(SWIGTYPE_p_twenty48__layer_tranche_builder_tT_4_t, (void *) &SwigClassLayerTrancheBuilder4);
   rb_define_alloc_func(SwigClassLayerTrancheBuilder4.klass, _wrap_LayerTrancheBuilder4_allocate);
   rb_define_method(SwigClassLayerTrancheBuilder4.klass, "initialize", VALUEFUNC(_wrap_new_LayerTrancheBuilder4), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder4.klass, "add_start_state_probabilities", VALUEFUNC(_wrap_LayerTrancheBuilder4_add_start_state_probabilities), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder4.klass, "run", VALUEFUNC(_wrap_LayerTrancheBuilder4_run), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder4.klass, "have_losses", VALUEFUNC(_wrap_LayerTrancheBuilder4_have_losses), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder4.klass, "finish_losses", VALUEFUNC(_wrap_LayerTrancheBuilder4_finish_losses), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder4.klass, "have_wins", VALUEFUNC(_wrap_LayerTrancheBuilder4_have_wins), -1);
-  rb_define_method(SwigClassLayerTrancheBuilder4.klass, "finish_wins", VALUEFUNC(_wrap_LayerTrancheBuilder4_finish_wins), -1);
+  rb_define_method(SwigClassLayerTrancheBuilder4.klass, "build", VALUEFUNC(_wrap_LayerTrancheBuilder4_build), -1);
+  rb_define_method(SwigClassLayerTrancheBuilder4.klass, "write", VALUEFUNC(_wrap_LayerTrancheBuilder4_write), -1);
   SwigClassLayerTrancheBuilder4.mark = 0;
   SwigClassLayerTrancheBuilder4.destroy = (void (*)(void *)) free_twenty48_layer_tranche_builder_t_Sl_4_Sg_;
   SwigClassLayerTrancheBuilder4.trackObjects = 0;

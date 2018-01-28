@@ -132,7 +132,7 @@ module Twenty48
       log_solve_layer(sum, max_value, batches.size)
       GC.start
       Parallel.each(batches) do |index, offset, previous, batch_size|
-        check_batch_size(batch_size)
+        check_batch_size_for_alternate_actions(batch_size)
         states_pathname = layer_part_states_pathname(sum, max_value)
         vbyte_reader = VByteReader.new(states_pathname, offset, previous,
           batch_size)
@@ -175,26 +175,8 @@ module Twenty48
       fragments.each(&:remove_if_empty)
     end
 
-    def concatenate(input_pathnames, output_pathname)
-      return if input_pathnames.empty?
-
-      first_pathname = input_pathnames.shift
-      FileUtils.mv first_pathname, output_pathname
-
-      input_pathnames.each do |input_pathname|
-        system %(cat "#{input_pathname}" >> "#{output_pathname}")
-        FileUtils.rm input_pathname
-      end
-    end
-
     def find_max_layer_sum
       layer_model.part.map(&:sum).max
-    end
-
-    def check_batch_size(batch_size)
-      return if alternate_action_tolerance < 0
-      # Otherwise we cannot concatenate the alternate actions as binary files.
-      raise 'batch size must be multiple of 16' unless batch_size % 16 == 0
     end
 
     def log_solve_layer(layer_sum, max_value, num_batches)

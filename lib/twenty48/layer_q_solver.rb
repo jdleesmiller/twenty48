@@ -90,7 +90,7 @@ module Twenty48
       find_predecessor_parts(sum, max_value).each do |pred_sum, pred_max_value|
         batches = make_layer_part_batches(pred_sum, pred_max_value)
         batches.each do |index, offset, previous, batch_size|
-          check_batch_size(batch_size)
+          check_batch_size_for_alternate_actions(batch_size)
           jobs << QJob.new(
             self, pred_sum, pred_max_value, index, offset, previous, batch_size
           )

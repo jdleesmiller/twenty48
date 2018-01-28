@@ -162,6 +162,34 @@ module Twenty48
               end
 
               #
+              # Transient states and their probabilities.
+              #
+              class Transient
+                include ReadStateProbabilityMap
+              end
+
+              class OutputFragment
+                def board_size
+                  parent.board_size
+                end
+
+                #
+                # Transient states and their probabilities.
+                #
+                class Transient
+                  include ReadStateProbabilityMap
+                end
+
+                class Losses
+                  include ReadStateProbabilityMap
+                end
+
+                class Wins
+                  include ReadStateProbabilityMap
+                end
+              end
+
+              #
               # Win states and their absorbing probabilities.
               #
               class Wins
@@ -184,6 +212,7 @@ module Twenty48
 
           def each_tranche_transient_pr(*args)
             target_tranche = tranche(*args)
+            return if target_tranche.nil?
             target_tranche.transient_pr.each_state_vbyte_with_pr do |state, pr|
               yield state, pr
             end
@@ -209,6 +238,14 @@ module Twenty48
 
         TrancheSummary = Struct.new(:sum, :max_value, :num_states, :total_pr)
 
+        def each_tranche_transient_pr(*args)
+          part.each do |part|
+            part.each_tranche_transient_pr(*args) do |state, pr|
+              yield(state, pr)
+            end
+          end
+        end
+
         def summarize_tranche_transient_pr(*args)
           part.map do |part|
             summary = TrancheSummary.new(part.sum, part.max_value, 0, 0.0)
@@ -224,6 +261,7 @@ module Twenty48
           part.map do |part|
             summary = TrancheSummary.new(part.sum, part.max_value, 0, 0.0)
             tranche = part.tranche(*args)
+            next if tranche.nil?
             # rubocop:disable Performance/HashEachMethods (spurious)
             tranche.wins.read.each do |_state, pr|
               summary.num_states += 1
@@ -238,6 +276,7 @@ module Twenty48
           part.map do |part|
             summary = TrancheSummary.new(part.sum, part.max_value, 0, 0.0)
             tranche = part.tranche(*args)
+            next if tranche.nil?
             # rubocop:disable Performance/HashEachMethods (spurious)
             tranche.losses.read.each do |_state, pr|
               summary.num_states += 1
@@ -298,6 +337,29 @@ module Twenty48
       read_layer_part_info(sum, max_value)['num_states']
     rescue Errno::ENOENT
       0
+    end
+
+    def check_batch_size_for_alternate_actions(batch_size)
+      return if alternate_action_tolerance < 0
+      # Otherwise we cannot concatenate the alternate actions as binary files.
+      raise 'batch size must be multiple of 16' unless batch_size % 16 == 0
+    end
+
+    def check_batch_size_for_bit_set(batch_size)
+      # Otherwise we cannot concatenate bit sets as binary files.
+      raise 'batch size must be multiple of 8' unless batch_size % 8 == 0
+    end
+
+    def concatenate(input_pathnames, output_pathname)
+      return if input_pathnames.empty?
+
+      first_pathname = input_pathnames.shift
+      FileUtils.mv first_pathname, output_pathname
+
+      input_pathnames.each do |input_pathname|
+        system %(cat "#{input_pathname}" >> "#{output_pathname}")
+        FileUtils.rm input_pathname
+      end
     end
 
     def log(message)

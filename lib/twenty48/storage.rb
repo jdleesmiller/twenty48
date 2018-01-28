@@ -100,11 +100,28 @@ module Twenty48
             folder :tranche do
               key :threshold, type: Float
 
+              folder :output_fragment do
+                key :input_sum, type: Integer, format: '%04d'
+                key :input_max_value, type: Integer, format: '%x'
+                key :batch, type: Integer, format: '%04d'
+
+                file :transient
+                file :wins
+                file :losses
+              end
+
+              folder :fragment do
+                key :batch, type: Integer, format: '%04d'
+
+                file :bit_set
+                file :transient_pr
+              end
+
               file :bit_set
               file :transient_pr
+              file :transient
               file :wins # will only exist in parts w/ max_value = max_exponent
               file :losses
-              file :metrics, :csv
             end
           end
         end
