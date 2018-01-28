@@ -27,7 +27,7 @@ class LayerTrancheBin
               next
             end
             tranche_builder = LayerTrancheBuilder.new(
-              layer_model, solution_attributes, threshold
+              layer_model, solution_attributes, threshold, verbose: true
             )
             tranche_builder.build
           end

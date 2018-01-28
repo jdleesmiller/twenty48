@@ -9,10 +9,11 @@ module Twenty48
     include Layers
     include LayerStartStates
 
-    def initialize(layer_model, solution_attributes, threshold)
+    def initialize(layer_model, solution_attributes, threshold, verbose: false)
       @layer_model = layer_model
       @solution_attributes = solution_attributes
       @threshold = threshold
+      @verbose = verbose
     end
 
     attr_reader :builder
@@ -61,7 +62,7 @@ module Twenty48
           end
 
         File.open(parent.transient.mkdir!.to_s, 'wb') do |file|
-          state_prs.each do |nybbles, pr|
+          state_prs.sort.each do |nybbles, pr|
             file.write([nybbles, pr].pack('QD'))
           end
         end
@@ -69,12 +70,14 @@ module Twenty48
     end
 
     def process_part(part)
+      log part.to_s
       return unless part.states_vbyte.exist? # may be wins/losses only
       solution = part.solution.find_by(solution_attributes)
       raise "no solution for #{part}" if solution.nil?
       tranche = solution.tranche.new(tranche_attributes).mkdir!
       prepare(tranche)
       map(part, tranche)
+      GC.start
       reduce(tranche)
     end
 
@@ -82,10 +85,7 @@ module Twenty48
       %i[transient wins losses].each do |file|
         files = tranche.output_fragment.map(&file).select(&:exist?)
         next if files.none?
-        # files.each do |f|
-        #   puts f
-        #   p f.read
-        # end
+        log "prepare #{file}"
         Twenty48.merge_state_probabilities(
           files.map(&:to_s),
           tranche.send(file).to_s
@@ -95,6 +95,7 @@ module Twenty48
     end
 
     def map(part, tranche)
+      log 'map'
       transient = tranche.transient
       return unless transient.exist?
       builder = NativeLayerTrancheBuilder.create(
@@ -104,8 +105,7 @@ module Twenty48
       )
       jobs = make_map_jobs(builder, part, tranche)
       GC.start
-      # Parallel.each(jobs, &:run)
-      jobs.each(&:run)
+      Parallel.each(jobs, &:run)
     end
 
     def make_map_jobs(builder, part, tranche)
@@ -119,6 +119,7 @@ module Twenty48
     end
 
     def reduce(tranche)
+      log 'reduce'
       concatenate(
         tranche.fragment.map(&:bit_set).map(&:to_s),
         tranche.bit_set.to_s
@@ -146,7 +147,8 @@ module Twenty48
       def run
         builder.build(
           make_vbyte_reader,
-          PolicyReader.new(solution.policy.to_s),
+          make_policy_reader,
+          make_alternate_action_reader,
           fragment.bit_set.to_s,
           fragment.transient_pr.to_s
         )
@@ -165,6 +167,21 @@ module Twenty48
         VByteReader.new(
           part.states_vbyte.to_s, byte_offset, previous, batch_size
         )
+      end
+
+      def make_policy_reader
+        reader = PolicyReader.new(solution.policy.to_s)
+        reader.skip(index * batch_size)
+        reader
+      end
+
+      def make_alternate_action_reader
+        return nil unless tranche.alternate_actions
+        alternate_actions = solution.alternate_actions
+        raise 'no alternate actions' unless alternate_actions&.exist?
+        reader = AlternateActionReader.new(alternate_actions.to_s)
+        reader.skip(index * batch_size)
+        reader
       end
 
       def model
