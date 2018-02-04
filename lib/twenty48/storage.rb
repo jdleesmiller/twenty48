@@ -141,6 +141,7 @@ module Twenty48
           key :alternate_action_tolerance, type: Float
           key :n, type: Integer
           key :seed, type: Integer
+          key :alternate_actions, type: :boolean
 
           file :transient, :csv
           file :wins, :csv

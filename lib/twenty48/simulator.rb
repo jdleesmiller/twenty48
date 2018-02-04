@@ -19,11 +19,13 @@ module Twenty48
       end
     end
 
-    def initialize(layer_model, solution_attributes, batch_size, random)
+    def initialize(layer_model, solution_attributes,
+      batch_size:, random:, use_alternate_actions:)
       @layer_model = layer_model
       @solution_attributes = solution_attributes
       @batch_size = batch_size
       @random = random
+      @use_alternate_actions = use_alternate_actions
       @instances = []
 
       @transient_visits = make_histogram_hash
@@ -40,6 +42,7 @@ module Twenty48
     attr_reader :solution_attributes
     attr_reader :batch_size
     attr_reader :random
+    attr_reader :use_alternate_actions
     attr_reader :instances
     attr_reader :transient_visits
     attr_reader :win_visits
@@ -98,15 +101,22 @@ module Twenty48
       return unless solution&.policy&.exist?
       state_reader = VByteReader.new(part.states_vbyte.to_s)
       policy_reader = PolicyReader.new(solution.policy.to_s)
+      alternate_action_reader = make_alternate_action_reader(solution)
       instances.compact!
       instances.sort!
-      apply_policy(part, state_reader, policy_reader)
+      apply_policy(part, state_reader, policy_reader, alternate_action_reader)
       # p instances.map(&:to_s)
     end
 
-    def apply_policy(part, state_reader, policy_reader)
+    def make_alternate_action_reader(solution)
+      return nil unless use_alternate_actions
+      AlternateActionReader.new(solution.alternate_actions.to_s)
+    end
+
+    def apply_policy(part, state_reader, policy_reader, alternate_action_reader)
       policy_state = 0
       action = nil
+      alternate_actions = nil
       (0...instances.size).each do |index|
         state_nybbles = instances[index].nybbles
         state = NativeState.create_from_nybbles(@board_size, state_nybbles)
@@ -116,14 +126,26 @@ module Twenty48
           policy_state = state_reader.read
           raise 'out of policy states' if policy_state == 0
           action = policy_reader.read
+
+          alternate_actions = alternate_action_reader&.read(action)
         end
 
-        move(index, state, action)
+        if alternate_actions
+          move_with_alternate_actions(index, state, alternate_actions)
+        else
+          move(index, state, action)
+        end
       end
     end
 
     def state_in_part(state, part)
       state.max_value == part.max_value && state.sum == part.sum
+    end
+
+    def move_with_alternate_actions(index, state, alternate_actions)
+      actions = alternate_actions.each_index.select { |i| alternate_actions[i] }
+      action = actions.sample(random: random)
+      move(index, state, action)
     end
 
     def move(index, state, action)

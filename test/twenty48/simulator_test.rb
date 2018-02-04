@@ -17,11 +17,13 @@ class SimulatorTest < Twenty48NativeTest
       layer_builder.build_start_state_layers
       layer_builder.build
 
-      layer_solver = LayerSolver.new(model, discount: DISCOUNT)
+      layer_solver = LayerSolver.new(model,
+        discount: DISCOUNT, alternate_action_tolerance: 1e-6)
       layer_solver.solve
 
       simulator = Simulator.new(
-        model, layer_solver.solution_attributes, 100, Random.new(2)
+        model, layer_solver.solution_attributes,
+        batch_size: 100, random: Random.new(2), use_alternate_actions: true
       )
       simulator.run
 

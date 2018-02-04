@@ -19,8 +19,9 @@ class LayerSimulateBin
 
     simulator = Simulator.new(
       model, solution_attributes,
-      simulation_attributes[:n],
-      Random.new(simulation_attributes[:seed])
+      batch_size: simulation_attributes[:n],
+      random: Random.new(simulation_attributes[:seed]),
+      use_alternate_actions: simulation_attributes[:alternate_actions]
     )
     simulator.run
 
@@ -60,5 +61,5 @@ LayerSimulateBin.new.run(
   { board_size: 4, max_exponent: 4 },
   { max_depth: 0 },
   { discount: 1.0, method: :v, alternate_action_tolerance: 1e-9 },
-  n: 1_000_000, seed: 42
+  n: 1_000_000, seed: 42, alternate_actions: true
 )
