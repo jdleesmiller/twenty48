@@ -1,0 +1,147 @@
+---
+title: "Tranches"
+output: html_notebook
+---
+
+```{r}
+require(reshape2)
+```
+
+# Compare with Simulation
+
+## 2x2 to 32 without Alternate Actions
+
+```{r}
+findModelPath <- function (boardSize, maxExponent, maxDepth = 0) {
+  paste0(
+    'game-board_size-', boardSize,
+    '.max_exponent-', maxExponent,
+    '/layer_model-max_depth-', maxDepth)
+}
+
+findSolutionPath <- function (
+  prefix, boardSize, maxExponent, maxDepth = 0,
+  discount = '1', method = 'v', alternateActionTolerance = '1e-09') {
+  file.path(
+    findModelPath(boardSize, maxExponent, maxDepth),
+    paste0(
+      prefix,
+      '-discount-', discount,
+      '.method-', method,
+      '.alternate_action_tolerance-', alternateActionTolerance))
+}
+
+readTrancheCsv <- function (..., threshold, alternateActions) {
+  path <- paste0(
+    findSolutionPath('tranche', ...),
+    '.threshold-', threshold,
+    '.alternate_actions-', alternateActions, '.csv')
+  read.csv(path, colClasses = list(state = 'character'))
+}
+
+readSimulationCsv <- function (..., n, seed, alternateActions) {
+  path <- paste0(
+    findSolutionPath('simulation', ...), 
+    '.n-', n,
+    '.seed-', seed,
+    '.alternate_actions-', alternateActions)
+  readKindCsv <- function (kind, name) {
+    csvPath <- file.path(path, paste0(name, '.csv'))
+    csv <- read.csv(csvPath, colClasses = list(state = 'character'))
+    if (nrow(csv) > 0) {
+      csv$kind <- kind
+      csv[,c('kind', 'state', 'pr')]
+    } else {
+      NULL
+    }
+  }
+  rbind(
+    readKindCsv('transient', 'transient'),
+    readKindCsv('loss', 'losses'),
+    readKindCsv('win', 'wins')
+  )
+}
+
+readTrancheAndSimulationCsvs <- function (..., threshold, alternateActions, n = '1000000', seed = 42) {
+  tranche <- readTrancheCsv(..., threshold = threshold, alternateActions = alternateActions)
+  tranche$source <- 'tranche'
+  simulation <- readSimulationCsv(..., n = n, seed = seed, alternateActions = alternateActions)
+  simulation$source <- 'simulation'
+  result <- transform(rbind(tranche, simulation), source = factor(source))
+  result[order(result$state, result$source), ]
+}
+
+d25 <- readTrancheAndSimulationCsvs(
+  boardSize = 2, maxExponent = 5,
+  threshold = 0, alternateActions = 'false')
+summary(d25)
+```
+
+```{r}
+aggregate(pr ~ kind + source, d25, sum)
+```
+
+```{r}
+compareTrancheAndSimulation <- function (data) {
+  compare <- transform(
+    dcast(data, state + kind ~ source, fill = 0, value.var = 'pr'),
+    delta = simulation - tranche)
+  merge(
+    aggregate(
+      cbind(max_delta = delta) ~ kind, compare, function (d) max(abs(d))),
+    aggregate(
+      cbind(mean_delta = delta) ~ kind, compare, function (d) mean(abs(d))))
+}
+compareTrancheAndSimulation(d25)
+```
+
+## 2x2 to 32 with Alternate Actions
+
+```{r}
+d25a <- readTrancheAndSimulationCsvs(
+  boardSize = 2, maxExponent = 5,
+  threshold = 0, alternateActions = 'true')
+summary(d25a)
+```
+
+```{r}
+aggregate(pr ~ kind + source, d25a, sum)
+```
+
+```{r}
+compareTrancheAndSimulation(d25a)
+```
+
+## 3x3 to 512
+
+```{r}
+d39 <- readTrancheAndSimulationCsvs(
+  boardSize = 3, maxExponent = 9,
+  threshold = 0, alternateActions = 'false')
+summary(d39)
+```
+
+```{r}
+aggregate(pr ~ kind + source, d39, sum)
+```
+
+```{r}
+compareTrancheAndSimulation(d39)
+```
+
+## 4x4 to 16
+
+```{r}
+d44 <- readTrancheAndSimulationCsvs(
+  boardSize = 4, maxExponent = 4,
+  threshold = '1e-06', alternateActions = 'false')
+summary(d44)
+```
+
+```{r}
+aggregate(pr ~ kind + source, d44, sum)
+```
+
+```{r}
+compareTrancheAndSimulation(d44)
+```
