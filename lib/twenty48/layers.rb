@@ -292,6 +292,39 @@ module Twenty48
             summary if summary.num_states > 0
           end.compact
         end
+
+        TrancheCsvSummary = Struct.new(
+          :sum, :max_value, :kind, :log2, :num_states, :total_pr
+        )
+
+        def summarize_tranche_csvs(*args)
+          results = []
+          part.each do |part|
+            tranche = part.tranche(*args)
+            next if tranche.nil?
+            results += read_tranche_csv(part, tranche.transient_csv, :transient)
+            results += read_tranche_csv(part, tranche.wins_csv, :win)
+            results += read_tranche_csv(part, tranche.losses_csv, :loss)
+          end
+          results
+        end
+
+        def read_tranche_csv(part, file, kind)
+          return [] unless file.exist?
+          csv_options = {
+            headers: true,
+            converters: :numeric,
+            header_converters: :symbol
+          }
+          results = []
+          CSV.foreach(file.to_s, csv_options) do |row|
+            results << TrancheCsvSummary.new(
+              part.sum, part.max_value, kind,
+              row[:log2], row[:num_states], row[:total_pr]
+            )
+          end
+          results
+        end
       end
     end
   end

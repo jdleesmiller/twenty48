@@ -123,6 +123,9 @@ module Twenty48
               file :transient
               file :wins # will only exist in parts w/ max_value = max_exponent
               file :losses
+              file :transient, :csv
+              file :wins, :csv
+              file :losses, :csv
             end
           end
         end

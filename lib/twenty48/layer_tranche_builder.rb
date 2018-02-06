@@ -53,19 +53,21 @@ module Twenty48
         solution = part.solution.find_by(solution_attributes)
         tranche = solution.tranche.new(tranche_attributes).mkdir!
 
-        parent = \
-          if sum == 4
-            tranche # layer sum 4 is just start states
-          else
-            tranche.output_fragment.new(
-              input_sum: 0, input_max_value: 0, batch: 0
-            )
-          end
+        if sum == 4
+          write_transient(state_prs, tranche) # layer sum 4 is just start states
+          write_histogram(tranche.transient.to_s, tranche.transient_csv.to_s)
+        else
+          write_transient(state_prs, tranche.output_fragment.new(
+            input_sum: 0, input_max_value: 0, batch: 0
+          ))
+        end
+      end
+    end
 
-        File.open(parent.transient.mkdir!.to_s, 'wb') do |file|
-          state_prs.sort.each do |nybbles, pr|
-            file.write([nybbles, pr].pack('QD'))
-          end
+    def write_transient(state_prs, parent)
+      File.open(parent.transient.mkdir!.to_s, 'wb') do |file|
+        state_prs.sort.each do |nybbles, pr|
+          file.write([nybbles, pr].pack('QD'))
         end
       end
     end
@@ -87,12 +89,37 @@ module Twenty48
         files = tranche.output_fragment.map(&file).select(&:exist?)
         next if files.none?
         log "prepare #{file}"
+        output_pathname = tranche.send(file).to_s
         Twenty48.merge_state_probabilities(
           files.map(&:to_s),
-          tranche.send(file).to_s
+          output_pathname
+        )
+        write_histogram(
+          output_pathname,
+          tranche.send("#{file}_csv".to_sym).to_s
         )
       end
       tranche.output_fragment.each(&:destroy!)
+    end
+
+    def write_histogram(state_probabilities_pathname, histogram_pathname)
+      counts = Hash.new { |h, k| h[k] = 0 }
+      total_prs = Hash.new { |h, k| h[k] = 0.0 }
+      File.open(state_probabilities_pathname, 'rb') do |input|
+        until input.eof?
+          _, pr = input.read(16).unpack('QD')
+          order = Math.log2(pr).floor
+          counts[order] += 1
+          total_prs[order] += pr
+        end
+      end
+      return if counts.none?
+      CSV.open(histogram_pathname, 'w') do |csv|
+        csv << %w[log2 num_states total_pr]
+        counts.keys.sort.each do |order|
+          csv << [order, counts[order], total_prs[order]]
+        end
+      end
     end
 
     def map(part, tranche)

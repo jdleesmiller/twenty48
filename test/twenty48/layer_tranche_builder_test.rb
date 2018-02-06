@@ -155,6 +155,22 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
       end
       assert_close 0.917112710928446, lose_pr
       assert_close 0.08288728907155415, win_pr
+
+      #
+      # Check CSV output.
+      #
+      csv_summary = model.summarize_tranche_csvs(
+        layer_solver.solution_attributes,
+        tranche_builder_0.tranche_attributes
+      )
+      losses = csv_summary.select { |row| row.kind == :loss }
+      assert_close 0.917112710928446, losses.map(&:total_pr).sum
+      assert_equal 4, losses.map(&:num_states).sum
+      wins = csv_summary.select { |row| row.kind == :win }
+      assert_close 0.08288728907155415, wins.map(&:total_pr).sum
+      assert_equal 10, wins.map(&:num_states).sum
+      transients = csv_summary.select { |row| row.kind == :transient }
+      assert_equal 53, transients.map(&:num_states).sum
     end
   end
 
