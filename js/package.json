@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
-    "build": "webpack --optimize-minimize",
+    "build": "NODE_ENV=production webpack --optimize-minimize",
     "test": "mocha --require babel-core/register"
   },
   "author": "John Lees-Miller",

@@ -9,11 +9,18 @@ var LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 
 require('webpack')
 
+var outputFilename
+if (process.env.NODE_ENV === 'production') {
+  outputFilename = 'mdp_player.[hash].js'
+} else {
+  outputFilename = 'mdp_player.js'
+}
+
 var config = {
   entry: './index',
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: 'bundle.js'
+    filename: outputFilename
   },
   module: {
     rules: [
