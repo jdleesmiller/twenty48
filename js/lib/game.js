@@ -22,6 +22,7 @@ export default function makeGame (
   if (!initialSeed) initialSeed = rollSeed()
 
   const PAD = 10
+  const PAD_PX = PAD + 'px'
 
   container.style('display', 'flex')
 
@@ -38,12 +39,12 @@ export default function makeGame (
 
   let seedInputId = generateId()
   let seedDiv = form.append('div')
-    .style('padding-bottom', PAD)
+    .style('padding-bottom', PAD_PX)
 
   seedDiv.append('label')
     .attr('for', seedInputId)
-    .style('padding-left', PAD)
-    .style('padding-right', PAD)
+    .style('padding-left', PAD_PX)
+    .style('padding-right', PAD_PX)
     .text('Random Seed')
 
   let seedInput = seedDiv.append('input')
@@ -58,7 +59,7 @@ export default function makeGame (
     })
 
   let seedButton = seedDiv.append('button')
-    .style('margin-left', PAD)
+    .style('margin-left', PAD_PX)
     .html('&#x27f2;')
     .on('click', () => {
       d3.event.preventDefault()
@@ -66,7 +67,8 @@ export default function makeGame (
     })
 
   let buttonDiv = form.append('div')
-    .style('padding-left', PAD)
+    .style('padding-left', PAD_PX)
+    .style('padding-bottom', PAD_PX)
 
   let button = buttonDiv.append('button')
     .text('Start')
@@ -76,7 +78,7 @@ export default function makeGame (
     })
 
   let statusDiv = rightDiv.append('div')
-    .style('padding-left', PAD)
+    .style('padding-left', PAD_PX)
 
   let moveCount = 0
   let policyLoad = null // only load the policy once
