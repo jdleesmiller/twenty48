@@ -31,7 +31,7 @@ export default function makeState (boardSize, maxExponent) {
   const { Point, REFLECT_X, ROTATE_90, TRANSPOSE, TRANSFORMS } =
     makeTransforms(boardSize)
 
-  const INDEXES = _.times(boardSize) // [0, 1, ..., boardSize - 1]
+  const INDEXES = _.times(boardSize, _.identity) // [0, 1, ..., boardSize - 1]
   const POINTS = _.flatten(INDEXES.map(i => INDEXES.map(j => new Point(i, j))))
 
   let tileId = 0
@@ -200,7 +200,7 @@ export default function makeState (boardSize, maxExponent) {
       if (this.countAvailableCells() === boardSize * boardSize) return true
       if (this.isWin()) return false
       let state = this.copy()
-      return _(DIRECTIONS).values().every((direction) => {
+      return _.every(_.values(DIRECTIONS), (direction) => {
         state.move(direction)
         return this.isEqual(state)
       })

@@ -1,4 +1,4 @@
-import * as d3 from 'd3'
+import d3 from './lib/d3'
 import makeGame from './lib/game'
 
 document.addEventListener('DOMContentLoaded', function () {

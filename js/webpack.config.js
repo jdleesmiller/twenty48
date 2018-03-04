@@ -1,7 +1,15 @@
 var path = require('path')
+
+if (process.env.BUNDLE_ANALYZER) {
+  var BundleAnalyzerPlugin =
+    require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+}
+
+var LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
+
 require('webpack')
 
-module.exports = {
+var config = {
   entry: './index',
   output: {
     path: path.resolve(__dirname, 'build'),
@@ -15,14 +23,24 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
+            plugins: ['lodash'],
             presets: ['env']
           }
         }
       }
     ]
   },
+  plugins: [
+    new LodashModuleReplacementPlugin()
+  ],
   stats: {
     colors: true
   },
   devtool: 'source-map'
 }
+
+if (BundleAnalyzerPlugin) {
+  config.plugins.push(new BundleAnalyzerPlugin())
+}
+
+module.exports = config
