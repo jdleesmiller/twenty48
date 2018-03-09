@@ -133,6 +133,7 @@ module Twenty48
       )
       jobs = make_map_jobs(builder, part, tranche)
       GC.start
+      # Note: pass in_processes: 4 here to reduce peak memory usage
       Parallel.each(jobs, &:run)
     end
 
