@@ -33,7 +33,9 @@ export default function makePolicy (boardSize) {
     getAction (canonicalState) {
       let actionIndex = this.actionValues[canonicalState.toString()]
       if (actionIndex == null) {
-        throw new Error('No policy for ' + canonicalState.toString())
+        let error = new Error('No policy for ' + canonicalState.toString())
+        error.code = 'no_policy'
+        throw error
       }
       return PACKED_DIRECTIONS[actionIndex]
     }

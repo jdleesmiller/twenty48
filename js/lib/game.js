@@ -89,7 +89,14 @@ export default function makeGame (
     let seed = parseInt(seedInput.attr('value'), 10)
 
     moveCount = 0
-    if (!policyLoad) policyLoad = Policy.load(packedPolicyPath)
+    if (!policyLoad) {
+      policyLoad = Policy.load(packedPolicyPath)
+      .catch((err) => {
+        alert(`Sorry, could not load the policy.
+          Please reload the page and try again.
+          ${err}`)
+      })
+    }
     policyLoad.then((policy) => {
       button.html('Running&hellip;')
 
@@ -97,11 +104,6 @@ export default function makeGame (
       dispatch.on('end', handleEnd)
 
       driver.run(State.newEmpty(), policy, seed)
-    })
-    .catch((err) => {
-      alert(`Sorry, could not load the policy.
-Please reload the page and try again.
-${err}`)
     })
   }
 

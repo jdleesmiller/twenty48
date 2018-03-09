@@ -233,7 +233,17 @@ export default class Driver {
         let canonicalTransform = this.state.getCanonicalTransform()
         let canonicalState =
           this.state.copy().applyTransform(canonicalTransform)
-        let canonicalAction = this.policy.getAction(canonicalState)
+        let canonicalAction
+        try {
+          canonicalAction = this.policy.getAction(canonicalState)
+        } catch (err) {
+          if (err.code === 'no_policy') {
+            alert('Sorry, this game visited a state that was not in the set' +
+              ' of states available in the downloaded policy (see footnote!).' +
+              ' Please try again with a different seed.')
+          }
+          throw err
+        }
         let action = canonicalTransform.invertAction(canonicalAction)
         this.state.startMove(action)
         this.dispatch.call('move', null, action)

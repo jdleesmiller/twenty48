@@ -1,5 +1,6 @@
 import d3 from './lib/d3'
 import makeGame from './lib/game'
+import evaluate from './lib/evaluate'
 
 document.addEventListener('DOMContentLoaded', function () {
   d3.selectAll('.twenty48-policy-player')
@@ -15,3 +16,5 @@ document.addEventListener('DOMContentLoaded', function () {
       )
     })
 })
+
+global.evaluate2048 = evaluate
