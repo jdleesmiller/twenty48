@@ -19,69 +19,11 @@ require_relative '../lib/twenty48'
 # 1508706 test3.csv.gz
 #
 
-raise 'need CSV file and solve folder as arguments' if ARGV.size != 2
-
 #
 # Pack data for browser.
 #
 class PackPolicyBin
-  #
-  # Efficiently read from a reader in part order.
-  #
-  class SolveDataReader
-    include Twenty48
-
-    def initialize(board_size, solve_folder)
-      @board_size = board_size
-      @solve_folder = solve_folder
-      @value_reader = nil
-      @alternate_action_reader = nil
-      @sum = nil
-      @max_value = nil
-      @previous_offset = nil
-    end
-
-    attr_reader :board_size
-    attr_reader :solve_folder
-
-    def read(state_nybbles, action)
-      state = NativeState.create_from_nybbles(board_size, state_nybbles)
-      load_next_if_needed(state.sum, state.max_value)
-      value, offset = @value_reader.get_value_and_offset(state_nybbles)
-      skip = offset - @previous_offset
-      @previous_offset = offset
-      @alternate_action_reader.skip(skip) if skip > 0
-      alternate_actions = @alternate_action_reader.read(action)
-      [alternate_actions, value]
-    end
-
-    private
-
-    def load_next_if_needed(state_sum, state_max_value)
-      return if state_sum == @sum && state_max_value == @max_value
-      check_not_going_backward(state_sum, state_max_value)
-      values_pathname = LayerPartValuesName.new(
-        sum: state_sum, max_value: state_max_value
-      ).in(solve_folder)
-      @value_reader = MmapValueReader.new(values_pathname)
-
-      alternate_action_pathname = LayerPartAlternateActionName.new(
-        sum: state_sum, max_value: state_max_value
-      ).in(solve_folder)
-      @alternate_action_reader = AlternateActionReader.new(
-        alternate_action_pathname
-      )
-      @previous_offset = 0
-    end
-
-    def check_not_going_backward(state_sum, state_max_value)
-      return if @sum.nil? || @max_value.nil?
-      raise "sum decreased: #{state_sum} < #{@sum}" if state_sum < @sum
-      return if state_sum > @sum
-      raise "max_value decreased: #{state_max_value} < #{@max_value}" if
-        state_max_value < @max_value
-    end
-  end
+  include Twenty48
 
   PolicyData = Struct.new(
     :action, :alternate_actions, :value
@@ -98,37 +40,65 @@ class PackPolicyBin
     end
 
     def rounded_value
-      value
+      format('%.2f', value)
     end
   end
 
-  def initialize(tranche_threshold_csv_pathname, solve_folder)
-    @tranche_threshold_csv_pathname = tranche_threshold_csv_pathname
-    @solve_folder = solve_folder
-  end
-
-  attr_reader :tranche_threshold_csv_pathname
-  attr_reader :solve_folder
-
   def run
-    policy_data = read_policy_data
+    data = Data.new(root: Data::ROOT)
+    data.game.each do |game|
+      next unless game.board_size == 2 && game.max_exponent == 4 ||
+          game.board_size == 2 && game.max_exponent == 5 ||
+          game.board_size == 3 && game.max_exponent == 9 ||
+          game.board_size == 3 && game.max_exponent == 10 ||
+          game.board_size == 4 && game.max_exponent == 6
+      game.layer_model.each do |layer_model|
+        next unless layer_model.max_depth == 0
+        solutions = layer_model.part.first&.solution&.all || []
+        solutions.each do |solution|
+          next unless solution.alternate_action_tolerance > 0
+          puts solution
+          solution.tranche.each do |tranche|
+            next unless tranche.threshold == 1e-6
+            build(layer_model, solution, tranche)
+          end
+        end
+      end
+    end
+  end
+
+  def build(model, solution, tranche)
+    packed_policy_csv = model.packed_policy_csv.new(
+      solution.to_h.merge(tranche.to_h)
+    )
+    return if packed_policy_csv.exist?
+
+    policy_data = read_policy_data(model, solution, tranche)
     packed_policy_data = pack_policy_data(policy_data)
-    write_packed_policy(packed_policy_data)
+    if tranche.alternate_actions
+      write_packed_policy_with_alternate_actions(
+        packed_policy_data, packed_policy_csv.to_s
+      )
+    else
+      write_packed_policy(
+        packed_policy_data, packed_policy_csv.to_s
+      )
+    end
+    puts packed_policy_csv
   end
 
-  def board_size
-    raise 'bad solve folder name' unless solve_folder =~ /board_size-(\d+)/
-    Regexp.last_match(1).to_i
-  end
-
-  def read_policy_data
-    solve_reader = SolveDataReader.new(board_size, solve_folder)
+  def read_policy_data(model, solution, tranche)
     policy_data = {}
-    CSV.foreach(ARGV[0], headers: true) do |row|
-      nybbles = row['state'].to_i(16)
-      action = row['action'].to_i
-      alternate_actions, value = solve_reader.read(nybbles, action)
-      policy_data[nybbles] = PolicyData.new(action, alternate_actions, value)
+    model.part.each do |part|
+      part_solution = part.solution.find_by(solution.to_h)
+      next unless part_solution
+      part_tranche = part_solution.tranche.find_by(tranche.to_h)
+      next unless part_tranche
+
+      part_tranche.each do |state, action, alternate_actions, value|
+        policy_data[state.get_nybbles] =
+          PolicyData.new(action, alternate_actions, value)
+      end
     end
     policy_data
   end
@@ -136,13 +106,26 @@ class PackPolicyBin
   def pack_policy_data(policy_data)
     previous = 0
     policy_data.keys.sort.each_with_object([]) do |nybbles, result|
-      result.push([nybbles - previous, policy_data[nybbles]])
+      delta = nybbles - previous
+      raise "delta #{delta} too large for JS" if delta > 2**53 - 1
+      result.push([delta, policy_data[nybbles]])
       previous = nybbles
     end
   end
 
-  def write_packed_policy(packed_policy_data)
-    CSV(STDOUT) do |csv|
+  def write_packed_policy(packed_policy_data, pathname)
+    CSV.open(pathname, 'w') do |csv|
+      csv << %w[delta36 action value]
+      packed_policy_data.each do |delta, data|
+        csv << [
+          delta.to_s(36), data.action, data.rounded_value
+        ]
+      end
+    end
+  end
+
+  def write_packed_policy_with_alternate_actions(packed_policy_data, pathname)
+    CSV.open(pathname, 'w') do |csv|
       csv << %w[delta36 actions36 value]
       packed_policy_data.each do |delta, data|
         csv << [
@@ -153,4 +136,4 @@ class PackPolicyBin
   end
 end
 
-PackPolicyBin.new(ARGV[0], ARGV[1]).run
+PackPolicyBin.new.run

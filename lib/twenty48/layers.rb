@@ -99,12 +99,52 @@ module Twenty48
             # Select a subset of states with at least a given probability.
             #
             class Tranche
+              def solution
+                parent
+              end
+
               def part
-                parent.parent
+                solution.parent
               end
 
               def board_size
                 part.parent.board_size
+              end
+
+              def each_state_vbyte_unfiltered(&block)
+                states_pathname = part.states_vbyte.to_s
+                Twenty48.each_state_vbyte(board_size, states_pathname, &block)
+              end
+
+              def each_state_vbyte
+                bit_set_reader = BitSetReader.new(bit_set.to_s)
+                each_state_vbyte_unfiltered do |state|
+                  yield state if bit_set_reader.read
+                end
+              end
+
+              def make_alternate_action_reader
+                return unless solution.alternate_actions.exist?
+                AlternateActionReader.new(solution.alternate_actions.to_s)
+              end
+
+              def each
+                return unless bit_set.exist?
+                bit_set_reader = BitSetReader.new(bit_set.to_s)
+                policy_reader = PolicyReader.new(solution.policy.to_s)
+                alternate_action_reader = make_alternate_action_reader
+                if solution.values.exist?
+                  values_file = File.open(solution.values.to_s, 'rb')
+                end
+                each_state_vbyte_unfiltered do |state|
+                  action = policy_reader.read
+                  alternate_actions = alternate_action_reader&.read(action)
+                  _nybbles, value = values_file&.read(16)&.unpack('QD')
+                  next unless bit_set_reader.read
+                  yield [state, action, alternate_actions, value]
+                end
+              ensure
+                values_file&.close
               end
 
               #
@@ -120,15 +160,11 @@ module Twenty48
                 end
 
                 def each_state_vbyte_unfiltered(&block)
-                  states_pathname = part.states_vbyte.to_s
-                  Twenty48.each_state_vbyte(board_size, states_pathname, &block)
+                  parent.each_state_vbyte_unfiltered(&block)
                 end
 
-                def each_state_vbyte
-                  bit_set_reader = BitSetReader.new(parent.bit_set.to_s)
-                  each_state_vbyte_unfiltered do |state|
-                    yield state if bit_set_reader.read
-                  end
+                def each_state_vbyte(&block)
+                  parent.each_state_vbyte(&block)
                 end
 
                 def each_state_with_pr
