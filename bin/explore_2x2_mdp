@@ -30,7 +30,9 @@ class Explore2x2MdpBin
     right: '→',
     up: '↑',
     down: '↓',
-    left_right_up_down: '*'
+    left_right: '⇆',
+    up_down: '⇅',
+    left_right_up_down: '⇆⇅'
   }.freeze
 
   COLORS = { # http://colorbrewer2.org/#type=diverging&scheme=PuOr&n=4
@@ -49,7 +51,7 @@ class Explore2x2MdpBin
 
     DIRECTIONS.each do |direction|
       node_properties = graph.add_node(direction)
-      node_properties[:label] = ARROWS[direction]
+      set_action_node_properties(node_properties, ARROWS[direction])
 
       edge_properties = graph.add_edge(node_name(start), direction)
       edge_properties[:dir] = :none
@@ -94,7 +96,7 @@ class Explore2x2MdpBin
 
     DIRECTIONS.each.with_index do |direction, action|
       node_properties = graph.add_node(direction)
-      node_properties[:label] = ARROWS[direction]
+      set_action_node_properties(node_properties, ARROWS[direction])
 
       edge_properties = graph.add_edge(node_name(start), direction)
       edge_properties[:dir] = :none
@@ -134,7 +136,7 @@ class Explore2x2MdpBin
 
     each_unique_action(feasible_directions, start) do |direction, action_label|
       node_properties = graph.add_node(direction)
-      node_properties[:label] = action_label
+      set_action_node_properties(node_properties, action_label)
 
       edge_properties = graph.add_edge(node_name(start), direction)
       edge_properties[:dir] = :none
@@ -172,6 +174,15 @@ class Explore2x2MdpBin
         group_actions.map { |action| ARROWS[action] }.join
       yield(group_actions.first, action_name)
     end
+  end
+
+  def set_action_node_properties(node_properties, label)
+    node_properties[:label] = label
+    node_properties[:fontname] = 'Arial'
+    # Not entirely sure why, but if we use double arrows anywhere, the baseline
+    # is too high and looks better if we align the text to the bottom.
+    node_properties[:labelloc] = :b if
+      label.include?(ARROWS[:up_down]) || label.include?(ARROWS[:left_right])
   end
 
   def set_transition_edge_properties(edge_properties, probability)
@@ -223,7 +234,7 @@ class Explore2x2MdpBin
         action_subgraphs[node_name(state)] << state_action_name
 
         node_properties = graph.add_node(state_action_name)
-        node_properties[:label] = action_label
+        set_action_node_properties(node_properties, action_label)
 
         edge_properties = graph.add_edge(node_name(state), state_action_name)
         edge_properties[:dir] = :none
