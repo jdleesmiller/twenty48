@@ -144,6 +144,7 @@ module Twenty48
           key :alternate_action_tolerance, type: Float
           key :threshold, type: Float
           key :alternate_actions, type: :boolean
+          key :values, type: :boolean
         end
 
         folder :simulation do

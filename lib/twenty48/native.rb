@@ -300,4 +300,19 @@ module Twenty48
       end
     end
   end
+
+  #
+  # State, action, value and optionally alternate actions.
+  #
+  class StateActionValue
+    include RadixPack
+
+    def radix_packed_state(max_exponent)
+      radix_pack_nybbles(state, max_exponent)
+    end
+
+    def alternate_actions
+      [left, right, up, down]
+    end
+  end
 end

@@ -16,7 +16,7 @@
 #include "alternate_action_writer.hpp"
 #include "bit_set_reader.hpp"
 #include "solution_writer.hpp"
-#include "subset_policy.hpp"
+#include "state_action_value.hpp"
 #include "start_states.hpp"
 %}
 
@@ -182,7 +182,9 @@
 %rename(PolicyWriter) twenty48::policy_writer_t;
 %include "policy_writer.hpp"
 
-%include "subset_policy.hpp"
+%rename(StateActionValue) twenty48::state_action_value_t;
+%include "state_action_value.hpp"
+%template(StateActionValueVector) std::vector<twenty48::state_action_value_t>;
 
 /******************************************************************************/
 /* Alternate Action Reader/Writer */

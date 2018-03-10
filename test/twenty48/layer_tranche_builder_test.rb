@@ -54,6 +54,15 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
         tranche_builder_0.tranche_attributes
       )
 
+      state_action_values = []
+      model.each_tranche_state_action_value(
+        layer_solver.solution_attributes,
+        tranche_builder_0.tranche_attributes
+      ) do |state_action_value|
+        state_action_values << state_action_value
+      end
+      assert_equal 53, state_action_values.size
+
       #
       # Check against the results obtained from the fundamental matrix via
       # bin/markov_chain_full. Results generated (with minor edits) from R:

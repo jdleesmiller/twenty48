@@ -123,28 +123,17 @@ module Twenty48
                 end
               end
 
-              def make_alternate_action_reader
-                return unless solution.alternate_actions.exist?
-                AlternateActionReader.new(solution.alternate_actions.to_s)
-              end
-
-              def each
-                return unless bit_set.exist?
-                bit_set_reader = BitSetReader.new(bit_set.to_s)
-                policy_reader = PolicyReader.new(solution.policy.to_s)
-                alternate_action_reader = make_alternate_action_reader
-                if solution.values.exist?
-                  values_file = File.open(solution.values.to_s, 'rb')
-                end
-                each_state_vbyte_unfiltered do |state|
-                  action = policy_reader.read
-                  alternate_actions = alternate_action_reader&.read(action)
-                  _nybbles, value = values_file&.read(16)&.unpack('QD')
-                  next unless bit_set_reader.read
-                  yield [state, action, alternate_actions, value]
-                end
-              ensure
-                values_file&.close
+              def read_state_action_value
+                return [] unless bit_set.exist?
+                StateActionValue.subset(
+                  bit_set.to_s,
+                  part.states_vbyte.to_s,
+                  solution.policy.to_s,
+                  if solution.alternate_actions.exist?
+                    solution.alternate_actions.to_s
+                  end,
+                  solution.values.exist? ? solution.values.to_s : nil
+                )
               end
 
               #
@@ -279,6 +268,28 @@ module Twenty48
         end
 
         TrancheSummary = Struct.new(:sum, :max_value, :num_states, :total_pr)
+
+        def each_tranche_state_action_value(
+          solution_attributes, tranche_attributes
+        )
+          part.each do |part|
+            part_solution = part.solution.find_by(solution_attributes)
+            next unless part_solution
+            part_tranche = part_solution.tranche.find_by(tranche_attributes)
+            next unless part_tranche
+            part_tranche.read_state_action_value.each do |state_action_value|
+              yield state_action_value
+            end
+          end
+        end
+
+        def read_tranche_state_action_values(*args)
+          state_action_values = []
+          each_tranche_state_action_value(*args) do |state_action_value|
+            state_action_values << state_action_value
+          end
+          state_action_values
+        end
 
         def each_tranche_transient_pr(*args)
           part.each do |part|

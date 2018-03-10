@@ -24,25 +24,8 @@ require_relative '../lib/twenty48'
 #
 class PackPolicyBin
   include Twenty48
-
-  PolicyData = Struct.new(
-    :action, :alternate_actions, :value
-  ) do
-    def packed_actions
-      alternate_action_mask = 0
-      offset = 0
-      (0...4).each do |i|
-        next if i == action
-        alternate_action_mask |= 1 << offset if alternate_actions[i]
-        offset += 1
-      end
-      action << 3 | alternate_action_mask
-    end
-
-    def rounded_value
-      format('%.2f', value)
-    end
-  end
+  include FileUtils
+  include RadixPack
 
   def run
     data = Data.new(root: Data::ROOT)
@@ -51,88 +34,169 @@ class PackPolicyBin
           game.board_size == 2 && game.max_exponent == 5 ||
           game.board_size == 3 && game.max_exponent == 9 ||
           game.board_size == 3 && game.max_exponent == 10 ||
+          game.board_size == 4 && game.max_exponent == 4 ||
           game.board_size == 4 && game.max_exponent == 6
-      game.layer_model.each do |layer_model|
-        next unless layer_model.max_depth == 0
-        solutions = layer_model.part.first&.solution&.all || []
+      game.layer_model.each do |model|
+        next unless model.max_depth == 0
+        solutions = model.part.first&.solution&.all || []
         solutions.each do |solution|
           next unless solution.alternate_action_tolerance > 0
+          next unless game.board_size < 4 && solution.discount == 1 ||
+              game.board_size == 4 && solution.discount < 1
           puts solution
           solution.tranche.each do |tranche|
-            next unless tranche.threshold == 1e-6
-            build(layer_model, solution, tranche)
+            next unless game.board_size == 2 && tranche.threshold == 0 ||
+                game.board_size > 2 && tranche.threshold == 1e-7
+            state_action_values = model.read_tranche_state_action_values(
+              solution.to_h, tranche.to_h
+            )
+            build(game, model, solution, tranche, state_action_values, false)
+            build(game, model, solution, tranche, state_action_values, true)
           end
         end
       end
     end
   end
 
-  def build(model, solution, tranche)
+  def build(game, model, solution, tranche, state_action_values, values)
     packed_policy_csv = model.packed_policy_csv.new(
-      solution.to_h.merge(tranche.to_h)
+      solution.to_h.merge(tranche.to_h).merge(values: values)
     )
-    return if packed_policy_csv.exist?
-
-    policy_data = read_policy_data(model, solution, tranche)
-    packed_policy_data = pack_policy_data(policy_data)
-    if tranche.alternate_actions
-      write_packed_policy_with_alternate_actions(
-        packed_policy_data, packed_policy_csv.to_s
-      )
-    else
+    unless packed_policy_csv.exist?
       write_packed_policy(
-        packed_policy_data, packed_policy_csv.to_s
+        state_action_values,
+        game.max_exponent,
+        tranche.alternate_actions,
+        values,
+        packed_policy_csv.to_s
       )
     end
-    puts packed_policy_csv
+    print_stats(
+      packed_policy_csv.to_s, game.max_exponent, tranche.alternate_actions
+    )
   end
 
-  def read_policy_data(model, solution, tranche)
-    policy_data = {}
-    model.part.each do |part|
-      part_solution = part.solution.find_by(solution.to_h)
-      next unless part_solution
-      part_tranche = part_solution.tranche.find_by(tranche.to_h)
-      next unless part_tranche
-
-      part_tranche.each do |state, action, alternate_actions, value|
-        policy_data[state.get_nybbles] =
-          PolicyData.new(action, alternate_actions, value)
-      end
-    end
-    policy_data
-  end
-
-  def pack_policy_data(policy_data)
+  #
+  # Sort the states and store the differences between successive states.
+  #
+  def with_radix_delta_packing(state_action_values, max_exponent)
     previous = 0
-    policy_data.keys.sort.each_with_object([]) do |nybbles, result|
-      delta = nybbles - previous
+    radix_packed_states = state_action_values.map do |state_action_value|
+      state_action_value.radix_packed_state(max_exponent)
+    end
+    sorted_indexes = (0...state_action_values.size).sort_by do |i|
+      radix_packed_states[i]
+    end
+    sorted_indexes.each do |i|
+      state_action_value = state_action_values[i]
+      radix_packed_state = radix_packed_states[i]
+      delta = radix_packed_state - previous
       raise "delta #{delta} too large for JS" if delta > 2**53 - 1
-      result.push([delta, policy_data[nybbles]])
-      previous = nybbles
+      yield(delta, state_action_value)
+      previous = radix_packed_state
     end
   end
 
-  def write_packed_policy(packed_policy_data, pathname)
+  def pack_actions(state_action_value)
+    action = state_action_value.action
+    alternate_actions = state_action_value.alternate_actions
+    alternate_action_mask = 0
+    offset = 0
+    (0...4).each do |i|
+      next if i == action
+      alternate_action_mask |= 1 << offset if alternate_actions[i]
+      offset += 1
+    end
+    action << 3 | alternate_action_mask
+  end
+
+  def round_value(value)
+    (value * 100).round
+  end
+
+  def write_packed_policy(
+    state_action_values, max_exponent, alternate_actions, values, pathname
+  )
     CSV.open(pathname, 'w') do |csv|
-      csv << %w[delta36 action value]
-      packed_policy_data.each do |delta, data|
-        csv << [
-          delta.to_s(36), data.action, data.rounded_value
-        ]
+      headers = %w[delta36]
+      headers << (alternate_actions ? :actions36 : :action)
+      headers << :value if values
+      csv << headers
+      with_radix_delta_packing(state_action_values, max_exponent) \
+        do |delta, state_action_value|
+        row = [delta.to_s(36)]
+        row << \
+          if alternate_actions
+            pack_actions(state_action_value)
+          else
+            state_action_value.action
+          end
+        row << round_value(state_action_value.value) if values
+        csv << row
       end
     end
   end
 
-  def write_packed_policy_with_alternate_actions(packed_policy_data, pathname)
-    CSV.open(pathname, 'w') do |csv|
-      csv << %w[delta36 actions36 value]
-      packed_policy_data.each do |delta, data|
-        csv << [
-          delta.to_s(36), data.packed_actions.to_s(36), data.rounded_value
-        ]
+  def print_stats(pathname, max_exponent, alternate_actions)
+    puts pathname
+    puts "Size: #{File.size(pathname)}"
+    puts "Size when gzipped: #{gz_size(pathname)}"
+    return if alternate_actions
+    with_rotated_data(pathname, max_exponent) do |output_pathname|
+      puts "Rotated Size: #{File.size(output_pathname)}"
+      puts "Rotated Size when gzipped: #{gz_size(output_pathname)}"
+    end
+  end
+
+  def gz_size(pathname)
+    Dir.mktmpdir do |tmp|
+      tmp_pathname = File.join(tmp, 'data')
+      cp pathname, tmp_pathname
+      system "gzip #{tmp_pathname}"
+      File.size("#{tmp_pathname}.gz")
+    end
+  end
+
+  def read_packed_policy(csv_pathname, max_exponent)
+    state_action_values = []
+    previous = 0
+    CSV.foreach(csv_pathname, headers: true) do |row|
+      delta = row['delta36'].to_i(36)
+      packed = delta + previous
+      nybbles = radix_unpack_nybbles(packed, max_exponent)
+      state_action_value = StateActionValue.new
+      state_action_value.state = nybbles
+      state_action_value.action = row['action'].to_i
+      state_action_value.value = (row['value']&.to_f || 0.0) / 100.0
+      state_action_values << state_action_value
+      previous = packed
+    end
+    state_action_values
+  end
+
+  #
+  # See if it helps if we write the data with just four lines, one for each
+  # action.
+  #
+  def with_rotated_data(csv_pathname, max_exponent)
+    state_action_values = read_packed_policy(csv_pathname, max_exponent)
+    have_values = state_action_values.any? { |sav| sav.value > 0 }
+    grouped_state_action_values = state_action_values.group_by(&:action)
+    output_pathname = csv_pathname + '.rotate'
+    # output_pathname = File.join(tmp, 'data')
+    File.open(output_pathname, 'w') do |output|
+      output.puts have_values ? 'av' : 'a'
+      grouped_state_action_values.keys.sort.each do |action|
+        action_savs = grouped_state_action_values[action]
+        output.write action
+        with_radix_delta_packing(action_savs, max_exponent) do |delta, sav|
+          output.write " #{delta.to_s(36)}"
+          output.write " #{round_value(sav.value)}" if have_values
+        end
+        output.puts
       end
     end
+    yield output_pathname
   end
 end
 
