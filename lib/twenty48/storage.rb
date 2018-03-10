@@ -138,7 +138,7 @@ module Twenty48
           key :alternate_actions, type: :boolean
         end
 
-        file :packed_policy, :csv do
+        file :packed_policy, :dat do
           key :discount, type: Float
           key :method, type: Symbol
           key :alternate_action_tolerance, type: Float

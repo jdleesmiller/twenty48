@@ -9,7 +9,7 @@ import makePolicy from './policy'
 export default function evaluate (
   boardSize, maxExponent, packedPolicyPath, startSeed, endSeed) {
   const State = makeState(boardSize, maxExponent)
-  const Policy = makePolicy(boardSize)
+  const Policy = makePolicy(boardSize, maxExponent)
 
   const LOSE = 'lose'
   const WIN = 'win'

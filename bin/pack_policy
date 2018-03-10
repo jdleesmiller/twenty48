@@ -1,26 +1,32 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'csv'
-
 require_relative '../lib/twenty48'
 
 #
-# We need something that we can easily load in a web browser that isn't too big.
-# Try a very cheesy form of variable width encoding with deltas: write deltas
-# as base-36 strings. Input is a `threshold-x.csv` file from bin/layer_tranche.
-#
-# Some tests on the 3x3 to 10 with threshold 1e-6 (sizes in bytes):
-# 2279591 test.csv      - delta encoding in base 36
-#  578692 test.csv.gz
-# 5026612 test2.csv     - base 36 without delta encoding
-# 1430601 test2.csv.gz
-# 6639571 test3.csv     - hexadecimal without delta encoding
-# 1508706 test3.csv.gz
-#
-
-#
 # Pack data for browser.
+#
+# The format is a bit weird. It was originally just a CSV, but writing it in
+# this weirder format saves bytes over the wire (both with and without gzip).
+#
+# There are 5 lines, and the delimiter is a single space. The first line starts
+# with either 'a' or 'av', to mark whether the file has actions only or both
+# actions and values, respectively.
+#
+# Each subsequent line lists an action by index (0..3), followed by packed
+# states, and optionally their values, for which that is the optimal action.
+#
+# When there are states only (no values), each entry is a base-36 encoded
+# difference from the previous state, where the states are written as numbers
+# in base-K, where K is the max_exponent (see RadixPack). If the difference is
+# 1, which is common, then the number 1 is elided, so there will just be two
+# adjacent spaces.
+#
+# When values are included, each state entry is followed by a value entry, where
+# the value is expressed as a percentage. The most common percentage value is
+# determined before the data are packed, and all instances are elided, so
+# again there will just be two spaces. The most common percentage value is
+# included at the end of the header line.
 #
 class PackPolicyBin
   include Twenty48
@@ -30,12 +36,7 @@ class PackPolicyBin
   def run
     data = Data.new(root: Data::ROOT)
     data.game.each do |game|
-      next unless game.board_size == 2 && game.max_exponent == 4 ||
-          game.board_size == 2 && game.max_exponent == 5 ||
-          game.board_size == 3 && game.max_exponent == 9 ||
-          game.board_size == 3 && game.max_exponent == 10 ||
-          game.board_size == 4 && game.max_exponent == 4 ||
-          game.board_size == 4 && game.max_exponent == 6
+      next unless include_game?(game)
       game.layer_model.each do |model|
         next unless model.max_depth == 0
         solutions = model.part.first&.solution&.all || []
@@ -58,22 +59,29 @@ class PackPolicyBin
     end
   end
 
+  def include_game?(game)
+    game.board_size == 2 && game.max_exponent == 4 ||
+      game.board_size == 2 && game.max_exponent == 5 ||
+      game.board_size == 3 && game.max_exponent == 9 ||
+      game.board_size == 3 && game.max_exponent == 10 ||
+      game.board_size == 4 && game.max_exponent == 4 ||
+      game.board_size == 4 && game.max_exponent == 6
+  end
+
   def build(game, model, solution, tranche, state_action_values, values)
-    packed_policy_csv = model.packed_policy_csv.new(
+    packed_policy_dat = model.packed_policy_dat.new(
       solution.to_h.merge(tranche.to_h).merge(values: values)
     )
-    unless packed_policy_csv.exist?
+    unless packed_policy_dat.exist?
       write_packed_policy(
         state_action_values,
         game.max_exponent,
         tranche.alternate_actions,
         values,
-        packed_policy_csv.to_s
+        packed_policy_dat.to_s
       )
     end
-    print_stats(
-      packed_policy_csv.to_s, game.max_exponent, tranche.alternate_actions
-    )
+    print_stats(packed_policy_dat.to_s)
   end
 
   #
@@ -114,38 +122,44 @@ class PackPolicyBin
     (value * 100).round
   end
 
+  def find_most_common_round_value(state_action_values)
+    values = state_action_values.map(&:value).map { |value| round_value(value) }
+    values.group_by { |value| value }.values.max_by(&:size).first
+  end
+
   def write_packed_policy(
-    state_action_values, max_exponent, alternate_actions, values, pathname
+    state_action_values, max_exponent, _alternate_actions, values, pathname
   )
-    CSV.open(pathname, 'w') do |csv|
-      headers = %w[delta36]
-      headers << (alternate_actions ? :actions36 : :action)
-      headers << :value if values
-      csv << headers
-      with_radix_delta_packing(state_action_values, max_exponent) \
-        do |delta, state_action_value|
-        row = [delta.to_s(36)]
-        row << \
-          if alternate_actions
-            pack_actions(state_action_value)
+    grouped_state_action_values = state_action_values.group_by(&:action)
+    most_common_round_value = find_most_common_round_value(state_action_values)
+    File.open(pathname, 'w') do |output|
+      output.puts values ? "av #{most_common_round_value}" : 'a'
+      grouped_state_action_values.keys.sort.each do |action|
+        action_savs = grouped_state_action_values[action]
+        output.write action
+        with_radix_delta_packing(action_savs, max_exponent) do |delta, sav|
+          if delta == 1 # use a blank for 1, which is very common
+            output.write ' '
           else
-            state_action_value.action
+            output.write " #{delta.to_s(36)}"
           end
-        row << round_value(state_action_value.value) if values
-        csv << row
+          next unless values
+          value = round_value(sav.value)
+          if value == most_common_round_value # use blank for most common value
+            output.write ' '
+          else
+            output.write " #{value}"
+          end
+        end
+        output.puts
       end
     end
   end
 
-  def print_stats(pathname, max_exponent, alternate_actions)
+  def print_stats(pathname)
     puts pathname
     puts "Size: #{File.size(pathname)}"
     puts "Size when gzipped: #{gz_size(pathname)}"
-    return if alternate_actions
-    with_rotated_data(pathname, max_exponent) do |output_pathname|
-      puts "Rotated Size: #{File.size(output_pathname)}"
-      puts "Rotated Size when gzipped: #{gz_size(output_pathname)}"
-    end
   end
 
   def gz_size(pathname)
@@ -155,48 +169,6 @@ class PackPolicyBin
       system "gzip #{tmp_pathname}"
       File.size("#{tmp_pathname}.gz")
     end
-  end
-
-  def read_packed_policy(csv_pathname, max_exponent)
-    state_action_values = []
-    previous = 0
-    CSV.foreach(csv_pathname, headers: true) do |row|
-      delta = row['delta36'].to_i(36)
-      packed = delta + previous
-      nybbles = radix_unpack_nybbles(packed, max_exponent)
-      state_action_value = StateActionValue.new
-      state_action_value.state = nybbles
-      state_action_value.action = row['action'].to_i
-      state_action_value.value = (row['value']&.to_f || 0.0) / 100.0
-      state_action_values << state_action_value
-      previous = packed
-    end
-    state_action_values
-  end
-
-  #
-  # See if it helps if we write the data with just four lines, one for each
-  # action.
-  #
-  def with_rotated_data(csv_pathname, max_exponent)
-    state_action_values = read_packed_policy(csv_pathname, max_exponent)
-    have_values = state_action_values.any? { |sav| sav.value > 0 }
-    grouped_state_action_values = state_action_values.group_by(&:action)
-    output_pathname = csv_pathname + '.rotate'
-    # output_pathname = File.join(tmp, 'data')
-    File.open(output_pathname, 'w') do |output|
-      output.puts have_values ? 'av' : 'a'
-      grouped_state_action_values.keys.sort.each do |action|
-        action_savs = grouped_state_action_values[action]
-        output.write action
-        with_radix_delta_packing(action_savs, max_exponent) do |delta, sav|
-          output.write " #{delta.to_s(36)}"
-          output.write " #{round_value(sav.value)}" if have_values
-        end
-        output.puts
-      end
-    end
-    yield output_pathname
   end
 end
 
