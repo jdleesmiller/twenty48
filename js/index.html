@@ -47,6 +47,16 @@
       data-initial-seed="42">Loading...
     </div><button onclick="evaluate2048(parseInt(this.previousSibling.dataset.boardSize, 10), parseInt(this.previousSibling.dataset.maxExponent, 10), this.previousSibling.dataset.packedPolicyPath, 1, 1000).then(function (outcomes) { console.log(outcomes) })">Evaluate</button>
   </div>
+
+  <div>
+    <div class="twenty48-policy-player"
+      data-board-size="4"
+      data-max-exponent="6"
+      data-packed-policy-path="/data/game-board_size-4.max_exponent-6/layer_model-max_depth-0/packed_policy-discount-0.99.method-v.alternate_action_tolerance-1e-09.threshold-1e-07.alternate_actions-false.values-false.dat"
+      data-initial-seed="42">Loading...
+    </div><button onclick="evaluate2048(parseInt(this.previousSibling.dataset.boardSize, 10), parseInt(this.previousSibling.dataset.maxExponent, 10), this.previousSibling.dataset.packedPolicyPath, 1, 1000).then(function (outcomes) { console.log(outcomes) })">Evaluate</button>
+  </div>
+
   <script type="text/javascript" src="mdp_player.js" charset="utf-8"></script>
 </body>
 </html>
