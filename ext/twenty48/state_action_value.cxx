@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "state_action_value.hpp"
 
 #include "alternate_action_reader.hpp"
