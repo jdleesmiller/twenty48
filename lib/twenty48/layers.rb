@@ -117,6 +117,7 @@ module Twenty48
               end
 
               def each_state_vbyte
+                return unless bit_set.exist?
                 bit_set_reader = BitSetReader.new(bit_set.to_s)
                 each_state_vbyte_unfiltered do |state|
                   yield state if bit_set_reader.read
@@ -238,6 +239,7 @@ module Twenty48
 
           def tranche(solution_attributes, tranche_attributes)
             target_solution = solution.find_by(solution_attributes)
+            return unless target_solution
             target_solution.tranche.find_by(tranche_attributes)
           end
 

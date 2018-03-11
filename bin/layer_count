@@ -11,30 +11,89 @@ require_relative '../lib/twenty48'
 class CountStatesBin
   include Twenty48
 
+  def initialize(check)
+    @check = !!check
+  end
+
+  def count_states(layer_model)
+    num_states = 0
+    max_layer_sum = 0
+    layer_model.part.each do |part|
+      next unless part.info_json.exist?
+      num_states += part.info_json.read['num_states']
+      max_layer_sum = part.sum if part.sum > max_layer_sum
+    end
+    puts "  num_states: #{num_states}"
+    puts "  max_layer_sum: #{max_layer_sum}"
+  end
+
+  def find_solution_attributes(layer_model)
+    layer_model.part.first.solution.map(&:to_h)
+  end
+
+  def print_mean_start_state_value(layer_model, solution_attributes)
+    value = LayerStartStates.find_mean_start_state_value(
+      layer_model, solution_attributes
+    )
+    puts "    mean start state value: #{value}"
+  end
+
+  def find_tranche_attributes(layer_model, solution_attributes)
+    solution = layer_model.part.first.solution.find_by(solution_attributes)
+    solution.tranche.map(&:to_h)
+  end
+
+  def estimate_part_tranche_states(part_tranche)
+    return 0 unless part_tranche.transient_pr.exist?
+    File.size(part_tranche.transient_pr.to_s) / 8
+  end
+
+  def count_part_tranche_states(part_tranche)
+    estimate = estimate_part_tranche_states(part_tranche)
+    if @check
+      num_states = 0
+      part_tranche.each_state_vbyte do |_state|
+        num_states += 1
+      end
+      raise "part tranche mismatch: #{estimate} != #{num_states}" if
+          num_states != estimate
+    end
+    estimate
+  end
+
+  def count_tranche_states(layer_model, solution_attributes, tranche_attributes)
+    num_states = 0
+    layer_model.part.each do |part|
+      part_tranche = part.tranche(solution_attributes, tranche_attributes)
+      next unless part_tranche
+      num_states += count_part_tranche_states(part_tranche)
+    end
+    num_states
+  end
+
+  def print_tranche_stats(layer_model, solution_attributes)
+    tranches_attributes =
+      find_tranche_attributes(layer_model, solution_attributes)
+    tranches_attributes.each do |tranche_attributes|
+      puts "    tranche #{tranche_attributes}"
+      num_states = count_tranche_states(
+        layer_model, solution_attributes, tranche_attributes
+      )
+      puts "      num_states: #{num_states}"
+    end
+  end
+
   def run
     data = Data.new(root: Data::ROOT)
     data.game.each do |game|
+      next unless game.board_size == 4
       game.layer_model.each do |layer_model|
         puts layer_model
-        num_states = 0
-        max_layer_sum = 0
-        solution_attributes = Set.new
-        layer_model.part.each do |part|
-          part.solution.each do |solution|
-            solution_attributes << solution.to_h
-          end
-          next unless part.info_json.exist?
-          num_states += part.info_json.read['num_states']
-          max_layer_sum = part.sum if part.sum > max_layer_sum
-        end
-        puts "num_states: #{num_states}"
-        puts "max_layer_sum: #{max_layer_sum}"
-
-        solution_attributes.each do |solution_hash|
-          value = LayerStartStates.find_mean_start_state_value(
-            layer_model, solution_hash
-          )
-          puts "mean start state value #{solution_hash}: #{value}"
+        count_states(layer_model)
+        find_solution_attributes(layer_model).each do |solution_attributes|
+          puts "  solution #{solution_attributes}"
+          print_mean_start_state_value(layer_model, solution_attributes)
+          print_tranche_stats(layer_model, solution_attributes)
         end
         puts
       end
@@ -42,4 +101,4 @@ class CountStatesBin
   end
 end
 
-CountStatesBin.new.run
+CountStatesBin.new(ARGV[0]).run
