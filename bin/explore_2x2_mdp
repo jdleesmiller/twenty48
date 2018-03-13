@@ -4,58 +4,158 @@
 require_relative '../lib/twenty48'
 
 #
-# Build the smallest possible MDP model and graph it.
+# Build the 2x2 MDP models and draw them as graphs.
+#
+# Also produce some subgraphs for my blog post.
 #
 class Explore2x2MdpBin
   include Twenty48
   include Twenty48::Dot
 
-  def initialize(max_exponent = 5)
+  def initialize(max_exponent = 5, layers: true, action_grouping: true)
     @max_exponent = max_exponent
+    @layers = layers
+    @action_grouping = action_grouping
+    @empty_state = State.new([0, 0, 0, 0])
+    @win_state = State.new([0, 0, 0, max_exponent])
+    @start_states = Twenty48.generate_start_states(
+      board_size: BOARD_SIZE
+    ).map { |native_state| State.new(native_state.to_a) }
   end
 
   attr_reader :max_exponent
+  attr_reader :layers
+  attr_reader :action_grouping
+  attr_reader :empty_state
+  attr_reader :win_state
+  attr_reader :start_states
 
+  BOARD_SIZE = 2
   BOARD_DIGITS = 2
 
   def make_mdp_model
     data = Data.new(root: Data::ROOT)
-    game = data.game.find_by(board_size: 2, max_exponent: max_exponent)
+    game = data.game.find_by(board_size: BOARD_SIZE, max_exponent: max_exponent)
     layer_model = game.layer_model.find_by(max_depth: 0)
     LayerConversion.convert_layers_to_finite_mdp_model(layer_model)
   end
 
-  ARROWS = {
-    left: '←',
-    right: '→',
-    up: '↑',
-    down: '↓',
-    left_right: '⇆',
-    up_down: '⇅',
-    left_right_up_down: '⇆⇅'
-  }.freeze
+  ActionGroup = Struct.new(:actions, :feasible) do
+    def action
+      actions.first
+    end
 
-  COLORS = { # http://colorbrewer2.org/#type=diverging&scheme=PuOr&n=4
-    left: '#e66101',  # dark orange
-    right: '#fdb863', # light orange
-    up: '#b2abd2',    # light purple
-    down: '#5e3c99'   # dark purple
-  }.freeze
+    def size
+      actions.size
+    end
+
+    def port
+      actions.join('_') if feasible
+    end
+
+    def label
+      actions.map { |action| action.to_s[0].upcase }.join('<BR/>')
+    end
+
+    def td_attributes
+      attributes = {
+        BORDER: 1,
+        ROWSPAN: size,
+        STYLE: :ROUNDED
+      }
+      attributes[:PORT] = port if port
+      attributes
+    end
+
+    def make_td
+      attributes_string = td_attributes.map do |key, value|
+        "#{key}=\"#{value}\""
+      end.join(' ')
+
+      text = label
+      text = "<FONT COLOR=\"grey\">#{text}</FONT>" unless feasible
+
+      "<TD #{attributes_string}>#{text}</TD>"
+    end
+  end
+
+  def trivial_group_actions(feasible_actions)
+    DIRECTIONS.map do |action|
+      ActionGroup.new([action], feasible_actions.member?(action))
+    end
+  end
+
+  def group_actions(state, feasible_actions)
+    return trivial_group_actions(feasible_actions) unless action_grouping
+    groups = DIRECTIONS.group_by do |action|
+      state.move(action).canonicalize if feasible_actions.member?(action)
+    end
+    groups.map do |group_state, actions|
+      ActionGroup.new(actions, !group_state.nil?)
+    end
+  end
+
+  def make_action_tds(action_groups)
+    action_groups = action_groups.dup
+    skip = 0
+    Array.new(4) do
+      if skip > 0
+        skip -= 1
+        next
+      end
+      action_group = action_groups.shift
+      skip = action_group.size - 1
+      action_group.make_td
+    end
+  end
+
+  def add_table_state(graph, state, feasible_actions, value = nil)
+    cell_labels = node_cell_labels(state, BOARD_DIGITS)
+    action_groups = group_actions(state, feasible_actions)
+    action_labels = make_action_tds(action_groups)
+
+    value_label = \
+      if value
+        format('%.3f', value[state])
+      else
+        '&nbsp;'
+      end
+
+    cluster = state.sum if layers
+    node_properties = graph.add_node(node_name(state), cluster)
+    node_properties[:color] = 'blue' if start_states.member?(state)
+    node_properties[:label] = <<~LABEL.chomp
+      <TABLE CELLSPACING="0" CELLPADDING="4" BORDER="0">
+        <TR>
+          <TD COLSPAN="2">&nbsp;</TD>
+          #{action_labels[0]}
+        </TR>
+        <TR>
+          <TD BORDER="1">#{cell_labels[0]}</TD>
+          <TD BORDER="1">#{cell_labels[1]}</TD>
+          #{action_labels[1]}
+        </TR>
+        <TR>
+          <TD BORDER="1">#{cell_labels[2]}</TD>
+          <TD BORDER="1">#{cell_labels[3]}</TD>
+          #{action_labels[2]}
+        </TR>
+        <TR>
+          <TD COLSPAN="2" BORDER="0">#{value_label}</TD>
+          #{action_labels[3]}
+        </TR>
+      </TABLE>
+    LABEL
+
+    action_groups
+  end
 
   def write_single_state_graph_with_no_canonicalization(start, file)
-    graph = Graph.new
+    graph = MultiGraph.new
 
-    node_properties = graph.add_node(node_name(start))
-    node_properties[:shape] = :record
-    node_properties[:label] = "{#{node_label(start, BOARD_DIGITS)}}"
+    add_table_state(graph, start, DIRECTIONS)
 
     DIRECTIONS.each do |direction|
-      node_properties = graph.add_node(direction)
-      set_action_node_properties(node_properties, ARROWS[direction])
-
-      edge_properties = graph.add_edge(node_name(start), direction)
-      edge_properties[:dir] = :none
-
       move_state = start.move(direction)
       move_state.to_a.each.with_index do |value, i|
         next unless value.zero?
@@ -70,7 +170,8 @@ class Explore2x2MdpBin
             node_properties[:label] = "{#{node_label(state, BOARD_DIGITS)}}"
           end
 
-          edge_properties = graph.add_edge(direction, node_name(state))
+          edge_properties = graph.add_edge(node_name(start), node_name(state))
+          edge_properties[:tailport] = direction
           edge_properties[:headlabel] =
             format('%.2f    ', pr / move_state.cells_available)
         end
@@ -81,34 +182,28 @@ class Explore2x2MdpBin
     file.puts '  bgcolor = transparent;'
     file.puts '  rankdir = LR;'
     file.puts '  ranksep = 1.5;'
+    file.puts '  nodesep = 0.25;'
     file.puts '  node [fontname="Courier"];'
     file.puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
     file.puts '}'
   end
 
   def write_single_state_graph_with_state_canonicalization(start, file)
-    graph = Graph.new
+    graph = MultiGraph.new
 
-    start = NativeState.create(start.to_a)
-    node_properties = graph.add_node(node_name(start))
-    node_properties[:shape] = :record
-    node_properties[:label] = "{#{node_label(start, BOARD_DIGITS)}}"
+    native_start = NativeState.create(start.to_a)
+    add_table_state(graph, start, DIRECTIONS)
 
     DIRECTIONS.each.with_index do |direction, action|
-      node_properties = graph.add_node(direction)
-      set_action_node_properties(node_properties, ARROWS[direction])
-
-      edge_properties = graph.add_edge(node_name(start), direction)
-      edge_properties[:dir] = :none
-
-      start.move(action).random_transitions.each do |state, pr|
+      native_start.move(action).random_transitions.each do |state, pr|
         unless graph.node?(node_name(state))
           node_properties = graph.add_node(node_name(state))
           node_properties[:shape] = :record
           node_properties[:label] = "{#{node_label(state, BOARD_DIGITS)}}"
         end
 
-        edge_properties = graph.add_edge(direction, node_name(state))
+        edge_properties = graph.add_edge(node_name(start), node_name(state))
+        edge_properties[:tailport] = direction
         edge_properties[:headlabel] = format('%.2f   ', pr)
       end
     end
@@ -117,30 +212,23 @@ class Explore2x2MdpBin
     file.puts '  bgcolor = transparent;'
     file.puts '  rankdir = LR;'
     file.puts '  ranksep = 1.5;'
-    file.puts '  nodesep = 1;'
+    file.puts '  nodesep = 1.5;'
     file.puts '  node [fontname="Courier"];'
     file.puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
     file.puts '}'
   end
 
   def write_single_state_graph_with_action_canonicalization(start, file)
-    graph = Graph.new
-
-    node_properties = graph.add_node(node_name(start))
-    node_properties[:shape] = :record
-    node_properties[:label] = "{#{node_label(start, BOARD_DIGITS)}}"
+    graph = MultiGraph.new
 
     feasible_directions = DIRECTIONS.reject do |direction|
       start.move(direction) == start
     end
 
-    each_unique_action(feasible_directions, start) do |direction, action_label|
-      node_properties = graph.add_node(direction)
-      set_action_node_properties(node_properties, action_label)
-
-      edge_properties = graph.add_edge(node_name(start), direction)
-      edge_properties[:dir] = :none
-
+    action_groups = add_table_state(graph, start, feasible_directions)
+    action_groups.each do |action_group|
+      next unless action_group.feasible
+      direction = action_group.action
       move_state = NativeState.create(start.move(direction).to_a)
       move_state.random_transitions.each do |state, pr|
         unless graph.node?(node_name(state))
@@ -149,7 +237,8 @@ class Explore2x2MdpBin
           node_properties[:label] = "{#{node_label(state, BOARD_DIGITS)}}"
         end
 
-        edge_properties = graph.add_edge(direction, node_name(state))
+        edge_properties = graph.add_edge(node_name(start), node_name(state))
+        edge_properties[:tailport] = action_group.port
         edge_properties[:headlabel] = format('%.2f   ', pr)
       end
     end
@@ -164,27 +253,6 @@ class Explore2x2MdpBin
     file.puts '}'
   end
 
-  def each_unique_action(actions, state, policy = nil)
-    actions = actions.group_by do |action|
-      state.move(action).canonicalize
-    end
-    actions.each_value do |group_actions|
-      next unless policy.nil? || group_actions.member?(policy[state])
-      action_name = ARROWS[group_actions.join('_').to_sym] ||
-        group_actions.map { |action| ARROWS[action] }.join
-      yield(group_actions.first, action_name)
-    end
-  end
-
-  def set_action_node_properties(node_properties, label)
-    node_properties[:label] = label
-    node_properties[:fontname] = 'Arial'
-    # Not entirely sure why, but if we use double arrows anywhere, the baseline
-    # is too high and looks better if we align the text to the bottom.
-    node_properties[:labelloc] = :b if
-      label.include?(ARROWS[:up_down]) || label.include?(ARROWS[:left_right])
-  end
-
   def set_transition_edge_properties(edge_properties, probability)
     edge_properties[:weight] = (100 * probability).round
     edge_properties[:penwidth] = 1 + probability * 2
@@ -193,87 +261,69 @@ class Explore2x2MdpBin
   end
 
   def write_full_mdp_graph(file, policy = nil, value = nil)
-    start_states = Twenty48.generate_start_states(board_size: 2).map(&:to_a)
-    mdp_model = make_mdp_model
-    graph = Graph.new
+    write_full_mdp_graph_with_model(
+      file, make_mdp_model, policy, value
+    )
+  end
 
-    sum_subgraphs = Hash.new { |h, k| h[k] = [] }
-    action_subgraphs = Hash.new { |h, k| h[k] = [] }
+  def add_end_node(graph, state, node_properties)
+    node_properties[:label] = 'end'
 
-    end_name = node_name(State.new([0, 0, 0, 0]))
-    mdp_model.states.each do |state|
-      node_properties = graph.add_node(node_name(state))
+    edge_properties = graph.add_edge(node_name(state), node_name(empty_state))
+    set_transition_edge_properties(edge_properties, 1.0)
+  end
+
+  def add_win_node(graph, state, node_properties)
+    node_properties[:label] = 'win'
+    node_properties[:color] = 'green'
+
+    edge_properties = graph.add_edge(node_name(state), node_name(empty_state))
+    set_transition_edge_properties(edge_properties, 1.0)
+  end
+
+  def write_full_mdp_graph_with_model(file, model, policy = nil, value = nil,
+    ranksep: 2)
+    graph = MultiGraph.new
+
+    model.states.each do |state|
       if state.lose?
-        node_properties[:label] = 'end'
-
-        edge_properties = graph.add_edge(node_name(state), end_name)
-        set_transition_edge_properties(edge_properties, 1.0)
+        node_properties = graph.add_node(node_name(state))
+        add_end_node(graph, state, node_properties)
         next
       elsif state.win?(max_exponent)
-        node_properties[:label] = 'win'
-        node_properties[:color] = 'green'
-
-        edge_properties = graph.add_edge(node_name(state), end_name)
-        set_transition_edge_properties(edge_properties, 1.0)
+        node_properties = graph.add_node(node_name(state))
+        add_win_node(graph, state, node_properties)
         next
-      else
-        sum_subgraphs[state.sum] << node_name(state)
-        node_properties[:shape] = :record
-        label = "{#{node_label(state, BOARD_DIGITS)}}"
-        if value
-          label = format('%<label>s|%.3<value>f',
-            label: label, value: value[state])
-        end
-        node_properties[:label] = label
-        node_properties[:color] = 'blue' if start_states.member?(state.to_a)
       end
 
-      actions = mdp_model.actions(state)
-      each_unique_action(actions, state, policy) do |action, action_label|
-        state_action_name = "#{node_name(state)}_#{action}"
-        action_subgraphs[node_name(state)] << state_action_name
-
-        node_properties = graph.add_node(state_action_name)
-        set_action_node_properties(node_properties, action_label)
-
-        edge_properties = graph.add_edge(node_name(state), state_action_name)
-        edge_properties[:dir] = :none
-
-        mdp_model.next_states(state, action).each do |next_state|
+      action_groups = add_table_state(graph, state, model.actions(state), value)
+      action_groups.each do |action_group|
+        next unless action_group.feasible
+        next unless policy.nil? || action_group.actions.member?(policy[state])
+        model.next_states(state, action_group.action).each do |next_state|
           edge_properties = graph.add_edge(
-            state_action_name,
+            node_name(state),
             node_name(next_state)
           )
-          probability = mdp_model.transition_probability(
-            state, action, next_state
+          probability = model.transition_probability(
+            state, action_group.action, next_state
           )
           set_transition_edge_properties(edge_properties, probability)
+          edge_properties[:tailport] = action_group.port
         end
       end
+    end
+
+    graph.clusters.each_key do |name|
+      graph.cluster_labels[name] = "sum #{name}"
     end
 
     file.puts 'digraph {'
     file.puts '  bgcolor = transparent;'
     file.puts '  rankdir = LR;'
     file.puts '  nodesep = 0.25;'
-    file.puts '  ranksep = 2;'
+    file.puts "  ranksep = #{ranksep};"
     file.puts '  node [fontname="Courier"];'
-    sum_subgraphs.each do |sum, states|
-      file.puts "  subgraph cluster_sum_#{sum} {"
-      file.puts "    label = \"sum: #{sum}\";"
-      file.puts '    style = filled;'
-      file.puts '    color = gray95;'
-      file.puts '    margin = 16;'
-      states.each do |state|
-        file.puts "    subgraph cluster_#{state}_actions {"
-        file.puts '      label = "";'
-        file.puts '      margin = 8;'
-        file.puts "      #{state};"
-        file.puts "      #{action_subgraphs[state].join('; ')};"
-        file.puts '    }'
-      end
-      file.puts '  }'
-    end
     file.puts graph.to_dot.map { |line| "  #{line}" }.join("\n")
     file.puts '}'
   end
@@ -289,6 +339,82 @@ class Explore2x2MdpBin
 
     write_full_mdp_graph(file, solver.policy, solver.value)
   end
+
+  def write_full_mdp_without_canonicalization(file)
+    model = build_full_mdp_without_canonicalization
+    write_full_mdp_graph_with_model(file, model, ranksep: 20)
+  end
+
+  def build_full_mdp_without_canonicalization
+    model_hash = build_full_mdp_hash_without_canonicalization
+    model_hash = Hash[
+      model_hash.keys.sort.map { |state| [state, model_hash[state]] }
+    ]
+    model = FiniteMDP::HashModel.new(model_hash)
+    model.check_transition_probabilities_sum
+    raise 'model has terminal states' if model.terminal_states.any?
+    model
+  end
+
+  def build_full_mdp_hash_without_canonicalization
+    model = {}
+
+    model[empty_state] = { down: { empty_state => [1, 0] } }
+    model[win_state] = { up: { empty_state => [1, 0] } }
+
+    open_states = find_start_states_without_canonicalization
+    loop do
+      state = open_states.pop
+      break unless state
+      next if model.key?(state)
+      model[state] = expand(state, open_states)
+    end
+
+    model
+  end
+
+  #
+  # Build a complete 2x2 model without state canonicalization.
+  #
+  def find_start_states_without_canonicalization
+    states = []
+    empty_state.random_successors.each do |one_tile_state|
+      one_tile_state.random_successors.each do |two_tile_state|
+        states << two_tile_state
+      end
+    end
+    states
+  end
+
+  def expand(state, open_states)
+    successors = {}
+    DIRECTIONS.each do |direction|
+      move_state = state.move(direction)
+      next if move_state == state
+      if move_state.win?(max_exponent)
+        successors[direction] = { win_state => [1, 0] }
+        next
+      end
+      successors[direction] = Hash.new { |h, k| h[k] = [0, 0] }
+      cells_available = move_state.cells_available
+      move_state.to_a.each.with_index do |value, i|
+        next unless value.zero?
+        State::RANDOM_TILES.each do |new_value, value_probability|
+          new_state_array = move_state.to_a.dup
+          new_state_array[i] = new_value
+          new_state = State.new(new_state_array)
+          if new_state.lose?
+            new_state = empty_state
+          else
+            open_states << new_state
+          end
+          successors[direction][new_state][0] +=
+            value_probability / cells_available
+        end
+      end
+    end
+    successors
+  end
 end
 
 OUTPUT_ROOT = '../jdleesmiller.github.io/assets/2048'
@@ -301,32 +427,28 @@ start = Twenty48::State.new([0, 1, 1, 0])
 start_name = Twenty48::Dot.node_name(start)
 File.open(File.join(OUTPUT_ROOT,
   "/mdp_#{start_name}_with_no_canonicalization.dot"), 'w') do |file|
-  Explore2x2MdpBin.new.write_single_state_graph_with_no_canonicalization(
-    start, file
-  )
+  bin = Explore2x2MdpBin.new(layers: false, action_grouping: false)
+  bin.write_single_state_graph_with_no_canonicalization(start, file)
 end
 
 File.open(File.join(OUTPUT_ROOT,
   "/mdp_#{start_name}_with_state_canonicalization.dot"), 'w') do |file|
-  Explore2x2MdpBin.new.write_single_state_graph_with_state_canonicalization(
-    start, file
-  )
+  bin = Explore2x2MdpBin.new(layers: false, action_grouping: false)
+  bin.write_single_state_graph_with_state_canonicalization(start, file)
 end
 
 File.open(File.join(OUTPUT_ROOT,
   "/mdp_#{start_name}_with_action_canonicalization.dot"), 'w') do |file|
-  Explore2x2MdpBin.new.write_single_state_graph_with_action_canonicalization(
-    start, file
-  )
+  bin = Explore2x2MdpBin.new(layers: false)
+  bin.write_single_state_graph_with_action_canonicalization(start, file)
 end
 
 start = Twenty48::State.new([0, 0, 1, 1])
 start_name = Twenty48::Dot.node_name(start)
 File.open(File.join(OUTPUT_ROOT,
   "/mdp_#{start_name}_with_action_canonicalization.dot"), 'w') do |file|
-  Explore2x2MdpBin.new.write_single_state_graph_with_action_canonicalization(
-    start, file
-  )
+  bin = Explore2x2MdpBin.new(layers: false)
+  bin.write_single_state_graph_with_action_canonicalization(start, file)
 end
 
 #
@@ -347,5 +469,13 @@ end
   File.open(File.join(OUTPUT_ROOT,
     "/mdp_2x2_#{max_exponent}_optimal.dot"), 'w') do |file|
     Explore2x2MdpBin.new(max_exponent).write_optimal_mdp_graph(file)
+  end
+end
+
+[3].each do |max_exponent|
+  File.open(File.join(OUTPUT_ROOT,
+    "/mdp_2x2_#{max_exponent}_with_no_canonicalization.dot"), 'w') do |file|
+    bin = Explore2x2MdpBin.new(3, action_grouping: false)
+    bin.write_full_mdp_without_canonicalization(file)
   end
 end

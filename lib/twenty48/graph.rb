@@ -72,10 +72,28 @@ module Twenty48
       properties.map do |name, value|
         if value.is_a?(Numeric) || value.is_a?(Symbol)
           "#{name}=#{value}"
+        elsif value&.start_with?('<TABLE')
+          "#{name}=<#{value}>"
         else
           "#{name}=\"#{value}\""
         end
       end
+    end
+  end
+
+  #
+  # A graph that will allow you to create multiple edges between the same
+  # pair of nodes, e.g. if using tailport.
+  #
+  class MultiGraph < Graph
+    def initialize
+      super
+      @edges = []
+    end
+
+    def add_edge(node0_name, node1_name, properties = {})
+      @edges << [[node0_name, node1_name], properties]
+      properties
     end
   end
 end
