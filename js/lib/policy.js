@@ -33,18 +33,31 @@ export default function makePolicy (boardSize, maxExponent) {
   }
 
   class Policy {
-    constructor (actionValues) {
+    constructor (actionValues, haveValues) {
       this.actionValues = actionValues
+      this.haveValues = haveValues
+    }
+
+    getHaveValues () {
+      return this.haveValues
     }
 
     getAction (canonicalState) {
+      return PACKED_DIRECTIONS[this.getActionValue(canonicalState).action]
+    }
+
+    getValue (canonicalState) {
+      return this.getActionValue(canonicalState).value
+    }
+
+    getActionValue (canonicalState) {
       let actionValue = this.actionValues[canonicalState.toString()]
       if (actionValue == null) {
         let error = new Error('No policy for ' + canonicalState.toString())
         error.code = 'no_policy'
         throw error
       }
-      return PACKED_DIRECTIONS[actionValue.action]
+      return actionValue
     }
 
     //
@@ -52,7 +65,18 @@ export default function makePolicy (boardSize, maxExponent) {
     //
     static load (path) {
       function unpackWithValues (actionValues, action, pairs, mostCommonValue) {
-        throw new Error('NYI')
+        let previous = 0
+        for (let i = 0; i < pairs.length; i += 2) {
+          let delta36 = pairs[i]
+          let value10 = pairs[i + 1]
+          let delta = delta36 === '' ? 1 : parseInt(delta36, 36)
+          let value = value10 === '' ? mostCommonValue : parseInt(value10, 10)
+          let packed = previous + delta
+          previous = packed
+          actionValues[getStateName(packed)] =
+            new ActionValue(action, value / 100.0)
+        }
+        return actionValues
       }
 
       function unpackWithoutValues (actionValues, action, delta36s) {
@@ -68,10 +92,11 @@ export default function makePolicy (boardSize, maxExponent) {
 
       function unpack (lines) {
         let header = lines.shift()
+        let mostCommonValue = null
         let haveValues = false
         if (header.startsWith('av')) {
           haveValues = true
-          let mostCommonValue = parseFloat(header.split(' ')[1])
+          mostCommonValue = parseFloat(header.split(' ')[1])
         }
 
         let actionValues = {}
@@ -84,7 +109,7 @@ export default function makePolicy (boardSize, maxExponent) {
             unpackWithoutValues(actionValues, action, rest)
           }
         }
-        return new Policy(actionValues)
+        return new Policy(actionValues, haveValues)
       }
 
       return fetch(path)

@@ -78,6 +78,10 @@ export default function makeGame (
     })
 
   let statusDiv = rightDiv.append('div')
+  let haveValues = false
+  let valueSpan = statusDiv.append('span')
+    .style('padding-left', PAD_PX)
+  let moveSpan = statusDiv.append('span')
     .style('padding-left', PAD_PX)
 
   let moveCount = 0
@@ -99,6 +103,8 @@ export default function makeGame (
     }
     policyLoad.then((policy) => {
       button.html('Running&hellip;')
+      haveValues = policy.getHaveValues()
+      if (!haveValues) valueSpan.style('display', 'none')
 
       dispatch.on('move', handleMove)
       dispatch.on('end', handleEnd)
@@ -114,12 +120,14 @@ export default function makeGame (
     [DIRECTIONS.DOWN]: '↓'
   }
 
-  function handleMove (action) {
-    statusDiv.text(`Move ${++moveCount}: ${ARROWS[action]}`)
+  function handleMove (action, value) {
+    if (haveValues) valueSpan.text(`Value: ${value.toFixed(2)}`)
+    moveSpan.text(`Move ${++moveCount}: ${ARROWS[action]}`)
   }
 
   function handleEnd (win) {
-    statusDiv.text(`${win ? 'Won' : 'Lost'} in ${moveCount} moves`)
+    if (haveValues) valueSpan.text(`Value: ${(win ? 1 : 0).toFixed(2)}`)
+    moveSpan.text(`${win ? 'Won' : 'Lost'} in ${moveCount} moves`)
     toggleInputs(true)
     button.text('Start')
   }

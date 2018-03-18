@@ -234,8 +234,10 @@ export default class Driver {
         let canonicalState =
           this.state.copy().applyTransform(canonicalTransform)
         let canonicalAction
+        let value
         try {
           canonicalAction = this.policy.getAction(canonicalState)
+          value = this.policy.getValue(canonicalState)
         } catch (err) {
           if (err.code === 'no_policy') {
             alert('Sorry, this game visited a state that was not in the set' +
@@ -246,7 +248,7 @@ export default class Driver {
         }
         let action = canonicalTransform.invertAction(canonicalAction)
         this.state.startMove(action)
-        this.dispatch.call('move', null, action)
+        this.dispatch.call('move', null, action, value)
 
         this.update(MOVE_DURATION, this.drawMove).on('end', () => {
           this.state.finishMove(action)
