@@ -60,7 +60,8 @@ class PackPolicyBin
   end
 
   def include_game?(game)
-    game.board_size == 2 && game.max_exponent == 4 ||
+    game.board_size == 2 && game.max_exponent == 3 ||
+      game.board_size == 2 && game.max_exponent == 4 ||
       game.board_size == 2 && game.max_exponent == 5 ||
       game.board_size == 3 && game.max_exponent == 9 ||
       game.board_size == 3 && game.max_exponent == 10 ||
