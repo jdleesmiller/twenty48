@@ -25,11 +25,8 @@ module Twenty48
       win_state = State.new([0] * (board_size**2 - 1) + [max_exponent])
 
       model[lose_state][:down][lose_state] = [1.0, 0.0]
-      if absorbing_win
-        model[win_state][:up][win_state] = [1.0, reward]
-      else
-        model[win_state][:up][lose_state] = [1.0, reward]
-      end
+      win_reward = absorbing_win ? reward : 0.0
+      model[win_state][:up][win_state] = [1.0, win_reward]
 
       [lose_state, win_state]
     end
@@ -48,19 +45,23 @@ module Twenty48
           state = State.new(native_state.to_a)
           actions.each do |action|
             move_state = native_state.move(action)
+            if move_state.max_value >= max_exponent
+              win_reward = absorbing_win ? 0.0 : reward
+              model[state][DIRECTIONS[action]][win_state] = [1.0, win_reward]
+              next
+            end
             move_state.random_transitions.each do |native_successor, pr|
               successor = State.new(native_successor.to_a)
-              if successor.win?(max_exponent)
-                successor = win_state
-              elsif successor.lose?
-                successor = lose_state
-              end
+              successor = lose_state if successor.lose?
               model[state][DIRECTIONS[action]][successor][0] += pr
             end
           end
         end
       end
+      make_hash_model(model)
+    end
 
+    def make_hash_model(model)
       hash_model = FiniteMDP::HashModel.new(model)
       hash_model.check_transition_probabilities_sum
       hash_model

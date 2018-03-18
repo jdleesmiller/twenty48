@@ -16,7 +16,7 @@ class Explore2x2MdpBin
     @max_exponent = max_exponent
     @layers = layers
     @action_grouping = action_grouping
-    @empty_state = State.new([0, 0, 0, 0])
+    @lose_state = State.new([0, 0, 0, 0])
     @win_state = State.new([0, 0, 0, max_exponent])
     @start_states = Twenty48.generate_start_states(
       board_size: BOARD_SIZE
@@ -26,7 +26,7 @@ class Explore2x2MdpBin
   attr_reader :max_exponent
   attr_reader :layers
   attr_reader :action_grouping
-  attr_reader :empty_state
+  attr_reader :lose_state
   attr_reader :win_state
   attr_reader :start_states
 
@@ -153,9 +153,13 @@ class Explore2x2MdpBin
   def write_single_state_graph_with_no_canonicalization(start, file)
     graph = MultiGraph.new
 
-    add_table_state(graph, start, DIRECTIONS)
+    feasible_directions = DIRECTIONS.reject do |direction|
+      start.move(direction) == start
+    end
 
-    DIRECTIONS.each do |direction|
+    add_table_state(graph, start, feasible_directions)
+
+    feasible_directions.each do |direction|
       move_state = start.move(direction)
       move_state.to_a.each.with_index do |value, i|
         next unless value.zero?
@@ -168,12 +172,18 @@ class Explore2x2MdpBin
             node_properties = graph.add_node(node_name(state))
             node_properties[:shape] = :record
             node_properties[:label] = "{#{node_label(state, BOARD_DIGITS)}}"
+            if state.win?(max_exponent)
+              node_properties[:color] = :green
+            elsif state.lose?
+              node_properties[:color] = :red
+            end
           end
 
+          probability = pr / move_state.cells_available
           edge_properties = graph.add_edge(node_name(start), node_name(state))
+          set_transition_edge_properties(edge_properties, probability)
           edge_properties[:tailport] = direction
-          edge_properties[:headlabel] =
-            format('%.2f    ', pr / move_state.cells_available)
+          edge_properties[:headlabel] = format('%.2f    ', probability)
         end
       end
     end
@@ -266,19 +276,17 @@ class Explore2x2MdpBin
     )
   end
 
-  def add_end_node(graph, state, node_properties)
-    node_properties[:label] = 'end'
-
-    edge_properties = graph.add_edge(node_name(state), node_name(empty_state))
-    set_transition_edge_properties(edge_properties, 1.0)
+  def add_lose_node(node_properties)
+    node_properties[:label] = 'lose'
+    node_properties[:style] = :filled
+    node_properties[:fillcolor] = :red
   end
 
-  def add_win_node(graph, state, node_properties)
+  def add_win_node(node_properties)
     node_properties[:label] = 'win'
-    node_properties[:color] = 'green'
-
-    edge_properties = graph.add_edge(node_name(state), node_name(empty_state))
-    set_transition_edge_properties(edge_properties, 1.0)
+    node_properties[:shape] = :star
+    node_properties[:style] = :filled
+    node_properties[:fillcolor] = :green
   end
 
   def write_full_mdp_graph_with_model(file, model, policy = nil, value = nil,
@@ -288,11 +296,11 @@ class Explore2x2MdpBin
     model.states.each do |state|
       if state.lose?
         node_properties = graph.add_node(node_name(state))
-        add_end_node(graph, state, node_properties)
+        add_lose_node(node_properties)
         next
       elsif state.win?(max_exponent)
         node_properties = graph.add_node(node_name(state))
-        add_win_node(graph, state, node_properties)
+        add_win_node(node_properties)
         next
       end
 
@@ -342,6 +350,8 @@ class Explore2x2MdpBin
 
   def write_full_mdp_without_canonicalization(file)
     model = build_full_mdp_without_canonicalization
+    puts "num states: #{model.states.size}"
+    puts "num transitions: #{FiniteMDP::TableModel.from_model(model).rows.size}"
     write_full_mdp_graph_with_model(file, model, ranksep: 20)
   end
 
@@ -359,8 +369,8 @@ class Explore2x2MdpBin
   def build_full_mdp_hash_without_canonicalization
     model = {}
 
-    model[empty_state] = { down: { empty_state => [1, 0] } }
-    model[win_state] = { up: { empty_state => [1, 0] } }
+    model[lose_state] = { down: { lose_state => [1, 0] } }
+    model[win_state] = { up: { win_state => [1, 0] } }
 
     open_states = find_start_states_without_canonicalization
     loop do
@@ -378,7 +388,7 @@ class Explore2x2MdpBin
   #
   def find_start_states_without_canonicalization
     states = []
-    empty_state.random_successors.each do |one_tile_state|
+    lose_state.random_successors.each do |one_tile_state|
       one_tile_state.random_successors.each do |two_tile_state|
         states << two_tile_state
       end
@@ -392,7 +402,7 @@ class Explore2x2MdpBin
       move_state = state.move(direction)
       next if move_state == state
       if move_state.win?(max_exponent)
-        successors[direction] = { win_state => [1, 0] }
+        successors[direction] = { win_state => [1, 1] }
         next
       end
       successors[direction] = Hash.new { |h, k| h[k] = [0, 0] }
@@ -404,7 +414,7 @@ class Explore2x2MdpBin
           new_state_array[i] = new_value
           new_state = State.new(new_state_array)
           if new_state.lose?
-            new_state = empty_state
+            new_state = lose_state
           else
             open_states << new_state
           end
@@ -441,6 +451,22 @@ File.open(File.join(OUTPUT_ROOT,
   "/mdp_#{start_name}_with_action_canonicalization.dot"), 'w') do |file|
   bin = Explore2x2MdpBin.new(layers: false)
   bin.write_single_state_graph_with_action_canonicalization(start, file)
+end
+
+start = Twenty48::State.new([2, 1, 0, 1])
+start_name = Twenty48::Dot.node_name(start)
+File.open(File.join(OUTPUT_ROOT,
+  "/mdp_#{start_name}_with_no_canonicalization.dot"), 'w') do |file|
+  bin = Explore2x2MdpBin.new(3, layers: false, action_grouping: false)
+  bin.write_single_state_graph_with_no_canonicalization(start, file)
+end
+
+start = Twenty48::State.new([2, 2, 1, 0])
+start_name = Twenty48::Dot.node_name(start)
+File.open(File.join(OUTPUT_ROOT,
+  "/mdp_#{start_name}_with_no_canonicalization.dot"), 'w') do |file|
+  bin = Explore2x2MdpBin.new(3, layers: false, action_grouping: false)
+  bin.write_single_state_graph_with_no_canonicalization(start, file)
 end
 
 start = Twenty48::State.new([0, 0, 1, 1])
