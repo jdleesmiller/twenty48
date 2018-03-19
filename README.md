@@ -37,6 +37,17 @@ Files:
 - `ext/twenty48/layer_builder.hpp` --- main enumeration class
 - `ext/twenty48/state.hpp` --- main state class for bit bashing
 
+### 4. Optimal Play with Markov Decision Processes
+
+Blog post: http://jdlm.info/articles/2018/03/18/markov-decision-process-2048.html
+
+Files:
+
+- `bin/explore_2x2_mdp` --- figures (via graphviz/dot)
+- `js` --- optimal policy player widgets
+- `bin/pack_policy` --- compact policies for delivery to browser
+- `lib/twenty48/layer_solver.rb` / `ext/twenty48/layer_solver.hpp` --- the solver code
+
 ## LICENSE
 
 (The MIT License)
