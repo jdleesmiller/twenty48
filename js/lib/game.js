@@ -11,7 +11,8 @@ function generateId () {
 }
 
 export default function makeGame (
-  container, boardSize, maxExponent, packedPolicyPath, initialSeed) {
+  container, boardSize, maxExponent, packedPolicyPath, initialSeed,
+  arcadeMode) {
   const State = makeState(boardSize, maxExponent)
   const Policy = makePolicy(boardSize, maxExponent)
 
@@ -20,6 +21,8 @@ export default function makeGame (
   }
 
   if (!initialSeed) initialSeed = rollSeed()
+
+  const ARCADE_MODE_PAUSE = 3000 // ms
 
   const PAD = 10
   const PAD_PX = PAD + 'px'
@@ -63,7 +66,7 @@ export default function makeGame (
     .html('&#x27f2;')
     .on('click', () => {
       d3.event.preventDefault()
-      seedInput.attr('value', rollSeed())
+      updateSeed()
     })
 
   let buttonDiv = form.append('div')
@@ -83,6 +86,10 @@ export default function makeGame (
     .style('padding-left', PAD_PX)
   let moveSpan = statusDiv.append('span')
     .style('padding-left', PAD_PX)
+
+  if (arcadeMode) {
+    startRun()
+  }
 
   let moveCount = 0
   let policyLoad = null // only load the policy once
@@ -120,6 +127,10 @@ export default function makeGame (
     [DIRECTIONS.DOWN]: '↓'
   }
 
+  function updateSeed () {
+    seedInput.attr('value', rollSeed())
+  }
+
   function handleMove (action, value) {
     if (haveValues) valueSpan.text(`Value: ${value.toFixed(2)}`)
     moveSpan.text(`Move ${++moveCount}: ${ARROWS[action]}`)
@@ -128,8 +139,15 @@ export default function makeGame (
   function handleEnd (win) {
     if (haveValues) valueSpan.text(`Value: ${(win ? 1 : 0).toFixed(2)}`)
     moveSpan.text(`${win ? 'Won' : 'Lost'} in ${moveCount} moves`)
-    toggleInputs(true)
-    button.text('Start')
+    if (arcadeMode) {
+      setTimeout(function () {
+        updateSeed()
+        startRun()
+      }, ARCADE_MODE_PAUSE)
+    } else {
+      toggleInputs(true)
+      button.text('Start')
+    }
   }
 
   function toggleInputs (enable) {

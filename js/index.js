@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
         parseInt(data.boardSize, 10),
         parseInt(data.maxExponent, 10),
         data.packedPolicyPath,
-        parseInt(data.initialSeed, 10)
+        parseInt(data.initialSeed, 10),
+        data.arcadeMode === 'true'
       )
     })
 })
