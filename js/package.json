@@ -12,10 +12,10 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "babel-core": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-loader": "^7.1.2",
-    "babel-plugin-lodash": "^3.3.2",
-    "babel-preset-env": "^1.6.1",
+    "babel-plugin-lodash": "^3.3.4",
+    "babel-preset-env": "^1.7.0",
     "eslint": "^4.13.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.8.0",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "d3": "^4.12.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.11",
     "mersenne-twister": "^1.1.0",
     "whatwg-fetch": "^2.0.3"
   }
