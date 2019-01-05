@@ -6,16 +6,17 @@
   "scripts": {
     "start": "webpack-dev-server",
     "build": "NODE_ENV=production webpack --optimize-minimize",
-    "test": "mocha --require babel-core/register"
+    "test": "mocha --require @babel/register"
   },
   "author": "John Lees-Miller",
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.2",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/register": "^7.0.0",
+    "babel-loader": "^8.0.5",
     "babel-plugin-lodash": "^3.3.4",
-    "babel-preset-env": "^1.7.0",
     "eslint": "^4.13.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.8.0",
@@ -24,9 +25,10 @@
     "eslint-plugin-standard": "^3.0.1",
     "lodash-webpack-plugin": "^0.11.4",
     "mocha": "^4.0.1",
-    "webpack": "^3.10.0",
+    "webpack": "^4.28.3",
     "webpack-bundle-analyzer": "^2.11.1",
-    "webpack-dev-server": "^2.9.7"
+    "webpack-cli": "^3.2.0",
+    "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
     "d3": "^4.12.0",

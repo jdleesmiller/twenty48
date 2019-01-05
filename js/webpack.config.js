@@ -17,6 +17,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 var config = {
+  mode: process.env.NODE_ENV || 'development',
   entry: './index',
   output: {
     path: path.resolve(__dirname, 'build'),
@@ -30,8 +31,7 @@ var config = {
         use: {
           loader: 'babel-loader',
           options: {
-            plugins: ['lodash'],
-            presets: ['env']
+            plugins: ['lodash']
           }
         }
       }
