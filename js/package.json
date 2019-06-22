@@ -6,6 +6,7 @@
   "scripts": {
     "start": "webpack-dev-server",
     "build": "NODE_ENV=production webpack --optimize-minimize",
+    "eslint": "eslint index.js lib test",
     "test": "mocha --require @babel/register"
   },
   "author": "John Lees-Miller",
@@ -17,7 +18,7 @@
     "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-lodash": "^3.3.4",
-    "eslint": "^4.13.0",
+    "eslint": "^4.19.1",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-node": "^5.2.1",

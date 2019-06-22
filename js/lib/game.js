@@ -102,11 +102,11 @@ export default function makeGame (
     moveCount = 0
     if (!policyLoad) {
       policyLoad = Policy.load(packedPolicyPath)
-      .catch((err) => {
-        alert(`Sorry, could not load the policy.
-          Please reload the page and try again.
-          ${err}`)
-      })
+        .catch((err) => {
+          alert(`Sorry, could not load the policy.
+            Please reload the page and try again.
+            ${err}`)
+        })
     }
     policyLoad.then((policy) => {
       button.html('Running&hellip;')
