@@ -2,6 +2,6 @@
 
 source 'https://rubygems.org'
 gemspec
-ruby '2.5.0'
+ruby '2.6.3'
 
 gem 'key_value_name', path: '../key_value_name'
