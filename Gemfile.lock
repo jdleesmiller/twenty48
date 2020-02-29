@@ -32,7 +32,7 @@ GEM
     powerpack (0.1.1)
     rainbow (2.2.2)
       rake
-    rake (12.3.0)
+    rake (13.0.1)
     rake-compiler (1.0.4)
       rake
     rdoc (6.0.1)
