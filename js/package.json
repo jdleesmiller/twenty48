@@ -32,7 +32,7 @@
     "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
-    "d3": "^4.12.0",
+    "d3": "^7.6.1",
     "lodash": "^4.17.21",
     "mersenne-twister": "^1.1.0",
     "whatwg-fetch": "^2.0.3"
