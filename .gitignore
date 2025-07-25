@@ -1,5 +1,6 @@
 .*.swp
 .bundle
+.DS_Store
 .ruby-version
 .ruby-gemset
 .yardoc
