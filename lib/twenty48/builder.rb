@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'set'
+require 'sorted_set'
 
 module Twenty48
   #

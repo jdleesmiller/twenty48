@@ -3,9 +3,14 @@
 # rubocop:disable Style/GlobalVars
 
 require 'mkmf'
+require 'rbconfig'
 
-$CFLAGS += ' -mavx '
-$CXXFLAGS += ' -std=c++11 -mavx '
+if RbConfig::CONFIG['host_cpu'] == 'x86_64'
+  $CFLAGS += ' -mavx '
+  $CXXFLAGS += ' -mavx '
+end
+
+$CXXFLAGS += ' -std=c++11 '
 $CXXFLAGS += ' -fno-omit-frame-pointer ' if ENV['PERF']
 
 # On Linux, it defaults to -O2, but -O3 still tests out OK.

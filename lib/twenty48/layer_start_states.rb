@@ -32,7 +32,7 @@ module Twenty48
       mean_value = 0.0
       start_state_weights.each_sum_max_value do |sum, max_value, weights|
         part = layer_model.part.find_by(sum: sum, max_value: max_value)
-        part_solution = part.solution.find_by(solution_attributes)
+        part_solution = part.solution.find_by(**solution_attributes)
         part_solution.values.read_state_values.each do |state, value|
           next unless weights.key?(state.get_nybbles)
           mean_value += weights[state.get_nybbles] * value

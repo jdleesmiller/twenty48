@@ -112,7 +112,7 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
         converters: :numeric,
         header_converters: :symbol
       }
-      CSV.parse(csv_from_fundamental_matrix, csv_options) do |row|
+      CSV.parse(csv_from_fundamental_matrix, **csv_options) do |row|
         observed_0 = find_summary_record(summary_0, row)
         assert_equal row[:num_states], observed_0[:num_states]
         assert_close row[:total_pr], observed_0[:total_pr]
@@ -151,7 +151,7 @@ class LayerTrancheBuilderTest < Twenty48NativeTest
 
       lose_pr = 0.0
       win_pr = 0.0
-      CSV.parse(csv_from_aggregation, csv_options) do |row|
+      CSV.parse(csv_from_aggregation, **csv_options) do |row|
         if row[:outcome] == 'win'
           observed_0 = find_summary_record(win_summary_0, row)
           win_pr += observed_0.total_pr

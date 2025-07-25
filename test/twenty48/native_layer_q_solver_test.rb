@@ -26,7 +26,7 @@ class NativeLayerQSolverTest < Twenty48NativeTest
       q = {}
       alternate_action_names = []
       model.part.each do |part|
-        solution = part.solution.find_by(solution_attributes)
+        solution = part.solution.find_by(**solution_attributes)
         solution.fragment.each do |fragment|
           next unless fragment.values_csv.exist?
           CSV.foreach(fragment.values_csv.to_s) do |state, *q_values|
@@ -45,7 +45,7 @@ class NativeLayerQSolverTest < Twenty48NativeTest
         info = part.info_json.read
         states = part.states_vbyte.read_states
 
-        solution = part.solution.find_by(solution_attributes)
+        solution = part.solution.find_by(**solution_attributes)
         policy_reader = PolicyReader.new(solution.policy.to_s)
         actions = AlternateActionReader.read(
           solution.alternate_actions.to_s, policy_reader, info['num_states']
@@ -74,7 +74,7 @@ class NativeLayerQSolverTest < Twenty48NativeTest
     part_names = model.part.all
     assert_equal 18, part_names.map(&:sum).uniq.size
 
-    layer_solver = LayerQSolver.new(model, solver_options)
+    layer_solver = LayerQSolver.new(model, **solver_options)
     layer_solver.save_all_values = true if save_all_values
     layer_solver.solve
 

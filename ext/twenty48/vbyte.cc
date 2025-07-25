@@ -29,7 +29,10 @@ typedef signed char int8_t;
 #endif
 
 #include "vbyte.h"
+
+#ifdef USE_MASKEDVBYTE
 #include "varintdecode.h"
+#endif
 
 namespace vbyte {
 

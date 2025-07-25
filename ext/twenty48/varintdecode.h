@@ -1,15 +1,13 @@
-
 #ifndef VARINTDECODE_H_
 #define VARINTDECODE_H_
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-#include <stdint.h>// please use a C99-compatible compiler
+
+#include <stdint.h>
 #include <stddef.h>
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
-
+	
 // Read "length" 32-bit integers in varint format from in, storing the result in out.  Returns the number of bytes read.
 size_t masked_vbyte_decode(const uint8_t* in, uint32_t* out, uint64_t length);
 
@@ -32,8 +30,8 @@ uint32_t masked_vbyte_select_delta(const uint8_t *in, uint64_t length,
 int masked_vbyte_search_delta(const uint8_t *in, uint64_t length, uint32_t prev,
                     uint32_t key, uint32_t *presult);
 
-#ifdef __cplusplus
-} // extern "C"
+#if defined(__cplusplus)
+}
 #endif
 
 #endif /* VARINTDECODE_H_ */

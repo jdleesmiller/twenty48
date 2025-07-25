@@ -238,9 +238,9 @@ module Twenty48
           end
 
           def tranche(solution_attributes, tranche_attributes)
-            target_solution = solution.find_by(solution_attributes)
+            target_solution = solution.find_by(**solution_attributes)
             return unless target_solution
-            target_solution.tranche.find_by(tranche_attributes)
+            target_solution.tranche.find_by(**tranche_attributes)
           end
 
           def each_tranche_transient_pr(*args)
@@ -275,9 +275,9 @@ module Twenty48
           solution_attributes, tranche_attributes
         )
           part.each do |part|
-            part_solution = part.solution.find_by(solution_attributes)
+            part_solution = part.solution.find_by(**solution_attributes)
             next unless part_solution
-            part_tranche = part_solution.tranche.find_by(tranche_attributes)
+            part_tranche = part_solution.tranche.find_by(**tranche_attributes)
             next unless part_tranche
             part_tranche.read_state_action_value.each do |state_action_value|
               yield state_action_value
@@ -366,7 +366,7 @@ module Twenty48
             header_converters: :symbol
           }
           results = []
-          CSV.foreach(file.to_s, csv_options) do |row|
+          CSV.foreach(file.to_s, **csv_options) do |row|
             results << TrancheCsvSummary.new(
               part.sum, part.max_value, kind,
               row[:log2], row[:num_states], row[:total_pr]

@@ -50,8 +50,8 @@ module Twenty48
       find_start_state_probabilities(layer_model.board_size, prs)
       prs.each_sum_max_value do |sum, max_value, state_prs|
         part = layer_model.part.find_by(sum: sum, max_value: max_value)
-        solution = part.solution.find_by(solution_attributes)
-        tranche = solution.tranche.new(tranche_attributes).mkdir!
+        solution = part.solution.find_by(**solution_attributes)
+        tranche = solution.tranche.new(**tranche_attributes).mkdir!
 
         if sum == 4
           write_transient(state_prs, tranche) # layer sum 4 is just start states
@@ -75,9 +75,9 @@ module Twenty48
     def process_part(part)
       log part.to_s
       return unless part.states_vbyte.exist? # may be wins/losses only
-      solution = part.solution.find_by(solution_attributes)
+      solution = part.solution.find_by(**solution_attributes)
       raise "no solution for #{part}" if solution.nil?
-      tranche = solution.tranche.new(tranche_attributes).mkdir!
+      tranche = solution.tranche.new(**tranche_attributes).mkdir!
       prepare(tranche)
       map(part, tranche)
       GC.start

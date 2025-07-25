@@ -97,7 +97,7 @@ module Twenty48
     end
 
     def run_part(part)
-      solution = part.solution.find_by(solution_attributes)
+      solution = part.solution.find_by(**solution_attributes)
       return unless solution&.policy&.exist?
       state_reader = VByteReader.new(part.states_vbyte.to_s)
       policy_reader = PolicyReader.new(solution.policy.to_s)

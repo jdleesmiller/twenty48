@@ -16,13 +16,14 @@ Gem::Specification.new do |s|
   s.description       = 'Provably optimal solver for 2048-like games based on '\
     ' finite Markov Decision Processes.'
 
+  s.add_runtime_dependency 'csv', '~> 3.3.5'
   s.add_runtime_dependency 'finite_mdp', '~> 0.4.0'
   s.add_runtime_dependency 'parallel', '~> 1.10.0'
+  s.add_runtime_dependency 'sorted_set', '~> 1.0.3'
 
-  s.add_development_dependency 'gemma', '~> 5.0.0'
-  s.add_development_dependency 'rake-compiler', '~> 1.0.1'
+  s.add_development_dependency 'gemma', '~> 6.0'
+  s.add_development_dependency 'rake-compiler', '~> 1.0'
   s.add_development_dependency 'rubocop', '~> 0.51.0'
-  s.add_development_dependency 'ruby-prof', '~> 0.15.9'
 
   s.files = Dir.glob('{lib,bin}/**/*.rb') +
     Dir.glob('ext/**/*.{i,hpp,cxx,rb}') +
