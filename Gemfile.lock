@@ -1,7 +1,8 @@
 PATH
   remote: ../key_value_name
   specs:
-    key_value_name (0.1.0)
+    key_value_name (0.2.0)
+      ostruct (~> 0.6.3)
 
 PATH
   remote: .
@@ -35,6 +36,7 @@ GEM
     io-console (0.8.1)
     minitest (5.25.5)
     narray (0.6.1.2)
+    ostruct (0.6.3)
     parallel (1.10.0)
     parser (2.7.2.0)
       ast (~> 2.4.1)
